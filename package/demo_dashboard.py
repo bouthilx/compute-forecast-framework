@@ -94,6 +94,7 @@ def main():
     
     print("\n🎭 Generating mock collection data...")
     print("💡 Open the dashboard URL in your browser to see real-time updates")
+    print("🚨 Alert system integration available - see demo_complete_monitoring.py for full alerting demo")
     print("🔥 Press Ctrl+C to stop the demo")
     
     try:
