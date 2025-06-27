@@ -400,5 +400,4 @@ class CollectionSession:
                 else:
                     rate_limits[api_name] = limit_data
             data['rate_limits'] = rate_limits
-        
         return cls(**data)

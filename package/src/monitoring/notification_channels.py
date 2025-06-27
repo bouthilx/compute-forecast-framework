@@ -390,5 +390,4 @@ class NotificationChannelManager:
         """Calculate overall success rate across all channels"""
         total_attempts = sum(stats.get('total_attempts', 0) for stats in self.delivery_stats.values())
         total_successful = sum(stats.get('successful_deliveries', 0) for stats in self.delivery_stats.values())
-        
         return (total_successful / max(total_attempts, 1)) * 100
