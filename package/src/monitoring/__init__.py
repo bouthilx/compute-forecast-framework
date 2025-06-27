@@ -19,7 +19,28 @@ from .dashboard_metrics import (
 from .metrics_collector import MetricsCollector
 from .dashboard_server import CollectionDashboard
 
+from .alert_structures import (
+    AlertRule,
+    Alert,
+    AlertConfiguration,
+    AlertDeliveryResult,
+    AlertSummary,
+    SuppressionRule,
+    NotificationResult
+)
+
+from .alert_system import IntelligentAlertSystem
+from .alert_suppression import AlertSuppressionManager
+from .notification_channels import (
+    NotificationChannel,
+    ConsoleNotificationChannel,
+    DashboardNotificationChannel,
+    LogNotificationChannel,
+    NotificationChannelManager
+)
+
 __all__ = [
+    # Dashboard components
     'SystemMetrics',
     'CollectionProgressMetrics', 
     'APIMetrics',
@@ -29,5 +50,21 @@ __all__ = [
     'MetricsSummary',
     'DashboardStatus',
     'MetricsCollector',
-    'CollectionDashboard'
+    'CollectionDashboard',
+    
+    # Alerting components
+    'AlertRule',
+    'Alert',
+    'AlertConfiguration',
+    'AlertDeliveryResult',
+    'AlertSummary',
+    'SuppressionRule',
+    'NotificationResult',
+    'IntelligentAlertSystem',
+    'AlertSuppressionManager',
+    'NotificationChannel',
+    'ConsoleNotificationChannel',
+    'DashboardNotificationChannel',
+    'LogNotificationChannel',
+    'NotificationChannelManager'
 ]
