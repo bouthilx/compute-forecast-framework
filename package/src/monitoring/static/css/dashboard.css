@@ -1,0 +1,279 @@
+/* Dashboard CSS - Real-time collection monitoring styles */
+
+/* Main layout */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container-fluid {
+    padding: 20px;
+}
+
+/* Cards */
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Connection status */
+.connection-status {
+    font-size: 0.9rem;
+}
+
+#connection-status.disconnected {
+    background-color: #dc3545 !important;
+}
+
+#connection-status.connecting {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+/* Venue progress grid */
+.venue-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(6, 1fr);
+    gap: 2px;
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.venue-grid-header {
+    background-color: #495057;
+    color: white;
+    padding: 8px 4px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.venue-grid-venue-name {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 4px;
+    text-align: center;
+    font-weight: bold;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 0.8rem;
+}
+
+.venue-grid-cell {
+    background-color: #ffffff;
+    padding: 6px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+    position: relative;
+    min-height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Venue status colors */
+.venue-status-not-started {
+    background-color: #6c757d !important;
+    color: white;
+}
+
+.venue-status-in-progress {
+    background-color: #ffc107 !important;
+    color: #000;
+    animation: pulse 2s infinite;
+}
+
+.venue-status-completed {
+    background-color: #28a745 !important;
+    color: white;
+}
+
+.venue-status-failed {
+    background-color: #dc3545 !important;
+    color: white;
+}
+
+.venue-status-paused {
+    background-color: #fd7e14 !important;
+    color: white;
+}
+
+/* Pulse animation for in-progress venues */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.venue-grid-cell:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.venue-papers-count {
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.venue-progress-bar {
+    font-size: 0.6rem;
+    margin-top: 2px;
+}
+
+/* API Health cards */
+.api-health-card {
+    margin-bottom: 15px;
+}
+
+.api-status-healthy {
+    border-left: 4px solid #28a745;
+}
+
+.api-status-degraded {
+    border-left: 4px solid #ffc107;
+}
+
+.api-status-critical {
+    border-left: 4px solid #fd7e14;
+}
+
+.api-status-offline {
+    border-left: 4px solid #dc3545;
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Summary cards animations */
+.card.bg-success,
+.card.bg-info,
+.card.bg-warning,
+.card.bg-secondary {
+    transition: transform 0.2s ease;
+}
+
+.card.bg-success:hover,
+.card.bg-info:hover,
+.card.bg-warning:hover,
+.card.bg-secondary:hover {
+    transform: translateY(-2px);
+}
+
+/* Alert styles */
+.alert {
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.alert-dismissible .btn-close {
+    padding: 0.75rem 1rem;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .venue-grid {
+        grid-template-columns: 80px repeat(6, 1fr);
+        font-size: 0.7rem;
+        gap: 1px;
+    }
+    
+    .venue-grid-cell {
+        min-height: 30px;
+        padding: 4px 2px;
+    }
+    
+    .venue-papers-count {
+        font-size: 0.6rem;
+    }
+    
+    .venue-progress-bar {
+        font-size: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .venue-grid {
+        grid-template-columns: 60px repeat(6, 1fr);
+        font-size: 0.6rem;
+    }
+    
+    .venue-grid-cell {
+        min-height: 25px;
+        padding: 2px 1px;
+    }
+}
+
+/* Tooltip styles */
+.tooltip {
+    font-size: 0.8rem;
+}
+
+.tooltip-inner {
+    max-width: 300px;
+    text-align: left;
+}
+
+/* Additional utility classes */
+.text-monospace {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.border-left-primary {
+    border-left: 4px solid #007bff !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #28a745 !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+
+.border-left-danger {
+    border-left: 4px solid #dc3545 !important;
+}
