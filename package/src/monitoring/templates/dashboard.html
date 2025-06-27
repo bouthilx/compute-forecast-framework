@@ -7,15 +7,12 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Socket.IO -->
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
 </head>
 <body>
     <div class="container-fluid">
@@ -24,228 +21,107 @@
             <div class="col-12">
                 <div class="card bg-primary text-white">
                     <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-6">
-                                <h2 class="mb-0">
-                                    <i class="fas fa-chart-line me-2"></i>
-                                    Paper Collection Dashboard
-                                </h2>
-                                <small>Real-time monitoring for venue-based collection</small>
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <div class="connection-status">
-                                    <span id="connection-status" class="badge bg-success">
-                                        <i class="fas fa-wifi me-1"></i>Connected
-                                    </span>
-                                    <small class="d-block mt-1">
-                                        Last Update: <span id="last-update">--</span>
-                                    </small>
-                                </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h1 class="h3 mb-0">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Paper Collection Dashboard
+                            </h1>
+                            <div>
+                                <span id="connection-status" class="badge bg-secondary">Connecting...</span>
+                                <span class="ms-3">Last Update: <span id="last-update">-</span></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- Summary Cards -->
         <div class="row mb-4">
             <div class="col-lg-3 col-md-6 mb-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h4 class="mb-0" id="total-papers">0</h4>
-                                <p class="mb-0">Papers Collected</p>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="fas fa-file-alt fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <small><span id="papers-per-minute">0</span> papers/min</small>
+                <div class="card border-left-success">
+                    <div class="card-body stats-card">
+                        <div class="text-muted">Papers Collected</div>
+                        <div class="display-4" id="total-papers">0</div>
+                        <div class="text-muted small" id="collection-rate">0/min</div>
+                        <i class="fas fa-file-alt fa-2x text-muted position-absolute" style="top: 10px; right: 10px; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-left-primary">
+                    <div class="card-body stats-card">
+                        <div class="text-muted">Overall Progress</div>
+                        <div class="display-4" id="overall-progress">0%</div>
+                        <div class="progress mt-2" style="height: 5px;">
+                            <div id="overall-progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="col-lg-3 col-md-6 mb-3">
-                <div class="card bg-info text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h4 class="mb-0" id="venues-completed">0</h4>
-                                <p class="mb-0">Venues Completed</p>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="fas fa-building fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <small><span id="venues-progress">0/0</span> total venues</small>
-                        </div>
+                <div class="card border-left-warning">
+                    <div class="card-body stats-card">
+                        <div class="text-muted">Active Alerts</div>
+                        <div class="display-4" id="active-alerts">0</div>
+                        <div class="text-muted small">System Status</div>
+                        <i class="fas fa-exclamation-triangle fa-2x text-muted position-absolute" style="top: 10px; right: 10px; opacity: 0.3;"></i>
                     </div>
                 </div>
             </div>
             
             <div class="col-lg-3 col-md-6 mb-3">
-                <div class="card bg-warning text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h4 class="mb-0" id="session-duration">0h 0m</h4>
-                                <p class="mb-0">Session Duration</p>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="fas fa-clock fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <small>ETA: <span id="estimated-completion">--</span></small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 mb-3">
-                <div class="card bg-secondary text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h4 class="mb-0" id="memory-usage">0%</h4>
-                                <p class="mb-0">Memory Usage</p>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="fas fa-memory fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <small><span id="cpu-usage">0</span>% CPU</small>
-                        </div>
+                <div class="card border-left-info">
+                    <div class="card-body stats-card">
+                        <div class="text-muted">Data Quality</div>
+                        <div class="display-4" id="quality-score">0%</div>
+                        <div class="text-muted small">Validation Score</div>
+                        <i class="fas fa-check-circle fa-2x text-muted position-absolute" style="top: 10px; right: 10px; opacity: 0.3;"></i>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- Venue Progress Grid -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-th me-2"></i>
+                            <i class="fas fa-building me-2"></i>
                             Venue Collection Progress
                         </h5>
-                        <small class="text-muted">25 venues × 6 years (2019-2024)</small>
                     </div>
                     <div class="card-body">
                         <div id="venue-grid" class="venue-grid">
-                            <!-- Grid will be populated by JavaScript -->
+                            <!-- Dynamically populated by JavaScript -->
                         </div>
-                        
-                        <!-- Legend -->
-                        <div class="mt-3">
-                            <div class="row">
-                                <div class="col-12">
-                                    <small class="text-muted me-3">
-                                        <span class="badge bg-secondary me-1">■</span> Not Started
-                                    </small>
-                                    <small class="text-muted me-3">
-                                        <span class="badge bg-warning me-1">■</span> In Progress
-                                    </small>
-                                    <small class="text-muted me-3">
-                                        <span class="badge bg-success me-1">■</span> Completed
-                                    </small>
-                                    <small class="text-muted me-3">
-                                        <span class="badge bg-danger me-1">■</span> Failed
-                                    </small>
-                                </div>
-                            </div>
+                        <div class="mt-3 text-muted small">
+                            <span class="badge bg-secondary">Not Started</span>
+                            <span class="badge bg-warning ms-2">In Progress</span>
+                            <span class="badge bg-success ms-2">Completed</span>
+                            <span class="badge bg-danger ms-2">Failed</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Charts Row -->
+        
+        <!-- Charts -->
         <div class="row mb-4">
             <div class="col-lg-6 mb-3">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Collection Rate</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="collection-rate-chart" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-6 mb-3">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">System Resources</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="system-resources-chart" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- API Health -->
-        <div class="row mb-4">
-            <div class="col-12">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-heartbeat me-2"></i>
-                            API Health Status
+                            <i class="fas fa-chart-line me-2"></i>
+                            Collection Rate
                         </h5>
                     </div>
                     <div class="card-body">
-                        <div id="api-health" class="row">
-                            <!-- API health cards will be populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Processing Metrics -->
-        <div class="row mb-4">
-            <div class="col-lg-6 mb-3">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Data Processing</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="text-center">
-                                    <h4 id="papers-processed" class="text-primary">0</h4>
-                                    <small>Processed</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="text-center">
-                                    <h4 id="papers-filtered" class="text-warning">0</h4>
-                                    <small>Filtered</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-6">
-                                <div class="text-center">
-                                    <h4 id="papers-deduplicated" class="text-info">0</h4>
-                                    <small>Deduplicated</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="text-center">
-                                    <h4 id="processing-queue" class="text-secondary">0</h4>
-                                    <small>Queue Size</small>
-                                </div>
-                            </div>
+                        <div class="chart-container">
+                            <canvas id="collectionRateChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -254,45 +130,90 @@
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">State Management</h5>
+                        <h5 class="mb-0">
+                            <i class="fas fa-server me-2"></i>
+                            System Resources
+                        </h5>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="text-center">
-                                    <h4 id="total-checkpoints" class="text-success">0</h4>
-                                    <small>Checkpoints</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="text-center">
-                                    <h4 id="checkpoint-size" class="text-info">0 MB</h4>
-                                    <small>Size</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <small class="text-muted">
-                                    Last checkpoint: <span id="last-checkpoint">--</span>
-                                </small>
-                            </div>
+                        <div class="chart-container">
+                            <canvas id="systemResourcesChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Alerts (will be populated dynamically) -->
+        
+        <!-- API Health and Processing Info -->
+        <div class="row mb-4">
+            <div class="col-lg-4 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-plug me-2"></i>
+                            API Health
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="api-health">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i>
+                            Processing Metrics
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Processing Errors</span>
+                            <strong id="processing-errors">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Checkpoints</span>
+                            <strong id="checkpoint-count">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Last Checkpoint</span>
+                            <strong id="last-checkpoint">-</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bell me-2"></i>
+                            Recent Alerts
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recent-alerts" class="alert-list">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Alerts Container -->
         <div id="alerts-container">
-            <!-- Alerts will be added here by JavaScript -->
+            <!-- Dynamic alerts will be inserted here -->
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Custom Dashboard JavaScript -->
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="/static/js/dashboard.js"></script>
 </body>
 </html>
