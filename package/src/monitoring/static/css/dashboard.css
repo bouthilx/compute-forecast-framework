@@ -1,8 +1,26 @@
+<<<<<<< HEAD
 /* Dashboard CSS - Real-time collection monitoring styles */
 
 /* Main layout */
 body {
     background-color: #f8f9fa;
+=======
+/* Dashboard CSS - Real-time collection monitoring styling */
+
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+    --border-color: #dee2e6;
+}
+
+body {
+    background-color: var(--light-color);
+>>>>>>> master
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -10,6 +28,7 @@ body {
     padding: 20px;
 }
 
+<<<<<<< HEAD
 /* Cards */
 .card {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -189,6 +208,364 @@ body {
 }
 
 /* Loading states */
+=======
+/* Header Styling */
+.dashboard-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 300;
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+}
+
+.status-indicator {
+    font-size: 1.5rem;
+    margin-right: 8px;
+}
+
+.status-indicator.connected {
+    color: var(--success-color);
+}
+
+.status-indicator.disconnected {
+    color: var(--danger-color);
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+    color: white;
+    border-radius: 10px 10px 0 0 !important;
+    padding: 15px 20px;
+    border: none;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Progress Bars */
+.progress {
+    height: 25px;
+    background-color: #e9ecef;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: width 0.6s ease;
+}
+
+.progress-container {
+    margin-bottom: 20px;
+}
+
+.progress-details {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 0.95rem;
+}
+
+/* Session Info */
+.session-info h5 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.session-info p {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+/* Venue Grid */
+.venue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.venue-item {
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.venue-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.venue-item.completed {
+    border-color: var(--success-color);
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+}
+
+.venue-item.in-progress {
+    border-color: var(--warning-color);
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    animation: pulse 2s infinite;
+}
+
+.venue-item.failed {
+    border-color: var(--danger-color);
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+}
+
+.venue-item.not-started {
+    border-color: var(--border-color);
+    background: #f8f9fa;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.venue-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+}
+
+.venue-year {
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.venue-progress {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.status-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+}
+
+.status-box.completed {
+    background-color: var(--success-color);
+}
+
+.status-box.in-progress {
+    background-color: var(--warning-color);
+}
+
+.status-box.not-started {
+    background-color: #e9ecef;
+}
+
+.status-box.failed {
+    background-color: var(--danger-color);
+}
+
+/* API Health */
+.api-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--border-color);
+}
+
+.api-item.healthy {
+    border-left-color: var(--success-color);
+}
+
+.api-item.degraded {
+    border-left-color: var(--warning-color);
+}
+
+.api-item.critical {
+    border-left-color: var(--danger-color);
+}
+
+.api-item.offline {
+    border-left-color: var(--dark-color);
+    background: #e9ecef;
+}
+
+.api-name {
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.api-metrics {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85rem;
+}
+
+.api-status {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.api-status.healthy {
+    background: var(--success-color);
+    color: white;
+}
+
+.api-status.degraded {
+    background: var(--warning-color);
+    color: black;
+}
+
+.api-status.critical {
+    background: var(--danger-color);
+    color: white;
+}
+
+.api-status.offline {
+    background: var(--dark-color);
+    color: white;
+}
+
+/* System Metrics */
+.system-metrics .metric-item {
+    margin-bottom: 15px;
+}
+
+.system-metrics label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--dark-color);
+}
+
+.system-details {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.system-details p {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+/* Processing Metrics */
+.processing-metric {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid var(--info-color);
+}
+
+.processing-metric h5 {
+    color: var(--info-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.processing-metric p {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+/* Charts */
+canvas {
+    max-height: 200px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 2rem;
+    }
+    
+    .progress-details {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .venue-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+    
+    .api-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .api-metrics {
+        flex-wrap: wrap;
+    }
+}
+
+/* Loading States */
+>>>>>>> master
 .loading {
     opacity: 0.6;
     pointer-events: none;
@@ -202,13 +579,20 @@ body {
     width: 20px;
     height: 20px;
     margin: -10px 0 0 -10px;
+<<<<<<< HEAD
     border: 2px solid #f3f3f3;
     border-top: 2px solid #007bff;
     border-radius: 50%;
+=======
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    border-top-color: transparent;
+>>>>>>> master
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
+<<<<<<< HEAD
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
@@ -276,4 +660,22 @@ body {
 
 .border-left-danger {
     border-left: 4px solid #dc3545 !important;
+=======
+    to { transform: rotate(360deg); }
+}
+
+/* Alerts */
+.alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    max-width: 300px;
+}
+
+.alert {
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+>>>>>>> master
 }
