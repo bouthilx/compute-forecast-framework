@@ -104,6 +104,54 @@ class CheckpointData:
             else:
                 result[key] = value
         return result
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'CheckpointData':
+        """Create CheckpointData from dictionary"""
+        # Handle datetime fields
+        if isinstance(data.get('timestamp'), str):
+            data['timestamp'] = datetime.fromisoformat(data['timestamp'])
+            
+        # Handle venue lists (convert lists back to tuples)
+        for venue_list_field in ['venues_completed', 'venues_in_progress', 'venues_not_started']:
+            if venue_list_field in data and isinstance(data[venue_list_field], list):
+                data[venue_list_field] = [tuple(item) if isinstance(item, list) else item 
+                                         for item in data[venue_list_field]]
+            
+        # Handle error_context
+        if data.get('error_context') and isinstance(data['error_context'], dict):
+            error_data = data['error_context'].copy()
+            if isinstance(error_data.get('timestamp'), str):
+                error_data['timestamp'] = datetime.fromisoformat(error_data['timestamp'])
+            data['error_context'] = ErrorContext(**error_data)
+        
+        # Handle api_health_status
+        if 'api_health_status' in data:
+            api_status = {}
+            for api_name, status_data in data['api_health_status'].items():
+                if isinstance(status_data, dict):
+                    # Handle datetime fields in APIHealthStatus
+                    if isinstance(status_data.get('last_successful_request'), str):
+                        status_data['last_successful_request'] = datetime.fromisoformat(status_data['last_successful_request'])
+                    api_status[api_name] = APIHealthStatus(**status_data)
+                else:
+                    api_status[api_name] = status_data
+            data['api_health_status'] = api_status
+        
+        # Handle rate_limit_status
+        if 'rate_limit_status' in data:
+            rate_limits = {}
+            for api_name, limit_data in data['rate_limit_status'].items():
+                if isinstance(limit_data, dict):
+                    # Handle datetime fields in RateLimitStatus
+                    if isinstance(limit_data.get('next_available_slot'), str):
+                        limit_data['next_available_slot'] = datetime.fromisoformat(limit_data['next_available_slot'])
+                    rate_limits[api_name] = RateLimitStatus(**limit_data)
+                else:
+                    rate_limits[api_name] = limit_data
+            data['rate_limit_status'] = rate_limits
+        
+        return cls(**data)
 
 
 @dataclass

@@ -178,6 +178,9 @@ class StatePersistence:
                     return raw_data
                 elif hasattr(expected_type, 'from_dict'):
                     return expected_type.from_dict(raw_data)
+                elif expected_type == CheckpointData:
+                    # Special handling for CheckpointData
+                    return CheckpointData.from_dict(raw_data)
                 else:
                     # Try to construct directly
                     return expected_type(**raw_data)
