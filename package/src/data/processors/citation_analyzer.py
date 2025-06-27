@@ -2,8 +2,9 @@
 
 from collections import defaultdict
 from datetime import datetime
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 import numpy as np
+import logging
 
 from src.data.models import Paper
 from src.data.collectors.state_structures import VenueConfig
@@ -18,37 +19,21 @@ from src.data.processors.citation_statistics import (
     AdaptiveThreshold,
     FilteringQualityReport
 )
+from src.data.processors.citation_config import CitationConfig
+
+logger = logging.getLogger(__name__)
 
 
 class CitationAnalyzer:
     """Analyze and filter papers based on citation patterns and breakthrough potential."""
     
-    def __init__(self, venue_configs: List[VenueConfig]):
+    def __init__(self, venue_configs: List[VenueConfig], config: Optional[CitationConfig] = None):
         """Initialize with venue-specific citation thresholds."""
         self.venue_configs = {vc.venue_name: vc for vc in venue_configs}
-        self.breakthrough_detector = BreakthroughDetector()
-        self.threshold_calculator = AdaptiveThresholdCalculator()
+        self.config = config or CitationConfig()
+        self.breakthrough_detector = BreakthroughDetector(self.config)
+        self.threshold_calculator = AdaptiveThresholdCalculator(self.config)
         self.current_year = datetime.now().year
-        
-        # Default venue tiers (hardcoded for now, should come from config)
-        self.venue_tiers = {
-            "NeurIPS": "tier1",
-            "ICML": "tier1", 
-            "ICLR": "tier1",
-            "AAAI": "tier2",
-            "CVPR": "tier2",
-            "ICCV": "tier2",
-            "ECCV": "tier2",
-            "ACL": "tier2",
-            "EMNLP": "tier2",
-            "NAACL": "tier2",
-            "UAI": "tier3",
-            "AISTATS": "tier3",
-            "KDD": "tier3",
-            "WWW": "tier3",
-            "SIGIR": "tier3",
-            "WSDM": "tier3"
-        }
     
     def analyze_citation_distributions(self, papers: List[Paper]) -> CitationAnalysisReport:
         """
@@ -62,11 +47,16 @@ class CitationAnalyzer:
         """
         analysis_start = datetime.now()
         
+        # Input validation
+        valid_papers = self._validate_papers(papers)
+        if len(valid_papers) < len(papers):
+            logger.warning(f"Filtered out {len(papers) - len(valid_papers)} invalid papers")
+        
         # Group papers by venue and year
         venue_papers = defaultdict(list)
         year_papers = defaultdict(list)
         
-        for paper in papers:
+        for paper in valid_papers:
             venue_key = paper.normalized_venue or paper.venue
             if venue_key:
                 venue_papers[venue_key].append(paper)
@@ -84,28 +74,28 @@ class CitationAnalyzer:
             year_analysis[year] = self._analyze_year_citations(year, year_paper_list)
         
         # Overall distribution analysis
-        all_citations = [p.citations for p in papers if p.citations is not None]
+        all_citations = [p.citations for p in valid_papers if p.citations is not None]
         overall_percentiles = self._calculate_percentiles(all_citations)
         
         # Detect breakthrough candidates
-        breakthrough_candidates = self.breakthrough_detector.detect_breakthrough_papers(papers)
+        breakthrough_candidates = self.breakthrough_detector.detect_breakthrough_papers(valid_papers)
         
         # Identify outliers
         high_citation_threshold = overall_percentiles.get(95, 100)
-        high_citation_outliers = [p for p in papers if p.citations and p.citations > high_citation_threshold]
-        zero_citation_papers = [p for p in papers if p.citations == 0]
+        high_citation_outliers = [p for p in valid_papers if p.citations and p.citations > high_citation_threshold]
+        zero_citation_papers = [p for p in valid_papers if p.citations == 0]
         
         # Generate threshold recommendations
         suggested_thresholds = self._generate_threshold_recommendations(venue_analysis, year_analysis)
         
         # Calculate quality indicators
-        quality_indicators = self._calculate_quality_indicators(papers, venue_analysis)
+        quality_indicators = self._calculate_quality_indicators(valid_papers, venue_analysis)
         
         # Generate filtering recommendations
         filtering_recommendations = self._generate_filtering_recommendations(venue_analysis)
         
         return CitationAnalysisReport(
-            papers_analyzed=len(papers),
+            papers_analyzed=len(valid_papers),
             analysis_timestamp=analysis_start,
             venue_analysis=venue_analysis,
             year_analysis=year_analysis,
@@ -129,6 +119,12 @@ class CitationAnalyzer:
         - Must provide justification for each filtering decision
         """
         original_count = len(papers)
+        
+        # Input validation
+        valid_papers = self._validate_papers(papers)
+        if len(valid_papers) < len(papers):
+            logger.warning(f"Filtered out {len(papers) - len(valid_papers)} invalid papers")
+        
         papers_above_threshold = []
         papers_below_threshold = []
         breakthrough_papers_preserved = []
@@ -138,24 +134,24 @@ class CitationAnalyzer:
         # First detect breakthrough papers if preservation is enabled
         breakthrough_papers = set()
         if preserve_breakthroughs:
-            breakthrough_candidates = self.breakthrough_detector.detect_breakthrough_papers(papers)
+            breakthrough_candidates = self.breakthrough_detector.detect_breakthrough_papers(valid_papers)
             breakthrough_papers = {bp.paper.paper_id for bp in breakthrough_candidates if bp.paper.paper_id}
         
         # Calculate thresholds for each venue/year combination
         venue_year_thresholds = {}
-        for paper in papers:
+        for paper in valid_papers:
             venue = paper.normalized_venue or paper.venue
             year = paper.year
             
             if venue and year and (venue, year) not in venue_year_thresholds:
                 venue_tier = self._get_venue_tier(venue)
                 threshold = self.threshold_calculator.calculate_venue_threshold(
-                    venue, year, papers, venue_tier
+                    venue, year, valid_papers, venue_tier
                 )
                 venue_year_thresholds[(venue, year)] = threshold
         
         # Filter papers
-        for paper in papers:
+        for paper in valid_papers:
             venue = paper.normalized_venue or paper.venue
             year = paper.year
             
@@ -187,7 +183,7 @@ class CitationAnalyzer:
         # Calculate threshold compliance
         threshold_compliance = {}
         for (venue, year), threshold in venue_year_thresholds.items():
-            venue_year_papers = [p for p in papers if p.normalized_venue == venue and p.year == year]
+            venue_year_papers = [p for p in valid_papers if (p.normalized_venue or p.venue) == venue and p.year == year]
             if venue_year_papers:
                 above_count = len([p for p in venue_year_papers if p in papers_above_threshold])
                 compliance_rate = above_count / len(venue_year_papers)
@@ -197,12 +193,12 @@ class CitationAnalyzer:
         filtered_count = len(papers_above_threshold)
         
         # Estimated precision (quality of papers kept)
-        avg_citations_original = np.mean([p.citations for p in papers if p.citations is not None]) if papers else 0
+        avg_citations_original = np.mean([p.citations for p in valid_papers if p.citations is not None]) if valid_papers else 0
         avg_citations_filtered = np.mean([p.citations for p in papers_above_threshold if p.citations is not None]) if papers_above_threshold else 0
         estimated_precision = min(avg_citations_filtered / avg_citations_original, 1.0) if avg_citations_original > 0 else 0.0
         
         # Estimated coverage (coverage of important papers)
-        high_impact_original = len([p for p in papers if p.citations and p.citations > 50])
+        high_impact_original = len([p for p in valid_papers if p.citations and p.citations > 50])
         high_impact_kept = len([p for p in papers_above_threshold if p.citations and p.citations > 50])
         estimated_coverage = high_impact_kept / high_impact_original if high_impact_original > 0 else 1.0
         
@@ -257,7 +253,7 @@ class CitationAnalyzer:
         venue_coverage_rate = len(preserved_venues) / len(original_venues) if original_venues else 0.0
         
         # High-impact preservation
-        high_impact_threshold = 50  # Papers with >50 citations
+        high_impact_threshold = self.config.high_impact_citation_threshold
         high_impact_original = [p for p in original_papers if p.citations and p.citations > high_impact_threshold]
         high_impact_preserved = [p for p in filtered_papers if p.citations and p.citations > high_impact_threshold]
         impact_preservation_rate = len(high_impact_preserved) / len(high_impact_original) if high_impact_original else 1.0
@@ -332,8 +328,11 @@ class CitationAnalyzer:
         for year, year_papers in papers_by_year.items():
             yearly_stats[year] = self._analyze_year_citations(year, year_papers)
         
-        # Identify high-impact papers (top 10%)
-        high_impact_threshold = percentiles.get(90, mean_citations * 2) if percentiles else 0
+        # Identify high-impact papers (top percentage from config)
+        high_impact_threshold = percentiles.get(
+            self.config.high_impact_percentile, 
+            mean_citations * 2
+        ) if percentiles else 0
         high_impact_papers = [p for p in papers if p.citations and p.citations >= high_impact_threshold]
         
         # Find breakthrough papers
@@ -409,7 +408,7 @@ class CitationAnalyzer:
     
     def _get_venue_tier(self, venue: str) -> str:
         """Get venue tier for prestige calculation."""
-        return self.venue_tiers.get(venue, "tier4")
+        return self.config.get_venue_tier(venue)
     
     def _generate_threshold_recommendations(self, venue_analysis: Dict[str, VenueCitationStats],
                                           year_analysis: Dict[int, YearCitationStats]) -> Dict[Tuple[str, int], int]:
@@ -417,20 +416,12 @@ class CitationAnalyzer:
         recommendations = {}
         
         for venue, venue_stats in venue_analysis.items():
-            for year, year_stats in venue_stats.yearly_stats.items():
-                venue_tier = self._get_venue_tier(venue)
-                
-                # Get papers for this specific venue/year
-                venue_year_papers = []
-                for year_dict in venue_stats.yearly_stats.values():
-                    if hasattr(year_dict, 'year') and year_dict.year == year:
-                        # This is a simplified approach - in real implementation,
-                        # we'd need to track the actual papers
-                        venue_year_papers = []  # Placeholder
-                
-                threshold = self.threshold_calculator.calculate_venue_threshold(
-                    venue, year, venue_year_papers, venue_tier
-                )
+            venue_tier = self._get_venue_tier(venue)
+            
+            # Use the venue's recommended threshold for all years in the venue
+            for year in venue_stats.yearly_stats.keys():
+                # Use the already calculated recommended threshold from venue stats
+                threshold = venue_stats.recommended_threshold
                 recommendations[(venue, year)] = threshold
         
         return recommendations
@@ -492,3 +483,21 @@ class CitationAnalyzer:
         recommendations.append("Validate filtering results to ensure important papers are preserved")
         
         return recommendations
+    
+    def _validate_papers(self, papers: List[Paper]) -> List[Paper]:
+        """Validate papers and filter out invalid ones."""
+        valid_papers = []
+        for paper in papers:
+            # Skip papers with invalid years
+            if paper.year and paper.year > self.current_year:
+                logger.warning(f"Skipping paper with future year: {paper.year}")
+                continue
+            
+            # Skip papers with negative citations
+            if paper.citations is not None and paper.citations < 0:
+                logger.warning(f"Skipping paper with negative citations: {paper.citations}")
+                continue
+            
+            valid_papers.append(paper)
+        
+        return valid_papers

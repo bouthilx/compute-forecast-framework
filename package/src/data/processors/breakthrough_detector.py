@@ -2,18 +2,23 @@
 
 import json
 from datetime import datetime
-from typing import List, Set, Tuple
+from typing import List, Set, Tuple, Optional
 from pathlib import Path
+import logging
 
 from src.data.models import Paper, Author
 from src.data.processors.citation_statistics import BreakthroughPaper
+from src.data.processors.citation_config import CitationConfig
+
+logger = logging.getLogger(__name__)
 
 
 class BreakthroughDetector:
     """Detect papers with breakthrough potential using multiple indicators."""
     
-    def __init__(self):
+    def __init__(self, config: Optional[CitationConfig] = None):
         """Initialize detector with breakthrough keywords and high-impact authors."""
+        self.config = config or CitationConfig()
         self.current_year = datetime.now().year
         self.breakthrough_keywords = self._load_breakthrough_keywords()
         self.high_impact_authors = self._load_high_impact_authors()
@@ -94,49 +99,31 @@ class BreakthroughDetector:
         """Calculate breakthrough potential score (0.0 to 1.0)."""
         score = 0.0
         
-        # Factor 1: Citation velocity (30% weight)
-        years_since_pub = max(1, self.current_year - paper.year)
-        citation_velocity = paper.citations / years_since_pub if paper.citations else 0
+        # Factor 1: Citation velocity (weight from config)
+        years_since_pub = max(1, self.current_year - paper.year) if paper.year else 1
+        citation_velocity = 0.0
+        if paper.citations and years_since_pub > 0:
+            citation_velocity = paper.citations / years_since_pub
         
-        # Velocity scoring (non-linear)
-        if citation_velocity >= 50:  # Very high velocity
-            velocity_score = 1.0
-        elif citation_velocity >= 20:  # High velocity
-            velocity_score = 0.8
-        elif citation_velocity >= 10:  # Good velocity
-            velocity_score = 0.6
-        elif citation_velocity >= 5:   # Moderate velocity
-            velocity_score = 0.4
-        elif citation_velocity >= 2:   # Low velocity
-            velocity_score = 0.2
-        else:
-            velocity_score = 0.0
+        # Velocity scoring using config
+        velocity_score = self.config.get_velocity_score(citation_velocity)
+        score += velocity_score * self.config.breakthrough_weights["citation_velocity"]
         
-        score += velocity_score * 0.3
-        
-        # Factor 2: Breakthrough keywords (25% weight)
+        # Factor 2: Breakthrough keywords (weight from config)
         keyword_score, matched_keywords = self._calculate_keyword_score(paper)
-        score += keyword_score * 0.25
+        score += keyword_score * self.config.breakthrough_weights["keywords"]
         
-        # Factor 3: Author reputation (20% weight)
+        # Factor 3: Author reputation (weight from config)
         author_score, high_impact_authors = self._calculate_author_reputation_score(paper.authors)
-        score += author_score * 0.2
+        score += author_score * self.config.breakthrough_weights["author_reputation"]
         
-        # Factor 4: Venue prestige (15% weight)
+        # Factor 4: Venue prestige (weight from config)
         venue_score = self._calculate_venue_prestige_score(paper.normalized_venue or paper.venue)
-        score += venue_score * 0.15
+        score += venue_score * self.config.breakthrough_weights["venue_prestige"]
         
-        # Factor 5: Recency bonus (10% weight)
-        if years_since_pub <= 2:  # Very recent
-            recency_score = 1.0
-        elif years_since_pub <= 3:  # Recent
-            recency_score = 0.8
-        elif years_since_pub <= 5:  # Somewhat recent
-            recency_score = 0.6
-        else:
-            recency_score = 0.0
-        
-        score += recency_score * 0.1
+        # Factor 5: Recency bonus (weight from config)
+        recency_score = self.config.get_recency_score(years_since_pub)
+        score += recency_score * self.config.breakthrough_weights["recency"]
         
         return min(score, 1.0)
     
@@ -150,8 +137,8 @@ class BreakthroughDetector:
             if keyword in title_lower or keyword in abstract_lower:
                 matched_keywords.append(keyword)
         
-        # Max score at 5 keywords
-        keyword_score = min(len(matched_keywords) / 5.0, 1.0)
+        # Max score at config-specified keywords
+        keyword_score = min(len(matched_keywords) / self.config.max_keywords_for_score, 1.0)
         
         return keyword_score, matched_keywords
     
@@ -166,45 +153,38 @@ class BreakthroughDetector:
         for author in authors:
             # Check if author is in high-impact list
             if author.name in self.high_impact_authors:
-                reputation_score += 0.3
+                reputation_score += self.config.author_reputation_scores["high_impact_author"]
                 high_impact_authors.append(author.name)
             
             # Check h-index if available
             if hasattr(author, 'h_index') and author.h_index:
-                if author.h_index >= 50:
-                    reputation_score += 0.2
-                elif author.h_index >= 30:
-                    reputation_score += 0.1
+                if author.h_index >= self.config.author_h_index_thresholds["high"]:
+                    reputation_score += self.config.author_reputation_scores["high_h_index"]
+                elif author.h_index >= self.config.author_h_index_thresholds["medium"]:
+                    reputation_score += self.config.author_reputation_scores["medium_h_index"]
         
         return min(reputation_score, 1.0), high_impact_authors
     
     def _calculate_venue_prestige_score(self, venue: str) -> float:
         """Calculate venue prestige score based on tier."""
-        # Hardcoded venue tiers (should ideally come from config)
-        tier1_venues = {"NeurIPS", "ICML", "ICLR"}
-        tier2_venues = {"AAAI", "CVPR", "ICCV", "ECCV", "ACL", "EMNLP", "NAACL"}
-        tier3_venues = {"UAI", "AISTATS", "KDD", "WWW", "SIGIR", "WSDM"}
+        if not venue:
+            return self.config.venue_tier_multipliers["tier4"]
         
-        if venue in tier1_venues:
-            return 1.0
-        elif venue in tier2_venues:
-            return 0.8
-        elif venue in tier3_venues:
-            return 0.6
-        else:
-            return 0.4
+        return self.config.get_venue_prestige_multiplier(venue)
     
     def identify_breakthrough_indicators(self, paper: Paper) -> List[str]:
         """Identify specific indicators of breakthrough potential."""
         indicators = []
         
         # Check citation velocity
-        years_since_pub = max(1, self.current_year - paper.year)
-        citation_velocity = paper.citations / years_since_pub if paper.citations else 0
+        years_since_pub = max(1, self.current_year - paper.year) if paper.year else 1
+        citation_velocity = 0.0
+        if paper.citations and years_since_pub > 0:
+            citation_velocity = paper.citations / years_since_pub
         
-        if citation_velocity >= 20:
+        if citation_velocity >= self.config.velocity_thresholds["high"]:
             indicators.append(f"High citation velocity: {citation_velocity:.1f} citations/year")
-        elif citation_velocity >= 10:
+        elif citation_velocity >= self.config.velocity_thresholds["good"]:
             indicators.append(f"Good citation velocity: {citation_velocity:.1f} citations/year")
         
         # Check keywords

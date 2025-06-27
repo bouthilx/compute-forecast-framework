@@ -9,6 +9,7 @@ from .fuzzy_venue_matcher import FuzzyVenueMatcher, FuzzyMatchResult
 from .citation_analyzer import CitationAnalyzer
 from .breakthrough_detector import BreakthroughDetector
 from .adaptive_threshold_calculator import AdaptiveThresholdCalculator
+from .citation_config import CitationConfig
 from .citation_statistics import (
     CitationAnalysisReport,
     VenueCitationStats,
@@ -33,6 +34,7 @@ __all__ = [
     "CitationAnalyzer",
     "BreakthroughDetector",
     "AdaptiveThresholdCalculator",
+    "CitationConfig",
     "CitationAnalysisReport",
     "VenueCitationStats", 
     "YearCitationStats",

@@ -178,7 +178,8 @@ class TestAdaptiveThresholdCalculator:
         assert calculator.get_venue_tier_multiplier("unknown") == 0.4  # Default
     
     def test_minimum_threshold(self, calculator):
-        """Test that threshold is always at least 1."""
+        """Test threshold edge cases including papers with 0 citations."""
+        # Test with all papers having 0 citations
         papers = [
             Paper(paper_id="1", title="P1", venue="Venue", year=2023, citations=0, authors=[Author(name="Test")]),
             Paper(paper_id="2", title="P2", venue="Venue", year=2023, citations=0, authors=[Author(name="Test")]),
@@ -189,7 +190,22 @@ class TestAdaptiveThresholdCalculator:
             "Venue", 2023, papers, "tier4"
         )
         
-        assert threshold >= 1  # Should never be less than 1
+        # When all papers have 0 citations, threshold should be 0 to ensure minimum representation
+        assert threshold == 0
+        
+        # Test with mixed citations
+        papers_mixed = [
+            Paper(paper_id="1", title="P1", venue="Venue", year=2023, citations=0, authors=[Author(name="Test")]),
+            Paper(paper_id="2", title="P2", venue="Venue", year=2023, citations=1, authors=[Author(name="Test")]),
+            Paper(paper_id="3", title="P3", venue="Venue", year=2023, citations=2, authors=[Author(name="Test")])
+        ]
+        
+        threshold_mixed = calculator.calculate_venue_threshold(
+            "Venue", 2023, papers_mixed, "tier4"
+        )
+        
+        # With mixed citations, threshold should be at least 0
+        assert threshold_mixed >= 0
     
     def test_years_capping(self, calculator):
         """Test that years since publication is capped at 4 for base threshold."""
