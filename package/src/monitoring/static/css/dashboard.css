@@ -1,8 +1,20 @@
 /* Dashboard CSS - Real-time collection monitoring styles */
 
+/* CSS Variables */
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+    --border-color: #dee2e6;
+}
+
 /* Main layout */
 body {
-    background-color: #f8f9fa;
+    background-color: var(--light-color);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -21,189 +33,247 @@ body {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
-/* Connection status */
-.connection-status {
-    font-size: 0.9rem;
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    font-weight: 600;
 }
 
-#connection-status.disconnected {
-    background-color: #dc3545 !important;
+/* Stats cards */
+.stats-card {
+    text-align: center;
+    padding: 1rem;
 }
 
-#connection-status.connecting {
-    background-color: #ffc107 !important;
-    color: #000 !important;
+.stats-card .display-4 {
+    font-size: 2.5rem;
+    font-weight: 300;
 }
 
-/* Venue progress grid */
+.stats-card .text-muted {
+    font-size: 0.875rem;
+}
+
+/* Venue grid */
 .venue-grid {
     display: grid;
-    grid-template-columns: 120px repeat(6, 1fr);
-    gap: 2px;
-    background-color: #e9ecef;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 15px;
 }
 
-.venue-grid-header {
-    background-color: #495057;
-    color: white;
-    padding: 8px 4px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 0.8rem;
-}
-
-.venue-grid-venue-name {
-    background-color: #6c757d;
-    color: white;
-    padding: 8px 4px;
-    text-align: center;
-    font-weight: bold;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    font-size: 0.8rem;
-}
-
-.venue-grid-cell {
-    background-color: #ffffff;
-    padding: 6px 4px;
-    text-align: center;
-    cursor: pointer;
+.venue-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 15px;
     transition: all 0.3s ease;
-    border-radius: 3px;
-    position: relative;
-    min-height: 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    cursor: pointer;
 }
 
-/* Venue status colors */
-.venue-status-not-started {
-    background-color: #6c757d !important;
-    color: white;
+.venue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.venue-status-in-progress {
-    background-color: #ffc107 !important;
-    color: #000;
-    animation: pulse 2s infinite;
+.venue-card.completed {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
 }
 
-.venue-status-completed {
-    background-color: #28a745 !important;
-    color: white;
+.venue-card.in-progress {
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
 }
 
-.venue-status-failed {
-    background-color: #dc3545 !important;
-    color: white;
+.venue-card.failed {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
 }
 
-.venue-status-paused {
-    background-color: #fd7e14 !important;
-    color: white;
+.venue-card .venue-name {
+    font-weight: 600;
+    margin-bottom: 5px;
 }
 
-/* Pulse animation for in-progress venues */
-@keyframes pulse {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.7;
-    }
-    100% {
-        opacity: 1;
-    }
+.venue-card .venue-year {
+    color: #6c757d;
+    font-size: 0.875rem;
 }
 
-.venue-grid-cell:hover {
-    transform: scale(1.05);
-    z-index: 10;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.venue-card .venue-stats {
+    margin-top: 10px;
+    font-size: 0.875rem;
 }
 
-.venue-papers-count {
-    font-size: 0.7rem;
-    font-weight: bold;
+.venue-card .progress {
+    height: 5px;
+    margin-top: 10px;
 }
 
-.venue-progress-bar {
-    font-size: 0.6rem;
-    margin-top: 2px;
+/* Progress bars */
+.progress {
+    background-color: #e9ecef;
 }
 
-/* API Health cards */
-.api-health-card {
-    margin-bottom: 15px;
-}
-
-.api-status-healthy {
-    border-left: 4px solid #28a745;
-}
-
-.api-status-degraded {
-    border-left: 4px solid #ffc107;
-}
-
-.api-status-critical {
-    border-left: 4px solid #fd7e14;
-}
-
-.api-status-offline {
-    border-left: 4px solid #dc3545;
+.progress-bar {
+    transition: width 0.6s ease;
 }
 
 /* Charts */
 .chart-container {
     position: relative;
     height: 300px;
+    width: 100%;
 }
 
-/* Summary cards animations */
-.card.bg-success,
-.card.bg-info,
-.card.bg-warning,
-.card.bg-secondary {
-    transition: transform 0.2s ease;
+/* Alert badges */
+.alert-badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
 }
 
-.card.bg-success:hover,
-.card.bg-info:hover,
-.card.bg-warning:hover,
-.card.bg-secondary:hover {
-    transform: translateY(-2px);
+.alert-badge.critical {
+    background-color: #dc3545;
+    color: white;
 }
 
-/* Alert styles */
-.alert {
-    border-radius: 8px;
-    margin-bottom: 10px;
+.alert-badge.error {
+    background-color: #fd7e14;
+    color: white;
 }
 
-.alert-dismissible .btn-close {
-    padding: 0.75rem 1rem;
+.alert-badge.warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.alert-badge.info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+/* Alert list */
+.alert-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    padding: 10px;
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.3s ease;
+}
+
+.alert-item:hover {
+    background-color: #f8f9fa;
+}
+
+.alert-item:last-child {
+    border-bottom: none;
+}
+
+.alert-item .alert-time {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* API status indicators */
+.api-status-badge {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.api-status-badge.healthy {
+    background-color: #28a745;
+}
+
+.api-status-badge.degraded {
+    background-color: #ffc107;
+}
+
+.api-status-badge.unhealthy {
+    background-color: #dc3545;
+}
+
+/* System metrics */
+.metric-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Tooltips */
+.custom-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.custom-tooltip.show {
+    opacity: 1;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
 }
 
 /* Loading states */
-.loading {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-.loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
+.spinner {
+    display: inline-block;
     width: 20px;
     height: 20px;
-    margin: -10px 0 0 -10px;
     border: 2px solid #f3f3f3;
-    border-top: 2px solid #007bff;
+    border-top: 2px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -213,67 +283,38 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Responsive design */
+/* Responsive */
 @media (max-width: 768px) {
     .venue-grid {
-        grid-template-columns: 80px repeat(6, 1fr);
-        font-size: 0.7rem;
-        gap: 1px;
+        grid-template-columns: 1fr;
     }
     
-    .venue-grid-cell {
-        min-height: 30px;
-        padding: 4px 2px;
+    .stats-card .display-4 {
+        font-size: 2rem;
     }
     
-    .venue-papers-count {
-        font-size: 0.6rem;
-    }
-    
-    .venue-progress-bar {
-        font-size: 0.5rem;
+    .container-fluid {
+        padding: 10px;
     }
 }
 
-@media (max-width: 576px) {
-    .venue-grid {
-        grid-template-columns: 60px repeat(6, 1fr);
-        font-size: 0.6rem;
-    }
-    
-    .venue-grid-cell {
-        min-height: 25px;
-        padding: 2px 1px;
-    }
-}
-
-/* Tooltip styles */
-.tooltip {
-    font-size: 0.8rem;
-}
-
-.tooltip-inner {
-    max-width: 300px;
-    text-align: left;
-}
-
-/* Additional utility classes */
+/* Utility classes */
 .text-monospace {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
 .border-left-primary {
-    border-left: 4px solid #007bff !important;
+    border-left: 4px solid var(--primary-color) !important;
 }
 
 .border-left-success {
-    border-left: 4px solid #28a745 !important;
+    border-left: 4px solid var(--success-color) !important;
 }
 
 .border-left-warning {
-    border-left: 4px solid #ffc107 !important;
+    border-left: 4px solid var(--warning-color) !important;
 }
 
 .border-left-danger {
-    border-left: 4px solid #dc3545 !important;
+    border-left: 4px solid var(--danger-color) !important;
 }

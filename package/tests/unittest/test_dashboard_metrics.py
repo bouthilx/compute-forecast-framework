@@ -16,10 +16,6 @@ from src.monitoring.dashboard_metrics import (
     SystemResourceMetrics,
     StateManagementMetrics,
     VenueProgressMetrics,
-=======
-    MetricsSummary,
-    DashboardStatus,
->>>>>>> master
     MetricsBuffer
 )
 
