@@ -1,0 +1,59 @@
+{
+  "collection_summary": {
+    "total_papers_collected": 804,
+    "new_papers_this_session": 40,
+    "target_achieved": true,
+    "domains_processed": 5
+  },
+  "domain_distribution": {
+    "Computer Vision & Medical Imaging": {
+      "2019": 54,
+      "2020": 36,
+      "2021": 36,
+      "2022": 34,
+      "2023": 24,
+      "2024": 26
+    },
+    "Natural Language Processing": {
+      "2019": 23,
+      "2020": 28,
+      "2021": 28,
+      "2022": 31,
+      "2023": 26,
+      "2024": 22
+    },
+    "Reinforcement Learning & Robotics": {
+      "2019": 31,
+      "2020": 26,
+      "2021": 24,
+      "2022": 26,
+      "2023": 21,
+      "2024": 21
+    },
+    "Graph Learning & Network Analysis": {
+      "2019": 26,
+      "2020": 23,
+      "2021": 20,
+      "2022": 26,
+      "2023": 26,
+      "2024": 26
+    },
+    "Scientific Computing & Applications": {
+      "2019": 24,
+      "2020": 23,
+      "2021": 23,
+      "2022": 26,
+      "2023": 23,
+      "2024": 21
+    }
+  },
+  "source_distribution": {
+    "semantic_scholar": 717,
+    "openalex": 87
+  },
+  "collection_metadata": {
+    "continuation_timestamp": "2025-06-27T10:39:20.836032",
+    "target_papers": 800,
+    "final_count": 804
+  }
+}

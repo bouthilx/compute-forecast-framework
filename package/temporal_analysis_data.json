@@ -1,0 +1,191 @@
+{
+  "years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "categories": [
+    "WITHOUT AI analysis",
+    "NO domain classification",
+    "Computer Vision & Medical Imaging",
+    "Natural Language Processing",
+    "Reinforcement Learning & Robotics",
+    "Graph Learning & Network Analysis",
+    "Other research domains"
+  ],
+  "year_data": {
+    "2019": {
+      "WITHOUT AI analysis": 13,
+      "NO domain classification": 103,
+      "Computer Vision & Medical Imaging": 1,
+      "Natural Language Processing": 1,
+      "Reinforcement Learning & Robotics": 0,
+      "Graph Learning & Network Analysis": 0,
+      "Other research domains": 1
+    },
+    "2020": {
+      "WITHOUT AI analysis": 46,
+      "NO domain classification": 165,
+      "Computer Vision & Medical Imaging": 0,
+      "Natural Language Processing": 1,
+      "Reinforcement Learning & Robotics": 0,
+      "Graph Learning & Network Analysis": 1,
+      "Other research domains": 0
+    },
+    "2021": {
+      "WITHOUT AI analysis": 56,
+      "NO domain classification": 216,
+      "Computer Vision & Medical Imaging": 0,
+      "Natural Language Processing": 3,
+      "Reinforcement Learning & Robotics": 1,
+      "Graph Learning & Network Analysis": 1,
+      "Other research domains": 2
+    },
+    "2022": {
+      "WITHOUT AI analysis": 85,
+      "NO domain classification": 81,
+      "Computer Vision & Medical Imaging": 52,
+      "Natural Language Processing": 104,
+      "Reinforcement Learning & Robotics": 51,
+      "Graph Learning & Network Analysis": 26,
+      "Other research domains": 28
+    },
+    "2023": {
+      "WITHOUT AI analysis": 141,
+      "NO domain classification": 20,
+      "Computer Vision & Medical Imaging": 122,
+      "Natural Language Processing": 201,
+      "Reinforcement Learning & Robotics": 118,
+      "Graph Learning & Network Analysis": 70,
+      "Other research domains": 51
+    },
+    "2024": {
+      "WITHOUT AI analysis": 143,
+      "NO domain classification": 133,
+      "Computer Vision & Medical Imaging": 100,
+      "Natural Language Processing": 213,
+      "Reinforcement Learning & Robotics": 125,
+      "Graph Learning & Network Analysis": 87,
+      "Other research domains": 53
+    }
+  },
+  "data_matrix": [
+    [
+      13.0,
+      46.0,
+      56.0,
+      85.0,
+      141.0,
+      143.0
+    ],
+    [
+      103.0,
+      165.0,
+      216.0,
+      81.0,
+      20.0,
+      133.0
+    ],
+    [
+      1.0,
+      0.0,
+      0.0,
+      52.0,
+      122.0,
+      100.0
+    ],
+    [
+      1.0,
+      1.0,
+      3.0,
+      104.0,
+      201.0,
+      213.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      51.0,
+      118.0,
+      125.0
+    ],
+    [
+      0.0,
+      1.0,
+      1.0,
+      26.0,
+      70.0,
+      87.0
+    ],
+    [
+      1.0,
+      0.0,
+      2.0,
+      28.0,
+      51.0,
+      53.0
+    ]
+  ],
+  "prop_matrix": [
+    [
+      10.92436974789916,
+      21.5962441314554,
+      20.07168458781362,
+      19.906323185011708,
+      19.502074688796682,
+      16.74473067915691
+    ],
+    [
+      86.5546218487395,
+      77.46478873239437,
+      77.41935483870968,
+      18.969555035128806,
+      2.7662517289073305,
+      15.573770491803279
+    ],
+    [
+      0.8403361344537815,
+      0.0,
+      0.0,
+      12.177985948477751,
+      16.874135546334717,
+      11.7096018735363
+    ],
+    [
+      0.8403361344537815,
+      0.4694835680751174,
+      1.0752688172043012,
+      24.355971896955502,
+      27.800829875518673,
+      24.94145199063232
+    ],
+    [
+      0.0,
+      0.0,
+      0.35842293906810035,
+      11.943793911007026,
+      16.32088520055325,
+      14.637002341920374
+    ],
+    [
+      0.0,
+      0.4694835680751174,
+      0.35842293906810035,
+      6.0889929742388755,
+      9.681881051175658,
+      10.187353629976581
+    ],
+    [
+      0.8403361344537815,
+      0.0,
+      0.7168458781362007,
+      6.557377049180328,
+      7.053941908713693,
+      6.206088992974239
+    ]
+  ]
+}

@@ -171,28 +171,6 @@ class InterruptionAnalysis:
     interruption_time: datetime
     last_successful_operation: str
     last_checkpoint_id: str
-    
-    # State assessment
-    venues_definitely_completed: List[Tuple[str, int]]
-    venues_possibly_incomplete: List[Tuple[str, int]]
-    venues_unknown_status: List[Tuple[str, int]]
-    venues_not_started: List[Tuple[str, int]]
-    
-    # Data integrity
-    corrupted_checkpoints: List[str]
-    missing_checkpoints: List[str]
-    data_files_found: List[Path]
-    data_files_corrupted: List[Path]
-    valid_checkpoints: List[str]
-    
-    # Recovery complexity
-    recovery_complexity: Literal["trivial", "simple", "complex", "problematic"]
-    blocking_issues: List[str]
-    estimated_papers_collected: int
-    estimated_papers_lost: int
-    
-    # Interruption cause analysis
-    interruption_cause: InterruptionCause
     system_state_at_interruption: Dict[str, Any]
 
 

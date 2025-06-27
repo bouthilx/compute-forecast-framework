@@ -338,6 +338,15 @@ class StateManager:
                 else:
                     result.resume_errors.append("Failed to load checkpoint")
             
+=======
+            # Save updated session
+            session_file = self._get_session_dir(session_id) / "session.json"
+            if self.persistence.save_state_atomic(session_file, session):
+                result.recovery_steps_executed.append("Updated session state")
+            else:
+                result.resume_errors.append("Failed to save session state")
+            
+>>>>>>> master
             # Add session to active sessions
             self._active_sessions[session_id] = session
             result.session_state_after_recovery = session

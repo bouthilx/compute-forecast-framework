@@ -1,0 +1,212 @@
+2025-06-26 21:56:24,863 - src.data.collectors.collection_executor - INFO - Setting up collection environment...
+2025-06-26 21:56:24,863 - src.data.collectors.collection_executor - INFO - Loading citation APIs...
+2025-06-26 21:56:24,866 - src.core.logging - WARNING - No API key found - using public rate limits (slower)
+2025-06-26 21:56:24,870 - src.core.logging - WARNING - No API key found - using public rate limits (slower)
+2025-06-26 21:56:24,871 - src.data.collectors.collection_executor - INFO - Testing API connectivity...
+2025-06-26 21:56:24,871 - scholarly - INFO - Getting https://scholar.google.com/scholar?hl=en&q=machine%20learning&as_vis=0&as_sdt=0,33
+2025-06-26 21:56:27,378 - httpx - INFO - HTTP Request: GET https://scholar.google.com/scholar?hl=en&q=machine%20learning&as_vis=0&as_sdt=0,33 "HTTP/1.1 302 Found"
+2025-06-26 21:56:27,592 - httpx - INFO - HTTP Request: GET https://www.google.com/sorry/index?continue=https://scholar.google.com/scholar%3Fhl%3Den%26q%3Dmachine%2520learning%26as_vis%3D0%26as_sdt%3D0,33&hl=en&q=EgRWvtLlGMr098IGIixdiJzY2v-7mI8ql1yR6YBwr5RB8MbEhr2pD5lwBkZ-gRzb_x-wXkObV0nxmTICclJaAUM "HTTP/1.1 429 Too Many Requests"
+2025-06-26 21:56:27,593 - scholarly - INFO - Got a captcha request.
+2025-06-26 21:56:28,064 - scholarly - INFO - Neither Chrome nor Firefox/Geckodriver found in PATH
+2025-06-26 21:56:28,064 - scholarly - INFO - Exception AttributeError while fetching page: ("'NoneType' object has no attribute 'current_url'",)
+2025-06-26 21:56:28,064 - scholarly - INFO - Retrying with a new session.
+2025-06-26 21:56:30,009 - httpx - INFO - HTTP Request: GET https://scholar.google.com/scholar?hl=en&q=machine%20learning&as_vis=0&as_sdt=0,33 "HTTP/1.1 302 Found"
+2025-06-26 21:56:30,218 - httpx - INFO - HTTP Request: GET https://www.google.com/sorry/index?continue=https://scholar.google.com/scholar%3Fhl%3Den%26q%3Dmachine%2520learning%26as_vis%3D0%26as_sdt%3D0,33&hl=en&q=EgRWvtLlGM3098IGIizVGzCrIHoT-8YhXv1yrcEQ-Q6OaF6GkC7mgdptWpPA4e03BnG82QFzYUR9QzICclJaAUM "HTTP/1.1 429 Too Many Requests"
+2025-06-26 21:56:30,218 - scholarly - INFO - Got a captcha request.
+2025-06-26 21:56:30,690 - scholarly - INFO - Neither Chrome nor Firefox/Geckodriver found in PATH
+2025-06-26 21:56:30,690 - scholarly - INFO - Exception AttributeError while fetching page: ("'NoneType' object has no attribute 'current_url'",)
+2025-06-26 21:56:30,690 - scholarly - INFO - Retrying with a new session.
+2025-06-26 21:56:32,760 - httpx - INFO - HTTP Request: GET https://scholar.google.com/scholar?hl=en&q=machine%20learning&as_vis=0&as_sdt=0,33 "HTTP/1.1 302 Found"
+2025-06-26 21:56:32,860 - httpx - INFO - HTTP Request: GET https://www.google.com/sorry/index?continue=https://scholar.google.com/scholar%3Fhl%3Den%26q%3Dmachine%2520learning%26as_vis%3D0%26as_sdt%3D0,33&hl=en&q=EgRWvtLlGND098IGIizF-5Qv2y_KC67rGATObiKRosvNzRcB20FgB8MLR0lXqmgaP2gyXvwjP_BPUDICclJaAUM "HTTP/1.1 429 Too Many Requests"
+2025-06-26 21:56:32,861 - scholarly - INFO - Got a captcha request.
+2025-06-26 21:56:33,357 - scholarly - INFO - Neither Chrome nor Firefox/Geckodriver found in PATH
+2025-06-26 21:56:33,357 - scholarly - INFO - Exception AttributeError while fetching page: ("'NoneType' object has no attribute 'current_url'",)
+2025-06-26 21:56:33,357 - scholarly - INFO - Retrying with a new session.
+2025-06-26 21:56:35,536 - httpx - INFO - HTTP Request: GET https://scholar.google.com/scholar?hl=en&q=machine%20learning&as_vis=0&as_sdt=0,33 "HTTP/1.1 302 Found"
+2025-06-26 21:56:35,598 - httpx - INFO - HTTP Request: GET https://www.google.com/sorry/index?continue=https://scholar.google.com/scholar%3Fhl%3Den%26q%3Dmachine%2520learning%26as_vis%3D0%26as_sdt%3D0,33&hl=en&q=EgRWvtLlGNP098IGIizheIAaeMcgKwgeiQNr3j0XlLT82Ag8GDUqzO6CNH__pwelFJjZGBlc4qyZbTICclJaAUM "HTTP/1.1 429 Too Many Requests"
+2025-06-26 21:56:35,599 - scholarly - INFO - Got a captcha request.
+2025-06-26 21:56:36,089 - scholarly - INFO - Neither Chrome nor Firefox/Geckodriver found in PATH
+2025-06-26 21:56:36,089 - scholarly - INFO - Exception AttributeError while fetching page: ("'NoneType' object has no attribute 'current_url'",)
+2025-06-26 21:56:36,089 - scholarly - INFO - Retrying with a new session.
+2025-06-26 21:56:38,217 - httpx - INFO - HTTP Request: GET https://scholar.google.com/scholar?hl=en&q=machine%20learning&as_vis=0&as_sdt=0,33 "HTTP/1.1 302 Found"
+2025-06-26 21:56:38,277 - httpx - INFO - HTTP Request: GET https://www.google.com/sorry/index?continue=https://scholar.google.com/scholar%3Fhl%3Den%26q%3Dmachine%2520learning%26as_vis%3D0%26as_sdt%3D0,33&hl=en&q=EgRWvtLlGNX098IGIiznJXdOMpFB5LNGeHZMHp_Ixzn96gcbBGhvYTeRMzNyQKf8WnUz0T7_NX4mmDICclJaAUM "HTTP/1.1 429 Too Many Requests"
+2025-06-26 21:56:38,277 - scholarly - INFO - Got a captcha request.
+2025-06-26 21:56:38,797 - scholarly - INFO - Neither Chrome nor Firefox/Geckodriver found in PATH
+2025-06-26 21:56:38,797 - scholarly - INFO - Exception AttributeError while fetching page: ("'NoneType' object has no attribute 'current_url'",)
+2025-06-26 21:56:38,797 - scholarly - INFO - Retrying with a new session.
+2025-06-26 21:56:38,842 - src.core.logging - ERROR - Google Scholar connectivity test failed: Cannot Fetch from Google Scholar.
+2025-06-26 21:56:38,842 - src.data.collectors.collection_executor - INFO -   google_scholar: ✗
+2025-06-26 21:56:39,699 - src.data.collectors.collection_executor - INFO -   semantic_scholar: ✓
+2025-06-26 21:56:40,098 - src.data.collectors.collection_executor - INFO -   openalex: ✓
+2025-06-26 21:56:40,098 - src.data.collectors.collection_executor - INFO - Proceeding with 2 working APIs: ['semantic_scholar', 'openalex']
+2025-06-26 21:56:40,098 - src.data.collectors.collection_executor - INFO - ✓ Citation APIs loaded successfully
+2025-06-26 21:56:40,098 - src.data.collectors.collection_executor - INFO - Loading venue analysis...
+2025-06-26 21:56:40,102 - src.analysis.venues.venue_database - INFO - Building comprehensive venue database
+2025-06-26 21:56:40,103 - src.analysis.venues.venue_database - INFO - Built database with 100 venues across 12 domains
+2025-06-26 21:56:40,103 - src.data.collectors.collection_executor - INFO - ✓ Venue analysis loaded successfully
+2025-06-26 21:56:40,103 - src.data.collectors.collection_executor - INFO - Loading computational analyzer...
+2025-06-26 21:56:40,103 - src.data.collectors.collection_executor - INFO - ✓ Computational analyzer loaded successfully
+2025-06-26 21:56:40,103 - src.data.collectors.collection_executor - INFO - Loading domain analysis results...
+2025-06-26 21:56:40,103 - src.data.collectors.collection_executor - INFO - ✓ Loaded domain analysis from final_corrected_domain_stats.json
+2025-06-26 21:56:40,103 - src.data.collectors.collection_executor - INFO - ✓ Domain analysis loaded successfully
+2025-06-26 21:56:40,103 - src.data.collectors.collection_executor - INFO - Collection environment setup complete!
+2025-06-26 21:56:40,103 - src.analysis.venues.collection_strategy - INFO - Generating collection strategy for domain: Computer Vision & Medical Imaging
+2025-06-26 21:56:40,103 - src.analysis.venues.venue_analyzer - INFO - Loading domain results from: /home/bouthilx/projects/preliminary_report/package/all_domains_full.json
+2025-06-26 21:56:40,114 - src.analysis.venues.venue_analyzer - INFO - Successfully loaded 4240 domain analysis records
+2025-06-26 21:56:40,133 - src.core.logging - INFO - Using only working APIs: ['semantic_scholar', 'openalex']
+2025-06-26 21:56:40,134 - src.core.logging - INFO - Searching semantic_scholar for NeurIPS 2023
+2025-06-26 21:56:40,134 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 20, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'NeurIPS year:2023'}
+2025-06-26 21:56:41,240 - src.core.logging - INFO - Semantic Scholar found 49353 total papers
+2025-06-26 21:56:41,241 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:56:41,241 - src.core.logging - INFO - Searching openalex for NeurIPS 2023
+2025-06-26 21:56:41,241 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2023,title.search:(NeurIPS)', 'per-page': 20, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:56:41,575 - src.core.logging - INFO - OpenAlex found 8 total works
+2025-06-26 21:56:41,576 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:56:41,576 - src.core.logging - INFO - Using only working APIs: ['semantic_scholar', 'openalex']
+2025-06-26 21:56:41,576 - src.core.logging - INFO - Searching semantic_scholar for ICML 2023
+2025-06-26 21:56:41,576 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 20, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'ICML year:2023'}
+2025-06-26 21:56:42,764 - src.core.logging - WARNING - Rate limited (429). Retrying in 2.4s (attempt 1/5)
+2025-06-26 21:56:46,365 - src.core.logging - INFO - Semantic Scholar found 49367 total papers
+2025-06-26 21:56:46,366 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:56:46,366 - src.core.logging - INFO - Searching openalex for ICML 2023
+2025-06-26 21:56:46,366 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2023,title.search:(ICML)', 'per-page': 20, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:56:46,698 - src.core.logging - INFO - OpenAlex found 9 total works
+2025-06-26 21:56:46,699 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:56:46,699 - src.core.logging - INFO - Using only working APIs: ['semantic_scholar', 'openalex']
+2025-06-26 21:56:46,699 - src.core.logging - INFO - Searching semantic_scholar for ICLR 2023
+2025-06-26 21:56:46,699 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 20, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'ICLR year:2023'}
+2025-06-26 21:56:47,879 - src.core.logging - WARNING - Rate limited (429). Retrying in 2.0s (attempt 1/5)
+2025-06-26 21:56:50,352 - src.core.logging - WARNING - Rate limited (429). Retrying in 4.1s (attempt 2/5)
+2025-06-26 21:56:55,751 - src.core.logging - INFO - Semantic Scholar found 49304 total papers
+2025-06-26 21:56:55,752 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:56:55,752 - src.core.logging - INFO - Searching openalex for ICLR 2023
+2025-06-26 21:56:55,752 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2023,title.search:(ICLR)', 'per-page': 20, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:56:56,077 - src.core.logging - INFO - OpenAlex found 5 total works
+2025-06-26 21:56:56,078 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:56:56,078 - src.core.logging - INFO - Searching semantic_scholar for NeurIPS 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:56:56,078 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'NeurIPS computer vision & medical imaging year:2023'}
+2025-06-26 21:56:56,714 - src.core.logging - WARNING - Rate limited (429). Retrying in 2.2s (attempt 1/5)
+2025-06-26 21:56:59,672 - src.core.logging - INFO - Semantic Scholar found 216 total papers
+2025-06-26 21:56:59,673 - src.core.logging - INFO - Found 2 papers from semantic_scholar
+2025-06-26 21:56:59,673 - src.core.logging - INFO - Searching openalex for NeurIPS 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:56:59,673 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2023,title.search:(NeurIPS OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:00,023 - src.core.logging - INFO - OpenAlex found 78 total works
+2025-06-26 21:57:00,023 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:00,023 - src.core.logging - INFO - Searching semantic_scholar for ICML 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:00,023 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'ICML computer vision & medical imaging year:2023'}
+2025-06-26 21:57:01,974 - src.core.logging - INFO - Semantic Scholar found 211 total papers
+2025-06-26 21:57:01,975 - src.core.logging - INFO - Found 2 papers from semantic_scholar
+2025-06-26 21:57:01,975 - src.core.logging - INFO - Searching openalex for ICML 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:01,975 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2023,title.search:(ICML OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:02,310 - src.core.logging - INFO - OpenAlex found 78 total works
+2025-06-26 21:57:02,310 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:02,310 - src.core.logging - INFO - Searching semantic_scholar for ICLR 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:02,311 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'ICLR computer vision & medical imaging year:2023'}
+2025-06-26 21:57:04,192 - src.core.logging - INFO - Semantic Scholar found 212 total papers
+2025-06-26 21:57:04,193 - src.core.logging - INFO - Found 2 papers from semantic_scholar
+2025-06-26 21:57:04,193 - src.core.logging - INFO - Searching openalex for ICLR 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:04,193 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2023,title.search:(ICLR OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:04,521 - src.core.logging - INFO - OpenAlex found 78 total works
+2025-06-26 21:57:04,522 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:04,522 - src.core.logging - INFO - Searching semantic_scholar for AAAI 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:04,522 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'AAAI computer vision & medical imaging year:2023'}
+2025-06-26 21:57:06,665 - src.core.logging - INFO - Semantic Scholar found 218 total papers
+2025-06-26 21:57:06,665 - src.core.logging - INFO - Found 4 papers from semantic_scholar
+2025-06-26 21:57:06,665 - src.core.logging - INFO - Searching openalex for AAAI 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:06,665 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2023,title.search:(AAAI OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:06,999 - src.core.logging - INFO - OpenAlex found 78 total works
+2025-06-26 21:57:07,000 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:07,000 - src.core.logging - INFO - Searching semantic_scholar for IJCAI 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:07,000 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'IJCAI computer vision & medical imaging year:2023'}
+2025-06-26 21:57:08,233 - src.core.logging - WARNING - Rate limited (429). Retrying in 2.1s (attempt 1/5)
+2025-06-26 21:57:11,286 - src.core.logging - INFO - Semantic Scholar found 212 total papers
+2025-06-26 21:57:11,287 - src.core.logging - INFO - Found 2 papers from semantic_scholar
+2025-06-26 21:57:11,287 - src.core.logging - INFO - Searching openalex for IJCAI 2023 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:11,287 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2023,title.search:(IJCAI OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:11,636 - src.core.logging - INFO - OpenAlex found 78 total works
+2025-06-26 21:57:11,636 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:11,637 - src.analysis.venues.collection_strategy - INFO - Generating collection strategy for domain: Computer Vision & Medical Imaging
+2025-06-26 21:57:11,641 - src.core.logging - INFO - Using only working APIs: ['semantic_scholar', 'openalex']
+2025-06-26 21:57:11,641 - src.core.logging - INFO - Searching semantic_scholar for NeurIPS 2024
+2025-06-26 21:57:11,641 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 20, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'NeurIPS year:2024'}
+2025-06-26 21:57:13,210 - src.core.logging - WARNING - Rate limited (429). Retrying in 1.8s (attempt 1/5)
+2025-06-26 21:57:15,202 - src.core.logging - WARNING - Rate limited (429). Retrying in 3.7s (attempt 2/5)
+2025-06-26 21:57:20,090 - src.core.logging - INFO - Semantic Scholar found 23962 total papers
+2025-06-26 21:57:20,091 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:57:20,091 - src.core.logging - INFO - Searching openalex for NeurIPS 2024
+2025-06-26 21:57:20,091 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2024,title.search:(NeurIPS)', 'per-page': 20, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:20,519 - src.core.logging - INFO - OpenAlex found 12 total works
+2025-06-26 21:57:20,519 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:20,519 - src.core.logging - INFO - Using only working APIs: ['semantic_scholar', 'openalex']
+2025-06-26 21:57:20,519 - src.core.logging - INFO - Searching semantic_scholar for ICML 2024
+2025-06-26 21:57:20,519 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 20, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'ICML year:2024'}
+2025-06-26 21:57:22,927 - src.core.logging - INFO - Semantic Scholar found 23970 total papers
+2025-06-26 21:57:22,928 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:57:22,928 - src.core.logging - INFO - Searching openalex for ICML 2024
+2025-06-26 21:57:22,928 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2024,title.search:(ICML)', 'per-page': 20, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:23,284 - src.core.logging - INFO - OpenAlex found 4 total works
+2025-06-26 21:57:23,285 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:23,285 - src.data.collectors.collection_executor - INFO - Rate limiting: waiting 0.23s for venue_search
+2025-06-26 21:57:23,519 - src.core.logging - INFO - Using only working APIs: ['semantic_scholar', 'openalex']
+2025-06-26 21:57:23,520 - src.core.logging - INFO - Searching semantic_scholar for ICLR 2024
+2025-06-26 21:57:23,520 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 20, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'ICLR year:2024'}
+2025-06-26 21:57:23,966 - src.core.logging - WARNING - Rate limited (429). Retrying in 1.9s (attempt 1/5)
+2025-06-26 21:57:27,125 - src.core.logging - INFO - Semantic Scholar found 23921 total papers
+2025-06-26 21:57:27,126 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:57:27,126 - src.core.logging - INFO - Searching openalex for ICLR 2024
+2025-06-26 21:57:27,126 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2024,title.search:(ICLR)', 'per-page': 20, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:27,452 - src.core.logging - INFO - OpenAlex found 5 total works
+2025-06-26 21:57:27,453 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:27,453 - src.core.logging - INFO - Searching semantic_scholar for NeurIPS 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:27,453 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'NeurIPS computer vision & medical imaging year:2024'}
+2025-06-26 21:57:29,205 - src.core.logging - INFO - Semantic Scholar found 184 total papers
+2025-06-26 21:57:29,206 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:57:29,206 - src.core.logging - INFO - Searching openalex for NeurIPS 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:29,206 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2024,title.search:(NeurIPS OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:29,563 - src.core.logging - INFO - OpenAlex found 126 total works
+2025-06-26 21:57:29,564 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:29,564 - src.core.logging - INFO - Searching semantic_scholar for ICML 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:29,564 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'ICML computer vision & medical imaging year:2024'}
+2025-06-26 21:57:30,938 - src.core.logging - WARNING - Rate limited (429). Retrying in 2.4s (attempt 1/5)
+2025-06-26 21:57:33,862 - src.core.logging - WARNING - Rate limited (429). Retrying in 4.6s (attempt 2/5)
+2025-06-26 21:57:39,385 - src.core.logging - INFO - Semantic Scholar found 181 total papers
+2025-06-26 21:57:39,386 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:57:39,386 - src.core.logging - INFO - Searching openalex for ICML 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:39,386 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2024,title.search:(ICML OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:39,723 - src.core.logging - INFO - OpenAlex found 126 total works
+2025-06-26 21:57:39,723 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:39,723 - src.core.logging - INFO - Searching semantic_scholar for ICLR 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:39,723 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'ICLR computer vision & medical imaging year:2024'}
+2025-06-26 21:57:40,985 - src.core.logging - WARNING - Rate limited (429). Retrying in 1.6s (attempt 1/5)
+2025-06-26 21:57:44,161 - src.core.logging - INFO - Semantic Scholar found 181 total papers
+2025-06-26 21:57:44,161 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:57:44,161 - src.core.logging - INFO - Searching openalex for ICLR 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:44,161 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2024,title.search:(ICLR OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:44,525 - src.core.logging - INFO - OpenAlex found 126 total works
+2025-06-26 21:57:44,526 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:44,526 - src.core.logging - INFO - Searching semantic_scholar for AAAI 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:44,526 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'AAAI computer vision & medical imaging year:2024'}
+2025-06-26 21:57:46,072 - src.core.logging - WARNING - Rate limited (429). Retrying in 2.1s (attempt 1/5)
+2025-06-26 21:57:49,201 - src.core.logging - INFO - Semantic Scholar found 186 total papers
+2025-06-26 21:57:49,201 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:57:49,202 - src.core.logging - INFO - Searching openalex for AAAI 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:49,202 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2024,title.search:(AAAI OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:49,536 - src.core.logging - INFO - OpenAlex found 126 total works
+2025-06-26 21:57:49,536 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:49,536 - src.core.logging - INFO - Searching semantic_scholar for IJCAI 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:49,536 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 15, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'IJCAI computer vision & medical imaging year:2024'}
+2025-06-26 21:57:50,715 - src.core.logging - WARNING - Rate limited (429). Retrying in 1.6s (attempt 1/5)
+2025-06-26 21:57:53,227 - src.core.logging - INFO - Semantic Scholar found 182 total papers
+2025-06-26 21:57:53,227 - src.core.logging - INFO - Found 0 papers from semantic_scholar
+2025-06-26 21:57:53,227 - src.core.logging - INFO - Searching openalex for IJCAI 2024 with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:53,227 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2024,title.search:(IJCAI OR computer vision & medical imaging)', 'per-page': 15, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:53,683 - src.core.logging - INFO - OpenAlex found 126 total works
+2025-06-26 21:57:53,684 - src.core.logging - INFO - Found 0 papers from openalex
+2025-06-26 21:57:53,684 - src.core.logging - INFO - Searching semantic_scholar with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:53,684 - src.core.logging - INFO - Semantic Scholar search params: {'limit': 10, 'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId', 'query': 'computer vision & medical imaging year:2024'}
+2025-06-26 21:57:55,916 - src.core.logging - INFO - Semantic Scholar found 11528 total papers
+2025-06-26 21:57:55,917 - src.core.logging - INFO - Found 10 papers from semantic_scholar
+2025-06-26 21:57:55,917 - src.core.logging - INFO - Searching openalex with keywords: ['computer vision & medical imaging']
+2025-06-26 21:57:55,917 - src.core.logging - INFO - OpenAlex search params: {'filter': 'publication_year:2024,title.search:(computer vision & medical imaging)', 'per-page': 10, 'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'}
+2025-06-26 21:57:56,290 - src.core.logging - INFO - OpenAlex found 14 total works
+2025-06-26 21:57:56,291 - src.core.logging - INFO - Found 10 papers from openalex

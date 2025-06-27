@@ -362,6 +362,13 @@ class CollectionDashboard {
                             text: 'Time'
                         }
                     }
+=======
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+>>>>>>> master
                 }
             }
         });
