@@ -1,0 +1,23 @@
+[project]
+name = "package"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "paperext",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.4",
+    "rich>=13.9.4",
+    "scholarly>=1.7.11",
+    "scikit-learn>=1.7.0",
+    "selenium>=4.32.0",
+]
+
+[tool.uv.sources]
+paperext = { path = "../../paperext" }
+
+[dependency-groups]
+test = [
+    "pytest>=8.4.1",
+]
