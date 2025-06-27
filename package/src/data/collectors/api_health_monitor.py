@@ -7,7 +7,7 @@ import threading
 from collections import deque
 from datetime import datetime, timedelta
 from typing import Optional, Dict
-from ..models import APIHealthStatus, APIError
+from ..models import APIHealthStatus, APIError, HealthMonitoringConfig
 import logging
 
 
@@ -22,7 +22,7 @@ class APIHealthMonitor:
     to determine API health status and guide rate limiting
     """
     
-    def __init__(self, history_size: int = 100):
+    def __init__(self, history_size: int = HealthMonitoringConfig.DEFAULT_HISTORY_SIZE) -> None:
         self.history_size = history_size
         self.request_histories: Dict[str, deque] = {}
         self.health_statuses: Dict[str, APIHealthStatus] = {}
@@ -58,7 +58,14 @@ class APIHealthMonitor:
     
     def get_health_status(self, api_name: str) -> APIHealthStatus:
         """Get current health status for API"""
-        with self._locks.get(api_name, self._global_lock):
+        # Ensure API is initialized with proper lock
+        if api_name not in self._locks:
+            with self._global_lock:
+                if api_name not in self._locks:
+                    self.request_histories[api_name] = deque(maxlen=self.history_size)
+                    self._locks[api_name] = threading.RLock()
+        
+        with self._locks[api_name]:
             if api_name in self.health_statuses:
                 return self.health_statuses[api_name]
             
@@ -90,7 +97,7 @@ class APIHealthMonitor:
             return self._create_default_status(api_name)
         
         # Calculate metrics from recent history
-        recent_requests = list(history)[-50:]  # Last 50 requests
+        recent_requests = list(history)[-HealthMonitoringConfig.RECENT_REQUESTS_WINDOW:]
         total_requests = len(recent_requests)
         
         if total_requests == 0:
@@ -153,16 +160,17 @@ class APIHealthMonitor:
         """Determine health status level based on metrics"""
         
         # Critical conditions
-        if consecutive_errors >= 10:
+        if consecutive_errors >= HealthMonitoringConfig.OFFLINE_CONSECUTIVE_ERRORS:
             return "offline"
         
-        if consecutive_errors >= 5 or success_rate < 0.5:
+        if (consecutive_errors >= HealthMonitoringConfig.CRITICAL_CONSECUTIVE_ERRORS or 
+            success_rate < HealthMonitoringConfig.CRITICAL_SUCCESS_RATE_THRESHOLD):
             return "critical"
         
         # Degraded conditions
-        if (consecutive_errors >= 3 or 
-            success_rate < 0.8 or 
-            avg_response_time > 5000):
+        if (consecutive_errors >= HealthMonitoringConfig.DEGRADED_CONSECUTIVE_ERRORS or 
+            success_rate < HealthMonitoringConfig.DEGRADED_SUCCESS_RATE_THRESHOLD or 
+            avg_response_time > HealthMonitoringConfig.SLOW_RESPONSE_THRESHOLD_MS):
             return "degraded"
         
         # Healthy

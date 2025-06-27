@@ -6,7 +6,7 @@ Real implementation with thread-safe rolling windows and adaptive delays
 import threading
 from datetime import datetime, timedelta
 from typing import Dict, Optional
-from ..models import APIConfig, RateLimitStatus, APIHealthStatus, RollingWindow
+from ..models import APIConfig, RateLimitStatus, APIHealthStatus, RollingWindow, RateLimitingConfig
 import logging
 
 
@@ -35,7 +35,7 @@ class RateLimitManager:
         # Initialize windows and locks for each API
         for api_name, config in api_configs.items():
             self.request_windows[api_name] = RollingWindow(
-                window_seconds=300,  # 5 minutes
+                window_seconds=RateLimitingConfig.DEFAULT_WINDOW_SECONDS,
                 max_requests=config.requests_per_window
             )
             self.health_multipliers[api_name] = 1.0  # Start healthy
@@ -50,10 +50,14 @@ class RateLimitManager:
         - Must account for API health degradation
         - Must be thread-safe
         - Must have <10ms response time
+        
+        Raises:
+            ValueError: If api_name is not configured
         """
         if api_name not in self.api_configs:
-            logger.warning(f"Unknown API: {api_name}")
-            return False
+            error_msg = f"Cannot check rate limit for unknown API '{api_name}'. Available APIs: {list(self.api_configs.keys())}"
+            logger.error(error_msg)
+            raise ValueError(error_msg)
         
         with self._locks[api_name]:
             window = self.request_windows[api_name]
@@ -79,17 +83,37 @@ class RateLimitManager:
         - Must implement exponential backoff for degraded APIs
         - Must not wait longer than 60 seconds
         - Must log wait reasons
+        
+        Raises:
+            ValueError: If api_name is not configured
         """
         if api_name not in self.api_configs:
-            return 0.0
+            error_msg = f"Cannot calculate wait time for unknown API '{api_name}'. Available APIs: {list(self.api_configs.keys())}"
+            logger.error(error_msg)
+            raise ValueError(error_msg)
         
         with self._locks[api_name]:
+            window = self.request_windows[api_name]
+            
+            # Quick check: if we have capacity in the window
+            current_count = window.get_current_count()
+            available_capacity = window.max_requests - current_count
+            
+            # Account for health degradation (degraded APIs get lower effective capacity)
+            health_multiplier = self.health_multipliers.get(api_name, 1.0)
+            can_make_request = False
+            if health_multiplier > 1.0:
+                # Degraded API - reduce effective capacity
+                effective_capacity = int(available_capacity / health_multiplier)
+                can_make_request = request_size <= effective_capacity
+            else:
+                can_make_request = request_size <= available_capacity
+            
             # If we can make the request now, no wait needed
-            if self.can_make_request(api_name, request_size):
+            if can_make_request:
                 return 0.0
             
             config = self.api_configs[api_name]
-            window = self.request_windows[api_name]
             
             # Calculate base wait time from rolling window
             base_wait = window.time_until_next_slot()
@@ -100,11 +124,12 @@ class RateLimitManager:
             
             # Apply size multiplier for large requests
             if request_size > 1:
-                size_multiplier = min(request_size / 10.0, 3.0)  # Cap at 3x
+                size_multiplier = min(request_size / RateLimitingConfig.BATCH_SIZE_DIVISOR, 
+                                    RateLimitingConfig.BATCH_SIZE_MULTIPLIER_CAP)
                 adjusted_wait *= size_multiplier
             
-            # Ensure we never exceed 60 seconds
-            final_wait = min(adjusted_wait, 60.0)
+            # Ensure we never exceed maximum wait time
+            final_wait = min(adjusted_wait, RateLimitingConfig.MAX_WAIT_TIME_SECONDS)
             
             if final_wait > 0:
                 logger.info(f"Rate limiting {api_name}: waiting {final_wait:.2f}s (health_multiplier={health_multiplier:.2f})")
@@ -119,10 +144,14 @@ class RateLimitManager:
         - Must update rolling windows
         - Must trigger health recalculation
         - Must be called for ALL requests
+        
+        Raises:
+            ValueError: If api_name is not configured
         """
         if api_name not in self.api_configs:
-            logger.warning(f"Recording request for unknown API: {api_name}")
-            return
+            error_msg = f"Cannot record request for unknown API '{api_name}'. Available APIs: {list(self.api_configs.keys())}"
+            logger.error(error_msg)
+            raise ValueError(error_msg)
         
         with self._locks[api_name]:
             window = self.request_windows[api_name]
@@ -170,30 +199,36 @@ class RateLimitManager:
         with self._locks[api_name]:
             # Convert health status to multiplier
             if health_status.status == "healthy":
-                self.health_multipliers[api_name] = 1.0
+                self.health_multipliers[api_name] = RateLimitingConfig.HEALTHY_MULTIPLIER
             elif health_status.status == "degraded":
-                self.health_multipliers[api_name] = 2.0
+                self.health_multipliers[api_name] = RateLimitingConfig.DEGRADED_MULTIPLIER
             elif health_status.status == "critical":
-                self.health_multipliers[api_name] = 5.0
+                self.health_multipliers[api_name] = RateLimitingConfig.CRITICAL_MULTIPLIER
             elif health_status.status == "offline":
-                self.health_multipliers[api_name] = 10.0
+                self.health_multipliers[api_name] = RateLimitingConfig.OFFLINE_MULTIPLIER
             
             logger.info(f"Updated health multiplier for {api_name}: {self.health_multipliers[api_name]:.1f}x (status: {health_status.status})")
     
-    def _update_health_multiplier(self, api_name: str, success: bool, response_time_ms: int):
+    def _update_health_multiplier(self, api_name: str, success: bool, response_time_ms: int) -> None:
         """Update health multiplier based on request outcome"""
         current_multiplier = self.health_multipliers.get(api_name, 1.0)
         
+        from ..models import HealthMonitoringConfig
+        
         if success:
             # Successful request - gradually improve health
-            if response_time_ms < 1000:  # Fast response
-                new_multiplier = max(1.0, current_multiplier * 0.95)
-            elif response_time_ms < 3000:  # Normal response
-                new_multiplier = max(1.0, current_multiplier * 0.98)
+            if response_time_ms < HealthMonitoringConfig.FAST_RESPONSE_THRESHOLD_MS:  # Fast response
+                new_multiplier = max(RateLimitingConfig.HEALTHY_MULTIPLIER, 
+                                   current_multiplier * RateLimitingConfig.FAST_RESPONSE_IMPROVEMENT)
+            elif response_time_ms < HealthMonitoringConfig.NORMAL_RESPONSE_THRESHOLD_MS:  # Normal response
+                new_multiplier = max(RateLimitingConfig.HEALTHY_MULTIPLIER, 
+                                   current_multiplier * RateLimitingConfig.NORMAL_RESPONSE_IMPROVEMENT)
             else:  # Slow response
-                new_multiplier = min(10.0, current_multiplier * 1.1)
+                new_multiplier = min(RateLimitingConfig.OFFLINE_MULTIPLIER, 
+                                   current_multiplier * RateLimitingConfig.SLOW_RESPONSE_DEGRADATION)
         else:
             # Failed request - degrade health
-            new_multiplier = min(10.0, current_multiplier * 1.5)
+            new_multiplier = min(RateLimitingConfig.OFFLINE_MULTIPLIER, 
+                               current_multiplier * RateLimitingConfig.FAILURE_DEGRADATION)
         
         self.health_multipliers[api_name] = new_multiplier
