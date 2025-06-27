@@ -155,6 +155,15 @@ class CheckpointData:
 
 
 @dataclass
+class InterruptionCause:
+    """Analysis of interruption cause"""
+    cause_type: Literal["process_killed", "system_crash", "network_failure", "api_failure", "disk_full", "memory_error", "unknown"]
+    confidence: float                           # 0.0 to 1.0
+    evidence: List[str]                        # Evidence supporting the cause
+    recovery_implications: List[str]           # How this affects recovery
+
+
+@dataclass
 class InterruptionAnalysis:
     """Analysis of what happened during interruption"""
     session_id: str
@@ -183,17 +192,8 @@ class InterruptionAnalysis:
     estimated_papers_lost: int
     
     # Interruption cause analysis
-    interruption_cause: 'InterruptionCause'
+    interruption_cause: InterruptionCause
     system_state_at_interruption: Dict[str, Any]
-
-
-@dataclass
-class InterruptionCause:
-    """Analysis of interruption cause"""
-    cause_type: Literal["process_killed", "system_crash", "network_failure", "api_failure", "disk_full", "memory_error", "unknown"]
-    confidence: float                           # 0.0 to 1.0
-    evidence: List[str]                        # Evidence supporting the cause
-    recovery_implications: List[str]           # How this affects recovery
 
 
 @dataclass
@@ -305,7 +305,7 @@ class VenueConfig:
     target_years: List[int]
     max_papers_per_year: int = 50
     priority: int = 1  # 1 = high, 5 = low
-    
+
 
 @dataclass
 class CollectionSession:
@@ -400,79 +400,4 @@ class CollectionSession:
                 else:
                     rate_limits[api_name] = limit_data
             data['rate_limits'] = rate_limits
-        
         return cls(**data)
-
-
-@dataclass
-class DataIntegrityAssessment:
-    """Assessment of data integrity after interruption"""
-    session_id: str
-    assessment_time: datetime
-    
-    # File integrity
-    total_data_files: int
-    valid_data_files: int
-    corrupted_data_files: int
-    missing_data_files: int
-    
-    # Checkpoint integrity  
-    total_checkpoints: int
-    valid_checkpoints: int
-    corrupted_checkpoints: int
-    
-    # Data consistency
-    venue_data_consistency: Dict[str, bool]  # venue -> is_consistent
-    paper_count_consistency: bool
-    timestamp_consistency: bool
-    
-    # Recovery implications
-    data_loss_severity: Literal["none", "minimal", "moderate", "severe"]
-    recovery_feasibility: Literal["trivial", "simple", "complex", "impossible"]
-    estimated_recovery_time_minutes: float
-
-
-@dataclass
-class RecoveryPlanValidation:
-    """Validation result for a recovery plan"""
-    plan_id: str
-    is_valid: bool
-    validation_timestamp: datetime
-    
-    # Validation checks
-    strategy_feasible: bool
-    data_availability_confirmed: bool
-    checkpoint_integrity_verified: bool
-    venue_status_consistent: bool
-    
-    # Issues found
-    validation_errors: List[str]
-    validation_warnings: List[str]
-    
-    # Recommendations
-    recommended_modifications: List[str]
-    confidence_assessment: float
-
-
-@dataclass
-class RecoveryResultValidation:
-    """Validation result after recovery execution"""
-    session_id: str
-    validation_timestamp: datetime
-    
-    # State validation
-    session_state_valid: bool
-    checkpoint_consistency: bool
-    data_file_integrity: bool
-    venue_progress_accurate: bool
-    
-    # Validation details
-    validation_checks_passed: int
-    validation_checks_failed: int
-    critical_issues: List[str]
-    minor_issues: List[str]
-    
-    # Recovery assessment
-    recovery_success_confidence: float
-    ready_for_continuation: bool
-    recommended_next_steps: List[str]

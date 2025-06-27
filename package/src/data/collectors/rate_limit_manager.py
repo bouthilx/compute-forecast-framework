@@ -6,7 +6,7 @@ Real implementation with thread-safe rolling windows and adaptive delays
 import threading
 from datetime import datetime, timedelta
 from typing import Dict, Optional
-from ..models import APIConfig, RateLimitStatus, APIHealthStatus, RollingWindow, RateLimitingConfig
+from ..models import APIConfig, RateLimitStatus, APIHealthStatus, RollingWindow, RateLimitingConfig, HealthMonitoringConfig
 import logging
 
 
@@ -212,8 +212,6 @@ class RateLimitManager:
     def _update_health_multiplier(self, api_name: str, success: bool, response_time_ms: int) -> None:
         """Update health multiplier based on request outcome"""
         current_multiplier = self.health_multipliers.get(api_name, 1.0)
-        
-        from ..models import HealthMonitoringConfig
         
         if success:
             # Successful request - gradually improve health

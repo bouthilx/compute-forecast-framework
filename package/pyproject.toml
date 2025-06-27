@@ -23,6 +23,11 @@ dependencies = [
 paperext = { path = "../../paperext" }
 
 [dependency-groups]
+dev = [
+    "pytest-cov>=6.2.1",
+    "ruff>=0.12.1",
+]
 test = [
     "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
 ]

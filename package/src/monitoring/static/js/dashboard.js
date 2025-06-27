@@ -1,467 +1,554 @@
-// Dashboard JavaScript - Real-time monitoring interface
+/**
+ * Dashboard JavaScript - Real-time collection monitoring client
+ * Handles WebSocket connections, chart updates, and venue grid management
+ */
 
 class CollectionDashboard {
     constructor() {
+        // Socket.IO connection
         this.socket = null;
-        this.charts = {};
         this.isConnected = false;
-        this.lastUpdate = null;
+        
+        // Charts
+        this.collectionRateChart = null;
+        this.systemResourcesChart = null;
+        
+        // Data storage
         this.metricsHistory = [];
-        this.maxHistoryPoints = 50;
+        this.maxHistorySize = 100;
+        
+        // Venues configuration
+        this.venues = [
+            'ICML', 'NeurIPS', 'ICLR', 'AAAI', 'IJCAI', 'UAI', 'AISTATS', 
+            'COLT', 'ALT', 'ACML', 'ECML', 'PKDD', 'KDD', 'WSDM', 'WWW',
+            'SIGIR', 'CIKM', 'ICDM', 'SDM', 'PAKDD', 'VLDB', 'ICDE', 
+            'EDBT', 'PODS', 'SIGMOD'
+        ];
+        this.years = [2019, 2020, 2021, 2022, 2023, 2024];
         
         // Initialize dashboard
         this.initializeSocket();
         this.initializeCharts();
-        this.setupEventHandlers();
+        this.createVenueGrid();
         
-        console.log('Collection Dashboard initialized');
+        // Set up periodic updates
+        setInterval(() => this.requestMetricsUpdate(), 30000); // Every 30 seconds
     }
     
     initializeSocket() {
+        console.log('Initializing Socket.IO connection...');
+        
         this.socket = io();
         
         this.socket.on('connect', () => {
-            this.isConnected = true;
-            this.updateConnectionStatus(true);
             console.log('Connected to dashboard server');
-            
-            // Request initial metrics
-            this.socket.emit('request_metrics');
+            this.updateConnectionStatus(true);
+            this.requestMetricsUpdate();
         });
         
         this.socket.on('disconnect', () => {
-            this.isConnected = false;
-            this.updateConnectionStatus(false);
             console.log('Disconnected from dashboard server');
+            this.updateConnectionStatus(false);
         });
         
         this.socket.on('metrics_update', (data) => {
-            this.handleMetricsUpdate(data);
+            console.log('Received metrics update');
+            this.updateDashboard(data);
         });
         
-        this.socket.on('venue_completed', (data) => {
-            this.handleVenueCompleted(data);
+        this.socket.on('metrics_history', (data) => {
+            console.log('Received metrics history');
+            this.metricsHistory = data;
+            this.updateCharts();
         });
         
-        this.socket.on('alert_triggered', (data) => {
-            this.showAlert(data.alert);
+        this.socket.on('alert_notification', (alert) => {
+            console.log('Received alert notification', alert);
+            this.showAlert(alert);
         });
+        
+        // Handle connection errors
+        this.socket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+            this.updateConnectionStatus(false, 'Connection Error');
+        });
+    }
+    
+    updateConnectionStatus(connected, message = null) {
+        const statusBadge = document.getElementById('connection-status');
+        if (statusBadge) {
+            if (connected) {
+                statusBadge.className = 'badge bg-success';
+                statusBadge.textContent = 'Connected';
+            } else {
+                statusBadge.className = 'badge bg-danger';
+                statusBadge.textContent = message || 'Disconnected';
+            }
+        }
+        this.isConnected = connected;
     }
     
     initializeCharts() {
-        // Collection Rate Chart
-        const collectionCtx = document.getElementById('collection-rate-chart').getContext('2d');
-        this.charts.collectionRate = new Chart(collectionCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Papers/Minute',
-                    data: [],
-                    borderColor: '#007bff',
-                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Papers per Minute'
+        // Collection rate chart
+        const collectionCtx = document.getElementById('collectionRateChart');
+        if (collectionCtx) {
+            this.collectionRateChart = new Chart(collectionCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Papers/minute',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
                         }
                     },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Time'
+                    plugins: {
+                        legend: {
+                            display: false
                         }
                     }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
                 }
-            }
-        });
+            });
+        }
         
-        // System Resources Chart
-        const systemCtx = document.getElementById('system-resources-chart').getContext('2d');
-        this.charts.systemResources = new Chart(systemCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [
-                    {
+        // System resources chart
+        const resourcesCtx = document.getElementById('systemResourcesChart');
+        if (resourcesCtx) {
+            this.systemResourcesChart = new Chart(resourcesCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
                         label: 'Memory %',
                         data: [],
-                        borderColor: '#28a745',
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        borderWidth: 2,
-                        fill: false
-                    },
-                    {
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        tension: 0.1,
+                        yAxisID: 'y'
+                    }, {
                         label: 'CPU %',
                         data: [],
-                        borderColor: '#17a2b8',
-                        backgroundColor: 'rgba(23, 162, 184, 0.1)',
-                        borderWidth: 2,
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        title: {
-                            display: true,
-                            text: 'Percentage'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Time'
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        tension: 0.1,
+                        yAxisID: 'y'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
                         }
                     }
                 }
-            }
+            });
+        }
+    }
+    
+    createVenueGrid() {
+        const venueGrid = document.getElementById('venue-grid');
+        if (!venueGrid) return;
+        
+        venueGrid.innerHTML = '';
+        
+        this.venues.forEach(venue => {
+            const venueRow = document.createElement('div');
+            venueRow.className = 'venue-row mb-2';
+            
+            const venueHeader = document.createElement('div');
+            venueHeader.className = 'd-flex align-items-center mb-1';
+            venueHeader.innerHTML = `<strong>${venue}</strong>`;
+            venueRow.appendChild(venueHeader);
+            
+            const yearGrid = document.createElement('div');
+            yearGrid.className = 'd-flex flex-wrap gap-1';
+            
+            this.years.forEach(year => {
+                const yearBadge = document.createElement('span');
+                yearBadge.id = `venue-${venue}-${year}`;
+                yearBadge.className = 'badge bg-secondary';
+                yearBadge.textContent = year;
+                yearBadge.style.cursor = 'pointer';
+                yearBadge.onclick = () => this.showVenueDetails(venue, year);
+                yearGrid.appendChild(yearBadge);
+            });
+            
+            venueRow.appendChild(yearGrid);
+            venueGrid.appendChild(venueRow);
         });
     }
     
-    setupEventHandlers() {
-        // Auto-refresh every 30 seconds as fallback
-        setInterval(() => {
-            if (this.isConnected) {
-                this.socket.emit('request_metrics');
-            }
-        }, 30000);
+    updateDashboard(metrics) {
+        if (!metrics) return;
         
-        // Venue item click handlers
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.venue-item')) {
-                const venueItem = e.target.closest('.venue-item');
-                this.showVenueDetails(venueItem);
-            }
-        });
-    }
-    
-    handleMetricsUpdate(data) {
-        this.lastUpdate = new Date();
-        this.updateLastUpdateTime();
+        // Update timestamp
+        const lastUpdate = document.getElementById('last-update');
+        if (lastUpdate) {
+            lastUpdate.textContent = new Date(metrics.timestamp).toLocaleString();
+        }
         
-        const metrics = data.system_metrics;
+        // Add to history
+        this.addToHistory(metrics);
         
-        // Update collection progress
-        this.updateCollectionProgress(metrics.collection_progress);
-        
-        // Update API health
-        this.updateAPIHealth(metrics.api_health);
-        
-        // Update system resources
-        this.updateSystemResources(metrics.system_resources);
-        
-        // Update processing metrics
-        this.updateProcessingMetrics(metrics.processing);
-        
-        // Update venue progress grid
+        // Update each section
+        this.updateSummaryCards(metrics.collection_progress);
         this.updateVenueGrid(metrics.venue_progress);
+        this.updateAPIHealth(metrics.api_metrics);
+        this.updateProcessingMetrics(metrics.processing_metrics);
+        this.updateStateMetrics(metrics.state_metrics);
         
         // Update charts
-        this.updateCharts(metrics);
-        
-        // Store metrics for history
-        this.storeMetricsHistory(metrics);
+        this.updateCharts();
     }
     
-    updateCollectionProgress(progress) {
-        document.getElementById('session-id').textContent = progress.session_id || '--';
-        document.getElementById('papers-collected').textContent = progress.papers_collected.toLocaleString();
-        document.getElementById('collection-rate').textContent = progress.papers_per_minute.toFixed(1);
-        document.getElementById('completed-venues').textContent = progress.completed_venues;
-        document.getElementById('total-venues').textContent = progress.total_venues;
+    updateSummaryCards(progress) {
+        if (!progress) return;
         
-        // Update progress bar
-        const progressBar = document.getElementById('overall-progress');
-        const progressText = document.getElementById('progress-text');
-        const percentage = Math.min(progress.completion_percentage, 100);
-        
-        progressBar.style.width = percentage + '%';
-        progressText.textContent = percentage.toFixed(1) + '%';
-        
-        // Update progress bar color based on completion
-        progressBar.className = 'progress-bar';
-        if (percentage < 25) {
-            progressBar.classList.add('bg-danger');
-        } else if (percentage < 75) {
-            progressBar.classList.add('bg-warning');
-        } else {
-            progressBar.classList.add('bg-success');
+        // Update total papers
+        const totalPapers = document.getElementById('total-papers');
+        if (totalPapers) {
+            totalPapers.textContent = progress.total_papers_collected.toLocaleString();
         }
         
-        // Update estimated completion time
-        if (progress.estimated_completion_time) {
-            const eta = new Date(progress.estimated_completion_time);
-            document.getElementById('estimated-completion').textContent = eta.toLocaleTimeString();
-        }
-    }
-    
-    updateAPIHealth(apiHealth) {
-        const container = document.getElementById('api-health-container');
-        container.innerHTML = '';
-        
-        for (const [apiName, health] of Object.entries(apiHealth)) {
-            const apiItem = document.createElement('div');
-            apiItem.className = `api-item ${health.status}`;
-            
-            apiItem.innerHTML = `
-                <div class="api-name">${apiName}</div>
-                <div class="api-metrics">
-                    <span class="api-status ${health.status}">${health.status}</span>
-                    <span>Success: ${(health.success_rate * 100).toFixed(1)}%</span>
-                    <span>Response: ${health.avg_response_time.toFixed(0)}ms</span>
-                    <span>Papers: ${health.papers_collected}</span>
-                </div>
-            `;
-            
-            container.appendChild(apiItem);
-        }
-    }
-    
-    updateSystemResources(resources) {
-        // Update memory usage
-        const memoryProgress = document.getElementById('memory-progress');
-        const memoryText = document.getElementById('memory-text');
-        memoryProgress.style.width = resources.memory_usage + '%';
-        memoryText.textContent = resources.memory_usage.toFixed(1) + '%';
-        
-        // Color code memory usage
-        memoryProgress.className = 'progress-bar';
-        if (resources.memory_usage > 80) {
-            memoryProgress.classList.add('bg-danger');
-        } else if (resources.memory_usage > 60) {
-            memoryProgress.classList.add('bg-warning');
-        } else {
-            memoryProgress.classList.add('bg-success');
+        // Update collection rate
+        const collectionRate = document.getElementById('collection-rate');
+        if (collectionRate) {
+            collectionRate.textContent = `${progress.papers_per_minute.toFixed(1)}/min`;
         }
         
-        // Update CPU usage
-        const cpuProgress = document.getElementById('cpu-progress');
-        const cpuText = document.getElementById('cpu-text');
-        cpuProgress.style.width = resources.cpu_usage + '%';
-        cpuText.textContent = resources.cpu_usage.toFixed(1) + '%';
+        // Update overall progress
+        const overallProgress = document.getElementById('overall-progress');
+        const overallProgressBar = document.getElementById('overall-progress-bar');
+        if (overallProgress && overallProgressBar) {
+            const percentage = progress.overall_completion_percent;
+            overallProgress.textContent = `${percentage.toFixed(1)}%`;
+            overallProgressBar.style.width = `${percentage}%`;
+            overallProgressBar.className = `progress-bar ${percentage >= 75 ? 'bg-success' : percentage >= 50 ? 'bg-info' : 'bg-warning'}`;
+        }
         
-        // Update system details
-        document.getElementById('process-memory').textContent = resources.process_memory_mb.toFixed(1);
-        document.getElementById('thread-count').textContent = resources.thread_count;
-        document.getElementById('network-connections').textContent = resources.network_connections;
-    }
-    
-    updateProcessingMetrics(processing) {
-        document.getElementById('venues-normalized').textContent = processing.venues_normalized;
-        document.getElementById('normalization-accuracy').textContent = (processing.normalization_accuracy * 100).toFixed(1) + '%';
-        document.getElementById('papers-deduplicated').textContent = processing.papers_deduplicated;
-        document.getElementById('duplicates-removed').textContent = processing.duplicates_removed;
-        document.getElementById('papers-analyzed').textContent = processing.papers_analyzed;
-        document.getElementById('breakthrough-papers').textContent = processing.breakthrough_papers_found;
+        // Update active alerts
+        const activeAlerts = document.getElementById('active-alerts');
+        if (activeAlerts && progress.active_alerts !== undefined) {
+            activeAlerts.textContent = progress.active_alerts;
+        }
     }
     
     updateVenueGrid(venueProgress) {
-        const grid = document.getElementById('venue-grid');
+        if (!venueProgress) return;
         
-        // Group venues by name and year
-        const venuesByName = {};
-        for (const [venueKey, progress] of Object.entries(venueProgress)) {
-            const venueName = progress.venue_name;
-            if (!venuesByName[venueName]) {
-                venuesByName[venueName] = {};
+        Object.entries(venueProgress).forEach(([key, progress]) => {
+            const badge = document.getElementById(`venue-${progress.venue_name}-${progress.year}`);
+            if (badge) {
+                // Update status color
+                let colorClass = 'bg-secondary';
+                if (progress.status === 'completed') {
+                    colorClass = 'bg-success';
+                } else if (progress.status === 'in_progress') {
+                    colorClass = 'bg-warning';
+                } else if (progress.status === 'failed') {
+                    colorClass = 'bg-danger';
+                }
+                
+                badge.className = `badge ${colorClass}`;
+                
+                // Add progress indicator if in progress
+                if (progress.status === 'in_progress' && progress.completion_percent > 0) {
+                    badge.innerHTML = `${progress.year} <small>(${progress.completion_percent.toFixed(0)}%)</small>`;
+                }
+                
+                // Add tooltip
+                badge.title = this.createVenueTooltip(progress);
             }
-            venuesByName[venueName][progress.year] = progress;
+        });
+    }
+    
+    updateAPIHealth(apiMetrics) {
+        if (!apiMetrics) return;
+        
+        const apiHealthDiv = document.getElementById('api-health');
+        if (!apiHealthDiv) return;
+        
+        apiHealthDiv.innerHTML = '';
+        
+        Object.entries(apiMetrics).forEach(([apiName, metrics]) => {
+            const apiCard = document.createElement('div');
+            apiCard.className = 'api-health-item d-flex justify-content-between align-items-center mb-2';
+            
+            const statusClass = metrics.health_status === 'healthy' ? 'text-success' : 
+                               metrics.health_status === 'degraded' ? 'text-warning' : 'text-danger';
+            
+            apiCard.innerHTML = `
+                <div>
+                    <span class="api-status-badge ${metrics.health_status}"></span>
+                    <strong>${apiName}</strong>
+                </div>
+                <div class="text-end">
+                    <small class="${statusClass}">${metrics.health_status}</small>
+                    <br>
+                    <small class="text-muted">${metrics.success_rate.toFixed(1)}% success</small>
+                </div>
+            `;
+            
+            apiHealthDiv.appendChild(apiCard);
+        });
+    }
+    
+    updateProcessingMetrics(processing) {
+        if (!processing) return;
+        
+        // Update processing errors
+        const processingErrors = document.getElementById('processing-errors');
+        if (processingErrors) {
+            processingErrors.textContent = processing.processing_errors;
+            if (processing.processing_errors > 0) {
+                processingErrors.classList.add('text-danger');
+            } else {
+                processingErrors.classList.remove('text-danger');
+            }
         }
         
-        // Clear existing grid
-        grid.innerHTML = '';
-        
-        // Create venue items
-        for (const [venueName, years] of Object.entries(venuesByName)) {
-            for (const [year, progress] of Object.entries(years)) {
-                const venueItem = document.createElement('div');
-                venueItem.className = `venue-item ${progress.status}`;
-                venueItem.dataset.venue = venueName;
-                venueItem.dataset.year = year;
-                
-                venueItem.innerHTML = `
-                    <div class="venue-name">${venueName}</div>
-                    <div class="venue-year">${year}</div>
-                    <div class="venue-progress">${progress.papers_collected}/${progress.target_papers}</div>
-                `;
-                
-                grid.appendChild(venueItem);
+        // Update data quality score
+        const qualityScore = document.getElementById('quality-score');
+        if (qualityScore) {
+            const score = processing.data_quality_score * 100;
+            qualityScore.textContent = `${score.toFixed(1)}%`;
+            
+            // Color based on score
+            if (score >= 90) {
+                qualityScore.className = 'metric-value text-success';
+            } else if (score >= 70) {
+                qualityScore.className = 'metric-value text-warning';
+            } else {
+                qualityScore.className = 'metric-value text-danger';
             }
         }
     }
     
-    updateCharts(metrics) {
-        const timestamp = new Date().toLocaleTimeString();
+    updateStateMetrics(state) {
+        if (!state) return;
+        
+        // Update checkpoint count
+        const checkpointCount = document.getElementById('checkpoint-count');
+        if (checkpointCount) {
+            checkpointCount.textContent = state.total_checkpoints;
+        }
+        
+        // Update last checkpoint time
+        const lastCheckpoint = document.getElementById('last-checkpoint');
+        if (lastCheckpoint && state.last_checkpoint_time) {
+            const timeSince = this.getTimeSince(new Date(state.last_checkpoint_time));
+            lastCheckpoint.textContent = timeSince;
+        }
+    }
+    
+    addToHistory(metrics) {
+        this.metricsHistory.push({
+            timestamp: metrics.timestamp,
+            papers_per_minute: metrics.collection_progress.papers_per_minute,
+            memory_percent: metrics.system_metrics.memory_usage_percent,
+            cpu_percent: metrics.system_metrics.cpu_usage_percent
+        });
+        
+        // Keep only last N entries
+        if (this.metricsHistory.length > this.maxHistorySize) {
+            this.metricsHistory = this.metricsHistory.slice(-this.maxHistorySize);
+        }
+    }
+    
+    updateCharts() {
+        if (!this.metricsHistory.length) return;
+        
+        const labels = this.metricsHistory.map(m => 
+            new Date(m.timestamp).toLocaleTimeString()
+        );
         
         // Update collection rate chart
-        const collectionChart = this.charts.collectionRate;
-        collectionChart.data.labels.push(timestamp);
-        collectionChart.data.datasets[0].data.push(metrics.collection_progress.papers_per_minute);
-        
-        // Keep only last 20 points
-        if (collectionChart.data.labels.length > 20) {
-            collectionChart.data.labels.shift();
-            collectionChart.data.datasets[0].data.shift();
+        if (this.collectionRateChart) {
+            this.collectionRateChart.data.labels = labels;
+            this.collectionRateChart.data.datasets[0].data = 
+                this.metricsHistory.map(m => m.papers_per_minute);
+            this.collectionRateChart.update('none');
         }
-        
-        collectionChart.update('none');
         
         // Update system resources chart
-        const systemChart = this.charts.systemResources;
-        systemChart.data.labels.push(timestamp);
-        systemChart.data.datasets[0].data.push(metrics.system_resources.memory_usage);
-        systemChart.data.datasets[1].data.push(metrics.system_resources.cpu_usage);
-        
-        // Keep only last 20 points
-        if (systemChart.data.labels.length > 20) {
-            systemChart.data.labels.shift();
-            systemChart.data.datasets[0].data.shift();
-            systemChart.data.datasets[1].data.shift();
-        }
-        
-        systemChart.update('none');
-    }
-    
-    storeMetricsHistory(metrics) {
-        this.metricsHistory.push({
-            timestamp: new Date(),
-            ...metrics
-        });
-        
-        // Keep only recent history
-        if (this.metricsHistory.length > this.maxHistoryPoints) {
-            this.metricsHistory.shift();
+        if (this.systemResourcesChart) {
+            this.systemResourcesChart.data.labels = labels;
+            this.systemResourcesChart.data.datasets[0].data = 
+                this.metricsHistory.map(m => m.memory_percent);
+            this.systemResourcesChart.data.datasets[1].data = 
+                this.metricsHistory.map(m => m.cpu_percent);
+            this.systemResourcesChart.update('none');
         }
     }
     
-    updateConnectionStatus(connected) {
-        const indicator = document.getElementById('connection-indicator');
-        const text = document.getElementById('connection-text');
-        
-        if (connected) {
-            indicator.className = 'status-indicator connected';
-            text.textContent = 'Connected';
-        } else {
-            indicator.className = 'status-indicator disconnected';
-            text.textContent = 'Disconnected';
+    requestMetricsUpdate() {
+        if (this.socket && this.isConnected) {
+            this.socket.emit('request_metrics');
         }
     }
     
-    updateLastUpdateTime() {
-        const element = document.getElementById('last-update');
-        if (this.lastUpdate) {
-            element.textContent = this.lastUpdate.toLocaleTimeString();
+    showVenueDetails(venue, year) {
+        // Create modal content
+        const modalContent = `
+            <div class="modal fade" id="venueDetailsModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">${venue} ${year} Collection Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Loading details...</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        const existingModal = document.getElementById('venueDetailsModal');
+        if (existingModal) {
+            existingModal.remove();
         }
-    }
-    
-    handleVenueCompleted(data) {
-        // Show completion notification
-        this.showNotification(`Venue ${data.venue} (${data.year}) completed with ${data.papers_collected} papers`, 'success');
         
-        // Update the venue item in grid
-        const venueItems = document.querySelectorAll(`.venue-item[data-venue="${data.venue}"][data-year="${data.year}"]`);
-        venueItems.forEach(item => {
-            item.className = 'venue-item completed';
-            item.querySelector('.venue-progress').textContent = `${data.papers_collected}/${data.papers_collected}`;
-        });
-    }
-    
-    showVenueDetails(venueItem) {
-        const venue = venueItem.dataset.venue;
-        const year = venueItem.dataset.year;
-        const status = venueItem.classList.contains('completed') ? 'Completed' :
-                      venueItem.classList.contains('in-progress') ? 'In Progress' :
-                      venueItem.classList.contains('failed') ? 'Failed' : 'Not Started';
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', modalContent);
         
-        const progress = venueItem.querySelector('.venue-progress').textContent;
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('venueDetailsModal'));
+        modal.show();
         
-        alert(`Venue: ${venue}\nYear: ${year}\nStatus: ${status}\nProgress: ${progress}`);
+        // Request details from server
+        if (this.socket && this.isConnected) {
+            this.socket.emit('get_venue_details', { venue, year }, (details) => {
+                const modalBody = document.querySelector('#venueDetailsModal .modal-body');
+                if (modalBody && details) {
+                    modalBody.innerHTML = `
+                        <table class="table table-sm">
+                            <tr><td>Status:</td><td><span class="badge bg-${this.getStatusColor(details.status)}">${details.status}</span></td></tr>
+                            <tr><td>Papers Collected:</td><td>${details.papers_collected || 0}</td></tr>
+                            <tr><td>Progress:</td><td>${(details.completion_percent || 0).toFixed(1)}%</td></tr>
+                            <tr><td>Started:</td><td>${details.start_time ? new Date(details.start_time).toLocaleString() : 'Not started'}</td></tr>
+                            <tr><td>Last Activity:</td><td>${details.last_activity ? new Date(details.last_activity).toLocaleString() : 'N/A'}</td></tr>
+                            ${details.error_message ? `<tr><td>Error:</td><td class="text-danger">${details.error_message}</td></tr>` : ''}
+                        </table>
+                    `;
+                } else {
+                    modalBody.innerHTML = '<p class="text-muted">No details available</p>';
+                }
+            });
+        }
     }
     
     showAlert(alert) {
-        const alertContainer = this.getOrCreateAlertContainer();
+        const alertsContainer = document.getElementById('alerts-container');
+        if (!alertsContainer) return;
         
-        const alertElement = document.createElement('div');
-        alertElement.className = `alert alert-${this.getBootstrapAlertClass(alert.severity)} alert-dismissible fade show`;
-        alertElement.innerHTML = `
-            <strong>${alert.title}</strong><br>
-            ${alert.message}
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${this.getAlertClass(alert.severity)} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            <strong>${alert.rule_name}:</strong> ${alert.message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         
-        alertContainer.appendChild(alertElement);
+        alertsContainer.insertBefore(alertDiv, alertsContainer.firstChild);
         
-        // Auto-remove after 10 seconds
+        // Auto-dismiss after 30 seconds
         setTimeout(() => {
-            if (alertElement.parentNode) {
-                alertElement.remove();
-            }
-        }, 10000);
+            alertDiv.remove();
+        }, 30000);
+        
+        // Update alerts list
+        this.updateAlertsList(alert);
     }
     
-    showNotification(message, type = 'info') {
-        const alertContainer = this.getOrCreateAlertContainer();
+    updateAlertsList(alert) {
+        const alertsList = document.getElementById('recent-alerts');
+        if (!alertsList) return;
         
-        const notification = document.createElement('div');
-        notification.className = `alert alert-${type} alert-dismissible fade show`;
-        notification.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        const alertItem = document.createElement('div');
+        alertItem.className = 'alert-item';
+        alertItem.innerHTML = `
+            <div class="d-flex justify-content-between">
+                <div>
+                    <span class="alert-badge ${alert.severity}">${alert.severity}</span>
+                    <strong>${alert.rule_name}</strong>
+                </div>
+                <small class="alert-time">${new Date(alert.timestamp).toLocaleTimeString()}</small>
+            </div>
+            <div class="text-muted small mt-1">${alert.message}</div>
         `;
         
-        alertContainer.appendChild(notification);
+        alertsList.insertBefore(alertItem, alertsList.firstChild);
         
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 5000);
-    }
-    
-    getOrCreateAlertContainer() {
-        let container = document.querySelector('.alert-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.className = 'alert-container';
-            document.body.appendChild(container);
+        // Keep only last 10 alerts
+        while (alertsList.children.length > 10) {
+            alertsList.removeChild(alertsList.lastChild);
         }
-        return container;
     }
     
-    getBootstrapAlertClass(severity) {
-        const mapping = {
-            'info': 'info',
-            'warning': 'warning',
-            'error': 'danger',
-            'critical': 'danger'
-        };
-        return mapping[severity] || 'info';
+    createVenueTooltip(progress) {
+        let tooltip = `Status: ${progress.status}\n`;
+        tooltip += `Papers: ${progress.papers_collected}\n`;
+        tooltip += `Progress: ${progress.completion_percent.toFixed(1)}%`;
+        
+        if (progress.last_activity) {
+            tooltip += `\nLast activity: ${this.getTimeSince(new Date(progress.last_activity))} ago`;
+        }
+        
+        return tooltip;
+    }
+    
+    getTimeSince(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        
+        if (seconds < 60) return `${seconds}s`;
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h`;
+        const days = Math.floor(hours / 24);
+        return `${days}d`;
+    }
+    
+    getStatusColor(status) {
+        switch(status) {
+            case 'completed': return 'success';
+            case 'in_progress': return 'warning';
+            case 'failed': return 'danger';
+            default: return 'secondary';
+        }
+    }
+    
+    getAlertClass(severity) {
+        switch(severity) {
+            case 'critical': return 'danger';
+            case 'error': return 'danger';
+            case 'warning': return 'warning';
+            case 'info': return 'info';
+            default: return 'secondary';
+        }
     }
 }
 
-// Initialize dashboard when page loads
+// Initialize dashboard when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.dashboard = new CollectionDashboard();
+    console.log('Dashboard initialized');
 });
