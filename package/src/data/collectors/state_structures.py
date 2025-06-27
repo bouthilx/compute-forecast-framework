@@ -290,6 +290,70 @@ class CollectionSession:
     # API status tracking
     api_status: Dict[str, APIHealthStatus] = field(default_factory=dict)
     rate_limits: Dict[str, RateLimitStatus] = field(default_factory=dict)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for JSON serialization"""
+        result = {}
+        for key, value in self.__dict__.items():
+            if isinstance(value, datetime):
+                result[key] = value.isoformat()
+            elif isinstance(value, list) and value and hasattr(value[0], '__dict__'):
+                result[key] = [item.__dict__ for item in value]
+            elif hasattr(value, '__dict__'):
+                result[key] = value.__dict__ if value else None
+            elif isinstance(value, dict):
+                # Handle nested dictionaries with complex objects
+                serialized_dict = {}
+                for k, v in value.items():
+                    if hasattr(v, '__dict__'):
+                        serialized_dict[k] = v.__dict__
+                    else:
+                        serialized_dict[k] = v
+                result[key] = serialized_dict
+            else:
+                result[key] = value
+        return result
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'CollectionSession':
+        """Create CollectionSession from dictionary"""
+        # Handle datetime fields
+        if isinstance(data.get('creation_time'), str):
+            data['creation_time'] = datetime.fromisoformat(data['creation_time'])
+        if isinstance(data.get('last_activity_time'), str):
+            data['last_activity_time'] = datetime.fromisoformat(data['last_activity_time'])
+        
+        # Handle target_venues (list of VenueConfig objects)
+        if 'target_venues' in data:
+            venue_configs = []
+            for venue_data in data['target_venues']:
+                if isinstance(venue_data, dict):
+                    venue_configs.append(VenueConfig(**venue_data))
+                else:
+                    venue_configs.append(venue_data)
+            data['target_venues'] = venue_configs
+        
+        # Handle API status objects
+        if 'api_status' in data:
+            api_status = {}
+            for api_name, status_data in data['api_status'].items():
+                if isinstance(status_data, dict):
+                    api_status[api_name] = APIHealthStatus(**status_data)
+                else:
+                    api_status[api_name] = status_data
+            data['api_status'] = api_status
+        
+        # Handle rate limits objects
+        if 'rate_limits' in data:
+            rate_limits = {}
+            for api_name, limit_data in data['rate_limits'].items():
+                if isinstance(limit_data, dict):
+                    rate_limits[api_name] = RateLimitStatus(**limit_data)
+                else:
+                    rate_limits[api_name] = limit_data
+            data['rate_limits'] = rate_limits
+        
+        return cls(**data)
 
 
 @dataclass

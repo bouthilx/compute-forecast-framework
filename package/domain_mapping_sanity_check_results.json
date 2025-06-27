@@ -1,0 +1,144 @@
+{
+  "total_domains": 2332,
+  "manually_mapped": 1454,
+  "auto_mapped": 878,
+  "suspicious_mappings": [
+    {
+      "domain": "Vision-and-Language Reasoning",
+      "mapped_to": "Computer Vision & Medical Imaging",
+      "matched_keywords": [
+        "vision"
+      ],
+      "frequency": 2
+    },
+    {
+      "domain": "Controlled Text Generation",
+      "mapped_to": "Natural Language Processing",
+      "matched_keywords": [
+        "text"
+      ],
+      "frequency": 2
+    },
+    {
+      "domain": "Conversational Agents",
+      "mapped_to": "Natural Language Processing",
+      "matched_keywords": [
+        "conversational"
+      ],
+      "frequency": 2
+    },
+    {
+      "domain": "Conditional Text-to-Image Generation",
+      "mapped_to": "Computer Vision & Medical Imaging",
+      "matched_keywords": [
+        "image"
+      ],
+      "frequency": 1
+    },
+    {
+      "domain": "Reinforcement Learning Visualization and Interpretation",
+      "mapped_to": "Computer Vision & Medical Imaging",
+      "matched_keywords": [
+        "visual"
+      ],
+      "frequency": 1
+    }
+  ],
+  "ambiguous_domains": [
+    {
+      "domain": "Vision-and-Language Reasoning",
+      "potential_matches": [
+        [
+          "CV",
+          [
+            "vision"
+          ]
+        ],
+        [
+          "NLP",
+          [
+            "language"
+          ]
+        ]
+      ],
+      "current_category": "Computer Vision & Medical Imaging",
+      "frequency": 2
+    },
+    {
+      "domain": "Controlled Text Generation",
+      "potential_matches": [
+        [
+          "NLP",
+          [
+            "text"
+          ]
+        ],
+        [
+          "RL",
+          [
+            "control"
+          ]
+        ]
+      ],
+      "current_category": "Natural Language Processing",
+      "frequency": 2
+    },
+    {
+      "domain": "Conversational Agents",
+      "potential_matches": [
+        [
+          "NLP",
+          [
+            "conversational"
+          ]
+        ],
+        [
+          "RL",
+          [
+            "agent"
+          ]
+        ]
+      ],
+      "current_category": "Natural Language Processing",
+      "frequency": 2
+    },
+    {
+      "domain": "Conditional Text-to-Image Generation",
+      "potential_matches": [
+        [
+          "CV",
+          [
+            "image"
+          ]
+        ],
+        [
+          "NLP",
+          [
+            "text"
+          ]
+        ]
+      ],
+      "current_category": "Computer Vision & Medical Imaging",
+      "frequency": 1
+    },
+    {
+      "domain": "Reinforcement Learning Visualization and Interpretation",
+      "potential_matches": [
+        [
+          "CV",
+          [
+            "visual"
+          ]
+        ],
+        [
+          "RL",
+          [
+            "reinforcement learning"
+          ]
+        ]
+      ],
+      "current_category": "Computer Vision & Medical Imaging",
+      "frequency": 1
+    }
+  ]
+}

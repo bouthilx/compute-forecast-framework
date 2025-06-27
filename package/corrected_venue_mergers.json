@@ -1,0 +1,5307 @@
+{
+  "corrected_mergers": {
+    "NeurIPS": [
+      "NeurIPS",
+      "NeurIPS.cc/2024/Conference",
+      "NeurIPS.cc/2023/Conference",
+      "Advances in Neural Information Processing Systems 36  (NeurIPS 2023)",
+      "Neural Information Processing Systems",
+      "Advances in Neural Information Processing Systems 35  (NeurIPS 2022)",
+      "NeurIPS (Competition and Demos)"
+    ],
+    "ICML": [
+      "ICML",
+      "Proceedings of the 41st International Conference on Machine Learning",
+      "Proceedings of the 40th International Conference on Machine Learning",
+      "ICML.cc/2024/Conference"
+    ],
+    "ICLR": [
+      "ICLR",
+      "ICLR.cc/2024/Conference",
+      "ICLR.cc/2023/Conference"
+    ],
+    "EMNLP": [
+      "EMNLP",
+      "EMNLP (Findings)",
+      "Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing",
+      "EMNLP/2023/Conference",
+      "Findings of the Association for Computational Linguistics: EMNLP 2023",
+      "Findings of the Association for Computational Linguistics: EMNLP 2022",
+      "Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing"
+    ],
+    "ACL": [
+      "ACL (1)",
+      "Findings of the Association for Computational Linguistics ACL 2024",
+      "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "Findings of the Association for Computational Linguistics: ACL 2023",
+      "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)",
+      "Findings of the Association for Computational Linguistics: ACL 2022",
+      "Annual Meeting of the Association for Computational Linguistics",
+      "Transactions of the Association for Computational Linguistics"
+    ],
+    "EACL": [
+      "EACL (1)",
+      "EACL",
+      "Proceedings of the 17th Conference of the European Chapter of the Association for Computational Linguistics",
+      "Findings of the Association for Computational Linguistics: EACL 2023"
+    ],
+    "NAACL": [
+      "Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers)",
+      "Findings of the Association for Computational Linguistics: NAACL 2024",
+      "Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies"
+    ],
+    "AAAI": [
+      "AAAI",
+      "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "AAAI.org/2023/Bridge/CCBridge"
+    ],
+    "ICRA": [
+      "ICRA",
+      "2024 IEEE International Conference on Robotics and Automation (ICRA)",
+      "2023 IEEE International Conference on Robotics and Automation (ICRA)",
+      "2022 International Conference on Robotics and Automation (ICRA)"
+    ],
+    "IROS": [
+      "2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)"
+    ],
+    "AISTATS": [
+      "AISTATS",
+      "Proceedings of The 27th International Conference on Artificial Intelligence and Statistics",
+      "International Conference on Artificial Intelligence and Statistics",
+      "Proceedings of The 26th International Conference on Artificial Intelligence and Statistics"
+    ],
+    "UAI": [
+      "UAI",
+      "auai.org/UAI/2024/Conference",
+      "auai.org/UAI/2023/Conference",
+      "auai.org/UAI/2022/Conference",
+      "Proceedings of the Fortieth Conference on Uncertainty in Artificial Intelligence"
+    ],
+    "CHI": [
+      "Proceedings of the CHI Conference on Human Factors in Computing Systems",
+      "Proceedings of the 2023 CHI Conference on Human Factors in Computing Systems",
+      "CHI Conference on Human Factors in Computing Systems"
+    ],
+    "SIGIR": [
+      "Proceedings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval",
+      "Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval"
+    ],
+    "ICASSP": [
+      "ICASSP 2024 - 2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "ICASSP 2023 - 2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)"
+    ],
+    "INTERSPEECH": [
+      "Interspeech 2024",
+      "INTERSPEECH 2023",
+      "Interspeech 2022"
+    ],
+    "ICC": [
+      "ICC 2024 - IEEE International Conference on Communications",
+      "ICC 2023 - IEEE International Conference on Communications"
+    ],
+    "ICDE": [
+      "2023 IEEE 39th International Conference on Data Engineering (ICDE)",
+      "2022 IEEE 38th International Conference on Data Engineering (ICDE)"
+    ],
+    "SIGGRAPH Asia": [
+      "SIGGRAPH Asia 2023 Conference Papers",
+      "SIGGRAPH Asia 2022 Conference Papers"
+    ],
+    "CoLLAs": [
+      "Proceedings of The 2nd Conference on Lifelong Learning Agents",
+      "Proceedings of The 1st Conference on Lifelong Learning Agents"
+    ],
+    "LoG": [
+      "logconference.io/LOG/2024/Conference",
+      "logconference.io/LOG/2023/Conference"
+    ],
+    "ACM FAccT": [
+      "2023 ACM Conference on Fairness, Accountability, and Transparency",
+      "2022 ACM Conference on Fairness, Accountability, and Transparency"
+    ],
+    "ASE": [
+      "Proceedings of the 39th IEEE/ACM International Conference on Automated Software Engineering",
+      "Proceedings of the 37th IEEE/ACM International Conference on Automated Software Engineering"
+    ],
+    "WACV": [
+      "2023 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)"
+    ],
+    "PLOS ONE": [
+      "PLoS ONE",
+      "PLOS ONE",
+      "PLOS One"
+    ],
+    "Nature Methods": [
+      "Nature methods",
+      "Nature Methods"
+    ],
+    "Canadian Journal of Public Health": [
+      "Canadian Journal of Public Health",
+      "Canadian journal of public health"
+    ],
+    "Electric Power Systems Research": [
+      "Electric Power Systems Research",
+      "Electric power systems research"
+    ]
+  },
+  "merged_venues": {
+    "NeurIPS": {
+      "total_papers": 152,
+      "by_year": {
+        "2024": 66,
+        "2023": 68,
+        "2022": 17,
+        "2019": 0,
+        "2021": 1
+      },
+      "merged_from": [
+        "NeurIPS",
+        "Advances in Neural Information Processing Systems 36  (NeurIPS 2023)",
+        "Neural Information Processing Systems",
+        "Advances in Neural Information Processing Systems 35  (NeurIPS 2022)",
+        "NeurIPS (Competition and Demos)"
+      ],
+      "is_merged": true
+    },
+    "ICML": {
+      "total_papers": 116,
+      "by_year": {
+        "2024": 61,
+        "2023": 47,
+        "2022": 8
+      },
+      "merged_from": [
+        "ICML"
+      ],
+      "is_merged": false
+    },
+    "ICLR": {
+      "total_papers": 94,
+      "by_year": {
+        "2024": 53,
+        "2023": 37,
+        "2022": 4
+      },
+      "merged_from": [
+        "ICLR"
+      ],
+      "is_merged": false
+    },
+    "TMLR": {
+      "total_papers": 54,
+      "by_year": {
+        "2024": 28,
+        "2023": 20,
+        "2022": 6
+      },
+      "merged_from": [
+        "TMLR"
+      ],
+      "is_merged": false
+    },
+    "EMNLP": {
+      "total_papers": 41,
+      "by_year": {
+        "2024": 8,
+        "2023": 29,
+        "2022": 4
+      },
+      "merged_from": [
+        "EMNLP",
+        "EMNLP (Findings)",
+        "Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing",
+        "EMNLP/2023/Conference",
+        "Findings of the Association for Computational Linguistics: EMNLP 2023",
+        "Findings of the Association for Computational Linguistics: EMNLP 2022",
+        "Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing"
+      ],
+      "is_merged": true
+    },
+    "ACL": {
+      "total_papers": 21,
+      "by_year": {
+        "2024": 3,
+        "2023": 7,
+        "2022": 11
+      },
+      "merged_from": [
+        "ACL (1)",
+        "Findings of the Association for Computational Linguistics ACL 2024",
+        "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+        "Findings of the Association for Computational Linguistics: ACL 2023",
+        "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+        "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)",
+        "Findings of the Association for Computational Linguistics: ACL 2022",
+        "Annual Meeting of the Association for Computational Linguistics",
+        "Transactions of the Association for Computational Linguistics"
+      ],
+      "is_merged": true
+    },
+    "AAAI": {
+      "total_papers": 19,
+      "by_year": {
+        "2024": 8,
+        "2023": 9,
+        "2022": 2
+      },
+      "merged_from": [
+        "AAAI",
+        "Proceedings of the AAAI Conference on Artificial Intelligence",
+        "AAAI.org/2023/Bridge/CCBridge"
+      ],
+      "is_merged": true
+    },
+    "AISTATS": {
+      "total_papers": 19,
+      "by_year": {
+        "2024": 16,
+        "2023": 2,
+        "2022": 1
+      },
+      "merged_from": [
+        "AISTATS",
+        "Proceedings of The 27th International Conference on Artificial Intelligence and Statistics",
+        "International Conference on Artificial Intelligence and Statistics",
+        "Proceedings of The 26th International Conference on Artificial Intelligence and Statistics"
+      ],
+      "is_merged": true
+    },
+    "Radiotherapy and Oncology": {
+      "total_papers": 18,
+      "by_year": {
+        "2024": 2,
+        "2023": 16
+      },
+      "merged_from": [
+        "Radiotherapy and Oncology"
+      ],
+      "is_merged": false
+    },
+    "Journal of Pediatric Surgery": {
+      "total_papers": 17,
+      "by_year": {
+        "2024": 10,
+        "2023": 7
+      },
+      "merged_from": [
+        "Journal of Pediatric Surgery"
+      ],
+      "is_merged": false
+    },
+    "CVPR": {
+      "total_papers": 16,
+      "by_year": {
+        "2024": 3,
+        "2023": 6,
+        "2022": 7
+      },
+      "merged_from": [
+        "CVPR"
+      ],
+      "is_merged": false
+    },
+    "Nature Communications": {
+      "total_papers": 15,
+      "by_year": {
+        "2024": 6,
+        "2023": 5,
+        "2022": 4
+      },
+      "merged_from": [
+        "Nature Communications"
+      ],
+      "is_merged": false
+    },
+    "UAI": {
+      "total_papers": 11,
+      "by_year": {
+        "2023": 4,
+        "2022": 3,
+        "2024": 4
+      },
+      "merged_from": [
+        "UAI",
+        "auai.org/UAI/2024/Conference",
+        "auai.org/UAI/2023/Conference",
+        "auai.org/UAI/2022/Conference",
+        "Proceedings of the Fortieth Conference on Uncertainty in Artificial Intelligence"
+      ],
+      "is_merged": true
+    },
+    "Scientific Reports": {
+      "total_papers": 11,
+      "by_year": {
+        "2024": 3,
+        "2023": 3,
+        "2022": 5
+      },
+      "merged_from": [
+        "Scientific Reports"
+      ],
+      "is_merged": false
+    },
+    "colmweb.org/COLM/2024/Conference": {
+      "total_papers": 11,
+      "by_year": {
+        "2024": 11
+      },
+      "merged_from": [
+        "colmweb.org/COLM/2024/Conference"
+      ],
+      "is_merged": false
+    },
+    "Trans. Mach. Learn. Res.": {
+      "total_papers": 11,
+      "by_year": {
+        "2024": 2,
+        "2023": 8,
+        "2022": 1
+      },
+      "merged_from": [
+        "Trans. Mach. Learn. Res."
+      ],
+      "is_merged": false
+    },
+    "ICRA": {
+      "total_papers": 9,
+      "by_year": {
+        "2024": 6,
+        "2023": 2,
+        "2022": 1
+      },
+      "merged_from": [
+        "ICRA",
+        "2024 IEEE International Conference on Robotics and Automation (ICRA)",
+        "2023 IEEE International Conference on Robotics and Automation (ICRA)",
+        "2022 International Conference on Robotics and Automation (ICRA)"
+      ],
+      "is_merged": true
+    },
+    "Empirical Software Engineering": {
+      "total_papers": 9,
+      "by_year": {
+        "2024": 2,
+        "2023": 6,
+        "2022": 1
+      },
+      "merged_from": [
+        "Empirical Software Engineering"
+      ],
+      "is_merged": false
+    },
+    "NeuroImage": {
+      "total_papers": 8,
+      "by_year": {
+        "2023": 7,
+        "2022": 1
+      },
+      "merged_from": [
+        "NeuroImage"
+      ],
+      "is_merged": false
+    },
+    "Lecture Notes in Computer Science": {
+      "total_papers": 7,
+      "by_year": {
+        "2024": 7
+      },
+      "merged_from": [
+        "Lecture Notes in Computer Science"
+      ],
+      "is_merged": false
+    },
+    "IROS": {
+      "total_papers": 6,
+      "by_year": {
+        "2024": 2,
+        "2023": 3,
+        "2022": 1
+      },
+      "merged_from": [
+        "2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+        "2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+        "2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)"
+      ],
+      "is_merged": true
+    },
+    "CHI": {
+      "total_papers": 6,
+      "by_year": {
+        "2024": 2,
+        "2023": 3,
+        "2022": 1
+      },
+      "merged_from": [
+        "Proceedings of the CHI Conference on Human Factors in Computing Systems",
+        "Proceedings of the 2023 CHI Conference on Human Factors in Computing Systems",
+        "CHI Conference on Human Factors in Computing Systems"
+      ],
+      "is_merged": true
+    },
+    "ICC": {
+      "total_papers": 6,
+      "by_year": {
+        "2024": 1,
+        "2023": 5
+      },
+      "merged_from": [
+        "ICC 2024 - IEEE International Conference on Communications",
+        "ICC 2023 - IEEE International Conference on Communications"
+      ],
+      "is_merged": true
+    },
+    "Nature MI": {
+      "total_papers": 6,
+      "by_year": {
+        "2023": 4,
+        "2022": 2
+      },
+      "merged_from": [
+        "Nature MI"
+      ],
+      "is_merged": false
+    },
+    "EACL": {
+      "total_papers": 5,
+      "by_year": {
+        "2024": 1,
+        "2023": 4
+      },
+      "merged_from": [
+        "EACL (1)",
+        "EACL",
+        "Proceedings of the 17th Conference of the European Chapter of the Association for Computational Linguistics",
+        "Findings of the Association for Computational Linguistics: EACL 2023"
+      ],
+      "is_merged": true
+    },
+    "NAACL": {
+      "total_papers": 5,
+      "by_year": {
+        "2024": 4,
+        "2022": 1
+      },
+      "merged_from": [
+        "Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers)",
+        "Findings of the Association for Computational Linguistics: NAACL 2024",
+        "Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies"
+      ],
+      "is_merged": true
+    },
+    "SIGIR": {
+      "total_papers": 5,
+      "by_year": {
+        "2024": 1,
+        "2022": 4
+      },
+      "merged_from": [
+        "Proceedings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval",
+        "Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval"
+      ],
+      "is_merged": true
+    },
+    "ICASSP": {
+      "total_papers": 5,
+      "by_year": {
+        "2024": 2,
+        "2023": 1,
+        "2022": 2
+      },
+      "merged_from": [
+        "ICASSP 2024 - 2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+        "ICASSP 2023 - 2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+        "ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)"
+      ],
+      "is_merged": true
+    },
+    "The 2024 ACM Conference on Fairness, Accountability, and Transparency": {
+      "total_papers": 5,
+      "by_year": {
+        "2024": 5
+      },
+      "merged_from": [
+        "The 2024 ACM Conference on Fairness, Accountability, and Transparency"
+      ],
+      "is_merged": false
+    },
+    "Biological Psychiatry": {
+      "total_papers": 5,
+      "by_year": {
+        "2024": 2,
+        "2023": 1,
+        "2022": 2
+      },
+      "merged_from": [
+        "Biological Psychiatry"
+      ],
+      "is_merged": false
+    },
+    "iScience": {
+      "total_papers": 5,
+      "by_year": {
+        "2024": 0,
+        "2023": 2,
+        "2022": 3
+      },
+      "merged_from": [
+        "iScience"
+      ],
+      "is_merged": false
+    },
+    "Information and Software Technology": {
+      "total_papers": 5,
+      "by_year": {
+        "2023": 5
+      },
+      "merged_from": [
+        "Information and Software Technology"
+      ],
+      "is_merged": false
+    },
+    "Molecular Autism": {
+      "total_papers": 5,
+      "by_year": {
+        "2023": 4,
+        "2022": 1
+      },
+      "merged_from": [
+        "Molecular Autism"
+      ],
+      "is_merged": false
+    },
+    "INTERSPEECH": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 1,
+        "2023": 1,
+        "2022": 2
+      },
+      "merged_from": [
+        "Interspeech 2024",
+        "INTERSPEECH 2023",
+        "Interspeech 2022"
+      ],
+      "is_merged": true
+    },
+    "PLOS ONE": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 2,
+        "2022": 0,
+        "2023": 2
+      },
+      "merged_from": [
+        "PLoS ONE",
+        "PLOS ONE",
+        "PLOS One"
+      ],
+      "is_merged": true
+    },
+    "BMJ Open": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 1,
+        "2023": 3
+      },
+      "merged_from": [
+        "BMJ Open"
+      ],
+      "is_merged": false
+    },
+    "ACM Transactions on Software Engineering and Methodology": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 3,
+        "2022": 1,
+        "2023": 0
+      },
+      "merged_from": [
+        "ACM Transactions on Software Engineering and Methodology"
+      ],
+      "is_merged": false
+    },
+    "Magnetic Resonance in Medicine": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 3,
+        "2022": 1
+      },
+      "merged_from": [
+        "Magnetic Resonance in Medicine"
+      ],
+      "is_merged": false
+    },
+    "Communications Biology": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 4,
+        "2023": 0
+      },
+      "merged_from": [
+        "Communications Biology"
+      ],
+      "is_merged": false
+    },
+    "rl-conference.cc/RLC/2024/Conference": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 4
+      },
+      "merged_from": [
+        "rl-conference.cc/RLC/2024/Conference"
+      ],
+      "is_merged": false
+    },
+    "The Astrophysical Journal": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 1,
+        "2023": 3
+      },
+      "merged_from": [
+        "The Astrophysical Journal"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Neuroscience": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 1,
+        "2023": 1,
+        "2022": 2
+      },
+      "merged_from": [
+        "Frontiers in Neuroscience"
+      ],
+      "is_merged": false
+    },
+    "J. Mach. Learn. Res.": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 2,
+        "2023": 2
+      },
+      "merged_from": [
+        "J. Mach. Learn. Res."
+      ],
+      "is_merged": false
+    },
+    "Bioinformatics": {
+      "total_papers": 4,
+      "by_year": {
+        "2023": 4
+      },
+      "merged_from": [
+        "Bioinformatics"
+      ],
+      "is_merged": false
+    },
+    "eLife": {
+      "total_papers": 4,
+      "by_year": {
+        "2024": 1,
+        "2022": 3
+      },
+      "merged_from": [
+        "eLife"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Control of Network Systems": {
+      "total_papers": 4,
+      "by_year": {
+        "2023": 1,
+        "2024": 1,
+        "2022": 2
+      },
+      "merged_from": [
+        "IEEE Transactions on Control of Network Systems"
+      ],
+      "is_merged": false
+    },
+    "SIGGRAPH Asia": {
+      "total_papers": 3,
+      "by_year": {
+        "2023": 2,
+        "2022": 1
+      },
+      "merged_from": [
+        "SIGGRAPH Asia 2023 Conference Papers",
+        "SIGGRAPH Asia 2022 Conference Papers"
+      ],
+      "is_merged": true
+    },
+    "Neural Networks": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 3
+      },
+      "merged_from": [
+        "Neural Networks"
+      ],
+      "is_merged": false
+    },
+    "ACM Trans. Softw. Eng. Methodol.": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 3
+      },
+      "merged_from": [
+        "ACM Trans. Softw. Eng. Methodol."
+      ],
+      "is_merged": false
+    },
+    "Brachytherapy": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 1,
+        "2023": 2
+      },
+      "merged_from": [
+        "Brachytherapy"
+      ],
+      "is_merged": false
+    },
+    "Cell Reports": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 1,
+        "2022": 2
+      },
+      "merged_from": [
+        "Cell Reports"
+      ],
+      "is_merged": false
+    },
+    "Medical Physics": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 1,
+        "2023": 2
+      },
+      "merged_from": [
+        "Medical Physics"
+      ],
+      "is_merged": false
+    },
+    "2024 IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 3
+      },
+      "merged_from": [
+        "2024 IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Knowledge and Data Engineering": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 1,
+        "2023": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Knowledge and Data Engineering"
+      ],
+      "is_merged": false
+    },
+    "JMLR": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 0,
+        "2023": 2,
+        "2022": 1
+      },
+      "merged_from": [
+        "JMLR"
+      ],
+      "is_merged": false
+    },
+    "IEEE Access": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 1,
+        "2023": 2,
+        "2022": 0
+      },
+      "merged_from": [
+        "IEEE Access"
+      ],
+      "is_merged": false
+    },
+    "Genome Biology": {
+      "total_papers": 3,
+      "by_year": {
+        "2024": 1,
+        "2023": 2
+      },
+      "merged_from": [
+        "Genome Biology"
+      ],
+      "is_merged": false
+    },
+    "Equity and Access in Algorithms, Mechanisms, and Optimization": {
+      "total_papers": 3,
+      "by_year": {
+        "2023": 3
+      },
+      "merged_from": [
+        "Equity and Access in Algorithms, Mechanisms, and Optimization"
+      ],
+      "is_merged": false
+    },
+    "IEEE Robotics and Automation Letters": {
+      "total_papers": 3,
+      "by_year": {
+        "2023": 2,
+        "2022": 1
+      },
+      "merged_from": [
+        "IEEE Robotics and Automation Letters"
+      ],
+      "is_merged": false
+    },
+    "European Neuropsychopharmacology": {
+      "total_papers": 3,
+      "by_year": {
+        "2023": 3
+      },
+      "merged_from": [
+        "European Neuropsychopharmacology"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 2023 AAAI/ACM Conference on AI, Ethics, and Society": {
+      "total_papers": 3,
+      "by_year": {
+        "2023": 3
+      },
+      "merged_from": [
+        "Proceedings of the 2023 AAAI/ACM Conference on AI, Ethics, and Society"
+      ],
+      "is_merged": false
+    },
+    "Monthly Notices of the Royal Astronomical Society": {
+      "total_papers": 3,
+      "by_year": {
+        "2023": 3
+      },
+      "merged_from": [
+        "Monthly Notices of the Royal Astronomical Society"
+      ],
+      "is_merged": false
+    },
+    "SampTA/2023/Conference": {
+      "total_papers": 3,
+      "by_year": {
+        "2023": 3
+      },
+      "merged_from": [
+        "SampTA/2023/Conference"
+      ],
+      "is_merged": false
+    },
+    "TPAMI": {
+      "total_papers": 3,
+      "by_year": {
+        "2023": 3
+      },
+      "merged_from": [
+        "TPAMI"
+      ],
+      "is_merged": false
+    },
+    "European Journal of Operational Research": {
+      "total_papers": 3,
+      "by_year": {
+        "2023": 2,
+        "2022": 1
+      },
+      "merged_from": [
+        "European Journal of Operational Research"
+      ],
+      "is_merged": false
+    },
+    "Patient Education and Counseling": {
+      "total_papers": 3,
+      "by_year": {
+        "2022": 3
+      },
+      "merged_from": [
+        "Patient Education and Counseling"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the First Conference on Causal Learning and Reasoning": {
+      "total_papers": 3,
+      "by_year": {
+        "2022": 3
+      },
+      "merged_from": [
+        "Proceedings of the First Conference on Causal Learning and Reasoning"
+      ],
+      "is_merged": false
+    },
+    "CoLLAs": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "CoLLAs"
+      ],
+      "is_merged": false
+    },
+    "ACM FAccT": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "2023 ACM Conference on Fairness, Accountability, and Transparency",
+        "2022 ACM Conference on Fairness, Accountability, and Transparency"
+      ],
+      "is_merged": true
+    },
+    "ASE": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Proceedings of the 39th IEEE/ACM International Conference on Automated Software Engineering",
+        "Proceedings of the 37th IEEE/ACM International Conference on Automated Software Engineering"
+      ],
+      "is_merged": true
+    },
+    "WACV": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "2023 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)"
+      ],
+      "is_merged": false
+    },
+    "Nature Methods": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Nature methods",
+        "Nature Methods"
+      ],
+      "is_merged": true
+    },
+    "Canadian Journal of Public Health": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "Canadian Journal of Public Health",
+        "Canadian journal of public health"
+      ],
+      "is_merged": true
+    },
+    "CIKM": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "CIKM"
+      ],
+      "is_merged": false
+    },
+    "Nature Medicine": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Nature Medicine"
+      ],
+      "is_merged": false
+    },
+    "Ethics and Information Technology": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Ethics and Information Technology"
+      ],
+      "is_merged": false
+    },
+    "Medical Physics (Lancaster)": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Medical Physics (Lancaster)"
+      ],
+      "is_merged": false
+    },
+    "Computers in Biology and Medicine": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Computers in Biology and Medicine"
+      ],
+      "is_merged": false
+    },
+    "Harm Reduction Journal": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Harm Reduction Journal"
+      ],
+      "is_merged": false
+    },
+    "Medical Informatics Europe": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "Medical Informatics Europe"
+      ],
+      "is_merged": false
+    },
+    "Space Science Reviews": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Space Science Reviews"
+      ],
+      "is_merged": false
+    },
+    "INFORMS Journal on Computing": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "INFORMS Journal on Computing"
+      ],
+      "is_merged": false
+    },
+    "Statistics in Medicine": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Statistics in Medicine"
+      ],
+      "is_merged": false
+    },
+    "Imaging Neuroscience": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Imaging Neuroscience"
+      ],
+      "is_merged": false
+    },
+    "Computers &amp; Operations Research": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Computers &amp; Operations Research"
+      ],
+      "is_merged": false
+    },
+    "Remote Sensing of Environment": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Remote Sensing of Environment"
+      ],
+      "is_merged": false
+    },
+    "Designing Interactive Systems Conference": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Designing Interactive Systems Conference"
+      ],
+      "is_merged": false
+    },
+    "Journal of Surgical Research": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Journal of Surgical Research"
+      ],
+      "is_merged": false
+    },
+    "Family Medicine and Community Health": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Family Medicine and Community Health"
+      ],
+      "is_merged": false
+    },
+    "STAR Protocols": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "STAR Protocols"
+      ],
+      "is_merged": false
+    },
+    "Journal of Energy Storage": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Journal of Energy Storage"
+      ],
+      "is_merged": false
+    },
+    "Comput. Oper. Res.": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Comput. Oper. Res."
+      ],
+      "is_merged": false
+    },
+    "Nature Biotechnology": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "Nature Biotechnology"
+      ],
+      "is_merged": false
+    },
+    "Molecular Genetics and Metabolism": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Molecular Genetics and Metabolism"
+      ],
+      "is_merged": false
+    },
+    "Magnetic Resonance in Medical Sciences": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "Magnetic Resonance in Medical Sciences"
+      ],
+      "is_merged": false
+    },
+    "Medical Image Analysis": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Medical Image Analysis"
+      ],
+      "is_merged": false
+    },
+    "Machine Learning with Applications": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "Machine Learning with Applications"
+      ],
+      "is_merged": false
+    },
+    "Trends in Ecology &amp; Evolution": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Trends in Ecology &amp; Evolution"
+      ],
+      "is_merged": false
+    },
+    "Journal of Applied Clinical Medical Physics": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Journal of Applied Clinical Medical Physics"
+      ],
+      "is_merged": false
+    },
+    "Machine-mediated learning": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 0,
+        "2023": 2
+      },
+      "merged_from": [
+        "Machine-mediated learning"
+      ],
+      "is_merged": false
+    },
+    "Complex Networks &amp; Their Applications XII": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Complex Networks &amp; Their Applications XII"
+      ],
+      "is_merged": false
+    },
+    "Health Expectations": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Health Expectations"
+      ],
+      "is_merged": false
+    },
+    "MLSP": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "MLSP"
+      ],
+      "is_merged": false
+    },
+    "Networks": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Networks"
+      ],
+      "is_merged": false
+    },
+    "AAMAS": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "AAMAS"
+      ],
+      "is_merged": false
+    },
+    "IEEE Open Journal of Intelligent Transportation Systems": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "IEEE Open Journal of Intelligent Transportation Systems"
+      ],
+      "is_merged": false
+    },
+    "Procedia Computer Science": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Procedia Computer Science"
+      ],
+      "is_merged": false
+    },
+    "Empir. Softw. Eng.": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Empir. Softw. Eng."
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Automatic Control": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Automatic Control"
+      ],
+      "is_merged": false
+    },
+    "Integration of Constraint Programming, Artificial Intelligence, and Operations Research": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 0,
+        "2022": 1
+      },
+      "merged_from": [
+        "Integration of Constraint Programming, Artificial Intelligence, and Operations Research"
+      ],
+      "is_merged": false
+    },
+    "Neuroscience and Biobehavioral Reviews": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "Neuroscience and Biobehavioral Reviews"
+      ],
+      "is_merged": false
+    },
+    "Cerebral Cortex (New York, NY)": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 2
+      },
+      "merged_from": [
+        "Cerebral Cortex (New York, NY)"
+      ],
+      "is_merged": false
+    },
+    "Journal of the Neurological Sciences": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "Journal of the Neurological Sciences"
+      ],
+      "is_merged": false
+    },
+    "The Annals of Applied Statistics": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "The Annals of Applied Statistics"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Neural Networks and Learning Systems": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Neural Networks and Learning Systems"
+      ],
+      "is_merged": false
+    },
+    "Blood": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "Blood"
+      ],
+      "is_merged": false
+    },
+    "Journal of Neuroscience": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "Journal of Neuroscience"
+      ],
+      "is_merged": false
+    },
+    "SIAM Journal on Mathematics of Data Science": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "SIAM Journal on Mathematics of Data Science"
+      ],
+      "is_merged": false
+    },
+    "PLOS Digital Health": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "PLOS Digital Health"
+      ],
+      "is_merged": false
+    },
+    "OpenReview.net/Archive": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "OpenReview.net/Archive"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the ACM on Human-Computer Interaction": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "Proceedings of the ACM on Human-Computer Interaction"
+      ],
+      "is_merged": false
+    },
+    "2023 IEEE International Conference on Software Maintenance and Evolution (ICSME)": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "2023 IEEE International Conference on Software Maintenance and Evolution (ICSME)"
+      ],
+      "is_merged": false
+    },
+    "Patterns": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "Patterns"
+      ],
+      "is_merged": false
+    },
+    "PLOS Computational Biology": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 0,
+        "2024": 2
+      },
+      "merged_from": [
+        "PLOS Computational Biology"
+      ],
+      "is_merged": false
+    },
+    "Pattern Recognition": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "Pattern Recognition"
+      ],
+      "is_merged": false
+    },
+    "Operations Research Letters": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "Operations Research Letters"
+      ],
+      "is_merged": false
+    },
+    "Mathematical Structures in Computer Science": {
+      "total_papers": 2,
+      "by_year": {
+        "2024": 1,
+        "2023": 1
+      },
+      "merged_from": [
+        "Mathematical Structures in Computer Science"
+      ],
+      "is_merged": false
+    },
+    "Journal of the Canadian Association of Gastroenterology": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "Journal of the Canadian Association of Gastroenterology"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Medicine": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "Frontiers in Medicine"
+      ],
+      "is_merged": false
+    },
+    "Machine Learning for Biomedical Imaging": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "Machine Learning for Biomedical Imaging"
+      ],
+      "is_merged": false
+    },
+    "TAG-ML": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 2
+      },
+      "merged_from": [
+        "TAG-ML"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Very Large Scale Integration (VLSI) Systems": {
+      "total_papers": 2,
+      "by_year": {
+        "2023": 1,
+        "2022": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Very Large Scale Integration (VLSI) Systems"
+      ],
+      "is_merged": false
+    },
+    "ACM Computing Surveys": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "ACM Computing Surveys"
+      ],
+      "is_merged": false
+    },
+    "Journal of Artificial Intelligence Research": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Journal of Artificial Intelligence Research"
+      ],
+      "is_merged": false
+    },
+    "Energy and Buildings": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Energy and Buildings"
+      ],
+      "is_merged": false
+    },
+    "Machine Learning": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Machine Learning"
+      ],
+      "is_merged": false
+    },
+    "JMIR Research Protocols": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "JMIR Research Protocols"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 31st ACM International Conference on Information &amp; Knowledge Management": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Proceedings of the 31st ACM International Conference on Information &amp; Knowledge Management"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 16th ACM Conference on Recommender Systems": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Proceedings of the 16th ACM Conference on Recommender Systems"
+      ],
+      "is_merged": false
+    },
+    "Blood Advances": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 1,
+        "2021": 1
+      },
+      "merged_from": [
+        "Blood Advances"
+      ],
+      "is_merged": false
+    },
+    "2022 International Joint Conference on Neural Networks (IJCNN)": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "2022 International Joint Conference on Neural Networks (IJCNN)"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Computational Neuroscience": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Frontiers in Computational Neuroscience"
+      ],
+      "is_merged": false
+    },
+    "Science Advances": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Science Advances"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Computer Science": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Frontiers in Computer Science"
+      ],
+      "is_merged": false
+    },
+    "International Journal of Infectious Diseases": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "International Journal of Infectious Diseases"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of The 5th International Conference on Medical Imaging with Deep Learning": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Proceedings of The 5th International Conference on Medical Imaging with Deep Learning"
+      ],
+      "is_merged": false
+    },
+    "Journal of Biomedical Informatics": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Journal of Biomedical Informatics"
+      ],
+      "is_merged": false
+    },
+    "IEEE Software": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "IEEE Software"
+      ],
+      "is_merged": false
+    },
+    "Information and Computation": {
+      "total_papers": 2,
+      "by_year": {
+        "2022": 2
+      },
+      "merged_from": [
+        "Information and Computation"
+      ],
+      "is_merged": false
+    },
+    "ICDE": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "ICDE"
+      ],
+      "is_merged": false
+    },
+    "LoG": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "LoG"
+      ],
+      "is_merged": false
+    },
+    "Electric Power Systems Research": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Electric Power Systems Research",
+        "Electric power systems research"
+      ],
+      "is_merged": true
+    },
+    "Transportation Research Part E: Logistics and Transportation Review": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Transportation Research Part E: Logistics and Transportation Review"
+      ],
+      "is_merged": false
+    },
+    "J. Open Source Softw.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "J. Open Source Softw."
+      ],
+      "is_merged": false
+    },
+    "International Journal of Technology Assessment in Health Care": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "International Journal of Technology Assessment in Health Care"
+      ],
+      "is_merged": false
+    },
+    "Log. Methods Comput. Sci.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Log. Methods Comput. Sci."
+      ],
+      "is_merged": false
+    },
+    "Canadian journal of surgery. Journal canadien de chirurgie": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Canadian journal of surgery. Journal canadien de chirurgie"
+      ],
+      "is_merged": false
+    },
+    "ACM Transactions on the Web": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "ACM Transactions on the Web"
+      ],
+      "is_merged": false
+    },
+    "BMJ Global Health": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "BMJ Global Health"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Immunology": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1,
+        "2022": 0
+      },
+      "merged_from": [
+        "Frontiers in Immunology"
+      ],
+      "is_merged": false
+    },
+    "European Journal of Nuclear Medicine and Molecular Imaging": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "European Journal of Nuclear Medicine and Molecular Imaging"
+      ],
+      "is_merged": false
+    },
+    "Bulletin of the World Health Organization": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Bulletin of the World Health Organization"
+      ],
+      "is_merged": false
+    },
+    "Digit. Investig.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Digit. Investig."
+      ],
+      "is_merged": false
+    },
+    "BMC Medical Education": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "BMC Medical Education"
+      ],
+      "is_merged": false
+    },
+    "ACML.org/2024/Conference": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "ACML.org/2024/Conference"
+      ],
+      "is_merged": false
+    },
+    "robot-learning.org/CoRL/2024/Conference": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "robot-learning.org/CoRL/2024/Conference"
+      ],
+      "is_merged": false
+    },
+    "BMC Bioinformatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "BMC Bioinformatics"
+      ],
+      "is_merged": false
+    },
+    "SIAM Review": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "SIAM Review"
+      ],
+      "is_merged": false
+    },
+    "Bernoulli": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Bernoulli"
+      ],
+      "is_merged": false
+    },
+    "Applied Energy": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Applied Energy"
+      ],
+      "is_merged": false
+    },
+    "Brazilian Journal of Anesthesiology": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Brazilian Journal of Anesthesiology"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Dependable and Secure Computing": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Dependable and Secure Computing"
+      ],
+      "is_merged": false
+    },
+    "Archives of gerontology and geriatrics (Print)": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 0,
+        "2023": 1
+      },
+      "merged_from": [
+        "Archives of gerontology and geriatrics (Print)"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the fifth Conference on Health, Inference, and Learning": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the fifth Conference on Health, Inference, and Learning"
+      ],
+      "is_merged": false
+    },
+    "Glia": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Glia"
+      ],
+      "is_merged": false
+    },
+    "Systems and Control Transactions": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Systems and Control Transactions"
+      ],
+      "is_merged": false
+    },
+    "Communications in Computer and Information Science": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Communications in Computer and Information Science"
+      ],
+      "is_merged": false
+    },
+    "BMC Cancer": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 0,
+        "2023": 0,
+        "2022": 1
+      },
+      "merged_from": [
+        "BMC Cancer"
+      ],
+      "is_merged": false
+    },
+    "BOKU.ac.at/2024/AI4Mat": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "BOKU.ac.at/2024/AI4Mat"
+      ],
+      "is_merged": false
+    },
+    "Expert Syst. Appl.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Expert Syst. Appl."
+      ],
+      "is_merged": false
+    },
+    "Conference on Designing Interactive Systems": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Conference on Designing Interactive Systems"
+      ],
+      "is_merged": false
+    },
+    "Neuropsychologia": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Neuropsychologia"
+      ],
+      "is_merged": false
+    },
+    "Operations Research Forum": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Operations Research Forum"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of Thirty Seventh Conference on Learning Theory": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of Thirty Seventh Conference on Learning Theory"
+      ],
+      "is_merged": false
+    },
+    "JMIR Public Health and Surveillance": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1,
+        "2022": 0
+      },
+      "merged_from": [
+        "JMIR Public Health and Surveillance"
+      ],
+      "is_merged": false
+    },
+    "Games Res. Pract.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Games Res. Pract."
+      ],
+      "is_merged": false
+    },
+    "Geriatrics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Geriatrics"
+      ],
+      "is_merged": false
+    },
+    "Trans. Assoc. Comput. Linguistics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Trans. Assoc. Comput. Linguistics"
+      ],
+      "is_merged": false
+    },
+    "Canadian Journal of Cardiology": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Canadian Journal of Cardiology"
+      ],
+      "is_merged": false
+    },
+    "Science of Remote Sensing": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Science of Remote Sensing"
+      ],
+      "is_merged": false
+    },
+    "Knowledge-Based Systems": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Knowledge-Based Systems"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 46th International Conference on Software Engineering: Software Engineering in Practice": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the 46th International Conference on Software Engineering: Software Engineering in Practice"
+      ],
+      "is_merged": false
+    },
+    "approximateinference.org/AABI/2024/Symposium_Archival_Track": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "approximateinference.org/AABI/2024/Symposium_Archival_Track"
+      ],
+      "is_merged": false
+    },
+    "approximateinference.org/AABI/2024/Symposium": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "approximateinference.org/AABI/2024/Symposium"
+      ],
+      "is_merged": false
+    },
+    "2024 IEEE International Symposium on Biomedical Imaging (ISBI)": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "2024 IEEE International Symposium on Biomedical Imaging (ISBI)"
+      ],
+      "is_merged": false
+    },
+    "Science": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Science"
+      ],
+      "is_merged": false
+    },
+    "FDG": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "FDG"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 2024 IEEE/ACM First International Conference on AI Foundation Models and Software Engineering": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the 2024 IEEE/ACM First International Conference on AI Foundation Models and Software Engineering"
+      ],
+      "is_merged": false
+    },
+    "2024 IEEE International Symposium on Circuits and Systems (ISCAS)": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "2024 IEEE International Symposium on Circuits and Systems (ISCAS)"
+      ],
+      "is_merged": false
+    },
+    "Computational Economics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Computational Economics"
+      ],
+      "is_merged": false
+    },
+    "RLJ": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "RLJ"
+      ],
+      "is_merged": false
+    },
+    "IEEE International Conference on Data Engineering": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "IEEE International Conference on Data Engineering"
+      ],
+      "is_merged": false
+    },
+    "Companion Proceedings of the ACM on Web Conference 2024": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Companion Proceedings of the ACM on Web Conference 2024"
+      ],
+      "is_merged": false
+    },
+    "Frontiers Digit. Health": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Frontiers Digit. Health"
+      ],
+      "is_merged": false
+    },
+    "European Journal of Neurology": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "European Journal of Neurology"
+      ],
+      "is_merged": false
+    },
+    "Journal of Systems and Software": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 0,
+        "2022": 1
+      },
+      "merged_from": [
+        "Journal of Systems and Software"
+      ],
+      "is_merged": false
+    },
+    "NAR Genomics and Bioinformatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "NAR Genomics and Bioinformatics"
+      ],
+      "is_merged": false
+    },
+    "MIDL.io/2024/Short_Papers": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "MIDL.io/2024/Short_Papers"
+      ],
+      "is_merged": false
+    },
+    "Optics Express": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Optics Express"
+      ],
+      "is_merged": false
+    },
+    "American-Eurasian journal of botany": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "American-Eurasian journal of botany"
+      ],
+      "is_merged": false
+    },
+    "Comput. Graph. Forum": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Comput. Graph. Forum"
+      ],
+      "is_merged": false
+    },
+    "Special Issue 5: Grappling With the Generative AI Revolution": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Special Issue 5: Grappling With the Generative AI Revolution"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the IEEE/ACM 46th International Conference on Software Engineering": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the IEEE/ACM 46th International Conference on Software Engineering"
+      ],
+      "is_merged": false
+    },
+    "SaTML": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "SaTML"
+      ],
+      "is_merged": false
+    },
+    "Water": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Water"
+      ],
+      "is_merged": false
+    },
+    "The spine journal": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "The spine journal"
+      ],
+      "is_merged": false
+    },
+    "Omega": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Omega"
+      ],
+      "is_merged": false
+    },
+    "BMC Surgery": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "BMC Surgery"
+      ],
+      "is_merged": false
+    },
+    "Annals of Mathematics and Artificial Intelligence": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Annals of Mathematics and Artificial Intelligence"
+      ],
+      "is_merged": false
+    },
+    "Journal of Revenue and Pricing Management": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Journal of Revenue and Pricing Management"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the Symposium on Computer Science and Law": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the Symposium on Computer Science and Law"
+      ],
+      "is_merged": false
+    },
+    "Astronomy &amp; Astrophysics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Astronomy &amp; Astrophysics"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 4th ACM Conference on Equity and Access in Algorithms, Mechanisms, and Optimization": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the 4th ACM Conference on Equity and Access in Algorithms, Mechanisms, and Optimization"
+      ],
+      "is_merged": false
+    },
+    "Ecography": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Ecography"
+      ],
+      "is_merged": false
+    },
+    "2024 IEEE Aerospace Conference": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "2024 IEEE Aerospace Conference"
+      ],
+      "is_merged": false
+    },
+    "2024 IEEE/ACM International Symposium on Code Generation and Optimization (CGO)": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "2024 IEEE/ACM International Symposium on Code Generation and Optimization (CGO)"
+      ],
+      "is_merged": false
+    },
+    "INFORMS J. Comput.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 0,
+        "2023": 1
+      },
+      "merged_from": [
+        "INFORMS J. Comput."
+      ],
+      "is_merged": false
+    },
+    "Global Change Biology": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Global Change Biology"
+      ],
+      "is_merged": false
+    },
+    "PNAS Nexus": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "PNAS Nexus"
+      ],
+      "is_merged": false
+    },
+    "Neuroscience of Consciousness": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Neuroscience of Consciousness"
+      ],
+      "is_merged": false
+    },
+    "Personality and Individual Differences": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Personality and Individual Differences"
+      ],
+      "is_merged": false
+    },
+    "Journal of Cleaner Production": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Journal of Cleaner Production"
+      ],
+      "is_merged": false
+    },
+    "Neuron": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Neuron"
+      ],
+      "is_merged": false
+    },
+    "Viruses": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Viruses"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Bioinformatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Frontiers in Bioinformatics"
+      ],
+      "is_merged": false
+    },
+    "Briefings in Bioinformatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 0,
+        "2022": 1
+      },
+      "merged_from": [
+        "Briefings in Bioinformatics"
+      ],
+      "is_merged": false
+    },
+    "MIDL": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "MIDL"
+      ],
+      "is_merged": false
+    },
+    "International Journal of Microwave and Wireless Technologies": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "International Journal of Microwave and Wireless Technologies"
+      ],
+      "is_merged": false
+    },
+    "Cureus": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Cureus"
+      ],
+      "is_merged": false
+    },
+    "Connection Science": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Connection Science"
+      ],
+      "is_merged": false
+    },
+    "Nature Immunology": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Nature Immunology"
+      ],
+      "is_merged": false
+    },
+    "Computers and Electronics in Agriculture": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Computers and Electronics in Agriculture"
+      ],
+      "is_merged": false
+    },
+    "Radiology": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Radiology"
+      ],
+      "is_merged": false
+    },
+    "Computers in industry (Print)": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Computers in industry (Print)"
+      ],
+      "is_merged": false
+    },
+    "JACC: Advances": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "JACC: Advances"
+      ],
+      "is_merged": false
+    },
+    "BMC Health Services Research": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1,
+        "2022": 0
+      },
+      "merged_from": [
+        "BMC Health Services Research"
+      ],
+      "is_merged": false
+    },
+    "Global Ecology and Biogeography": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Global Ecology and Biogeography"
+      ],
+      "is_merged": false
+    },
+    "Journal of Vision": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Journal of Vision"
+      ],
+      "is_merged": false
+    },
+    "graphicsinterface.org/Graphics_Interface/2024/Conference": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "graphicsinterface.org/Graphics_Interface/2024/Conference"
+      ],
+      "is_merged": false
+    },
+    "Nature Ecology & Evolution": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Nature Ecology & Evolution"
+      ],
+      "is_merged": false
+    },
+    "Insights into Imaging": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Insights into Imaging"
+      ],
+      "is_merged": false
+    },
+    "BMC Pediatrics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "BMC Pediatrics"
+      ],
+      "is_merged": false
+    },
+    "ACM Transactions on Knowledge Discovery from Data": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 0,
+        "2023": 1
+      },
+      "merged_from": [
+        "ACM Transactions on Knowledge Discovery from Data"
+      ],
+      "is_merged": false
+    },
+    "Genome Biology and Evolution": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Genome Biology and Evolution"
+      ],
+      "is_merged": false
+    },
+    "AI and Ethics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "AI and Ethics"
+      ],
+      "is_merged": false
+    },
+    "Math. Program.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Math. Program."
+      ],
+      "is_merged": false
+    },
+    "IEEE Signal Processing Letters": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 0,
+        "2022": 1
+      },
+      "merged_from": [
+        "IEEE Signal Processing Letters"
+      ],
+      "is_merged": false
+    },
+    "CP": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "CP"
+      ],
+      "is_merged": false
+    },
+    "Digital Discovery": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 0,
+        "2023": 1
+      },
+      "merged_from": [
+        "Digital Discovery"
+      ],
+      "is_merged": false
+    },
+    "IEEE ACM Trans. Audio Speech Lang. Process.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "IEEE ACM Trans. Audio Speech Lang. Process."
+      ],
+      "is_merged": false
+    },
+    "COLT": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "COLT"
+      ],
+      "is_merged": false
+    },
+    "ML4CMH@AAAI": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "ML4CMH@AAAI"
+      ],
+      "is_merged": false
+    },
+    "RLC": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "RLC"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the Third Conference on Causal Learning and Reasoning": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the Third Conference on Causal Learning and Reasoning"
+      ],
+      "is_merged": false
+    },
+    "IEEE Trans. Knowl. Data Eng.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "IEEE Trans. Knowl. Data Eng."
+      ],
+      "is_merged": false
+    },
+    "LREC/COLING": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "LREC/COLING"
+      ],
+      "is_merged": false
+    },
+    "ECML/PKDD (7)": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "ECML/PKDD (7)"
+      ],
+      "is_merged": false
+    },
+    "AIES (1)": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "AIES (1)"
+      ],
+      "is_merged": false
+    },
+    "Conference on Parsimony and Learning": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Conference on Parsimony and Learning"
+      ],
+      "is_merged": false
+    },
+    "Neuroergonomics and Cognitive Engineering": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Neuroergonomics and Cognitive Engineering"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 1st ACM International Conference on AI-Powered Software": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the 1st ACM International Conference on AI-Powered Software"
+      ],
+      "is_merged": false
+    },
+    "Computers in Industry": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Computers in Industry"
+      ],
+      "is_merged": false
+    },
+    "WSDM": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "WSDM"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Information Forensics and Security": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Information Forensics and Security"
+      ],
+      "is_merged": false
+    },
+    "Inf.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Inf."
+      ],
+      "is_merged": false
+    },
+    "International Conference on Software and Data Technologies": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "International Conference on Software and Data Technologies"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Signal Processing": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Signal Processing"
+      ],
+      "is_merged": false
+    },
+    "ECAI": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "ECAI"
+      ],
+      "is_merged": false
+    },
+    "Science of the Total Environment": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Science of the Total Environment"
+      ],
+      "is_merged": false
+    },
+    "ECIR (4)": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "ECIR (4)"
+      ],
+      "is_merged": false
+    },
+    "2024 IEEE Power & Energy Society General Meeting (PESGM)": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "2024 IEEE Power & Energy Society General Meeting (PESGM)"
+      ],
+      "is_merged": false
+    },
+    "International Conference on Language Resources and Evaluation": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "International Conference on Language Resources and Evaluation"
+      ],
+      "is_merged": false
+    },
+    "IFAC-PapersOnLine": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "IFAC-PapersOnLine"
+      ],
+      "is_merged": false
+    },
+    "Management Science": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Management Science"
+      ],
+      "is_merged": false
+    },
+    "J. Am. Medical Informatics Assoc.": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "J. Am. Medical Informatics Assoc."
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 6th Annual Learning for Dynamics & Control Conference": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the 6th Annual Learning for Dynamics & Control Conference"
+      ],
+      "is_merged": false
+    },
+    "MRL": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "MRL"
+      ],
+      "is_merged": false
+    },
+    "Eur. J. Oper. Res.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Eur. J. Oper. Res."
+      ],
+      "is_merged": false
+    },
+    "Psychiatry Research Case Reports": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Psychiatry Research Case Reports"
+      ],
+      "is_merged": false
+    },
+    "Physics of Life Reviews": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Physics of Life Reviews"
+      ],
+      "is_merged": false
+    },
+    "Journal of Voice": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Journal of Voice"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 15th ACM International Conference on Bioinformatics, Computational Biology and Health Informatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the 15th ACM International Conference on Bioinformatics, Computational Biology and Health Informatics"
+      ],
+      "is_merged": false
+    },
+    "Electronic Notes in Theoretical Informatics and Computer Science": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Electronic Notes in Theoretical Informatics and Computer Science"
+      ],
+      "is_merged": false
+    },
+    "Pediatric surgery international (Print)": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Pediatric surgery international (Print)"
+      ],
+      "is_merged": false
+    },
+    "Molecular informatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Molecular informatics"
+      ],
+      "is_merged": false
+    },
+    "International Conference on Climate Informatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "International Conference on Climate Informatics"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Industrial Informatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Industrial Informatics"
+      ],
+      "is_merged": false
+    },
+    "Neuromodulation: Technology at the Neural Interface": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Neuromodulation: Technology at the Neural Interface"
+      ],
+      "is_merged": false
+    },
+    "Clinical Proteomics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Clinical Proteomics"
+      ],
+      "is_merged": false
+    },
+    "CMAJ Open": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "CMAJ Open"
+      ],
+      "is_merged": false
+    },
+    "EJNMMI Radiopharmacy and Chemistry": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "EJNMMI Radiopharmacy and Chemistry"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the Royal Society B: Biological Sciences": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Proceedings of the Royal Society B: Biological Sciences"
+      ],
+      "is_merged": false
+    },
+    "Methods in Ecology and Evolution": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Methods in Ecology and Evolution"
+      ],
+      "is_merged": false
+    },
+    "ACM SIGSOFT Softw. Eng. Notes": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "ACM SIGSOFT Softw. Eng. Notes"
+      ],
+      "is_merged": false
+    },
+    "Monthly Notices of the Royal Astronomical Society: Letters": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Monthly Notices of the Royal Astronomical Society: Letters"
+      ],
+      "is_merged": false
+    },
+    "Clinical Image-Based Procedures, Fairness of AI in Medical Imaging, and Ethical and Philosophical Issues in Medical Imaging": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Clinical Image-Based Procedures, Fairness of AI in Medical Imaging, and Ethical and Philosophical Issues in Medical Imaging"
+      ],
+      "is_merged": false
+    },
+    "Cell Reports Methods": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Cell Reports Methods"
+      ],
+      "is_merged": false
+    },
+    "Addiction Biology": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Addiction Biology"
+      ],
+      "is_merged": false
+    },
+    "Journal of Democracy": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Journal of Democracy"
+      ],
+      "is_merged": false
+    },
+    "Journal of Environmental Chemical Engineering": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Journal of Environmental Chemical Engineering"
+      ],
+      "is_merged": false
+    },
+    "Brain and Behavior": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Brain and Behavior"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Artificial Intelligence and Applications": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Frontiers in Artificial Intelligence and Applications"
+      ],
+      "is_merged": false
+    },
+    "Current Psychiatry Reports": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Current Psychiatry Reports"
+      ],
+      "is_merged": false
+    },
+    "Heliyon": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Heliyon"
+      ],
+      "is_merged": false
+    },
+    "Dementia and Geriatric Cognitive Disorders EXTRA": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Dementia and Geriatric Cognitive Disorders EXTRA"
+      ],
+      "is_merged": false
+    },
+    "World Journal of Surgery": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "World Journal of Surgery"
+      ],
+      "is_merged": false
+    },
+    "The EMBO Journal": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "The EMBO Journal"
+      ],
+      "is_merged": false
+    },
+    "Bioelectronic Medicine": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Bioelectronic Medicine"
+      ],
+      "is_merged": false
+    },
+    "IEEE International Symposium on Robot and Human Interactive Communication": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "IEEE International Symposium on Robot and Human Interactive Communication"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the Thirty-ThirdInternational Joint Conference on Artificial Intelligence": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 0,
+        "2023": 1
+      },
+      "merged_from": [
+        "Proceedings of the Thirty-ThirdInternational Joint Conference on Artificial Intelligence"
+      ],
+      "is_merged": false
+    },
+    "Humanities and Social Sciences Communications": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Humanities and Social Sciences Communications"
+      ],
+      "is_merged": false
+    },
+    "Canadian Medical Association Journal": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Canadian Medical Association Journal"
+      ],
+      "is_merged": false
+    },
+    "Sustainability": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Sustainability"
+      ],
+      "is_merged": false
+    },
+    "Bioinformatics Advances": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Bioinformatics Advances"
+      ],
+      "is_merged": false
+    },
+    "Journal of Cognitive Neuroscience": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Journal of Cognitive Neuroscience"
+      ],
+      "is_merged": false
+    },
+    "Discrete Mathematics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Discrete Mathematics"
+      ],
+      "is_merged": false
+    },
+    "CISS": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "CISS"
+      ],
+      "is_merged": false
+    },
+    "Special Interest Group on Computer Graphics and Interactive Techniques Conference Conference Proceedings": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Special Interest Group on Computer Graphics and Interactive Techniques Conference Conference Proceedings"
+      ],
+      "is_merged": false
+    },
+    "Microscopy and Microanalysis": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Microscopy and Microanalysis"
+      ],
+      "is_merged": false
+    },
+    "NMR in Biomedicine": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "NMR in Biomedicine"
+      ],
+      "is_merged": false
+    },
+    "Robotics: Science and Systems XIX": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Robotics: Science and Systems XIX"
+      ],
+      "is_merged": false
+    },
+    "SN Computer Science": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "SN Computer Science"
+      ],
+      "is_merged": false
+    },
+    "NeuroImage : Clinical": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "NeuroImage : Clinical"
+      ],
+      "is_merged": false
+    },
+    "FAccT": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "FAccT"
+      ],
+      "is_merged": false
+    },
+    "Advances in Applied Probability": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Advances in Applied Probability"
+      ],
+      "is_merged": false
+    },
+    "The Astrophysical Journal Letters": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "The Astrophysical Journal Letters"
+      ],
+      "is_merged": false
+    },
+    "Nature": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Nature"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the Canadian Conference on Artificial Intelligence": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Proceedings of the Canadian Conference on Artificial Intelligence"
+      ],
+      "is_merged": false
+    },
+    "Journal of Biomechanics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Journal of Biomechanics"
+      ],
+      "is_merged": false
+    },
+    "Computer Vision and Image Understanding": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Computer Vision and Image Understanding"
+      ],
+      "is_merged": false
+    },
+    "Frontiers of Computer Science": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Frontiers of Computer Science"
+      ],
+      "is_merged": false
+    },
+    "Nature Reviews Neuroscience": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Nature Reviews Neuroscience"
+      ],
+      "is_merged": false
+    },
+    "Scientific Data": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Scientific Data"
+      ],
+      "is_merged": false
+    },
+    "2023 IEEE/ACM 20th International Conference on Mining Software Repositories (MSR)": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "2023 IEEE/ACM 20th International Conference on Mining Software Repositories (MSR)"
+      ],
+      "is_merged": false
+    },
+    "graphicsinterface.org/Graphics_Interface/2023/Conference_SD": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "graphicsinterface.org/Graphics_Interface/2023/Conference_SD"
+      ],
+      "is_merged": false
+    },
+    "Social Neuroscience": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Social Neuroscience"
+      ],
+      "is_merged": false
+    },
+    "Environmental Research": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Environmental Research"
+      ],
+      "is_merged": false
+    },
+    "The Journal of Physiology": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "The Journal of Physiology"
+      ],
+      "is_merged": false
+    },
+    "The Lancet Infectious Diseases": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "The Lancet Infectious Diseases"
+      ],
+      "is_merged": false
+    },
+    "MIDL.io/2023/Short_Paper_Track": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "MIDL.io/2023/Short_Paper_Track"
+      ],
+      "is_merged": false
+    },
+    "JMIR Diabetes": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "JMIR Diabetes"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Psychology": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Frontiers in Psychology"
+      ],
+      "is_merged": false
+    },
+    "CHI Extended Abstracts": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "CHI Extended Abstracts"
+      ],
+      "is_merged": false
+    },
+    "International Conference on Human Factors in Computing Systems": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "International Conference on Human Factors in Computing Systems"
+      ],
+      "is_merged": false
+    },
+    "Cell Reports Medicine": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Cell Reports Medicine"
+      ],
+      "is_merged": false
+    },
+    "MIDL.io/2023/Conference": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "MIDL.io/2023/Conference"
+      ],
+      "is_merged": false
+    },
+    "EvoMUSART@EvoStar": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "EvoMUSART@EvoStar"
+      ],
+      "is_merged": false
+    },
+    "New Scientist": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "New Scientist"
+      ],
+      "is_merged": false
+    },
+    "Computer": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1,
+        "2022": 0
+      },
+      "merged_from": [
+        "Computer"
+      ],
+      "is_merged": false
+    },
+    "INFORMS Journal on Optimization": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "INFORMS Journal on Optimization"
+      ],
+      "is_merged": false
+    },
+    "Schizophrenia Research": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Schizophrenia Research"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Visualization and Computer Graphics": {
+      "total_papers": 1,
+      "by_year": {
+        "2021": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Visualization and Computer Graphics"
+      ],
+      "is_merged": false
+    },
+    "Software Quality Journal": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Software Quality Journal"
+      ],
+      "is_merged": false
+    },
+    "Molecular Psychiatry": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Molecular Psychiatry"
+      ],
+      "is_merged": false
+    },
+    "Nature Computational Science": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Nature Computational Science"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 54th ACM Technical Symposium on Computer Science Education V. 1": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Proceedings of the 54th ACM Technical Symposium on Computer Science Education V. 1"
+      ],
+      "is_merged": false
+    },
+    "Nature human behaviour": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Nature human behaviour"
+      ],
+      "is_merged": false
+    },
+    "Diagnostic and Interventional Imaging": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Diagnostic and Interventional Imaging"
+      ],
+      "is_merged": false
+    },
+    "Computerized Medical Imaging and Graphics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Computerized Medical Imaging and Graphics"
+      ],
+      "is_merged": false
+    },
+    "Clinics in oncology": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Clinics in oncology"
+      ],
+      "is_merged": false
+    },
+    "Neuroimage. Reports": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Neuroimage. Reports"
+      ],
+      "is_merged": false
+    },
+    "The British Journal of Psychiatry": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "The British Journal of Psychiatry"
+      ],
+      "is_merged": false
+    },
+    "Physica medica (Testo stampato)": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Physica medica (Testo stampato)"
+      ],
+      "is_merged": false
+    },
+    "American Journal of Psychiatry": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 0,
+        "2022": 1
+      },
+      "merged_from": [
+        "American Journal of Psychiatry"
+      ],
+      "is_merged": false
+    },
+    "Genomics, Proteomics & Bioinformatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Genomics, Proteomics & Bioinformatics"
+      ],
+      "is_merged": false
+    },
+    "The Lancet Digital Health": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "The Lancet Digital Health"
+      ],
+      "is_merged": false
+    },
+    "Clinical Microbiology and Infection": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Clinical Microbiology and Infection"
+      ],
+      "is_merged": false
+    },
+    "Big data": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Big data"
+      ],
+      "is_merged": false
+    },
+    "Education and training": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Education and training"
+      ],
+      "is_merged": false
+    },
+    "Dynamic Games and Applications": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Dynamic Games and Applications"
+      ],
+      "is_merged": false
+    },
+    "Human Brain Mapping": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 0,
+        "2022": 1
+      },
+      "merged_from": [
+        "Human Brain Mapping"
+      ],
+      "is_merged": false
+    },
+    "ImmunoInformatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "ImmunoInformatics"
+      ],
+      "is_merged": false
+    },
+    "Injury": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Injury"
+      ],
+      "is_merged": false
+    },
+    "Futurum Careers": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Futurum Careers"
+      ],
+      "is_merged": false
+    },
+    "Integer Programming and Combinatorial Optimization": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Integer Programming and Combinatorial Optimization"
+      ],
+      "is_merged": false
+    },
+    "IEEE/ACM Transactions on Audio, Speech, and Language Processing": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "IEEE/ACM Transactions on Audio, Speech, and Language Processing"
+      ],
+      "is_merged": false
+    },
+    "European Conference on Artificial Intelligence": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "European Conference on Artificial Intelligence"
+      ],
+      "is_merged": false
+    },
+    "CoRL": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "CoRL"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Applied Mathematics and Statistics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Frontiers in Applied Mathematics and Statistics"
+      ],
+      "is_merged": false
+    },
+    "Aperture Neuro": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Aperture Neuro"
+      ],
+      "is_merged": false
+    },
+    "Canadian AI": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Canadian AI"
+      ],
+      "is_merged": false
+    },
+    "IEEE Control Systems Letters": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "IEEE Control Systems Letters"
+      ],
+      "is_merged": false
+    },
+    "J. Syst. Softw.": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "J. Syst. Softw."
+      ],
+      "is_merged": false
+    },
+    "Computers &amp; Graphics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Computers &amp; Graphics"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the Conference on Health, Inference, and Learning": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Proceedings of the Conference on Health, Inference, and Learning"
+      ],
+      "is_merged": false
+    },
+    "2023 IEEE 26th International Conference on Intelligent Transportation Systems (ITSC)": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "2023 IEEE 26th International Conference on Intelligent Transportation Systems (ITSC)"
+      ],
+      "is_merged": false
+    },
+    "Sensors &amp; Diagnostics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Sensors &amp; Diagnostics"
+      ],
+      "is_merged": false
+    },
+    "AfricaNLP": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "AfricaNLP"
+      ],
+      "is_merged": false
+    },
+    "AIED (Posters/Late Breaking Results/...)": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "AIED (Posters/Late Breaking Results/...)"
+      ],
+      "is_merged": false
+    },
+    "OM@ISWC": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "OM@ISWC"
+      ],
+      "is_merged": false
+    },
+    "2023 38th IEEE/ACM International Conference on Automated Software Engineering (ASE)": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "2023 38th IEEE/ACM International Conference on Automated Software Engineering (ASE)"
+      ],
+      "is_merged": false
+    },
+    "ICTCS": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "ICTCS"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Reliability": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Reliability"
+      ],
+      "is_merged": false
+    },
+    "Sci. Comput. Program.": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Sci. Comput. Program."
+      ],
+      "is_merged": false
+    },
+    "Web and Internet Economics": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Web and Internet Economics"
+      ],
+      "is_merged": false
+    },
+    "ANT/EDI40": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "ANT/EDI40"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 28th Asia and South Pacific Design Automation Conference": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Proceedings of the 28th Asia and South Pacific Design Automation Conference"
+      ],
+      "is_merged": false
+    },
+    "2022 Computing in Cardiology (CinC)": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "2022 Computing in Cardiology (CinC)"
+      ],
+      "is_merged": false
+    },
+    "Journal of Language Modelling": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Journal of Language Modelling"
+      ],
+      "is_merged": false
+    },
+    "eNeuro": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "eNeuro"
+      ],
+      "is_merged": false
+    },
+    "BMC Neurology": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "BMC Neurology"
+      ],
+      "is_merged": false
+    },
+    "Journal of Open Source Software": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Journal of Open Source Software"
+      ],
+      "is_merged": false
+    },
+    "Autism Research": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Autism Research"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Cognitive Communications and Networking": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Cognitive Communications and Networking"
+      ],
+      "is_merged": false
+    },
+    "The Lancet Child &amp; Adolescent Health": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "The Lancet Child &amp; Adolescent Health"
+      ],
+      "is_merged": false
+    },
+    "ACM SIGGRAPH Conference and Exhibition on Computer Graphics and Interactive Techniques in Asia": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "ACM SIGGRAPH Conference and Exhibition on Computer Graphics and Interactive Techniques in Asia"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Neuroanatomy": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Frontiers in Neuroanatomy"
+      ],
+      "is_merged": false
+    },
+    "SIGGRAPH Asia 2022 Technical Communications": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "SIGGRAPH Asia 2022 Technical Communications"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 16th International Joint Conference on Biomedical Engineering Systems and Technologies": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Proceedings of the 16th International Joint Conference on Biomedical Engineering Systems and Technologies"
+      ],
+      "is_merged": false
+    },
+    "PLoS Medicine": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "PLoS Medicine"
+      ],
+      "is_merged": false
+    },
+    "Surgery Open Science": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Surgery Open Science"
+      ],
+      "is_merged": false
+    },
+    "npj Digit. Medicine": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "npj Digit. Medicine"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Vehicular Technology": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Vehicular Technology"
+      ],
+      "is_merged": false
+    },
+    "Journal of High Energy Physics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Journal of High Energy Physics"
+      ],
+      "is_merged": false
+    },
+    "Epidemics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Epidemics"
+      ],
+      "is_merged": false
+    },
+    "2022 IEEE/ACM 44th International Conference on Software Engineering: New Ideas and Emerging Results (ICSE-NIER)": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "2022 IEEE/ACM 44th International Conference on Software Engineering: New Ideas and Emerging Results (ICSE-NIER)"
+      ],
+      "is_merged": false
+    },
+    "Cancers": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Cancers"
+      ],
+      "is_merged": false
+    },
+    "Neurocomputing": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Neurocomputing"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Psychiatry": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Frontiers in Psychiatry"
+      ],
+      "is_merged": false
+    },
+    "JMIR Pediatrics and Parenting": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "JMIR Pediatrics and Parenting"
+      ],
+      "is_merged": false
+    },
+    "Clinical Epigenetics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Clinical Epigenetics"
+      ],
+      "is_merged": false
+    },
+    "Expert Systems with Applications": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Expert Systems with Applications"
+      ],
+      "is_merged": false
+    },
+    "Journal of Rail Transport Planning &amp; Management": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Journal of Rail Transport Planning &amp; Management"
+      ],
+      "is_merged": false
+    },
+    "Science Translational Medicine": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Science Translational Medicine"
+      ],
+      "is_merged": false
+    },
+    "JMIR Medical Informatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "JMIR Medical Informatics"
+      ],
+      "is_merged": false
+    },
+    "BMC Public Health": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "BMC Public Health"
+      ],
+      "is_merged": false
+    },
+    "Earth System Governance": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Earth System Governance"
+      ],
+      "is_merged": false
+    },
+    "Computer Graphics Forum": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Computer Graphics Forum"
+      ],
+      "is_merged": false
+    },
+    "Nature Neuroscience": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Nature Neuroscience"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 15th International Conference on Cooperative and Human Aspects of Software Engineering": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Proceedings of the 15th International Conference on Cooperative and Human Aspects of Software Engineering"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Artificial Intelligence": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Frontiers in Artificial Intelligence"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Oncology": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Frontiers in Oncology"
+      ],
+      "is_merged": false
+    },
+    "International Journal of Public Health": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "International Journal of Public Health"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Public Health": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Frontiers in Public Health"
+      ],
+      "is_merged": false
+    },
+    "The American Journal of Surgery": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "The American Journal of Surgery"
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Intelligent Transportation Systems": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "IEEE Transactions on Intelligent Transportation Systems"
+      ],
+      "is_merged": false
+    },
+    "Canadian Journal of Neurological Sciences / Journal Canadien des Sciences Neurologiques": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Canadian Journal of Neurological Sciences / Journal Canadien des Sciences Neurologiques"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Aging Neuroscience": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Frontiers in Aging Neuroscience"
+      ],
+      "is_merged": false
+    },
+    "Frontiers in Neuroinformatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Frontiers in Neuroinformatics"
+      ],
+      "is_merged": false
+    },
+    "Journal of Medical Internet Research": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Journal of Medical Internet Research"
+      ],
+      "is_merged": false
+    },
+    "The International Conference on Evaluation and Assessment in Software Engineering 2022": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "The International Conference on Evaluation and Assessment in Software Engineering 2022"
+      ],
+      "is_merged": false
+    },
+    "Nature Climate Change": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Nature Climate Change"
+      ],
+      "is_merged": false
+    },
+    "Nature Genetics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Nature Genetics"
+      ],
+      "is_merged": false
+    },
+    "2022 19th Conference on Robots and Vision (CRV)": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "2022 19th Conference on Robots and Vision (CRV)"
+      ],
+      "is_merged": false
+    },
+    "Zeitschrift fur Evidenz, Fortbildung und Qualitat im Gesundheitswesen": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Zeitschrift fur Evidenz, Fortbildung und Qualitat im Gesundheitswesen"
+      ],
+      "is_merged": false
+    },
+    "Current Biology": {
+      "total_papers": 1,
+      "by_year": {
+        "2021": 0,
+        "2023": 1
+      },
+      "merged_from": [
+        "Current Biology"
+      ],
+      "is_merged": false
+    },
+    "Applied Informatics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Applied Informatics"
+      ],
+      "is_merged": false
+    },
+    "PLoS Comput. Biol.": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "PLoS Comput. Biol."
+      ],
+      "is_merged": false
+    },
+    "MIDL.io/2022/Conference/Short": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "MIDL.io/2022/Conference/Short"
+      ],
+      "is_merged": false
+    },
+    "Findings": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Findings"
+      ],
+      "is_merged": false
+    },
+    "Transportation Research Part C: Emerging Technologies": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Transportation Research Part C: Emerging Technologies"
+      ],
+      "is_merged": false
+    },
+    "Discrete Optimization": {
+      "total_papers": 1,
+      "by_year": {
+        "2020": 1
+      },
+      "merged_from": [
+        "Discrete Optimization"
+      ],
+      "is_merged": false
+    },
+    "Journal of Personalized Medicine": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Journal of Personalized Medicine"
+      ],
+      "is_merged": false
+    },
+    "PLoS Biology": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "PLoS Biology"
+      ],
+      "is_merged": false
+    },
+    "American Journal of Neuroradiology": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "American Journal of Neuroradiology"
+      ],
+      "is_merged": false
+    },
+    "BMC Geriatrics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "BMC Geriatrics"
+      ],
+      "is_merged": false
+    },
+    "Systematic review, meta-analysis, or scoping review": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Systematic review, meta-analysis, or scoping review"
+      ],
+      "is_merged": false
+    },
+    "Mach. Learn.": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Mach. Learn."
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the 31st ACM SIGPLAN International Conference on Compiler Construction": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Proceedings of the 31st ACM SIGPLAN International Conference on Compiler Construction"
+      ],
+      "is_merged": false
+    },
+    "Review of Philosophy and Psychology": {
+      "total_papers": 1,
+      "by_year": {
+        "2021": 1
+      },
+      "merged_from": [
+        "Review of Philosophy and Psychology"
+      ],
+      "is_merged": false
+    },
+    "Operations Research": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Operations Research"
+      ],
+      "is_merged": false
+    },
+    "Spinal Cord Series and Cases": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Spinal Cord Series and Cases"
+      ],
+      "is_merged": false
+    },
+    "CMAJ : Canadian Medical Association Journal": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "CMAJ : Canadian Medical Association Journal"
+      ],
+      "is_merged": false
+    },
+    "Mathematics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Mathematics"
+      ],
+      "is_merged": false
+    },
+    "UNSURE/CLIP@MICCAI": {
+      "total_papers": 1,
+      "by_year": {
+        "2019": 1
+      },
+      "merged_from": [
+        "UNSURE/CLIP@MICCAI"
+      ],
+      "is_merged": false
+    },
+    "ACM Transactions on Architecture and Code Optimization": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "ACM Transactions on Architecture and Code Optimization"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the Twenty-Eighth International Joint Conference on Artificial Intelligence": {
+      "total_papers": 1,
+      "by_year": {
+        "2019": 1
+      },
+      "merged_from": [
+        "Proceedings of the Twenty-Eighth International Joint Conference on Artificial Intelligence"
+      ],
+      "is_merged": false
+    },
+    "Energy": {
+      "total_papers": 1,
+      "by_year": {
+        "2021": 1
+      },
+      "merged_from": [
+        "Energy"
+      ],
+      "is_merged": false
+    },
+    "Predictive Intelligence in Medicine": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Predictive Intelligence in Medicine"
+      ],
+      "is_merged": false
+    },
+    "AIED (2)": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "AIED (2)"
+      ],
+      "is_merged": false
+    },
+    "Internet of Things": {
+      "total_papers": 1,
+      "by_year": {
+        "2023": 1
+      },
+      "merged_from": [
+        "Internet of Things"
+      ],
+      "is_merged": false
+    },
+    "Performance Evaluation": {
+      "total_papers": 1,
+      "by_year": {
+        "2024": 1
+      },
+      "merged_from": [
+        "Performance Evaluation"
+      ],
+      "is_merged": false
+    },
+    "CogSci": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "CogSci"
+      ],
+      "is_merged": false
+    },
+    "CLeaR": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "CLeaR"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of The 4th Annual Learning for Dynamics and Control Conference": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Proceedings of The 4th Annual Learning for Dynamics and Control Conference"
+      ],
+      "is_merged": false
+    },
+    "TREC": {
+      "total_papers": 1,
+      "by_year": {
+        "2021": 1
+      },
+      "merged_from": [
+        "TREC"
+      ],
+      "is_merged": false
+    },
+    "Proceedings of the Twenty Third International Conference on Artificial Intelligence and Statistics": {
+      "total_papers": 1,
+      "by_year": {
+        "2020": 1
+      },
+      "merged_from": [
+        "Proceedings of the Twenty Third International Conference on Artificial Intelligence and Statistics"
+      ],
+      "is_merged": false
+    },
+    "Nonlinear Dynamics": {
+      "total_papers": 1,
+      "by_year": {
+        "2022": 1
+      },
+      "merged_from": [
+        "Nonlinear Dynamics"
+      ],
+      "is_merged": false
+    },
+    "IJRR": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "IJRR"
+      ],
+      "is_merged": false
+    },
+    "TIP": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "TIP"
+      ],
+      "is_merged": false
+    },
+    "Medical Image Anal.": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "Medical Image Anal."
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Robotics": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "IEEE Transactions on Robotics"
+      ],
+      "is_merged": false
+    },
+    "Oper. Res.": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "Oper. Res."
+      ],
+      "is_merged": false
+    },
+    "IEEE Trans Autom. Sci. Eng.": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "IEEE Trans Autom. Sci. Eng."
+      ],
+      "is_merged": false
+    },
+    "IEEE Transactions on Automation Science and Engineering": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "IEEE Transactions on Automation Science and Engineering"
+      ],
+      "is_merged": false
+    },
+    "The Astronomical Journal": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "The Astronomical Journal"
+      ],
+      "is_merged": false
+    },
+    "Advanced Materials Interfaces": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "Advanced Materials Interfaces"
+      ],
+      "is_merged": false
+    },
+    "Environmental Data Science": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "Environmental Data Science"
+      ],
+      "is_merged": false
+    },
+    "Int. Trans. Oper. Res.": {
+      "total_papers": 0,
+      "by_year": {},
+      "merged_from": [
+        "Int. Trans. Oper. Res."
+      ],
+      "is_merged": false
+    }
+  },
+  "summary": {
+    "total_venues_after_merge": 499,
+    "legitimate_mergers": 22,
+    "venues_eliminated": 53
+  }
+}
