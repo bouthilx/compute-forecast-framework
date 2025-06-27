@@ -1,0 +1,182 @@
+{
+  "domain_coverage": {
+    "Computer Vision & Medical Imaging": {
+      "total_papers": 755,
+      "empirical_papers": 420,
+      "theoretical_papers": 335,
+      "empirical_coverage": 0.5562913907284768
+    },
+    "Natural Language Processing": {
+      "total_papers": 767,
+      "empirical_papers": 402,
+      "theoretical_papers": 365,
+      "empirical_coverage": 0.5241199478487614
+    },
+    "Reinforcement Learning & Robotics": {
+      "total_papers": 695,
+      "empirical_papers": 325,
+      "theoretical_papers": 370,
+      "empirical_coverage": 0.4676258992805755
+    },
+    "Graph Learning & Network Analysis": {
+      "total_papers": 382,
+      "empirical_papers": 218,
+      "theoretical_papers": 164,
+      "empirical_coverage": 0.5706806282722513
+    },
+    "Other research domains": {
+      "total_papers": 259,
+      "empirical_papers": 86,
+      "theoretical_papers": 173,
+      "empirical_coverage": 0.33204633204633205
+    }
+  },
+  "correction_factors": {
+    "Computer Vision & Medical Imaging": {
+      "raw_coverage": 0.5562913907284768,
+      "correction_factor": 1.0957138488642224,
+      "interpretation": "under-represented"
+    },
+    "Natural Language Processing": {
+      "raw_coverage": 0.5241199478487614,
+      "correction_factor": 1.032346527189359,
+      "interpretation": "under-represented"
+    },
+    "Reinforcement Learning & Robotics": {
+      "raw_coverage": 0.4676258992805755,
+      "correction_factor": 0.9210715507538835,
+      "interpretation": "over-represented"
+    },
+    "Graph Learning & Network Analysis": {
+      "raw_coverage": 0.5706806282722513,
+      "correction_factor": 1.124055985942174,
+      "interpretation": "under-represented"
+    },
+    "Other research domains": {
+      "raw_coverage": 0.33204633204633205,
+      "correction_factor": 0.6540237194958077,
+      "interpretation": "over-represented"
+    }
+  },
+  "overall_coverage": 0.5076976906927921,
+  "raw_year_data": {
+    "2019": {
+      "WITHOUT AI analysis": 13,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 30,
+      "Natural Language Processing": 39,
+      "Reinforcement Learning & Robotics": 36,
+      "Graph Learning & Network Analysis": 26,
+      "Other research domains": 11
+    },
+    "2020": {
+      "WITHOUT AI analysis": 46,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 47,
+      "Natural Language Processing": 60,
+      "Reinforcement Learning & Robotics": 60,
+      "Graph Learning & Network Analysis": 22,
+      "Other research domains": 21
+    },
+    "2021": {
+      "WITHOUT AI analysis": 56,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 63,
+      "Natural Language Processing": 68,
+      "Reinforcement Learning & Robotics": 69,
+      "Graph Learning & Network Analysis": 46,
+      "Other research domains": 38
+    },
+    "2022": {
+      "WITHOUT AI analysis": 85,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 130,
+      "Natural Language Processing": 129,
+      "Reinforcement Learning & Robotics": 108,
+      "Graph Learning & Network Analysis": 55,
+      "Other research domains": 43
+    },
+    "2023": {
+      "WITHOUT AI analysis": 141,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 250,
+      "Natural Language Processing": 216,
+      "Reinforcement Learning & Robotics": 197,
+      "Graph Learning & Network Analysis": 106,
+      "Other research domains": 52
+    },
+    "2024": {
+      "WITHOUT AI analysis": 143,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 235,
+      "Natural Language Processing": 255,
+      "Reinforcement Learning & Robotics": 225,
+      "Graph Learning & Network Analysis": 127,
+      "Other research domains": 94
+    }
+  },
+  "corrected_year_data": {
+    "2019": {
+      "WITHOUT AI analysis": 13,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 32.871415465926674,
+      "Natural Language Processing": 40.261514560385,
+      "Reinforcement Learning & Robotics": 33.158575827139806,
+      "Graph Learning & Network Analysis": 29.225455634496523,
+      "Other research domains": 7.194260914453885
+    },
+    "2020": {
+      "WITHOUT AI analysis": 46,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 51.498550896618454,
+      "Natural Language Processing": 61.94079163136154,
+      "Reinforcement Learning & Robotics": 55.26429304523301,
+      "Graph Learning & Network Analysis": 24.729231690727826,
+      "Other research domains": 13.734498109411962
+    },
+    "2021": {
+      "WITHOUT AI analysis": 56,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 69.02997247844601,
+      "Natural Language Processing": 70.19956384887641,
+      "Reinforcement Learning & Robotics": 63.55393700201796,
+      "Graph Learning & Network Analysis": 51.70657535334,
+      "Other research domains": 24.852901340840695
+    },
+    "2022": {
+      "WITHOUT AI analysis": 85,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 142.4428003523489,
+      "Natural Language Processing": 133.17270200742732,
+      "Reinforcement Learning & Robotics": 99.47572748141941,
+      "Graph Learning & Network Analysis": 61.823079226819566,
+      "Other research domains": 28.123019938319732
+    },
+    "2023": {
+      "WITHOUT AI analysis": 141,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 273.9284622160556,
+      "Natural Language Processing": 222.98684987290156,
+      "Reinforcement Learning & Robotics": 181.45109549851503,
+      "Graph Learning & Network Analysis": 119.14993450987043,
+      "Other research domains": 34.009233413782
+    },
+    "2024": {
+      "WITHOUT AI analysis": 143,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 257.49275448309226,
+      "Natural Language Processing": 263.24836443328655,
+      "Reinforcement Learning & Robotics": 207.2410989196238,
+      "Graph Learning & Network Analysis": 142.7551102146561,
+      "Other research domains": 61.478229632605924
+    }
+  },
+  "total_papers_by_year": {
+    "2019": 119,
+    "2020": 213,
+    "2021": 279,
+    "2022": 427,
+    "2023": 723,
+    "2024": 854
+  }
+}

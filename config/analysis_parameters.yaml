@@ -1,0 +1,85 @@
+# Analysis Parameters Configuration
+# Shared parameters for coherent implementation across all issues
+
+time_windows:
+  projection_horizon: 2  # years
+  historical_analysis: 5  # years
+  collaboration_window: 2  # years for co-authorship analysis
+  infrastructure_breakpoint_threshold: 6  # months minimum between breakpoints
+
+data_quality:
+  min_samples_per_cluster: 30
+  confidence_levels: [0.90, 0.95]
+  constraint_threshold: 0.8  # ratio indicating resource constraint
+  statistical_significance_p: 0.05
+  silhouette_threshold: 0.3
+  validation_accuracy_threshold: 0.7
+  domain_constraint_thresholds:
+    ml_dl: 0.9
+    theory: 0.3
+    vision: 0.85
+    nlp: 0.9
+
+clustering:
+  max_iterations: 100
+  convergence_threshold: 0.001
+  min_cluster_size: 20
+  max_clusters: 15
+  min_clusters: 5
+  k_range: [5, 6, 7, 8, 10, 12, 15]  # for pattern granularity testing
+
+growth_modeling:
+  models: ["linear", "exponential", "logistic"]
+  validation_split: 0.2
+  bootstrap_samples: 1000
+  scenario_labels: ["conservative", "realistic", "optimistic"]
+  growth_rate_bounds: [0.5, 5.0]  # min/max annual growth factors
+
+data_weighting:
+  capacity_change_threshold: 0.2  # 20% minimum change to trigger breakpoint
+  max_weight_factor: 3.0
+  temporal_decay_halflife: 1.0  # years
+
+external_validation:
+  similarity_threshold: 0.7  # for institutional comparison
+  normalization_method: "per_researcher"
+  weight_by_overlap: true
+
+uncertainty:
+  monte_carlo_iterations: 10000
+  sensitivity_parameters: ["growth_rate", "cluster_assignments", "constraint_levels"]
+  confidence_intervals: [0.80, 0.90, 0.95]
+
+# Integration Testing Configuration
+integration_testing:
+  mock_data_size: 1000  # number of synthetic records
+  test_iterations: 100  # for stability testing
+  error_injection_rate: 0.1  # percentage of corrupted data for testing
+  convergence_max_iterations: 10  # for circular dependency testing
+  validation_thresholds:
+    schema_compliance: 1.0  # 100% required
+    data_quality_min: 0.9   # 90% minimum quality score
+    temporal_consistency: 1.0  # 100% required
+    interface_match: 1.0    # 100% required
+
+# Interface data schemas
+schemas:
+  usage_data:
+    columns: ["timestamp", "user_id", "compute_hours", "domain", "project_id"]
+    types: ["datetime", "string", "float", "string", "string"]
+  
+  cluster_assignments:
+    format: "dict[str, str]"
+    schema: "{user_id: cluster_label}"
+  
+  growth_rates:
+    format: "dict[str, dict]"
+    schema: "{cluster_label: {rate: float, confidence: tuple, model: str}}"
+  
+  constraint_scores:
+    format: "dict[str, float]"
+    schema: "{user_id: constraint_score}"  # 0-1 scale
+  
+  uncertainty_bounds:
+    format: "dict[str, dict]"
+    schema: "{metric: {lower: float, upper: float, confidence: float}}"

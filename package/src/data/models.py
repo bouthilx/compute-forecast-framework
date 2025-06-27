@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Literal
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 
 @dataclass
@@ -225,3 +225,92 @@ class APIHealthStatus:
     consecutive_errors: int
     last_error: Optional[APIError] = None
     last_successful_request: Optional[datetime] = None
+
+# Configuration constants for rate limiting and health monitoring
+class HealthMonitoringConfig:
+    """Configuration constants for API health monitoring"""
+    DEFAULT_HISTORY_SIZE = 100
+    RECENT_REQUESTS_WINDOW = 50  # Number of recent requests to analyze
+    FAST_RESPONSE_THRESHOLD_MS = 1000  # Responses under this are considered fast
+    NORMAL_RESPONSE_THRESHOLD_MS = 3000  # Responses under this are considered normal
+    SLOW_RESPONSE_THRESHOLD_MS = 5000  # Responses over this are considered slow
+    DEGRADED_CONSECUTIVE_ERRORS = 3  # Errors before marking as degraded
+    CRITICAL_CONSECUTIVE_ERRORS = 5  # Errors before marking as critical
+    OFFLINE_CONSECUTIVE_ERRORS = 10  # Errors before marking as offline
+    DEGRADED_SUCCESS_RATE_THRESHOLD = 0.8  # Success rate below this is degraded
+    CRITICAL_SUCCESS_RATE_THRESHOLD = 0.5  # Success rate below this is critical
+
+class RateLimitingConfig:
+    """Configuration constants for rate limiting"""
+    MAX_WAIT_TIME_SECONDS = 60.0  # Never wait longer than this
+    DEFAULT_WINDOW_SECONDS = 300  # 5-minute rolling windows
+    BATCH_SIZE_MULTIPLIER_CAP = 3.0  # Maximum multiplier for large batches
+    BATCH_SIZE_DIVISOR = 10.0  # Divisor for calculating batch multiplier
+    
+    # Health multipliers for different states
+    HEALTHY_MULTIPLIER = 1.0
+    DEGRADED_MULTIPLIER = 2.0
+    CRITICAL_MULTIPLIER = 5.0
+    OFFLINE_MULTIPLIER = 10.0
+    
+    # Health improvement factors
+    FAST_RESPONSE_IMPROVEMENT = 0.95
+    NORMAL_RESPONSE_IMPROVEMENT = 0.98
+    SLOW_RESPONSE_DEGRADATION = 1.1
+    FAILURE_DEGRADATION = 1.5
+
+# Rolling window for request tracking
+class RollingWindow:
+    """Rolling time window for request tracking"""
+    
+    def __init__(self, window_seconds: int, max_requests: int) -> None:
+        self.window_seconds = window_seconds
+        self.max_requests = max_requests
+        self.requests: List[datetime] = []
+        self._lock = threading.RLock()
+    
+    def add_request(self, timestamp: Optional[datetime] = None) -> bool:
+        """Add request to window, return if within limits"""
+        with self._lock:
+            if timestamp is None:
+                timestamp = datetime.now()
+            
+            # Clean old requests
+            self._clean_old_requests(timestamp)
+            
+            # Check if we can add this request
+            if len(self.requests) < self.max_requests:
+                self.requests.append(timestamp)
+                return True
+            
+            return False
+    
+    def get_current_count(self) -> int:
+        """Get current request count in window"""
+        with self._lock:
+            self._clean_old_requests()
+            return len(self.requests)
+    
+    def time_until_next_slot(self) -> float:
+        """Seconds until next request slot available"""
+        with self._lock:
+            self._clean_old_requests()
+            
+            if len(self.requests) < self.max_requests:
+                return 0.0
+            
+            # Find oldest request
+            if self.requests:
+                oldest_request = min(self.requests)
+                time_until_expired = self.window_seconds - (datetime.now() - oldest_request).total_seconds()
+                return max(0.0, time_until_expired)
+            
+            return 0.0
+    
+    def _clean_old_requests(self, current_time: Optional[datetime] = None) -> None:
+        """Remove requests outside the time window"""
+        if current_time is None:
+            current_time = datetime.now()
+        
+        cutoff_time = current_time - timedelta(seconds=self.window_seconds)
+        self.requests = [req for req in self.requests if req > cutoff_time]

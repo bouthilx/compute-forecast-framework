@@ -1,0 +1,45 @@
+{
+  "rl_with_data_count": 113,
+  "rl_without_data_count": 348,
+  "other_domains_with_data": {
+    "Machine Learning Theory & Methods": 7,
+    "Deep Learning & Neural Architectures": 15,
+    "Scientific Computing & Applications": 6,
+    "Natural Language Processing": 24,
+    "Social & Economic Applications": 4,
+    "Software Engineering & Systems": 2,
+    "Optimization & Operations Research": 4,
+    "Computer Vision & Medical Imaging": 14,
+    "Graph Learning & Network Analysis": 10
+  },
+  "other_domains_without_data": {
+    "Machine Learning Theory & Methods": 25,
+    "Deep Learning & Neural Architectures": 112,
+    "Natural Language Processing": 84,
+    "Graph Learning & Network Analysis": 48,
+    "Computer Vision & Medical Imaging": 79,
+    "Software Engineering & Systems": 30,
+    "Scientific Computing & Applications": 10,
+    "Social & Economic Applications": 4,
+    "Optimization & Operations Research": 11
+  },
+  "paper_types_with_data": {
+    "unclear": 84,
+    "empirical": 29
+  },
+  "paper_types_without_data": {
+    "unclear": 299,
+    "empirical": 46,
+    "theoretical": 3
+  },
+  "key_patterns": {
+    "deep_learning_with_pct": 13.274336283185843,
+    "deep_learning_without_pct": 32.18390804597701,
+    "theory_with_pct": 6.1946902654867255,
+    "theory_without_pct": 7.183908045977011,
+    "empirical_with_pct": 25.663716814159294,
+    "empirical_without_pct": 13.218390804597702,
+    "theoretical_with_pct": 0.0,
+    "theoretical_without_pct": 0.8620689655172413
+  }
+}
