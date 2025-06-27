@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Literal
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 
 @dataclass
@@ -225,3 +225,59 @@ class APIHealthStatus:
     consecutive_errors: int
     last_error: Optional[APIError] = None
     last_successful_request: Optional[datetime] = None
+
+# Rolling window for request tracking
+class RollingWindow:
+    """Rolling time window for request tracking"""
+    
+    def __init__(self, window_seconds: int, max_requests: int):
+        self.window_seconds = window_seconds
+        self.max_requests = max_requests
+        self.requests: List[datetime] = []
+        self._lock = threading.RLock()
+    
+    def add_request(self, timestamp: Optional[datetime] = None) -> bool:
+        """Add request to window, return if within limits"""
+        with self._lock:
+            if timestamp is None:
+                timestamp = datetime.now()
+            
+            # Clean old requests
+            self._clean_old_requests(timestamp)
+            
+            # Check if we can add this request
+            if len(self.requests) < self.max_requests:
+                self.requests.append(timestamp)
+                return True
+            
+            return False
+    
+    def get_current_count(self) -> int:
+        """Get current request count in window"""
+        with self._lock:
+            self._clean_old_requests()
+            return len(self.requests)
+    
+    def time_until_next_slot(self) -> float:
+        """Seconds until next request slot available"""
+        with self._lock:
+            self._clean_old_requests()
+            
+            if len(self.requests) < self.max_requests:
+                return 0.0
+            
+            # Find oldest request
+            if self.requests:
+                oldest_request = min(self.requests)
+                time_until_expired = self.window_seconds - (datetime.now() - oldest_request).total_seconds()
+                return max(0.0, time_until_expired)
+            
+            return 0.0
+    
+    def _clean_old_requests(self, current_time: Optional[datetime] = None):
+        """Remove requests outside the time window"""
+        if current_time is None:
+            current_time = datetime.now()
+        
+        cutoff_time = current_time - timedelta(seconds=self.window_seconds)
+        self.requests = [req for req in self.requests if req > cutoff_time]
