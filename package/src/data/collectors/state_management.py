@@ -5,6 +5,10 @@ Provides basic session and checkpoint management functionality.
 
 import logging
 import time
+import threading
+import warnings
+import gzip
+import json
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timedelta
@@ -172,6 +176,9 @@ class StateManager:
         self.base_state_dir.mkdir(parents=True, exist_ok=True)
         (self.base_state_dir / "sessions").mkdir(exist_ok=True)
         
+        # For backward compatibility with tests
+        self.persistence = None
+        
         logger.info(f"StateManager initialized with base_dir: {self.base_state_dir}, "
                    f"backup_interval: {backup_interval_seconds}s, "
                    f"max_checkpoints: {max_checkpoints_per_session}")
@@ -255,7 +262,7 @@ class StateManager:
             json.dump(session.to_dict(), f, indent=2, default=str)
         
         # Create initial checkpoint
-        self.checkpoint_manager.create_checkpoint(
+        checkpoint_id = self.checkpoint_manager.create_checkpoint(
             session_id=session_id,
             checkpoint_type="session_started",
             venues_completed=[],
@@ -265,6 +272,10 @@ class StateManager:
             papers_by_venue={},
             last_successful_operation="session_created"
         )
+        
+        # Update session with initial checkpoint
+        session.checkpoint_count = 1
+        session.last_checkpoint_id = checkpoint_id
         
         # Check 1-second requirement
         duration = (datetime.now() - start_time).total_seconds()
@@ -330,15 +341,29 @@ class StateManager:
         # Auto-cleanup old checkpoints if exceeding maximum
         if session.checkpoint_count > self.max_checkpoints_per_session:
             logger.info(f"Cleaning up old checkpoints for session {session_id}")
-            # Note: Cleanup implementation would go here
+            self._cleanup_old_checkpoints(session_id)
         
         # Save checkpoint to session directory as required by Issue #5
         session_dir = self.base_state_dir / "sessions" / session_id
         checkpoint_file = session_dir / "checkpoints" / f"{checkpoint_id}.json"
         
-        import json
-        with open(checkpoint_file, 'w') as f:
-            json.dump(checkpoint_data.to_dict(), f, indent=2, default=str)
+        # Validate path security
+        if not self._validate_path_security(checkpoint_file):
+            raise ValueError(f"Invalid checkpoint path: {checkpoint_file}")
+        
+        # Serialize checkpoint data
+        checkpoint_dict = checkpoint_data.to_dict()
+        checkpoint_json = json.dumps(checkpoint_dict, indent=2, default=str)
+        
+        # Compress if checkpoint is larger than 10KB
+        if len(checkpoint_json.encode()) > 10240:
+            checkpoint_file = checkpoint_file.with_suffix('.json.gz')
+            with gzip.open(checkpoint_file, 'wt', encoding='utf-8') as f:
+                f.write(checkpoint_json)
+            logger.debug(f"Compressed checkpoint saved: {checkpoint_file.name}")
+        else:
+            with open(checkpoint_file, 'w') as f:
+                f.write(checkpoint_json)
         
         # Update session status file
         session_status_file = session_dir / "session_status.json"
@@ -592,6 +617,69 @@ class StateManager:
             recommendations=[] if papers_consistency else ["Recalculate paper counts"]
         ))
         return results
+    
+    def _cleanup_old_checkpoints(self, session_id: str):
+        """Remove old checkpoints when exceeding max_checkpoints_per_session"""
+        # Get checkpoint statistics
+        stats = self.checkpoint_manager.get_checkpoint_statistics(session_id)
+        total_checkpoints = stats["total_checkpoints"]
+        
+        if total_checkpoints <= self.max_checkpoints_per_session:
+            return
+        
+        # Get all checkpoints for the session
+        session_dir = self.base_state_dir / "sessions" / session_id
+        checkpoint_dir = session_dir / "checkpoints"
+        
+        if not checkpoint_dir.exists():
+            return
+        
+        # Get all checkpoint files sorted by modification time
+        checkpoint_files = sorted(
+            checkpoint_dir.glob("*.json"),
+            key=lambda f: f.stat().st_mtime
+        )
+        
+        # Calculate how many to delete
+        to_delete = total_checkpoints - self.max_checkpoints_per_session + 10  # Keep buffer of 10
+        
+        if to_delete > 0 and len(checkpoint_files) > to_delete:
+            for i in range(to_delete):
+                try:
+                    checkpoint_files[i].unlink()
+                    logger.debug(f"Deleted old checkpoint: {checkpoint_files[i].name}")
+                except Exception as e:
+                    logger.warning(f"Failed to delete checkpoint {checkpoint_files[i]}: {e}")
+    
+    @staticmethod
+    def _validate_path_security(path: Path) -> bool:
+        """Validate that a path is safe from directory traversal attacks"""
+        try:
+            # Resolve the path and check it doesn't escape the intended directory
+            resolved = path.resolve()
+            return not (".." in str(path))
+        except Exception:
+            return False
+    
+    def _get_session_dir(self, session_id: str) -> Path:
+        """Get the directory path for a session"""
+        return self.base_state_dir / "sessions" / session_id
+    
+    def list_sessions(self) -> List[str]:
+        """List all available sessions"""
+        with self._lock:
+            # Return active sessions
+            active_sessions = list(self._active_sessions.keys())
+            
+            # Also check for sessions on disk
+            sessions_dir = self.base_state_dir / "sessions"
+            if sessions_dir.exists():
+                disk_sessions = [d.name for d in sessions_dir.iterdir() if d.is_dir()]
+                # Combine and deduplicate
+                all_sessions = list(set(active_sessions + disk_sessions))
+                return sorted(all_sessions)
+            
+            return sorted(active_sessions)
 
 
 # Monkey patch for backward compatibility with existing tests

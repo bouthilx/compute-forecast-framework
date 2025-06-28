@@ -23,17 +23,40 @@ class RecoveryEngine:
     the existing InterruptionRecoveryEngine implementation.
     """
     
-    def __init__(self, state_manager: StateManager):
+    def __init__(
+        self, 
+        state_manager: StateManager,
+        confidence_valid_checkpoint_boost: float = 0.1,
+        confidence_no_checkpoint_penalty: float = 0.2,
+        confidence_corrupted_penalty: float = 0.1,
+        confidence_max_with_checkpoints: float = 0.95,
+        confidence_min_without_checkpoints: float = 0.3,
+        confidence_min_with_missing: float = 0.4
+    ):
         """
         Initialize RecoveryEngine.
         
         Args:
             state_manager: StateManager instance for session management
+            confidence_valid_checkpoint_boost: Boost to confidence score when valid checkpoints exist
+            confidence_no_checkpoint_penalty: Penalty to confidence score when no checkpoints exist
+            confidence_corrupted_penalty: Penalty to confidence score when corrupted checkpoints exist
+            confidence_max_with_checkpoints: Maximum confidence score when checkpoints are available
+            confidence_min_without_checkpoints: Minimum confidence score when no checkpoints exist
+            confidence_min_with_missing: Minimum confidence score when checkpoints are missing
         """
         self.state_manager = state_manager
         self.interruption_recovery_engine = InterruptionRecoveryEngine(
             state_manager=state_manager
         )
+        
+        # Configurable confidence values
+        self.confidence_valid_checkpoint_boost = confidence_valid_checkpoint_boost
+        self.confidence_no_checkpoint_penalty = confidence_no_checkpoint_penalty
+        self.confidence_corrupted_penalty = confidence_corrupted_penalty
+        self.confidence_max_with_checkpoints = confidence_max_with_checkpoints
+        self.confidence_min_without_checkpoints = confidence_min_without_checkpoints
+        self.confidence_min_with_missing = confidence_min_with_missing
         
         logger.info("RecoveryEngine initialized with Issue #5 interface")
     
@@ -100,9 +123,15 @@ class RecoveryEngine:
             
             # Enhance confidence scoring based on analysis
             if analysis.valid_checkpoints:
-                recovery_plan.confidence_score = min(0.95, recovery_plan.confidence_score + 0.1)
+                recovery_plan.confidence_score = min(
+                    self.confidence_max_with_checkpoints, 
+                    recovery_plan.confidence_score + self.confidence_valid_checkpoint_boost
+                )
             else:
-                recovery_plan.confidence_score = max(0.3, recovery_plan.confidence_score - 0.2)
+                recovery_plan.confidence_score = max(
+                    self.confidence_min_without_checkpoints, 
+                    recovery_plan.confidence_score - self.confidence_no_checkpoint_penalty
+                )
             
             # Update recovery strategy based on analysis complexity
             if analysis.recovery_complexity == "trivial":
@@ -127,7 +156,10 @@ class RecoveryEngine:
             
             if analysis.missing_checkpoints:
                 recovery_plan.risk_assessment.append("Missing checkpoints detected")
-                recovery_plan.confidence_score = max(0.4, recovery_plan.confidence_score - 0.1)
+                recovery_plan.confidence_score = max(
+                    self.confidence_min_with_missing, 
+                    recovery_plan.confidence_score - self.confidence_corrupted_penalty
+                )
             
             # Ensure data consistency requirements
             if analysis.venues_possibly_incomplete:
