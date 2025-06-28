@@ -1,0 +1,65 @@
+% Dual-Tier Pyramid Visualization
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=0.8]
+% Define colors
+\definecolor{goldtier}{RGB}{255,215,0}
+\definecolor{bluetier}{RGB}{70,130,180}
+\definecolor{basetier}{RGB}{128,128,128}
+
+% Base (current capacity)
+\fill[basetier] (-4,0) -- (4,0) -- (3.5,1) -- (-3.5,1) -- cycle;
+\node at (0,0.5) {\textbf{Current Capacity}};
+
+% Tier 2: Competitive Foundation (60%)
+\fill[bluetier] (-3.5,1) -- (3.5,1) -- (2,4) -- (-2,4) -- cycle;
+\node[white] at (0,2.5) {\textbf{Tier 2: Competitive Foundation}};
+\node[white] at (0,2) {60\% of resources};
+\node[white] at (0,1.5) {50+ research projects};
+
+% Tier 1: Frontier Innovation (40%)
+\fill[goldtier] (-2,4) -- (2,4) -- (0,7) -- cycle;
+\node at (0,5.2) {\textbf{Tier 1: Frontier Innovation}};
+\node at (0,4.7) {40\% of resources};
+\node at (0,4.2) {5-10 breakthrough projects};
+
+% Annotations with arrows
+\draw[<-,ultra thick] (-3.5,0.5) -- (-5,0.5) node[left,align=right] {Current state:\\Constrained resources};
+
+\draw[<-,ultra thick] (3,2.5) -- (5,2.5) node[right,align=left] {Broad excellence:\\Published research,\\student training};
+
+\draw[<-,ultra thick] (1,5.5) -- (3,6) node[right,align=left] {Breakthrough potential:\\Novel architectures,\\grand challenges};
+
+% Vertical scale indicator
+\draw[<->,thick] (-5,0) -- (-5,7) node[midway,left,rotate=90] {Computational Scale};
+
+% Resource allocation percentages
+\draw[thick,dashed] (-2,4) -- (2,4);
+\node[right] at (4.5,4) {40\%};
+\node[right] at (4.5,2) {60\%};
+
+% Peak label
+\node[above] at (0,7.2) {\large\textbf{Global AI Leadership}};
+
+% Title
+\node[below] at (0,-1) {\Large\textbf{Dual-Tier Defense Framework}};
+
+% Key metrics boxes
+\begin{scope}[shift={(-6,-2)}]
+\draw[thick,bluetier] (0,0) rectangle (3,2);
+\node[align=center] at (1.5,1.5) {\textbf{Tier 2 Metrics}};
+\node[align=left] at (1.5,0.8) {\footnotesize 5-15K GPU-hrs/project};
+\node[align=left] at (1.5,0.4) {\footnotesize Top conferences};
+\end{scope}
+
+\begin{scope}[shift={(3,-2)}]
+\draw[thick,goldtier] (0,0) rectangle (3,2);
+\node[align=center] at (1.5,1.5) {\textbf{Tier 1 Metrics}};
+\node[align=left] at (1.5,0.8) {\footnotesize 50K+ GPU-hrs/project};
+\node[align=left] at (1.5,0.4) {\footnotesize Nature/Science};
+\end{scope}
+
+\end{tikzpicture}
+\caption{The Dual-Tier Defense Framework balances frontier innovation with broad competitive foundation}
+\label{fig:dual_tier_pyramid}
+\end{figure}
