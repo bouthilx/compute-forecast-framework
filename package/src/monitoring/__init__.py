@@ -55,6 +55,23 @@ from .notification_channels import (
     NotificationChannelManager
 )
 
+# Advanced Analytics Dashboard components
+from .advanced_analytics_engine import (
+    AdvancedAnalyticsEngine,
+    AnalyticsTimeWindow,
+    TrendAnalysis,
+    PerformanceAnalytics,
+    PredictiveAnalytics,
+    AnalyticsSummary
+)
+
+from .advanced_dashboard_server import (
+    AdvancedAnalyticsDashboard,
+    create_advanced_analytics_dashboard,
+    AnalyticsDashboardAdapter,
+    EXAMPLE_ANALYTICS_CONFIG
+)
+
 __all__ = [
     # Core monitoring
     'SystemMetrics',
@@ -97,5 +114,17 @@ __all__ = [
     'ConsoleNotificationChannel',
     'DashboardNotificationChannel',
     'LogNotificationChannel',
-    'NotificationChannelManager'
+    'NotificationChannelManager',
+    
+    # Advanced Analytics Dashboard
+    'AdvancedAnalyticsEngine',
+    'AnalyticsTimeWindow',
+    'TrendAnalysis',
+    'PerformanceAnalytics',
+    'PredictiveAnalytics',
+    'AnalyticsSummary',
+    'AdvancedAnalyticsDashboard',
+    'create_advanced_analytics_dashboard',
+    'AnalyticsDashboardAdapter',
+    'EXAMPLE_ANALYTICS_CONFIG'
 ]
