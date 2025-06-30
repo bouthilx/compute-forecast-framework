@@ -3,6 +3,7 @@ Enhanced Collection Orchestrator
 Orchestrates multi-source collection with parallel execution and integration with deduplication
 """
 
+import os
 import time
 import logging
 from typing import Dict, List, Optional, Any
@@ -51,25 +52,53 @@ class EnhancedCollectionOrchestrator:
         Args:
             api_keys: Dictionary of API keys for different sources
         """
+        # Merge provided API keys with environment variables
+        merged_keys = self._load_from_env()
+        if api_keys:
+            merged_keys.update(api_keys)
+        
         # Initialize API clients
         self.sources = {
             "semantic_scholar": EnhancedSemanticScholarClient(
-                api_key=api_keys.get("semantic_scholar") if api_keys else None
+                api_key=merged_keys.get("semantic_scholar")
             ),
             "openalex": EnhancedOpenAlexClient(
-                email=api_keys.get("openalex_email") if api_keys else None
+                email=merged_keys.get("openalex_email")
             ),
             "crossref": EnhancedCrossrefClient(
-                email=api_keys.get("crossref_email") if api_keys else None
+                email=merged_keys.get("crossref_email")
             ),
             "google_scholar": GoogleScholarClient(
-                use_proxy=api_keys.get("google_scholar_proxy", False) if api_keys else False
+                use_proxy=merged_keys.get("google_scholar_proxy", False)
             )
         }
         
         # Initialize rate limiter with API configurations
         self.api_configs = self._create_api_configs()
         self.rate_limiter = RateLimitManager(self.api_configs)
+    
+    def _load_from_env(self) -> Dict[str, Any]:
+        """Load API configuration from environment variables"""
+        env_config = {}
+        
+        # Semantic Scholar API key
+        if os.getenv("SEMANTIC_SCHOLAR_API_KEY"):
+            env_config["semantic_scholar"] = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
+        
+        # OpenAlex email for polite pool
+        if os.getenv("OPENALEX_EMAIL"):
+            env_config["openalex_email"] = os.getenv("OPENALEX_EMAIL")
+        
+        # CrossRef email for polite pool
+        if os.getenv("CROSSREF_EMAIL"):
+            env_config["crossref_email"] = os.getenv("CROSSREF_EMAIL")
+        
+        # Google Scholar proxy setting
+        if os.getenv("GOOGLE_SCHOLAR_USE_PROXY"):
+            env_config["google_scholar_proxy"] = os.getenv("GOOGLE_SCHOLAR_USE_PROXY").lower() in ("true", "1", "yes")
+        
+        logger.info(f"Loaded {len(env_config)} API configurations from environment variables")
+        return env_config
         
     def _create_api_configs(self) -> Dict[str, APIConfig]:
         """Create API configurations for rate limiting"""
