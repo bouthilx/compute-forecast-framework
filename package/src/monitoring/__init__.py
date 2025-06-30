@@ -21,18 +21,32 @@ from .dashboard_metrics import (
 from .metrics_collector import MetricsCollector
 from .dashboard_server import CollectionDashboard
 
+# Intelligent Alerting System components
 from .alert_structures import (
-    AlertRule,
     Alert,
-    AlertConfiguration,
+    AlertRule,
+    AlertSeverity,
+    AlertStatus,
     AlertDeliveryResult,
-    AlertSummary,
     SuppressionRule,
-    NotificationResult
+    AlertConfiguration,
+    AlertSummary,
+    NotificationResult,
+    EvaluationContext,
+    BUILT_IN_ALERT_RULES,
+    BUILT_IN_SUPPRESSION_RULES
 )
 
-from .alert_system import IntelligentAlertSystem
-from .alert_suppression import AlertSuppressionManager
+from .alert_system import (
+    IntelligentAlertSystem,
+    AlertRuleEvaluator
+)
+
+from .alert_suppression import (
+    AlertSuppressionManager,
+    SuppressionRuleManager
+)
+
 from .notification_channels import (
     NotificationChannel,
     ConsoleNotificationChannel,
@@ -42,7 +56,7 @@ from .notification_channels import (
 )
 
 __all__ = [
-    # Dashboard components
+    # Core monitoring
     'SystemMetrics',
     'CollectionProgressMetrics', 
     'APIMetrics',
@@ -56,16 +70,29 @@ __all__ = [
     'MetricsCollector',
     'CollectionDashboard',
     
-    # Alerting components
-    'AlertRule',
+    # Intelligent Alerting System
     'Alert',
-    'AlertConfiguration',
+    'AlertRule',
+    'AlertSeverity',
+    'AlertStatus',
     'AlertDeliveryResult',
-    'AlertSummary',
     'SuppressionRule',
+    'AlertConfiguration',
+    'AlertSummary',
     'NotificationResult',
+    'EvaluationContext',
+    'BUILT_IN_ALERT_RULES',
+    'BUILT_IN_SUPPRESSION_RULES',
+    
+    # Alert System
     'IntelligentAlertSystem',
+    'AlertRuleEvaluator',
+    
+    # Alert Suppression
     'AlertSuppressionManager',
+    'SuppressionRuleManager',
+    
+    # Notification Channels
     'NotificationChannel',
     'ConsoleNotificationChannel',
     'DashboardNotificationChannel',
