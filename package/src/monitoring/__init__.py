@@ -1,6 +1,8 @@
 """
-Monitoring system for paper collection dashboard and alerting.
-Provides real-time metrics collection, dashboard display, and intelligent alerting.
+Monitoring module for real-time collection dashboard and intelligent alerting.
+
+Provides system metrics collection, dashboard visualization, and proactive alerting
+for 4-6 hour paper collection sessions.
 """
 
 from .dashboard_metrics import (
@@ -10,6 +12,8 @@ from .dashboard_metrics import (
     ProcessingMetrics,
     SystemResourceMetrics,
     StateManagementMetrics,
+    MetricsSummary,
+    DashboardStatus,
     VenueProgressMetrics,
     MetricsBuffer
 )
@@ -17,31 +21,18 @@ from .dashboard_metrics import (
 from .metrics_collector import MetricsCollector
 from .dashboard_server import CollectionDashboard
 
-# Intelligent Alerting System components
 from .alert_structures import (
-    Alert,
     AlertRule,
-    AlertSeverity,
-    AlertStatus,
-    SuppressionRule,
+    Alert,
     AlertConfiguration,
+    AlertDeliveryResult,
     AlertSummary,
-    NotificationResult,
-    EvaluationContext,
-    BUILT_IN_ALERT_RULES,
-    BUILT_IN_SUPPRESSION_RULES
+    SuppressionRule,
+    NotificationResult
 )
 
-from .alert_system import (
-    IntelligentAlertSystem,
-    AlertRuleEvaluator
-)
-
-from .alert_suppression import (
-    AlertSuppressionManager,
-    SuppressionRuleManager
-)
-
+from .alert_system import IntelligentAlertSystem
+from .alert_suppression import AlertSuppressionManager
 from .notification_channels import (
     NotificationChannel,
     ConsoleNotificationChannel,
@@ -50,73 +41,34 @@ from .notification_channels import (
     NotificationChannelManager
 )
 
-# Advanced Analytics Dashboard components
-from .advanced_analytics_engine import (
-    AdvancedAnalyticsEngine,
-    AnalyticsTimeWindow,
-    TrendAnalysis,
-    PerformanceAnalytics,
-    PredictiveAnalytics,
-    AnalyticsSummary
-)
-
-from .advanced_dashboard_server import (
-    AdvancedAnalyticsDashboard,
-    create_advanced_analytics_dashboard,
-    AnalyticsDashboardAdapter,
-    EXAMPLE_ANALYTICS_CONFIG
-)
-
 __all__ = [
-    # Core monitoring
+    # Dashboard components
     'SystemMetrics',
     'CollectionProgressMetrics', 
     'APIMetrics',
     'ProcessingMetrics',
     'SystemResourceMetrics',
     'StateManagementMetrics',
+    'MetricsSummary',
+    'DashboardStatus',
     'VenueProgressMetrics',
     'MetricsBuffer',
     'MetricsCollector',
     'CollectionDashboard',
     
-    # Intelligent Alerting System
-    'Alert',
+    # Alerting components
     'AlertRule',
-    'AlertSeverity',
-    'AlertStatus',
-    'SuppressionRule',
+    'Alert',
     'AlertConfiguration',
+    'AlertDeliveryResult',
     'AlertSummary',
+    'SuppressionRule',
     'NotificationResult',
-    'EvaluationContext',
-    'BUILT_IN_ALERT_RULES',
-    'BUILT_IN_SUPPRESSION_RULES',
-    
-    # Alert System
     'IntelligentAlertSystem',
-    'AlertRuleEvaluator',
-    
-    # Alert Suppression
     'AlertSuppressionManager',
-    'SuppressionRuleManager',
-    
-    # Notification Channels
     'NotificationChannel',
     'ConsoleNotificationChannel',
     'DashboardNotificationChannel',
     'LogNotificationChannel',
-    'NotificationChannelManager',
-    
-    # Advanced Analytics Dashboard
-    'AdvancedAnalyticsEngine',
-    'AnalyticsTimeWindow',
-    'TrendAnalysis',
-    'PerformanceAnalytics',
-    'PredictiveAnalytics',
-    'AnalyticsSummary',
-    'AdvancedAnalyticsDashboard',
-    'create_advanced_analytics_dashboard',
-    'AnalyticsDashboardAdapter',
-    'EXAMPLE_ANALYTICS_CONFIG'
+    'NotificationChannelManager'
 ]
