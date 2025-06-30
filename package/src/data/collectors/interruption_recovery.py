@@ -15,6 +15,7 @@ from .state_structures import (
     InterruptionAnalysis, InterruptionCause, ValidationResult
 )
 from .state_management import StateManager
+from .state_persistence import StatePersistence
 
 logger = logging.getLogger(__name__)
 
