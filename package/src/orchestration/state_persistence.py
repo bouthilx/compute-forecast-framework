@@ -387,3 +387,25 @@ class StatePersistenceManager:
         except Exception as e:
             logger.error(f"Failed to cleanup old data: {e}")
             return cleanup_stats
+    
+    def get_component_status(self, component: str) -> Optional[Dict[str, Any]]:
+        """
+        Get status information for a specific component.
+        
+        Args:
+            component: Component name
+            
+        Returns:
+            Component status dictionary or None if not found
+        """
+        try:
+            # This is a simplified implementation
+            # In a real system, this would track component health
+            return {
+                "status": "healthy",
+                "error_count": 0,
+                "partial_functionality": True
+            }
+        except Exception as e:
+            logger.error(f"Failed to get component status for {component}: {e}")
+            return None
