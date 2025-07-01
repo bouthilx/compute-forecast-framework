@@ -99,7 +99,7 @@ class ExtractionQualityValidator(QualityAnalyzer):
         
         # Build validation result
         return ExtractionValidation(
-            paper_id=paper.id,
+            paper_id=paper.paper_id or "unknown",
             extraction_type="computational_analysis",
             extracted_value=extraction,
             confidence=confidence,

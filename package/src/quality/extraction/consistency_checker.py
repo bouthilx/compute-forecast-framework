@@ -216,7 +216,7 @@ class ExtractionConsistencyChecker:
                 "issue": "too_many_outliers",
                 "outliers": len(outliers),
                 "total": len(values),
-                "outlier_papers": [papers_with_data[i].id for i in outliers]
+                "outlier_papers": [papers_with_data[i].paper_id or f"paper_{i}" for i in outliers]
             }
         else:
             passed = True

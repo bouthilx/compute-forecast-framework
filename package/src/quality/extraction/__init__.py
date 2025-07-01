@@ -9,6 +9,7 @@ from .extraction_validator import ExtractionQualityValidator, ExtractionValidati
 from .consistency_checker import ExtractionConsistencyChecker, ConsistencyCheck
 from .cross_validation import CrossValidationFramework
 from .outlier_detection import OutlierDetector
+from .integrated_validator import IntegratedExtractionValidator, IntegratedValidationResult
 
 __all__ = [
     'ExtractionQualityValidator',
@@ -17,5 +18,7 @@ __all__ = [
     'ExtractionConsistencyChecker',
     'ConsistencyCheck',
     'CrossValidationFramework',
-    'OutlierDetector'
+    'OutlierDetector',
+    'IntegratedExtractionValidator',
+    'IntegratedValidationResult'
 ]

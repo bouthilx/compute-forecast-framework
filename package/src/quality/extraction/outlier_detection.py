@@ -115,7 +115,7 @@ class OutlierDetector:
             Context dictionary explaining the outlier
         """
         context = {
-            "paper_id": paper.id,
+            "paper_id": paper.paper_id or "unknown",
             "field": field,
             "value": value,
             "reasons": [],
@@ -123,25 +123,32 @@ class OutlierDetector:
         }
         
         # Check if it's a known extreme case
+        is_known_extreme = False
         if field in self.known_extremes:
             for model_name, known_value in self.known_extremes[field].items():
                 if abs(value - known_value) / known_value < 0.3:  # Within 30% of known extreme
                     context["reasons"].append(f"Similar to known extreme: {model_name}")
                     context["severity"] = "expected"
+                    is_known_extreme = True
+                    break
         
         # Check paper characteristics
         if hasattr(paper, 'title') and paper.title:
             title_lower = paper.title.lower()
             
-            # Novel architecture indicators
-            if any(term in title_lower for term in ["novel", "new", "introducing", "proposing"]):
-                context["reasons"].append("Paper describes novel architecture")
-                context["severity"] = "possible"
-            
-            # Scale indicators
-            if any(term in title_lower for term in ["large", "giant", "massive", "billion"]):
-                context["reasons"].append("Paper explicitly mentions large scale")
-                context["severity"] = "expected"
+            # Only check other indicators if not already a known extreme
+            if not is_known_extreme:
+                # Novel architecture indicators
+                if any(term in title_lower for term in ["novel", "new", "introducing", "proposing"]):
+                    context["reasons"].append("Paper describes novel architecture")
+                    if context["severity"] == "unknown":
+                        context["severity"] = "possible"
+                
+                # Scale indicators
+                if any(term in title_lower for term in ["large", "giant", "massive", "billion"]):
+                    context["reasons"].append("Paper explicitly mentions large scale")
+                    if context["severity"] in ["unknown", "possible"]:
+                        context["severity"] = "expected"
             
             # Efficiency indicators
             if any(term in title_lower for term in ["efficient", "lightweight", "tiny", "small"]):
@@ -159,8 +166,8 @@ class OutlierDetector:
                 context["severity"] = "suspicious"
         
         # Check if it's a breakthrough paper
-        if hasattr(paper, 'citation_count') and paper.citation_count:
-            if paper.citation_count > 1000:
+        if hasattr(paper, 'citations') and paper.citations:
+            if paper.citations > 1000:
                 context["reasons"].append("Highly cited paper - might be breakthrough")
                 context["severity"] = "possible"
         
