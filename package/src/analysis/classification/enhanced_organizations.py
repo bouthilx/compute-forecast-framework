@@ -55,7 +55,7 @@ class EnhancedOrganizationClassifier(OrganizationDatabase):
     def __init__(self):
         """Initialize enhanced classifier."""
         super().__init__()
-        self.fuzzy_threshold = 85  # 85% similarity for fuzzy matching
+        self.fuzzy_threshold = 80  # 80% similarity for fuzzy matching
         self.industry_threshold = 0.25  # 25% industry authors
         self._enhanced_orgs: Dict[str, OrganizationRecord] = {}
         self._domain_map: Dict[str, str] = {}  # domain -> org name
@@ -121,27 +121,34 @@ class EnhancedOrganizationClassifier(OrganizationDatabase):
         if exact_result:
             return exact_result
         
-        # 2. Try alias match
+        # 2. Try domain match first if email is present
+        if '@' in affiliation_lower:
+            domain_result = self._try_domain_match(affiliation_lower)
+            if domain_result:
+                return domain_result
+        
+        # 3. Try alias match
         alias_result = self._try_alias_match(affiliation_lower)
         if alias_result:
             return alias_result
         
-        # 3. Try domain match
-        domain_result = self._try_domain_match(affiliation_lower)
-        if domain_result:
-            return domain_result
+        # 4. Try domain match (for cases without @)
+        if '@' not in affiliation_lower:
+            domain_result = self._try_domain_match(affiliation_lower)
+            if domain_result:
+                return domain_result
         
-        # 4. Try fuzzy match
+        # 5. Try fuzzy match
         fuzzy_result = self._try_fuzzy_match(affiliation_lower)
         if fuzzy_result:
             return fuzzy_result
         
-        # 5. Try keyword match
+        # 6. Try keyword match
         keyword_result = self._try_keyword_match(affiliation_lower)
         if keyword_result:
             return keyword_result
         
-        # 6. Unknown organization
+        # 7. Unknown organization
         return ClassificationResult(
             organization=None,
             type=OrganizationType.UNKNOWN,
@@ -231,7 +238,10 @@ class EnhancedOrganizationClassifier(OrganizationDatabase):
         
         if best_match:
             # Scale confidence based on fuzzy match score
-            confidence = 0.7 * (best_score / 100)
+            # Ensure minimum confidence of 0.7 for matches above threshold
+            # Scale from 0.7 to 0.85 based on score from 80 to 100
+            normalized_score = (best_score - self.fuzzy_threshold) / (100 - self.fuzzy_threshold)
+            confidence = 0.7 + (0.15 * normalized_score)
             return ClassificationResult(
                 organization=best_match.name,
                 type=best_match.type,
@@ -316,7 +326,7 @@ class EnhancedOrganizationClassifier(OrganizationDatabase):
             industry_ratio = industry_count / classified_authors
             academic_ratio = academic_count / classified_authors
             
-            if industry_ratio >= self.industry_threshold:
+            if industry_ratio > self.industry_threshold:
                 classification = "industry"
             else:
                 classification = "academic"

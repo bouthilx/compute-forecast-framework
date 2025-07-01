@@ -102,31 +102,35 @@ class EnhancedAffiliationParser(AffiliationParser):
                         part = re.sub(pattern, '', part, flags=re.IGNORECASE).strip()
                         break
             
-            # Check for location information
-            if i == len(parts) - 1:  # Last part often contains country
-                if len(part) <= 30 and not any(keyword in part_lower for keyword in ['university', 'institute', 'college']):
-                    # Likely a location
-                    location_parts = part.split()
-                    if len(location_parts) >= 1:
-                        # Check for country patterns
-                        if location_parts[-1].upper() in ['USA', 'UK', 'CA', 'CANADA', 'FRANCE', 'GERMANY', 'CHINA', 'JAPAN']:
-                            result["country"] = location_parts[-1].upper()
-                            if len(location_parts) > 1:
-                                result["city"] = ' '.join(location_parts[:-1])
-                        else:
-                            result["country"] = part
-            
             # Check for state abbreviation (US states)
-            if len(part) == 2 and part.isupper():
+            if len(part) == 2 and part.isupper() and not result["state"]:
                 result["state"] = part
+                continue
+            
+            # Check for location information
+            if i >= 2:  # Location info usually comes after org and dept
+                if len(part) <= 30 and not any(keyword in part_lower for keyword in ['university', 'institute', 'college']):
+                    # Check if it's a country
+                    if part.upper() in ['USA', 'UK', 'CA', 'CANADA', 'FRANCE', 'GERMANY', 'CHINA', 'JAPAN']:
+                        result["country"] = part.upper()
+                    # Check if it's already identified as state
+                    elif part != result.get("state"):
+                        # If we don't have a city yet, this could be the city
+                        if not result["city"] and i < len(parts) - 1:
+                            result["city"] = part
             
             # Extract organization name (usually first substantial part)
-            if not result["organization"] and len(part) > 3:
+            if not result["organization"] and len(part) > 2:
                 # Check if it's a known organization pattern
                 org_keywords = ['university', 'institute', 'college', 'corporation', 'company', 
                                'research', 'laboratory', 'foundation', 'academy']
+                # Common university abbreviations
+                common_abbreviations = ['MIT', 'UCLA', 'UCB', 'NYU', 'CMU', 'UIUC', 'USC', 'UCSD']
+                
                 if any(keyword in part_lower for keyword in org_keywords):
                     result["organization"] = self._clean_organization_name(part)
+                elif part.upper() in common_abbreviations:
+                    result["organization"] = part.upper()
                 elif i == 0:  # First part is often the organization
                     result["organization"] = self._clean_organization_name(part)
         
