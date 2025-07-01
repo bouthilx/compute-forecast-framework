@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 
 from src.analysis.benchmark.extractor import AcademicBenchmarkExtractor
 from src.analysis.benchmark.models import BenchmarkDomain, BenchmarkPaper, ExtractionBatch
-from src.data.models import Paper, ComputationalAnalysis
+from src.data.models import Paper, ComputationalAnalysis, Author
 from src.analysis.computational.analyzer import ComputationalAnalyzer
 
 
@@ -16,15 +16,20 @@ class TestAcademicBenchmarkExtractor:
     @pytest.fixture
     def mock_analyzer(self):
         """Create a mock computational analyzer."""
-        analyzer = Mock(spec=ComputationalAnalyzer)
+        analyzer = Mock()
+        analyzer.analyze_paper = Mock()
         analyzer.analyze_paper.return_value = ComputationalAnalysis(
-            gpu_hours=100.0,
-            gpu_type="V100",
-            gpu_count=4,
-            training_time_days=2.0,
-            parameters=350_000_000,
+            computational_richness=0.85,
+            keyword_matches={"gpu": 5, "training": 3, "deep learning": 2},
+            resource_metrics={
+                "gpu_hours": 100.0,
+                "gpu_type": "V100",
+                "gpu_count": 4,
+                "training_time_days": 2.0,
+                "parameters": 350_000_000,
+            },
+            experimental_indicators={"has_experiments": True, "has_results": True},
             confidence_score=0.85,
-            extraction_method="pattern_matching",
         )
         return analyzer
 
@@ -38,7 +43,8 @@ class TestAcademicBenchmarkExtractor:
                 title=f"Deep Learning Paper {i}",
                 year=2023,
                 venue="NeurIPS",
-                authors=[f"Author {i}"],
+                authors=[Author(name=f"Author {i}")],
+                citations=10 + i * 5,
                 abstract="Training neural networks on large datasets...",
             )
             papers.append(paper)
@@ -132,11 +138,17 @@ class TestAcademicBenchmarkExtractor:
         confidence_scores = [0.9, 0.8, 0.6, 0.75, 0.5]
         
         with patch.object(extractor.analyzer, "analyze_paper") as mock_analyze:
-            for i, (paper, confidence) in enumerate(zip(sample_papers, confidence_scores)):
-                mock_analyze.return_value = ComputationalAnalysis(
-                    gpu_hours=100.0,
-                    confidence_score=confidence,
+            # Create side_effect list for sequential calls
+            mock_analyze.side_effect = [
+                ComputationalAnalysis(
+                    computational_richness=conf,
+                    keyword_matches={},
+                    resource_metrics={"gpu_hours": 100.0},
+                    experimental_indicators={},
+                    confidence_score=conf,
                 )
+                for conf in confidence_scores
+            ]
 
             batch = extractor.extract_benchmark_batch(sample_papers, BenchmarkDomain.CV)
 
@@ -148,11 +160,11 @@ class TestAcademicBenchmarkExtractor:
         # Mock low confidence extractions
         with patch.object(extractor.analyzer, "analyze_paper") as mock_analyze:
             mock_analyze.side_effect = [
-                ComputationalAnalysis(gpu_hours=100.0, confidence_score=0.9),
-                ComputationalAnalysis(gpu_hours=None, confidence_score=0.4),  # Low confidence
-                ComputationalAnalysis(gpu_hours=50.0, confidence_score=0.6),  # Below threshold
-                ComputationalAnalysis(gpu_hours=200.0, confidence_score=0.8),
-                ComputationalAnalysis(gpu_hours=None, confidence_score=0.3),  # Very low
+                ComputationalAnalysis(computational_richness=0.9, keyword_matches={}, resource_metrics={"gpu_hours": 100.0}, experimental_indicators={}, confidence_score=0.9),
+                ComputationalAnalysis(computational_richness=0.4, keyword_matches={}, resource_metrics={"gpu_hours": None}, experimental_indicators={}, confidence_score=0.4),  # Low confidence
+                ComputationalAnalysis(computational_richness=0.6, keyword_matches={}, resource_metrics={"gpu_hours": 50.0}, experimental_indicators={}, confidence_score=0.6),  # Below threshold
+                ComputationalAnalysis(computational_richness=0.8, keyword_matches={}, resource_metrics={"gpu_hours": 200.0}, experimental_indicators={}, confidence_score=0.8),
+                ComputationalAnalysis(computational_richness=0.3, keyword_matches={}, resource_metrics={"gpu_hours": None}, experimental_indicators={}, confidence_score=0.3),  # Very low
             ]
 
             batch = extractor.extract_benchmark_batch(sample_papers, BenchmarkDomain.RL)
@@ -169,14 +181,17 @@ class TestAcademicBenchmarkExtractor:
             title="Theoretical Analysis of Neural Networks",
             year=2022,
             venue="COLT",
-            authors=["Theorist"],
+            authors=[Author(name="Theorist")],
+            citations=5,
             abstract="We provide theoretical bounds for neural network convergence.",
         )
 
         with patch.object(extractor.analyzer, "analyze_paper") as mock_analyze:
             mock_analyze.return_value = ComputationalAnalysis(
-                gpu_hours=None,
-                gpu_type=None,
+                computational_richness=0.2,
+                keyword_matches={},
+                resource_metrics={"gpu_hours": None, "gpu_type": None},
+                experimental_indicators={},
                 confidence_score=0.2,
             )
 
