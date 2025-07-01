@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "paperext",
+    # "paperext",
     "pyyaml>=6.0.2",
     "requests>=2.32.4",
     "rich>=13.9.4",
@@ -16,18 +16,15 @@ dependencies = [
     "flask-socketio>=5.3.0",
     "eventlet>=0.36.1",
     "psutil>=5.9.0",
-    "rapidfuzz>=3.13.0",
 ]
 
-[tool.uv.sources]
-paperext = { path = "../../paperext" }
+# [tool.uv.sources]
+# paperext = { path = "../../paperext" }
 
 [dependency-groups]
 dev = [
     "pytest-cov>=6.2.1",
-    "ruff>=0.12.1",
 ]
 test = [
     "pytest>=8.4.1",
-    "pytest-cov>=6.2.1",
 ]

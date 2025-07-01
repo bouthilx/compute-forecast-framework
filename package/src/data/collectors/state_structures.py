@@ -306,7 +306,6 @@ class VenueConfig:
     max_papers_per_year: int = 50
     priority: int = 1  # 1 = high, 5 = low
 
-
 @dataclass
 class CollectionSession:
     """Main session state for paper collection"""

@@ -1,3 +1,15 @@
+<<<<<<< HEAD
+// Dashboard JavaScript - Real-time monitoring interface
+
+class CollectionDashboard {
+    constructor() {
+        this.socket = null;
+        this.charts = {};
+        this.isConnected = false;
+        this.lastUpdate = null;
+        this.metricsHistory = [];
+        this.maxHistoryPoints = 50;
+=======
 /**
  * Dashboard JavaScript - Real-time collection monitoring client
  * Handles WebSocket connections, chart updates, and venue grid management
@@ -25,10 +37,47 @@ class CollectionDashboard {
             'EDBT', 'PODS', 'SIGMOD'
         ];
         this.years = [2019, 2020, 2021, 2022, 2023, 2024];
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
         
         // Initialize dashboard
         this.initializeSocket();
         this.initializeCharts();
+<<<<<<< HEAD
+        this.setupEventHandlers();
+        
+        console.log('Collection Dashboard initialized');
+    }
+    
+    initializeSocket() {
+        this.socket = io();
+        
+        this.socket.on('connect', () => {
+            this.isConnected = true;
+            this.updateConnectionStatus(true);
+            console.log('Connected to dashboard server');
+            
+            // Request initial metrics
+            this.socket.emit('request_metrics');
+        });
+        
+        this.socket.on('disconnect', () => {
+            this.isConnected = false;
+            this.updateConnectionStatus(false);
+            console.log('Disconnected from dashboard server');
+        });
+        
+        this.socket.on('metrics_update', (data) => {
+            this.handleMetricsUpdate(data);
+        });
+        
+        this.socket.on('venue_completed', (data) => {
+            this.handleVenueCompleted(data);
+        });
+        
+        this.socket.on('alert_triggered', (data) => {
+            this.showAlert(data.alert);
+        });
+=======
         this.createVenueGrid();
         
         // Set up periodic updates
@@ -75,322 +124,16 @@ class CollectionDashboard {
     }
     
     updateConnectionStatus(connected, message = null) {
-        const statusBadge = document.getElementById('connection-status');
-        if (statusBadge) {
-            if (connected) {
-                statusBadge.className = 'badge bg-success';
-                statusBadge.textContent = 'Connected';
-            } else {
-                statusBadge.className = 'badge bg-danger';
-                statusBadge.textContent = message || 'Disconnected';
-            }
-        }
         this.isConnected = connected;
-    }
-    
-    initializeCharts() {
-        // Collection rate chart
-        const collectionCtx = document.getElementById('collectionRateChart');
-        if (collectionCtx) {
-            this.collectionRateChart = new Chart(collectionCtx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Papers/minute',
-                        data: [],
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        }
+        const statusElement = document.getElementById('connection-status');
         
-        // System resources chart
-        const resourcesCtx = document.getElementById('systemResourcesChart');
-        if (resourcesCtx) {
-            this.systemResourcesChart = new Chart(resourcesCtx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Memory %',
-                        data: [],
-                        borderColor: 'rgb(54, 162, 235)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
-                        tension: 0.1,
-                        yAxisID: 'y'
-                    }, {
-                        label: 'CPU %',
-                        data: [],
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                        tension: 0.1,
-                        yAxisID: 'y'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
-                        }
-                    }
-                }
-            });
-        }
-    }
-    
-    createVenueGrid() {
-        const venueGrid = document.getElementById('venue-grid');
-        if (!venueGrid) return;
-        
-        venueGrid.innerHTML = '';
-        
-        this.venues.forEach(venue => {
-            const venueRow = document.createElement('div');
-            venueRow.className = 'venue-row mb-2';
-            
-            const venueHeader = document.createElement('div');
-            venueHeader.className = 'd-flex align-items-center mb-1';
-            venueHeader.innerHTML = `<strong>${venue}</strong>`;
-            venueRow.appendChild(venueHeader);
-            
-            const yearGrid = document.createElement('div');
-            yearGrid.className = 'd-flex flex-wrap gap-1';
-            
-            this.years.forEach(year => {
-                const yearBadge = document.createElement('span');
-                yearBadge.id = `venue-${venue}-${year}`;
-                yearBadge.className = 'badge bg-secondary';
-                yearBadge.textContent = year;
-                yearBadge.style.cursor = 'pointer';
-                yearBadge.onclick = () => this.showVenueDetails(venue, year);
-                yearGrid.appendChild(yearBadge);
-            });
-            
-            venueRow.appendChild(yearGrid);
-            venueGrid.appendChild(venueRow);
-        });
-    }
-    
-    updateDashboard(metrics) {
-        if (!metrics) return;
-        
-        // Update timestamp
-        const lastUpdate = document.getElementById('last-update');
-        if (lastUpdate) {
-            lastUpdate.textContent = new Date(metrics.timestamp).toLocaleString();
-        }
-        
-        // Add to history
-        this.addToHistory(metrics);
-        
-        // Update each section
-        this.updateSummaryCards(metrics.collection_progress);
-        this.updateVenueGrid(metrics.venue_progress);
-        this.updateAPIHealth(metrics.api_metrics);
-        this.updateProcessingMetrics(metrics.processing_metrics);
-        this.updateStateMetrics(metrics.state_metrics);
-        
-        // Update charts
-        this.updateCharts();
-    }
-    
-    updateSummaryCards(progress) {
-        if (!progress) return;
-        
-        // Update total papers
-        const totalPapers = document.getElementById('total-papers');
-        if (totalPapers) {
-            totalPapers.textContent = progress.total_papers_collected.toLocaleString();
-        }
-        
-        // Update collection rate
-        const collectionRate = document.getElementById('collection-rate');
-        if (collectionRate) {
-            collectionRate.textContent = `${progress.papers_per_minute.toFixed(1)}/min`;
-        }
-        
-        // Update overall progress
-        const overallProgress = document.getElementById('overall-progress');
-        const overallProgressBar = document.getElementById('overall-progress-bar');
-        if (overallProgress && overallProgressBar) {
-            const percentage = progress.overall_completion_percent;
-            overallProgress.textContent = `${percentage.toFixed(1)}%`;
-            overallProgressBar.style.width = `${percentage}%`;
-            overallProgressBar.className = `progress-bar ${percentage >= 75 ? 'bg-success' : percentage >= 50 ? 'bg-info' : 'bg-warning'}`;
-        }
-        
-        // Update active alerts
-        const activeAlerts = document.getElementById('active-alerts');
-        if (activeAlerts && progress.active_alerts !== undefined) {
-            activeAlerts.textContent = progress.active_alerts;
-        }
-    }
-    
-    updateVenueGrid(venueProgress) {
-        if (!venueProgress) return;
-        
-        Object.entries(venueProgress).forEach(([key, progress]) => {
-            const badge = document.getElementById(`venue-${progress.venue_name}-${progress.year}`);
-            if (badge) {
-                // Update status color
-                let colorClass = 'bg-secondary';
-                if (progress.status === 'completed') {
-                    colorClass = 'bg-success';
-                } else if (progress.status === 'in_progress') {
-                    colorClass = 'bg-warning';
-                } else if (progress.status === 'failed') {
-                    colorClass = 'bg-danger';
-                }
-                
-                badge.className = `badge ${colorClass}`;
-                
-                // Add progress indicator if in progress
-                if (progress.status === 'in_progress' && progress.completion_percent > 0) {
-                    badge.innerHTML = `${progress.year} <small>(${progress.completion_percent.toFixed(0)}%)</small>`;
-                }
-                
-                // Add tooltip
-                badge.title = this.createVenueTooltip(progress);
-            }
-        });
-    }
-    
-    updateAPIHealth(apiMetrics) {
-        if (!apiMetrics) return;
-        
-        const apiHealthDiv = document.getElementById('api-health');
-        if (!apiHealthDiv) return;
-        
-        apiHealthDiv.innerHTML = '';
-        
-        Object.entries(apiMetrics).forEach(([apiName, metrics]) => {
-            const apiCard = document.createElement('div');
-            apiCard.className = 'api-health-item d-flex justify-content-between align-items-center mb-2';
-            
-            const statusClass = metrics.health_status === 'healthy' ? 'text-success' : 
-                               metrics.health_status === 'degraded' ? 'text-warning' : 'text-danger';
-            
-            apiCard.innerHTML = `
-                <div>
-                    <span class="api-status-badge ${metrics.health_status}"></span>
-                    <strong>${apiName}</strong>
-                </div>
-                <div class="text-end">
-                    <small class="${statusClass}">${metrics.health_status}</small>
-                    <br>
-                    <small class="text-muted">${metrics.success_rate.toFixed(1)}% success</small>
-                </div>
-            `;
-            
-            apiHealthDiv.appendChild(apiCard);
-        });
-    }
-    
-    updateProcessingMetrics(processing) {
-        if (!processing) return;
-        
-        // Update processing errors
-        const processingErrors = document.getElementById('processing-errors');
-        if (processingErrors) {
-            processingErrors.textContent = processing.processing_errors;
-            if (processing.processing_errors > 0) {
-                processingErrors.classList.add('text-danger');
-            } else {
-                processingErrors.classList.remove('text-danger');
-            }
-        }
-        
-        // Update data quality score
-        const qualityScore = document.getElementById('quality-score');
-        if (qualityScore) {
-            const score = processing.data_quality_score * 100;
-            qualityScore.textContent = `${score.toFixed(1)}%`;
-            
-            // Color based on score
-            if (score >= 90) {
-                qualityScore.className = 'metric-value text-success';
-            } else if (score >= 70) {
-                qualityScore.className = 'metric-value text-warning';
-            } else {
-                qualityScore.className = 'metric-value text-danger';
-            }
-        }
-    }
-    
-    updateStateMetrics(state) {
-        if (!state) return;
-        
-        // Update checkpoint count
-        const checkpointCount = document.getElementById('checkpoint-count');
-        if (checkpointCount) {
-            checkpointCount.textContent = state.total_checkpoints;
-        }
-        
-        // Update last checkpoint time
-        const lastCheckpoint = document.getElementById('last-checkpoint');
-        if (lastCheckpoint && state.last_checkpoint_time) {
-            const timeSince = this.getTimeSince(new Date(state.last_checkpoint_time));
-            lastCheckpoint.textContent = timeSince;
-        }
-    }
-    
-    addToHistory(metrics) {
-        this.metricsHistory.push({
-            timestamp: metrics.timestamp,
-            papers_per_minute: metrics.collection_progress.papers_per_minute,
-            memory_percent: metrics.system_metrics.memory_usage_percent,
-            cpu_percent: metrics.system_metrics.cpu_usage_percent
-        });
-        
-        // Keep only last N entries
-        if (this.metricsHistory.length > this.maxHistorySize) {
-            this.metricsHistory = this.metricsHistory.slice(-this.maxHistorySize);
-        }
-    }
-    
-    updateCharts() {
-        if (!this.metricsHistory.length) return;
-        
-        const labels = this.metricsHistory.map(m => 
-            new Date(m.timestamp).toLocaleTimeString()
-        );
-        
-        // Update collection rate chart
-        if (this.collectionRateChart) {
-            this.collectionRateChart.data.labels = labels;
-            this.collectionRateChart.data.datasets[0].data = 
-                this.metricsHistory.map(m => m.papers_per_minute);
-            this.collectionRateChart.update('none');
-        }
-        
-        // Update system resources chart
-        if (this.systemResourcesChart) {
-            this.systemResourcesChart.data.labels = labels;
-            this.systemResourcesChart.data.datasets[0].data = 
-                this.metricsHistory.map(m => m.memory_percent);
-            this.systemResourcesChart.data.datasets[1].data = 
-                this.metricsHistory.map(m => m.cpu_percent);
-            this.systemResourcesChart.update('none');
+        if (connected) {
+            statusElement.className = 'badge bg-success';
+            statusElement.innerHTML = '<i class="fas fa-wifi me-1"></i>Connected';
+        } else {
+            statusElement.className = 'badge bg-danger';
+            const msg = message || 'Disconnected';
+            statusElement.innerHTML = `<i class="fas fa-wifi-slash me-1"></i>${msg}`;
         }
     }
     
@@ -400,155 +143,776 @@ class CollectionDashboard {
         }
     }
     
-    showVenueDetails(venue, year) {
-        // Create modal content
-        const modalContent = `
-            <div class="modal fade" id="venueDetailsModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">${venue} ${year} Collection Details</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Loading details...</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+    updateDashboard(metrics) {
+        // Update timestamp
+        const timestamp = new Date(metrics.timestamp);
+        document.getElementById('last-update').textContent = timestamp.toLocaleTimeString();
         
-        // Remove existing modal if any
-        const existingModal = document.getElementById('venueDetailsModal');
-        if (existingModal) {
-            existingModal.remove();
+        // Update summary cards
+        this.updateSummaryCards(metrics);
+        
+        // Update venue grid
+        this.updateVenueGrid(metrics.venue_progress || {});
+        
+        // Update API health
+        this.updateAPIHealth(metrics.api_metrics || {});
+        
+        // Update processing metrics
+        this.updateProcessingMetrics(metrics.processing_metrics || {});
+        
+        // Update state metrics
+        this.updateStateMetrics(metrics.state_metrics || {});
+        
+        // Add to history and update charts
+        this.addToHistory(metrics);
+        this.updateCharts();
+    }
+    
+    updateSummaryCards(metrics) {
+        const progress = metrics.collection_progress || {};
+        const system = metrics.system_metrics || {};
+        
+        // Papers collected
+        document.getElementById('total-papers').textContent = 
+            (progress.total_papers_collected || 0).toLocaleString();
+        document.getElementById('papers-per-minute').textContent = 
+            (progress.papers_per_minute || 0).toFixed(1);
+        
+        // Venues completed
+        document.getElementById('venues-completed').textContent = 
+            progress.venues_completed || 0;
+        document.getElementById('venues-progress').textContent = 
+            `${progress.venues_completed || 0}/${progress.total_venues || 0}`;
+        
+        // Session duration
+        const duration = progress.session_duration_minutes || 0;
+        const hours = Math.floor(duration / 60);
+        const minutes = Math.floor(duration % 60);
+        document.getElementById('session-duration').textContent = `${hours}h ${minutes}m`;
+        
+        // ETA
+        if (progress.estimated_completion_time) {
+            const eta = new Date(progress.estimated_completion_time);
+            document.getElementById('estimated-completion').textContent = eta.toLocaleTimeString();
+        } else {
+            document.getElementById('estimated-completion').textContent = '--';
         }
         
-        // Add modal to page
-        document.body.insertAdjacentHTML('beforeend', modalContent);
+        // Memory and CPU
+        document.getElementById('memory-usage').textContent = 
+            `${(system.memory_usage_percent || 0).toFixed(1)}%`;
+        document.getElementById('cpu-usage').textContent = 
+            (system.cpu_usage_percent || 0).toFixed(1);
+    }
+    
+    createVenueGrid() {
+        const grid = document.getElementById('venue-grid');
+        grid.innerHTML = '';
         
-        // Show modal
-        const modal = new bootstrap.Modal(document.getElementById('venueDetailsModal'));
-        modal.show();
+        // Header row
+        grid.appendChild(this.createElement('div', 'venue-grid-header', ''));
+        this.years.forEach(year => {
+            grid.appendChild(this.createElement('div', 'venue-grid-header', year.toString()));
+        });
         
-        // Request details from server
-        if (this.socket && this.isConnected) {
-            this.socket.emit('get_venue_details', { venue, year }, (details) => {
-                const modalBody = document.querySelector('#venueDetailsModal .modal-body');
-                if (modalBody && details) {
-                    modalBody.innerHTML = `
-                        <table class="table table-sm">
-                            <tr><td>Status:</td><td><span class="badge bg-${this.getStatusColor(details.status)}">${details.status}</span></td></tr>
-                            <tr><td>Papers Collected:</td><td>${details.papers_collected || 0}</td></tr>
-                            <tr><td>Progress:</td><td>${(details.completion_percent || 0).toFixed(1)}%</td></tr>
-                            <tr><td>Started:</td><td>${details.start_time ? new Date(details.start_time).toLocaleString() : 'Not started'}</td></tr>
-                            <tr><td>Last Activity:</td><td>${details.last_activity ? new Date(details.last_activity).toLocaleString() : 'N/A'}</td></tr>
-                            ${details.error_message ? `<tr><td>Error:</td><td class="text-danger">${details.error_message}</td></tr>` : ''}
-                        </table>
+        // Venue rows
+        this.venues.forEach(venue => {
+            // Venue name
+            grid.appendChild(this.createElement('div', 'venue-grid-venue-name', venue));
+            
+            // Year cells
+            this.years.forEach(year => {
+                const cell = this.createElement('div', 'venue-grid-cell venue-status-not-started', '');
+                cell.id = `venue-${venue}-${year}`;
+                cell.setAttribute('data-venue', venue);
+                cell.setAttribute('data-year', year);
+                
+                // Add click handler for venue details
+                cell.addEventListener('click', () => this.showVenueDetails(venue, year));
+                
+                grid.appendChild(cell);
+            });
+        });
+    }
+    
+    updateVenueGrid(venueProgress) {
+        this.venues.forEach(venue => {
+            this.years.forEach(year => {
+                const cellId = `venue-${venue}-${year}`;
+                const cell = document.getElementById(cellId);
+                const key = `${venue}_${year}`;
+                
+                if (cell && venueProgress[key]) {
+                    const progress = venueProgress[key];
+                    const status = progress.status || 'not_started';
+                    const papers = progress.papers_collected || 0;
+                    const target = progress.target_papers || 50;
+                    const percent = progress.progress_percent || 0;
+                    
+                    // Update cell class
+                    cell.className = `venue-grid-cell venue-status-${status}`;
+                    
+                    // Update cell content
+                    cell.innerHTML = `
+                        <div class="venue-papers-count">${papers}/${target}</div>
+                        <div class="venue-progress-bar">${percent.toFixed(0)}%</div>
                     `;
-                } else {
-                    modalBody.innerHTML = '<p class="text-muted">No details available</p>';
+                    
+                    // Add tooltip with details
+                    const tooltip = this.createVenueTooltip(progress);
+                    cell.setAttribute('title', tooltip);
+                    cell.setAttribute('data-bs-toggle', 'tooltip');
+                    cell.setAttribute('data-bs-placement', 'top');
                 }
+            });
+        });
+        
+        // Re-initialize tooltips
+        if (typeof bootstrap !== 'undefined') {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         }
     }
     
-    showAlert(alert) {
-        const alertsContainer = document.getElementById('alerts-container');
-        if (!alertsContainer) return;
+    createVenueTooltip(progress) {
+        const lines = [
+            `Venue: ${progress.venue_name} (${progress.year})`,
+            `Status: ${progress.status}`,
+            `Papers: ${progress.papers_collected}/${progress.target_papers}`,
+            `Progress: ${(progress.progress_percent || 0).toFixed(1)}%`
+        ];
         
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${this.getAlertClass(alert.severity)} alert-dismissible fade show`;
-        alertDiv.innerHTML = `
-            <strong>${alert.rule_name}:</strong> ${alert.message}
+        if (progress.api_source) {
+            lines.push(`API: ${progress.api_source}`);
+        }
+        
+        if (progress.start_time) {
+            const start = new Date(progress.start_time);
+            lines.push(`Started: ${start.toLocaleTimeString()}`);
+        }
+        
+        if (progress.error_count > 0) {
+            lines.push(`Errors: ${progress.error_count}`);
+        }
+        
+        return lines.join('\\n');
+    }
+    
+    updateAPIHealth(apiMetrics) {
+        const container = document.getElementById('api-health');
+        container.innerHTML = '';
+        
+        Object.entries(apiMetrics).forEach(([apiName, metrics]) => {
+            const card = document.createElement('div');
+            card.className = `col-lg-4 col-md-6 mb-3`;
+            
+            const statusClass = `api-status-${metrics.health_status || 'healthy'}`;
+            const statusIcon = this.getStatusIcon(metrics.health_status || 'healthy');
+            
+            card.innerHTML = `
+                <div class="card ${statusClass}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-1">${apiName}</h6>
+                                <p class="card-text mb-0">
+                                    <small class="text-muted">
+                                        ${statusIcon} ${(metrics.health_status || 'healthy').toUpperCase()}
+                                    </small>
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <div class="h5 mb-0">${(metrics.success_rate * 100 || 100).toFixed(1)}%</div>
+                                <small class="text-muted">Success Rate</small>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-6">
+                                <small class="text-muted">Response Time</small>
+                                <div class="fw-bold">${(metrics.avg_response_time_ms || 0).toFixed(0)}ms</div>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Requests/min</small>
+                                <div class="fw-bold">${(metrics.requests_per_minute || 0).toFixed(1)}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+    }
+    
+    getStatusIcon(status) {
+        const icons = {
+            'healthy': '<i class="fas fa-check-circle text-success"></i>',
+            'degraded': '<i class="fas fa-exclamation-triangle text-warning"></i>',
+            'critical': '<i class="fas fa-exclamation-circle text-danger"></i>',
+            'offline': '<i class="fas fa-times-circle text-danger"></i>'
+        };
+        return icons[status] || icons['healthy'];
+    }
+    
+    updateProcessingMetrics(processing) {
+        document.getElementById('papers-processed').textContent = 
+            (processing.papers_processed || 0).toLocaleString();
+        document.getElementById('papers-filtered').textContent = 
+            (processing.papers_filtered || 0).toLocaleString();
+        document.getElementById('papers-deduplicated').textContent = 
+            (processing.papers_deduplicated || 0).toLocaleString();
+        document.getElementById('processing-queue').textContent = 
+            (processing.processing_queue_size || 0).toLocaleString();
+    }
+    
+    updateStateMetrics(state) {
+        document.getElementById('total-checkpoints').textContent = 
+            (state.total_checkpoints || 0).toLocaleString();
+        document.getElementById('checkpoint-size').textContent = 
+            `${(state.checkpoint_size_mb || 0).toFixed(1)} MB`;
+        
+        if (state.last_checkpoint_time) {
+            const lastCheckpoint = new Date(state.last_checkpoint_time);
+            document.getElementById('last-checkpoint').textContent = lastCheckpoint.toLocaleTimeString();
+        }
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+    }
+    
+    initializeCharts() {
+        // Collection Rate Chart
+        const collectionCtx = document.getElementById('collection-rate-chart').getContext('2d');
+<<<<<<< HEAD
+        this.charts.collectionRate = new Chart(collectionCtx, {
+=======
+        this.collectionRateChart = new Chart(collectionCtx, {
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+<<<<<<< HEAD
+                    label: 'Papers/Minute',
+                    data: [],
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+=======
+                    label: 'Papers/min',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Papers per Minute'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    }
+<<<<<<< HEAD
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+=======
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+                }
+            }
+        });
+        
+        // System Resources Chart
+        const systemCtx = document.getElementById('system-resources-chart').getContext('2d');
+<<<<<<< HEAD
+        this.charts.systemResources = new Chart(systemCtx, {
+=======
+        this.systemResourcesChart = new Chart(systemCtx, {
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Memory %',
+                        data: [],
+<<<<<<< HEAD
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        borderWidth: 2,
+                        fill: false
+=======
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.1
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+                    },
+                    {
+                        label: 'CPU %',
+                        data: [],
+<<<<<<< HEAD
+                        borderColor: '#17a2b8',
+                        backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                        borderWidth: 2,
+                        fill: false
+=======
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.1
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Percentage'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+<<<<<<< HEAD
+    setupEventHandlers() {
+        // Auto-refresh every 30 seconds as fallback
+        setInterval(() => {
+            if (this.isConnected) {
+                this.socket.emit('request_metrics');
+            }
+        }, 30000);
+        
+        // Venue item click handlers
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.venue-item')) {
+                const venueItem = e.target.closest('.venue-item');
+                this.showVenueDetails(venueItem);
+            }
+        });
+    }
+    
+    handleMetricsUpdate(data) {
+        this.lastUpdate = new Date();
+        this.updateLastUpdateTime();
+        
+        const metrics = data.system_metrics;
+        
+        // Update collection progress
+        this.updateCollectionProgress(metrics.collection_progress);
+        
+        // Update API health
+        this.updateAPIHealth(metrics.api_health);
+        
+        // Update system resources
+        this.updateSystemResources(metrics.system_resources);
+        
+        // Update processing metrics
+        this.updateProcessingMetrics(metrics.processing);
+        
+        // Update venue progress grid
+        this.updateVenueGrid(metrics.venue_progress);
+        
+        // Update charts
+        this.updateCharts(metrics);
+        
+        // Store metrics for history
+        this.storeMetricsHistory(metrics);
+    }
+    
+    updateCollectionProgress(progress) {
+        document.getElementById('session-id').textContent = progress.session_id || '--';
+        document.getElementById('papers-collected').textContent = progress.papers_collected.toLocaleString();
+        document.getElementById('collection-rate').textContent = progress.papers_per_minute.toFixed(1);
+        document.getElementById('completed-venues').textContent = progress.completed_venues;
+        document.getElementById('total-venues').textContent = progress.total_venues;
+        
+        // Update progress bar
+        const progressBar = document.getElementById('overall-progress');
+        const progressText = document.getElementById('progress-text');
+        const percentage = Math.min(progress.completion_percentage, 100);
+        
+        progressBar.style.width = percentage + '%';
+        progressText.textContent = percentage.toFixed(1) + '%';
+        
+        // Update progress bar color based on completion
+        progressBar.className = 'progress-bar';
+        if (percentage < 25) {
+            progressBar.classList.add('bg-danger');
+        } else if (percentage < 75) {
+            progressBar.classList.add('bg-warning');
+        } else {
+            progressBar.classList.add('bg-success');
+        }
+        
+        // Update estimated completion time
+        if (progress.estimated_completion_time) {
+            const eta = new Date(progress.estimated_completion_time);
+            document.getElementById('estimated-completion').textContent = eta.toLocaleTimeString();
+        }
+    }
+    
+    updateAPIHealth(apiHealth) {
+        const container = document.getElementById('api-health-container');
+        container.innerHTML = '';
+        
+        for (const [apiName, health] of Object.entries(apiHealth)) {
+            const apiItem = document.createElement('div');
+            apiItem.className = `api-item ${health.status}`;
+            
+            apiItem.innerHTML = `
+                <div class="api-name">${apiName}</div>
+                <div class="api-metrics">
+                    <span class="api-status ${health.status}">${health.status}</span>
+                    <span>Success: ${(health.success_rate * 100).toFixed(1)}%</span>
+                    <span>Response: ${health.avg_response_time.toFixed(0)}ms</span>
+                    <span>Papers: ${health.papers_collected}</span>
+                </div>
+            `;
+            
+            container.appendChild(apiItem);
+        }
+    }
+    
+    updateSystemResources(resources) {
+        // Update memory usage
+        const memoryProgress = document.getElementById('memory-progress');
+        const memoryText = document.getElementById('memory-text');
+        memoryProgress.style.width = resources.memory_usage + '%';
+        memoryText.textContent = resources.memory_usage.toFixed(1) + '%';
+        
+        // Color code memory usage
+        memoryProgress.className = 'progress-bar';
+        if (resources.memory_usage > 80) {
+            memoryProgress.classList.add('bg-danger');
+        } else if (resources.memory_usage > 60) {
+            memoryProgress.classList.add('bg-warning');
+        } else {
+            memoryProgress.classList.add('bg-success');
+        }
+        
+        // Update CPU usage
+        const cpuProgress = document.getElementById('cpu-progress');
+        const cpuText = document.getElementById('cpu-text');
+        cpuProgress.style.width = resources.cpu_usage + '%';
+        cpuText.textContent = resources.cpu_usage.toFixed(1) + '%';
+        
+        // Update system details
+        document.getElementById('process-memory').textContent = resources.process_memory_mb.toFixed(1);
+        document.getElementById('thread-count').textContent = resources.thread_count;
+        document.getElementById('network-connections').textContent = resources.network_connections;
+    }
+    
+    updateProcessingMetrics(processing) {
+        document.getElementById('venues-normalized').textContent = processing.venues_normalized;
+        document.getElementById('normalization-accuracy').textContent = (processing.normalization_accuracy * 100).toFixed(1) + '%';
+        document.getElementById('papers-deduplicated').textContent = processing.papers_deduplicated;
+        document.getElementById('duplicates-removed').textContent = processing.duplicates_removed;
+        document.getElementById('papers-analyzed').textContent = processing.papers_analyzed;
+        document.getElementById('breakthrough-papers').textContent = processing.breakthrough_papers_found;
+    }
+    
+    updateVenueGrid(venueProgress) {
+        const grid = document.getElementById('venue-grid');
+        
+        // Group venues by name and year
+        const venuesByName = {};
+        for (const [venueKey, progress] of Object.entries(venueProgress)) {
+            const venueName = progress.venue_name;
+            if (!venuesByName[venueName]) {
+                venuesByName[venueName] = {};
+            }
+            venuesByName[venueName][progress.year] = progress;
+        }
+        
+        // Clear existing grid
+        grid.innerHTML = '';
+        
+        // Create venue items
+        for (const [venueName, years] of Object.entries(venuesByName)) {
+            for (const [year, progress] of Object.entries(years)) {
+                const venueItem = document.createElement('div');
+                venueItem.className = `venue-item ${progress.status}`;
+                venueItem.dataset.venue = venueName;
+                venueItem.dataset.year = year;
+                
+                venueItem.innerHTML = `
+                    <div class="venue-name">${venueName}</div>
+                    <div class="venue-year">${year}</div>
+                    <div class="venue-progress">${progress.papers_collected}/${progress.target_papers}</div>
+                `;
+                
+                grid.appendChild(venueItem);
+            }
+        }
+    }
+    
+    updateCharts(metrics) {
+        const timestamp = new Date().toLocaleTimeString();
+        
+        // Update collection rate chart
+        const collectionChart = this.charts.collectionRate;
+        collectionChart.data.labels.push(timestamp);
+        collectionChart.data.datasets[0].data.push(metrics.collection_progress.papers_per_minute);
+        
+        // Keep only last 20 points
+        if (collectionChart.data.labels.length > 20) {
+            collectionChart.data.labels.shift();
+            collectionChart.data.datasets[0].data.shift();
+        }
+        
+        collectionChart.update('none');
+        
+        // Update system resources chart
+        const systemChart = this.charts.systemResources;
+        systemChart.data.labels.push(timestamp);
+        systemChart.data.datasets[0].data.push(metrics.system_resources.memory_usage);
+        systemChart.data.datasets[1].data.push(metrics.system_resources.cpu_usage);
+        
+        // Keep only last 20 points
+        if (systemChart.data.labels.length > 20) {
+            systemChart.data.labels.shift();
+            systemChart.data.datasets[0].data.shift();
+            systemChart.data.datasets[1].data.shift();
+        }
+        
+        systemChart.update('none');
+    }
+    
+    storeMetricsHistory(metrics) {
+        this.metricsHistory.push({
+            timestamp: new Date(),
+            ...metrics
+        });
+        
+        // Keep only recent history
+        if (this.metricsHistory.length > this.maxHistoryPoints) {
+            this.metricsHistory.shift();
+        }
+    }
+    
+    updateConnectionStatus(connected) {
+        const indicator = document.getElementById('connection-indicator');
+        const text = document.getElementById('connection-text');
+        
+        if (connected) {
+            indicator.className = 'status-indicator connected';
+            text.textContent = 'Connected';
+        } else {
+            indicator.className = 'status-indicator disconnected';
+            text.textContent = 'Disconnected';
+        }
+    }
+    
+    updateLastUpdateTime() {
+        const element = document.getElementById('last-update');
+        if (this.lastUpdate) {
+            element.textContent = this.lastUpdate.toLocaleTimeString();
+        }
+    }
+    
+    handleVenueCompleted(data) {
+        // Show completion notification
+        this.showNotification(`Venue ${data.venue} (${data.year}) completed with ${data.papers_collected} papers`, 'success');
+        
+        // Update the venue item in grid
+        const venueItems = document.querySelectorAll(`.venue-item[data-venue="${data.venue}"][data-year="${data.year}"]`);
+        venueItems.forEach(item => {
+            item.className = 'venue-item completed';
+            item.querySelector('.venue-progress').textContent = `${data.papers_collected}/${data.papers_collected}`;
+        });
+    }
+    
+    showVenueDetails(venueItem) {
+        const venue = venueItem.dataset.venue;
+        const year = venueItem.dataset.year;
+        const status = venueItem.classList.contains('completed') ? 'Completed' :
+                      venueItem.classList.contains('in-progress') ? 'In Progress' :
+                      venueItem.classList.contains('failed') ? 'Failed' : 'Not Started';
+        
+        const progress = venueItem.querySelector('.venue-progress').textContent;
+        
+        alert(`Venue: ${venue}\nYear: ${year}\nStatus: ${status}\nProgress: ${progress}`);
+    }
+    
+    showAlert(alert) {
+        const alertContainer = this.getOrCreateAlertContainer();
+        
+        const alertElement = document.createElement('div');
+        alertElement.className = `alert alert-${this.getBootstrapAlertClass(alert.severity)} alert-dismissible fade show`;
+        alertElement.innerHTML = `
+            <strong>${alert.title}</strong><br>
+            ${alert.message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         
-        alertsContainer.insertBefore(alertDiv, alertsContainer.firstChild);
+        alertContainer.appendChild(alertElement);
         
-        // Auto-dismiss after 30 seconds
-        setTimeout(() => {
-            alertDiv.remove();
-        }, 30000);
+        // Auto-remove after 10 seconds
+=======
+    addToHistory(metrics) {
+        this.metricsHistory.push(metrics);
         
-        // Update alerts list
-        this.updateAlertsList(alert);
+        // Keep only recent history
+        if (this.metricsHistory.length > this.maxHistorySize) {
+            this.metricsHistory = this.metricsHistory.slice(-this.maxHistorySize);
+        }
     }
     
-    updateAlertsList(alert) {
-        const alertsList = document.getElementById('recent-alerts');
-        if (!alertsList) return;
+    updateCharts() {
+        if (this.metricsHistory.length === 0) return;
         
-        const alertItem = document.createElement('div');
-        alertItem.className = 'alert-item';
-        alertItem.innerHTML = `
-            <div class="d-flex justify-content-between">
-                <div>
-                    <span class="alert-badge ${alert.severity}">${alert.severity}</span>
-                    <strong>${alert.rule_name}</strong>
-                </div>
-                <small class="alert-time">${new Date(alert.timestamp).toLocaleTimeString()}</small>
-            </div>
-            <div class="text-muted small mt-1">${alert.message}</div>
+        // Prepare data for charts
+        const labels = this.metricsHistory.map(m => {
+            const time = new Date(m.timestamp);
+            return time.toLocaleTimeString();
+        });
+        
+        const collectionRates = this.metricsHistory.map(m => 
+            m.collection_progress?.papers_per_minute || 0
+        );
+        
+        const memoryUsage = this.metricsHistory.map(m => 
+            m.system_metrics?.memory_usage_percent || 0
+        );
+        
+        const cpuUsage = this.metricsHistory.map(m => 
+            m.system_metrics?.cpu_usage_percent || 0
+        );
+        
+        // Update collection rate chart
+        this.collectionRateChart.data.labels = labels;
+        this.collectionRateChart.data.datasets[0].data = collectionRates;
+        this.collectionRateChart.update('none');
+        
+        // Update system resources chart
+        this.systemResourcesChart.data.labels = labels;
+        this.systemResourcesChart.data.datasets[0].data = memoryUsage;
+        this.systemResourcesChart.data.datasets[1].data = cpuUsage;
+        this.systemResourcesChart.update('none');
+    }
+    
+    showVenueDetails(venue, year) {
+        // Show modal or alert with venue details
+        console.log(`Showing details for ${venue} ${year}`);
+        // TODO: Implement venue details modal
+    }
+    
+    showAlert(alert) {
+        const container = document.getElementById('alerts-container');
+        
+        const alertElement = document.createElement('div');
+        alertElement.className = `alert alert-${this.getAlertClass(alert.severity)} alert-dismissible fade show`;
+        alertElement.innerHTML = `
+            <strong>${alert.rule_name}:</strong> ${alert.message}
+            <small class="d-block mt-1 text-muted">
+                ${new Date(alert.timestamp).toLocaleString()}
+            </small>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         
-        alertsList.insertBefore(alertItem, alertsList.firstChild);
+        container.appendChild(alertElement);
         
-        // Keep only last 10 alerts
-        while (alertsList.children.length > 10) {
-            alertsList.removeChild(alertsList.lastChild);
+        // Auto-remove alert after 10 seconds
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+        setTimeout(() => {
+            if (alertElement.parentNode) {
+                alertElement.remove();
+            }
+        }, 10000);
+    }
+    
+<<<<<<< HEAD
+    showNotification(message, type = 'info') {
+        const alertContainer = this.getOrCreateAlertContainer();
+        
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show`;
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        alertContainer.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    
+    getOrCreateAlertContainer() {
+        let container = document.querySelector('.alert-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'alert-container';
+            document.body.appendChild(container);
         }
+        return container;
     }
     
-    createVenueTooltip(progress) {
-        let tooltip = `Status: ${progress.status}\n`;
-        tooltip += `Papers: ${progress.papers_collected}\n`;
-        tooltip += `Progress: ${progress.completion_percent.toFixed(1)}%`;
-        
-        if (progress.last_activity) {
-            tooltip += `\nLast activity: ${this.getTimeSince(new Date(progress.last_activity))} ago`;
-        }
-        
-        return tooltip;
-    }
-    
-    getTimeSince(date) {
-        const seconds = Math.floor((new Date() - date) / 1000);
-        
-        if (seconds < 60) return `${seconds}s`;
-        const minutes = Math.floor(seconds / 60);
-        if (minutes < 60) return `${minutes}m`;
-        const hours = Math.floor(minutes / 60);
-        if (hours < 24) return `${hours}h`;
-        const days = Math.floor(hours / 24);
-        return `${days}d`;
-    }
-    
-    getStatusColor(status) {
-        switch(status) {
-            case 'completed': return 'success';
-            case 'in_progress': return 'warning';
-            case 'failed': return 'danger';
-            default: return 'secondary';
-        }
-    }
-    
+    getBootstrapAlertClass(severity) {
+        const mapping = {
+=======
     getAlertClass(severity) {
-        switch(severity) {
-            case 'critical': return 'danger';
-            case 'error': return 'danger';
-            case 'warning': return 'warning';
-            case 'info': return 'info';
-            default: return 'secondary';
-        }
+        const classes = {
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+            'info': 'info',
+            'warning': 'warning',
+            'error': 'danger',
+            'critical': 'danger'
+        };
+<<<<<<< HEAD
+        return mapping[severity] || 'info';
+=======
+        return classes[severity] || 'info';
+    }
+    
+    createElement(tag, className, textContent) {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        if (textContent) element.textContent = textContent;
+        return element;
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
     }
 }
 
-// Initialize dashboard when DOM is ready
+// Initialize dashboard when page loads
+<<<<<<< HEAD
 document.addEventListener('DOMContentLoaded', () => {
+=======
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing Collection Dashboard...');
+>>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
     window.dashboard = new CollectionDashboard();
-    console.log('Dashboard initialized');
 });

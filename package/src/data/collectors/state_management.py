@@ -667,19 +667,18 @@ class StateManager:
     
     def list_sessions(self) -> List[str]:
         """List all available sessions"""
-        with self._lock:
-            # Return active sessions
-            active_sessions = list(self._active_sessions.keys())
-            
-            # Also check for sessions on disk
-            sessions_dir = self.base_state_dir / "sessions"
-            if sessions_dir.exists():
-                disk_sessions = [d.name for d in sessions_dir.iterdir() if d.is_dir()]
-                # Combine and deduplicate
-                all_sessions = list(set(active_sessions + disk_sessions))
-                return sorted(all_sessions)
-            
-            return sorted(active_sessions)
+        # Return active sessions
+        active_sessions = list(self._active_sessions.keys())
+        
+        # Also check for sessions on disk
+        sessions_dir = self.base_state_dir / "sessions"
+        if sessions_dir.exists():
+            disk_sessions = [d.name for d in sessions_dir.iterdir() if d.is_dir()]
+            # Combine and deduplicate
+            all_sessions = list(set(active_sessions + disk_sessions))
+            return sorted(all_sessions)
+        
+        return sorted(active_sessions)
 
 
 # Monkey patch for backward compatibility with existing tests

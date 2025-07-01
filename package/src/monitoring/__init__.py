@@ -1,6 +1,8 @@
 """
-Monitoring system for paper collection dashboard and alerting.
-Provides real-time metrics collection, dashboard display, and intelligent alerting.
+Monitoring module for real-time collection dashboard and intelligent alerting.
+
+Provides system metrics collection, dashboard visualization, and proactive alerting
+for 4-6 hour paper collection sessions.
 """
 
 from .dashboard_metrics import (
@@ -10,6 +12,8 @@ from .dashboard_metrics import (
     ProcessingMetrics,
     SystemResourceMetrics,
     StateManagementMetrics,
+    MetricsSummary,
+    DashboardStatus,
     VenueProgressMetrics,
     MetricsBuffer
 )
@@ -23,6 +27,7 @@ from .alert_structures import (
     AlertRule,
     AlertSeverity,
     AlertStatus,
+    AlertDeliveryResult,
     SuppressionRule,
     AlertConfiguration,
     AlertSummary,
@@ -75,6 +80,8 @@ __all__ = [
     'ProcessingMetrics',
     'SystemResourceMetrics',
     'StateManagementMetrics',
+    'MetricsSummary',
+    'DashboardStatus',
     'VenueProgressMetrics',
     'MetricsBuffer',
     'MetricsCollector',
@@ -85,6 +92,7 @@ __all__ = [
     'AlertRule',
     'AlertSeverity',
     'AlertStatus',
+    'AlertDeliveryResult',
     'SuppressionRule',
     'AlertConfiguration',
     'AlertSummary',
