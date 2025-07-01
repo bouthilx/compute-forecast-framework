@@ -145,7 +145,13 @@ class PerformanceRegressionTestScenario:
             save_as_baseline = True
             
         # Generate test data
-        test_papers = self.mock_generator.generate_test_papers(self.config.test_data_size)
+        from src.testing.mock_data.configs import MockDataConfig, DataQuality
+        
+        mock_config = MockDataConfig(
+            size=self.config.test_data_size,
+            quality=DataQuality.NORMAL
+        )
+        test_papers = self.mock_generator.generate(mock_config)
         print(f"   ✓ Generated {len(test_papers)} test papers")
         
         # Start performance monitoring

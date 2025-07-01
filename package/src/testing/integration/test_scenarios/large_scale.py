@@ -76,6 +76,9 @@ class LargeScaleTestScenario:
         # Setup mock data generator with larger datasets
         self.mock_generator = MockDataGenerator()
         
+        # Import configs
+        from src.testing.mock_data.configs import MockDataConfig, DataQuality
+        
     def run_test(self) -> LargeScaleResult:
         """Execute the large scale test scenario"""
         start_time = time.time()
@@ -132,15 +135,21 @@ class LargeScaleTestScenario:
             
     def _generate_test_data_batched(self) -> List[Paper]:
         """Generate test data in batches to manage memory"""
+        from src.testing.mock_data.configs import MockDataConfig, DataQuality
+        
         print("   📝 Generating papers in batches...")
         
         batch_size = 1000
         all_papers = []
         
         for batch_num in range(0, self.config.test_data_size, batch_size):
-            batch_papers = self.mock_generator.generate_test_papers(
-                min(batch_size, self.config.test_data_size - batch_num)
+            current_batch_size = min(batch_size, self.config.test_data_size - batch_num)
+            
+            mock_config = MockDataConfig(
+                size=current_batch_size,
+                quality=DataQuality.NORMAL
             )
+            batch_papers = self.mock_generator.generate(mock_config)
             all_papers.extend(batch_papers)
             
             if (batch_num // batch_size + 1) % 5 == 0:  # Progress every 5 batches

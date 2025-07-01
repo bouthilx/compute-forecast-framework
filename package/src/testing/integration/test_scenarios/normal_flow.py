@@ -76,6 +76,9 @@ class NormalFlowTestScenario:
         # Setup mock data generator
         self.mock_generator = MockDataGenerator()
         
+        # Import configs
+        from src.testing.mock_data.configs import MockDataConfig, DataQuality
+        
     def _setup_validators(self) -> None:
         """Setup validators for each phase"""
         # Register phase validators
@@ -176,7 +179,13 @@ class NormalFlowTestScenario:
             
     def _generate_test_data(self) -> List[Paper]:
         """Generate test papers for normal flow"""
-        return self.mock_generator.generate_test_papers(self.config.test_data_size)
+        from src.testing.mock_data.configs import MockDataConfig, DataQuality
+        
+        mock_config = MockDataConfig(
+            size=self.config.test_data_size,
+            quality=DataQuality.NORMAL
+        )
+        return self.mock_generator.generate(mock_config)
         
     def _validate_results(self, pipeline_result: Dict[str, Any]) -> Dict[str, Any]:
         """Validate pipeline results"""
