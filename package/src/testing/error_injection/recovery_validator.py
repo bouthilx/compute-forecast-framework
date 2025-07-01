@@ -6,8 +6,9 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
 from collections import defaultdict
 
-from src.data.collectors.interruption_recovery import InterruptionRecoveryEngine
-from src.orchestration.state_persistence import StatePersistenceManager
+# Avoiding circular imports - these would be injected in production
+InterruptionRecoveryEngine = None
+StatePersistenceManager = None
 from .injection_framework import ErrorType, ErrorScenario
 
 logger = logging.getLogger(__name__)
@@ -34,15 +35,11 @@ class RecoveryValidator:
     to ensure the system meets recovery requirements.
     """
     
-    def __init__(self):
+    def __init__(self, recovery_engine=None, state_manager=None):
         """Initialize recovery validator with existing recovery systems."""
-        # Use existing recovery systems
-        self.recovery_engine = InterruptionRecoveryEngine(
-            state_manager=StatePersistenceManager(),
-            max_recovery_attempts=3,
-            recovery_timeout_seconds=300  # 5 minutes
-        )
-        self.state_manager = StatePersistenceManager()
+        # Use provided or mock recovery systems
+        self.recovery_engine = recovery_engine
+        self.state_manager = state_manager
         
         # Validation tracking
         self.validation_results: List[Dict[str, Any]] = []
