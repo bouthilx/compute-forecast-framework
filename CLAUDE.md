@@ -11,3 +11,7 @@ The data analysis is presented and described in a report under `report`.
 ## Guidelines
 
 Keep a journal in `journals/` in markdown format where you detail the analysis requested, how you proceeded and what the outcomes were. Add a timestamp and a title for each important interactions. Use your judgement to squash multiple interactions together in one journal entry if the interactions are iterations on a precise analysis question.
+
+## Planning
+
+When creating new issues, follow the guidelines in `ISSUE_LABELING_GUIDELINES.md` for the labeling of the issues.
