@@ -25,6 +25,16 @@ class EnhancedClassificationValidator(ClassificationValidator):
         self.enhanced_classifier = EnhancedOrganizationClassifier()
         self.test_cases: List[ValidationCase] = []
         self._load_default_test_cases()
+        
+        # Try to load enhanced database if available
+        try:
+            import os
+            config_path = os.path.join(os.path.dirname(__file__), "../../../config/organizations_enhanced.yaml")
+            if os.path.exists(config_path):
+                self.enhanced_classifier.load_enhanced_database(config_path)
+        except Exception:
+            # If loading fails, continue with test organizations
+            pass
     
     def _load_default_test_cases(self):
         """Load default validation test cases."""
@@ -63,6 +73,24 @@ class EnhancedClassificationValidator(ClassificationValidator):
         """Load validation test cases from file."""
         # Implementation would load test cases from a YAML or JSON file
         pass
+    
+    def validate(self, papers: List[Paper]) -> Dict[str, Any]:
+        """Override parent validate method to include accuracy metrics."""
+        # Get base validation results
+        base_results = super().validate(papers)
+        
+        # Add enhanced accuracy metrics
+        accuracy_metrics = self.validate_accuracy()
+        
+        # Merge results
+        base_results.update(accuracy_metrics)
+        
+        # Add confidence distribution for real papers
+        if papers:
+            confidence_dist = self.validate_confidence_distribution(papers)
+            base_results["confidence_distribution"] = confidence_dist
+        
+        return base_results
     
     def validate_accuracy(self) -> Dict[str, float]:
         """Run validation and return accuracy metrics."""
