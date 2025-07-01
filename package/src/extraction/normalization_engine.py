@@ -128,11 +128,17 @@ class NormalizationEngine:
                 if num_val is not None:
                     if unit:
                         return self.normalize_parameters_to_millions(num_val, unit)
-                    # If no unit, assume already in base units (individual parameters)
-                    # Convert to millions
-                    return num_val / 1e6
-            # If numeric, assume it's in base units (individual parameters)
-            return float(value) / 1e6
+                    # If no unit, assume already in millions if reasonable
+                    if num_val < 1000:  # Likely already in millions
+                        return num_val
+                    else:  # Likely in base units
+                        return num_val / 1e6
+            # If numeric, check magnitude to determine if conversion needed
+            num_val = float(value)
+            if num_val < 1000:  # Already in millions (or billions converted to millions)
+                return num_val
+            else:  # In base units, convert to millions
+                return num_val / 1e6
         
         # Memory/dataset size fields - normalize to GB
         if field in [ExtractionField.DATASET_SIZE_GB, ExtractionField.GPU_MEMORY_GB]:

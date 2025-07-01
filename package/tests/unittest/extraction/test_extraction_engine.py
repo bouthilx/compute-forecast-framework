@@ -111,7 +111,8 @@ class TestExtractionTemplateEngine:
         assert ExtractionField.TRAINING_TIME_HOURS in extracted
         assert extracted[ExtractionField.TRAINING_TIME_HOURS] == 168.0
         assert ExtractionField.PARAMETERS_COUNT in extracted
-        assert extracted[ExtractionField.PARAMETERS_COUNT] == 340000000
+        # Parameters are normalized to millions
+        assert extracted[ExtractionField.PARAMETERS_COUNT] == 340.0
         
         # Verify completeness (all required fields present)
         assert result['completeness'] == 1.0

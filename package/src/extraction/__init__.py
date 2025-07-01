@@ -6,6 +6,7 @@ from .template_engine import ExtractionTemplateEngine, ExtractionTemplate, Extra
 from .validation_rules import ValidationRulesEngine, ValidationRule
 from .normalization_engine import NormalizationEngine
 from .default_templates import DefaultTemplates
+from .coverage_reporter import CoverageReporter, TemplateCoverageReport, FieldCoverageStats
 
 __all__ = [
     "ExtractionTemplateEngine",
@@ -15,4 +16,7 @@ __all__ = [
     "ValidationRule",
     "NormalizationEngine",
     "DefaultTemplates",
+    "CoverageReporter",
+    "TemplateCoverageReport",
+    "FieldCoverageStats",
 ]

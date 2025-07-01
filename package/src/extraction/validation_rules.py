@@ -39,11 +39,11 @@ class ValidationRulesEngine:
             severity="error"
         ))
         
-        # Parameters validation
+        # Parameters validation (in millions after normalization)
         self.add_rule(ValidationRule(
             field=ExtractionField.PARAMETERS_COUNT,
             rule_type="range",
-            parameters={"min": 1e4, "max": 1e13},
+            parameters={"min": 0.01, "max": 10000000},  # 10K to 10T parameters in millions
             severity="error"
         ))
     
@@ -53,9 +53,13 @@ class ValidationRulesEngine:
             self.rules[rule.field] = []
         self.rules[rule.field].append(rule)
     
-    def validate_range(self, value: float, min_val: float, max_val: float) -> bool:
+    def validate_range(self, value: Any, min_val: float, max_val: float) -> bool:
         """Validate value is within range."""
-        return min_val <= value <= max_val
+        try:
+            num_value = float(value)
+            return min_val <= num_value <= max_val
+        except (ValueError, TypeError):
+            return False
     
     def validate_enum(self, value: str, allowed_values: List[str]) -> bool:
         """Validate value is in allowed set."""

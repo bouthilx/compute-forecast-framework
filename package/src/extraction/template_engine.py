@@ -91,8 +91,14 @@ class ExtractionTemplateEngine:
     
     def load_default_templates(self):
         """Load default extraction templates."""
-        # Will be implemented with DefaultTemplates class
-        pass
+        from .default_templates import DefaultTemplates
+        
+        # Register all default templates
+        self.register_template(DefaultTemplates.nlp_training_template())
+        self.register_template(DefaultTemplates.cv_training_template())
+        self.register_template(DefaultTemplates.rl_training_template())
+        self.register_template(DefaultTemplates.generic_training_template())
+        self.register_template(DefaultTemplates.inference_template())
     
     def register_template(self, template: ExtractionTemplate):
         """Register a new extraction template."""
@@ -112,11 +118,11 @@ class ExtractionTemplateEngine:
         template = self.templates[template_id]
         extracted = self.map_to_template(raw_analysis, template)
         
-        # 3. Validate against rules
-        validation_results = self.validate_extraction(extracted, template)
-        
-        # 4. Normalize values
+        # 3. Normalize values BEFORE validation
         normalized = self.normalize_values(extracted, template)
+        
+        # 4. Validate against rules (on normalized values)
+        validation_results = self.validate_extraction(normalized, template)
         
         return {
             "template_id": template_id,
