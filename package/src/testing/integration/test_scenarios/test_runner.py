@@ -325,7 +325,7 @@ class EndToEndTestRunner:
         print(f"Execution Time: {result.execution_time_seconds:.1f}s")
         print(f"Tests: {result.tests_passed}/{result.tests_run} passed")
         
-        print(f"\n📊 System Health Assessment:")
+        print("\n📊 System Health Assessment:")
         for aspect, status in result.summary.items():
             aspect_formatted = aspect.replace('_', ' ').title()
             print(f"   {aspect_formatted}: {status}")
@@ -340,7 +340,7 @@ class EndToEndTestRunner:
             for rec in result.recommendations[:8]:  # Show top 8
                 print(f"   • {rec}")
                 
-        print(f"\n📈 Individual Test Results:")
+        print("\n📈 Individual Test Results:")
         
         if result.normal_flow_result:
             status = "✅" if result.normal_flow_result.success else "❌"

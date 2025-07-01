@@ -13,12 +13,10 @@ from datetime import datetime
 
 from src.testing.integration.pipeline_test_framework import (
     EndToEndTestFramework,
-    PipelineConfig,
-    PipelinePhase
+    PipelineConfig
 )
 from src.testing.integration.performance_monitor import PerformanceMonitor, BottleneckAnalyzer
 from src.testing.mock_data.generators import MockDataGenerator
-from src.data.models import Paper
 
 
 @dataclass
@@ -468,29 +466,29 @@ class PerformanceRegressionTestScenario:
         
         # Current performance summary
         current = result.current_performance
-        print(f"\n📊 Current Performance:")
+        print("\n📊 Current Performance:")
         print(f"   Throughput: {current.throughput_papers_per_second:.1f} papers/sec")
         print(f"   Peak Memory: {current.peak_memory_mb:.0f}MB")
         print(f"   CPU Utilization: {current.cpu_utilization:.1f}%")
         print(f"   Memory Efficiency: {current.memory_efficiency:.2f} papers/MB")
         
         if result.critical_issues:
-            print(f"\n🚨 Critical Issues:")
+            print("\n🚨 Critical Issues:")
             for issue in result.critical_issues:
                 print(f"   • {issue}")
                 
         if result.performance_regressions:
-            print(f"\n📉 Performance Regressions:")
+            print("\n📉 Performance Regressions:")
             for regression in result.performance_regressions[:5]:  # Show top 5
                 print(f"   • {regression}")
                 
         if result.performance_improvements:
-            print(f"\n📈 Performance Improvements:")
+            print("\n📈 Performance Improvements:")
             for improvement in result.performance_improvements[:5]:  # Show top 5
                 print(f"   • {improvement}")
                 
         if result.recommendations:
-            print(f"\n💡 Recommendations:")
+            print("\n💡 Recommendations:")
             for rec in result.recommendations[:5]:  # Show top 5
                 print(f"   • {rec}")
                 

@@ -6,9 +6,8 @@ Provides detailed resource tracking and bottleneck analysis.
 import time
 import threading
 import psutil
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Any
-from datetime import datetime
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Any
 import statistics
 
 from src.testing.integration.pipeline_test_framework import PipelinePhase
@@ -135,7 +134,7 @@ class PerformanceMonitor:
         # Initialize process handle
         try:
             self._process = psutil.Process()
-        except:
+        except Exception:
             self._process = None
             
     def start_monitoring(self) -> None:
@@ -207,7 +206,7 @@ class PerformanceMonitor:
                     io_counters = self._process.io_counters()
                     snapshot.io_read_bytes = io_counters.read_bytes
                     snapshot.io_write_bytes = io_counters.write_bytes
-                except:
+                except Exception:
                     pass  # Not available on all platforms
                     
                 # Network (system-wide, not process-specific)
@@ -215,7 +214,7 @@ class PerformanceMonitor:
                     net_counters = psutil.net_io_counters()
                     snapshot.network_bytes_sent = net_counters.bytes_sent
                     snapshot.network_bytes_recv = net_counters.bytes_recv
-                except:
+                except Exception:
                     pass
                     
                 # Thread count
@@ -224,7 +223,7 @@ class PerformanceMonitor:
                 # Open files
                 try:
                     snapshot.open_files = len(self._process.open_files())
-                except:
+                except Exception:
                     pass
                     
             except psutil.NoSuchProcess:

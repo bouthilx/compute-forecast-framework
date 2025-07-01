@@ -6,7 +6,7 @@ Verifies graceful degradation, checkpoint recovery, and partial results handling
 
 import time
 import random
-from typing import List, Dict, Any, Optional, Callable
+from typing import List, Dict, Any, Callable
 from dataclasses import dataclass
 from enum import Enum
 
@@ -17,7 +17,6 @@ from src.testing.integration.pipeline_test_framework import (
 )
 from src.testing.integration.performance_monitor import PerformanceMonitor
 from src.testing.mock_data.generators import MockDataGenerator
-from src.data.models import Paper
 
 
 class ErrorType(Enum):
@@ -287,7 +286,7 @@ class ErrorRecoveryTestScenario:
     def _attempt_recovery(self, error_info: Dict[str, Any], data: Any) -> bool:
         """Attempt to recover from an error"""
         error_type = error_info["error_type"]
-        phase = error_info["phase"]
+        # phase = error_info["phase"]  # Not used in current implementation
         
         # Simulate different recovery strategies
         if error_type == ErrorType.NETWORK_TIMEOUT:
@@ -505,22 +504,22 @@ class ErrorRecoveryTestScenario:
         print(f"Partial Results Preserved: {'✅ Yes' if result.partial_results_preserved else '❌ No'}")
         
         if result.failures_by_phase:
-            print(f"\n💥 Failures by Phase:")
+            print("\n💥 Failures by Phase:")
             for phase, errors in result.failures_by_phase.items():
                 print(f"   {phase}: {', '.join(set(errors))}")
                 
         if result.recovery_strategies_used:
-            print(f"\n🔧 Recovery Strategies Used:")
+            print("\n🔧 Recovery Strategies Used:")
             for strategy in result.recovery_strategies_used:
                 print(f"   • {strategy}")
                 
         if result.recommendations:
-            print(f"\n💡 Recovery Improvement Recommendations:")
+            print("\n💡 Recovery Improvement Recommendations:")
             for rec in result.recommendations[:5]:  # Show top 5
                 print(f"   • {rec}")
                 
         if result.errors:
-            print(f"\n❌ Unrecovered Errors:")
+            print("\n❌ Unrecovered Errors:")
             for error in result.errors[:3]:  # Show first 3
                 print(f"   • {error}")
                 

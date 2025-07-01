@@ -5,7 +5,7 @@ Ensures data integrity and quality at each pipeline phase.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional, Set, Tuple
+from typing import List, Dict, Any, Set, Tuple
 from datetime import datetime
 
 from src.testing.integration.pipeline_test_framework import PipelinePhase
@@ -223,9 +223,9 @@ class ProjectionPhaseValidator(PhaseValidator):
             "resource_projections"
         ]
         
-        for field in required_fields:
-            if field not in data:
-                result.add_error(f"Missing {field} in projections")
+        for req_field in required_fields:
+            if req_field not in data:
+                result.add_error(f"Missing {req_field} in projections")
                 
         if not result.is_valid:
             return result
@@ -306,7 +306,7 @@ class ReportingPhaseValidator(PhaseValidator):
             try:
                 # Try to parse timestamp
                 datetime.fromisoformat(data["generated_at"].replace('Z', '+00:00'))
-            except:
+            except Exception:
                 result.add_error("Invalid timestamp format in generated_at")
                 
         result.metrics = {

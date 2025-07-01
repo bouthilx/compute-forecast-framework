@@ -5,7 +5,7 @@ Target: <5 minutes execution, <4GB memory usage.
 """
 
 import time
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from dataclasses import dataclass
 
 from src.testing.integration.pipeline_test_framework import (
@@ -77,14 +77,13 @@ class NormalFlowTestScenario:
         self.mock_generator = MockDataGenerator()
         
         # Import configs
-        from src.testing.mock_data.configs import MockDataConfig, DataQuality
         
     def _setup_validators(self) -> None:
         """Setup validators for each phase"""
         # Register phase validators
         collection_validator = CollectionPhaseValidator(min_papers=800)
         extraction_validator = ExtractionPhaseValidator()
-        analysis_validator = AnalysisPhaseValidator()
+        # analysis_validator = AnalysisPhaseValidator()  # Using simple function instead
         projection_validator = ProjectionPhaseValidator()
         reporting_validator = ReportingPhaseValidator()
         
@@ -306,17 +305,17 @@ class NormalFlowTestScenario:
         print(f"Phases Completed: {len(result.phases_completed)}/{len(self.config.phases_to_test)}")
         
         if result.bottlenecks:
-            print(f"\n⚠️ Bottlenecks Identified:")
+            print("\n⚠️ Bottlenecks Identified:")
             for bottleneck in result.bottlenecks:
                 print(f"   • {bottleneck}")
                 
         if result.recommendations:
-            print(f"\n💡 Recommendations:")
+            print("\n💡 Recommendations:")
             for rec in result.recommendations:
                 print(f"   • {rec}")
                 
         if result.errors:
-            print(f"\n❌ Errors:")
+            print("\n❌ Errors:")
             for error in result.errors:
                 print(f"   • {error}")
                 

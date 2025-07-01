@@ -6,13 +6,12 @@ Verifies memory optimization and streaming/batching capabilities.
 
 import time
 import threading
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from dataclasses import dataclass
 
 from src.testing.integration.pipeline_test_framework import (
     EndToEndTestFramework,
-    PipelineConfig,
-    PipelinePhase
+    PipelineConfig
 )
 from src.testing.integration.performance_monitor import PerformanceMonitor, BottleneckAnalyzer
 from src.testing.mock_data.generators import MockDataGenerator
@@ -77,7 +76,6 @@ class LargeScaleTestScenario:
         self.mock_generator = MockDataGenerator()
         
         # Import configs
-        from src.testing.mock_data.configs import MockDataConfig, DataQuality
         
     def run_test(self) -> LargeScaleResult:
         """Execute the large scale test scenario"""
@@ -397,22 +395,22 @@ class LargeScaleTestScenario:
         print(f"Phases Completed: {len(result.phases_completed)}/{len(self.config.phases_to_test)}")
         
         if result.scaling_issues:
-            print(f"\n⚠️ Scaling Issues:")
+            print("\n⚠️ Scaling Issues:")
             for issue in result.scaling_issues:
                 print(f"   • {issue}")
                 
         if result.bottlenecks:
-            print(f"\n🔍 Performance Bottlenecks:")
+            print("\n🔍 Performance Bottlenecks:")
             for bottleneck in result.bottlenecks:
                 print(f"   • {bottleneck}")
                 
         if result.recommendations:
-            print(f"\n💡 Scaling Recommendations:")
+            print("\n💡 Scaling Recommendations:")
             for rec in result.recommendations[:5]:  # Show top 5
                 print(f"   • {rec}")
                 
         if result.errors:
-            print(f"\n❌ Errors:")
+            print("\n❌ Errors:")
             for error in result.errors:
                 print(f"   • {error}")
                 

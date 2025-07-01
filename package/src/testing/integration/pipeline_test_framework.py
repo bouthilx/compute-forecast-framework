@@ -391,7 +391,7 @@ class EndToEndTestFramework:
         """Get current memory usage in MB"""
         try:
             return self._process.memory_info().rss / 1024 / 1024
-        except:
+        except Exception:
             return 0.0
             
     def analyze_bottlenecks(self) -> Dict[PipelinePhase, List[str]]:
