@@ -63,19 +63,19 @@ class TemplateCoverageReport:
     def get_required_field_coverage(self, template: ExtractionTemplate) -> Dict[ExtractionField, float]:
         """Get coverage percentages for required fields."""
         coverage = {}
-        for field in template.required_fields:
-            if field in self.field_coverage:
-                coverage[field] = self.field_coverage[field].coverage_percentage
+        for req_field in template.required_fields:
+            if req_field in self.field_coverage:
+                coverage[req_field] = self.field_coverage[req_field].coverage_percentage
             else:
-                coverage[field] = 0.0
+                coverage[req_field] = 0.0
         return coverage
     
     def get_low_coverage_fields(self, threshold: float = 50.0) -> List[ExtractionField]:
         """Get fields with coverage below threshold."""
         low_coverage = []
-        for field, stats in self.field_coverage.items():
+        for coverage_field, stats in self.field_coverage.items():
             if stats.coverage_percentage < threshold:
-                low_coverage.append(field)
+                low_coverage.append(coverage_field)
         return low_coverage
 
 
@@ -123,29 +123,29 @@ class CoverageReporter:
         
         # Initialize field stats for all template fields
         all_fields = set(template.required_fields + template.optional_fields)
-        for field in all_fields:
-            if field not in report.field_coverage:
-                report.field_coverage[field] = FieldCoverageStats(field=field)
+        for template_field in all_fields:
+            if template_field not in report.field_coverage:
+                report.field_coverage[template_field] = FieldCoverageStats(field=template_field)
             
-            stats = report.field_coverage[field]
+            stats = report.field_coverage[template_field]
             stats.total_papers += 1
             
-            if field in extracted_fields:
+            if template_field in extracted_fields:
                 stats.papers_with_field += 1
                 
                 # Track confidence
-                if field in confidence_scores:
-                    stats.confidence_scores.append(confidence_scores[field])
+                if template_field in confidence_scores:
+                    stats.confidence_scores.append(confidence_scores[template_field])
                 
                 # Track unique values (limit to reasonable size)
-                value = extracted_fields[field]
+                value = extracted_fields[template_field]
                 if len(stats.unique_values) < 1000:  # Prevent memory issues
                     stats.unique_values.add(str(value))
             
             # Track validation failures for this field
             validation_errors = result['validation_results'].get('errors', [])
             for error in validation_errors:
-                if isinstance(error, dict) and error.get('field') == field.value:
+                if isinstance(error, dict) and error.get('field') == template_field.value:
                     stats.validation_failures += 1
     
     def generate_report(self, template_id: str) -> Optional[TemplateCoverageReport]:
@@ -249,9 +249,9 @@ class CoverageReporter:
             reverse=True
         )
         
-        for field, stats in sorted_fields:
+        for report_field, stats in sorted_fields:
             lines.append(
-                f"{field.value:<30} "
+                f"{report_field.value:<30} "
                 f"{stats.coverage_percentage:>6.1f}% "
                 f"{stats.average_confidence:>9.2f} "
                 f"{stats.validation_failures:>9d}"

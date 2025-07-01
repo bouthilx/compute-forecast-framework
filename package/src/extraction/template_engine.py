@@ -3,11 +3,11 @@ Template engine for standardized extraction of computational requirements.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Any
 from enum import Enum
 
 from src.analysis.computational.analyzer import ComputationalAnalyzer
-from src.data.models import Paper, ComputationalAnalysis
+from src.data.models import Paper
 
 
 class ExtractionField(Enum):
@@ -156,9 +156,9 @@ class ExtractionTemplateEngine:
         
         # Only include fields that are in the template
         all_template_fields = set(template.required_fields + template.optional_fields)
-        for field, value in field_mappings.items():
-            if field in all_template_fields and value is not None:
-                extracted[field] = value
+        for extraction_field, value in field_mappings.items():
+            if extraction_field in all_template_fields and value is not None:
+                extracted[extraction_field] = value
         
         return extracted
     
@@ -172,10 +172,10 @@ class ExtractionTemplateEngine:
         validator = ValidationRulesEngine()
         
         # Add template-specific rules
-        for field, rules in template.validation_rules.items():
+        for val_field, rules in template.validation_rules.items():
             if "min" in rules and "max" in rules:
                 validator.add_rule(ValidationRule(
-                    field=field,
+                    field=val_field,
                     rule_type="range",
                     parameters={"min": rules["min"], "max": rules["max"]},
                     severity="error"
@@ -204,7 +204,7 @@ class ExtractionTemplateEngine:
         
         # Simple heuristic: assign base confidence to all fields
         # Can be enhanced with field-specific logic
-        for field in extracted:
-            confidence_scores[field] = base_confidence
+        for extracted_field in extracted:
+            confidence_scores[extracted_field] = base_confidence
         
         return confidence_scores

@@ -1,7 +1,7 @@
 """Validation rules engine for extracted values."""
 
 from dataclasses import dataclass
-from typing import Dict, List, Any, Callable, Optional
+from typing import Dict, List, Any, Callable
 from .template_engine import ExtractionField
 
 
