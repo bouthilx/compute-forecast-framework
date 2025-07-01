@@ -132,15 +132,18 @@ class TestAnalyzerErrorHandler:
         """Test processing error simulation."""
         handler = AnalyzerErrorHandler()
         
-        # Configure error injection
-        handler.set_error_rate(0.1)  # 10% error rate
+        # Configure error injection with high rate to ensure errors
+        handler.set_error_rate(0.5)  # 50% error rate
         handler.simulate_processing_errors()
         
-        # Process batch and check for errors
-        results = handler.process_papers_batch(10)
+        # Process multiple batches to ensure we get errors
+        total_errors = 0
+        for _ in range(5):  # Try 5 batches
+            results = handler.process_papers_batch(10)
+            total_errors += len(results["errors"])
         
         assert handler._processing_errors_active is True
-        assert len(results["errors"]) > 0  # Should have some errors
+        assert total_errors > 0  # Should have some errors across batches
 
 
 class TestReporterErrorHandler:
@@ -205,14 +208,16 @@ class TestReporterErrorHandler:
         
         # Setup outputs
         handler.set_output_path("/primary/output")
-        handler.add_alternative_output("/backup/output", "backup")
+        # For disk_full recovery, need non-file alternative
+        handler.add_alternative_output("memory://", "memory", "memory")
         
         # Simulate failure and recovery
-        handler.simulate_output_failure("disk_full")
+        handler.simulate_disk_full()
         
         # Attempt recovery
         recovery_result = handler.attempt_recovery()
         
         assert recovery_result["recovered"] is True
         assert recovery_result["recovery_method"] == "alternative_output"
-        assert handler.can_write_output() is True
+        assert handler.can_write_output() is True  # Can write to alternative
+        assert handler.get_available_space_mb() == 0  # But disk still full
