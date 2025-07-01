@@ -160,19 +160,32 @@ class ExtractionTemplateEngine:
                           extracted: Dict[ExtractionField, Any], 
                           template: ExtractionTemplate) -> Dict[str, Any]:
         """Validate extracted values against template rules."""
-        # Placeholder - will be implemented with ValidationRulesEngine
-        return {
-            "passed": True,
-            "warnings": [],
-            "errors": []
-        }
+        from .validation_rules import ValidationRulesEngine, ValidationRule
+        
+        # Create validation engine
+        validator = ValidationRulesEngine()
+        
+        # Add template-specific rules
+        for field, rules in template.validation_rules.items():
+            if "min" in rules and "max" in rules:
+                validator.add_rule(ValidationRule(
+                    field=field,
+                    rule_type="range",
+                    parameters={"min": rules["min"], "max": rules["max"]},
+                    severity="error"
+                ))
+        
+        # Validate the extraction
+        return validator.validate_extraction(extracted)
     
     def normalize_values(self, 
                         extracted: Dict[ExtractionField, Any], 
                         template: ExtractionTemplate) -> Dict[ExtractionField, Any]:
         """Normalize values to standard units."""
-        # Placeholder - will be implemented with NormalizationEngine
-        return extracted
+        from .normalization_engine import NormalizationEngine
+        
+        normalizer = NormalizationEngine()
+        return normalizer.normalize_extraction(extracted)
     
     def calculate_field_confidence(self, 
                                  extracted: Dict[ExtractionField, Any],
