@@ -14,6 +14,12 @@ from src.data.models import Paper
 
 logger = logging.getLogger(__name__)
 
+# Module-level constants
+SEMANTIC_SCHOLAR_MAX_BATCH_SIZE = 500  # Maximum papers per batch API call
+DEFAULT_MAX_RETRIES = 3  # Default number of retries for API failures
+CONFIDENCE_SCORE_WITH_IDENTIFIER = 0.9  # Confidence when found via DOI/arXiv/SS ID
+CONFIDENCE_SCORE_TITLE_SEARCH = 0.8  # Confidence when found via title search
+
 
 class SemanticScholarPDFCollector(BasePDFCollector):
     """Collects PDF URLs from Semantic Scholar's openAccessPdf field."""
@@ -32,7 +38,7 @@ class SemanticScholarPDFCollector(BasePDFCollector):
         
         # Batch settings
         self.supports_batch = True
-        self.batch_size = 500  # Max batch size for SS API
+        self.batch_size = SEMANTIC_SCHOLAR_MAX_BATCH_SIZE
         
         # Rate limiting
         # Without API key: 100 requests per 5 minutes = 1 request per 3 seconds
@@ -41,7 +47,7 @@ class SemanticScholarPDFCollector(BasePDFCollector):
         self.last_request_time = 0
         
         # Retry settings
-        self.max_retries = 3
+        self.max_retries = DEFAULT_MAX_RETRIES
         self.retry_delay = 1.0
         
         logger.info(f"Initialized Semantic Scholar PDF collector "
@@ -58,6 +64,33 @@ class SemanticScholarPDFCollector(BasePDFCollector):
             time.sleep(sleep_time)
         
         self.last_request_time = time.time()
+    
+    def _match_paper_to_response(self, ss_paper: dict, paper_map: Dict[str, Paper]) -> Optional[Paper]:
+        """Match a Semantic Scholar response to our original paper.
+        
+        Args:
+            ss_paper: Semantic Scholar API response for a paper
+            paper_map: Mapping of identifiers to our Paper objects
+            
+        Returns:
+            The matched Paper object, or None if no match found
+        """
+        # Direct ID match
+        paper_id = ss_paper.get('paperId')
+        if paper_id in paper_map:
+            return paper_map[paper_id]
+        
+        # DOI match
+        doi = ss_paper.get('doi')
+        if doi and f"DOI:{doi}" in paper_map:
+            return paper_map[f"DOI:{doi}"]
+        
+        # arXiv match
+        arxiv_id = ss_paper.get('arxivId')
+        if arxiv_id and f"ARXIV:{arxiv_id}" in paper_map:
+            return paper_map[f"ARXIV:{arxiv_id}"]
+        
+        return None
     
     def _discover_single(self, paper: Paper) -> PDFRecord:
         """Discover PDF for a single paper.
@@ -141,7 +174,7 @@ class SemanticScholarPDFCollector(BasePDFCollector):
             (hasattr(paper, 'arxiv_id') and paper.arxiv_id) or
             (hasattr(paper, 'semantic_scholar_id') and paper.semantic_scholar_id)
         )
-        confidence_score = 0.9 if has_identifier else 0.8
+        confidence_score = CONFIDENCE_SCORE_WITH_IDENTIFIER if has_identifier else CONFIDENCE_SCORE_TITLE_SEARCH
         
         return PDFRecord(
             paper_id=paper.paper_id,
@@ -166,6 +199,10 @@ class SemanticScholarPDFCollector(BasePDFCollector):
             
         Returns:
             Dictionary mapping paper_id to PDFRecord for successful discoveries
+            
+        Example:
+            collector = SemanticScholarPDFCollector()
+            records = collector.discover_pdfs_batch([paper1, paper2])
         """
         if not papers:
             return {}
@@ -206,15 +243,8 @@ class SemanticScholarPDFCollector(BasePDFCollector):
                         if not ss_paper:
                             continue
                         
-                        # Find our paper
-                        our_paper = None
-                        for key, paper in paper_map.items():
-                            if (ss_paper.get('paperId') == key or
-                                key in [f"DOI:{ss_paper.get('doi')}", 
-                                       f"ARXIV:{ss_paper.get('arxivId')}"]):
-                                our_paper = paper
-                                break
-                        
+                        # Find our paper using helper method
+                        our_paper = self._match_paper_to_response(ss_paper, paper_map)
                         if not our_paper:
                             continue
                         
@@ -226,7 +256,7 @@ class SemanticScholarPDFCollector(BasePDFCollector):
                                 pdf_url=open_access_pdf['url'],
                                 source=self.source_name,
                                 discovery_timestamp=datetime.now(),
-                                confidence_score=0.9,
+                                confidence_score=CONFIDENCE_SCORE_WITH_IDENTIFIER,
                                 version_info={
                                     'ss_paper_id': ss_paper.get('paperId'),
                                     'pdf_status': open_access_pdf.get('status', 'unknown')
