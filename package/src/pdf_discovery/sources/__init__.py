@@ -6,6 +6,7 @@ from .pmlr_collector import PMLRCollector
 from .pubmed_central_collector import PubMedCentralCollector
 from .acl_anthology_collector import ACLAnthologyCollector
 from .openalex_collector import OpenAlexPDFCollector
+from .cvf_collector import CVFCollector
 
 __all__ = [
     "OpenReviewPDFCollector",
@@ -15,5 +16,6 @@ __all__ = [
     "PMLRCollector",
     "PubMedCentralCollector",
     "ACLAnthologyCollector",
-    "OpenAlexPDFCollector"
+    "OpenAlexPDFCollector",
+    "CVFCollector"
 ]
