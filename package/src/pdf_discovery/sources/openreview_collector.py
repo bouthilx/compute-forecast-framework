@@ -97,10 +97,13 @@ class OpenReviewPDFCollector(BasePDFCollector):
         submissions = self._make_api_request(
             lambda: self.client.get_all_notes(
                 invitation=invitation,
-                details="original",
-                limit=1000,  # Get many to search through
+                details="original"
             )
         )
+        
+        # Apply manual limit to avoid memory issues
+        if len(submissions) > 1000:
+            submissions = submissions[:1000]
 
         # Find best title match
         best_match = None
@@ -153,10 +156,13 @@ class OpenReviewPDFCollector(BasePDFCollector):
                 lambda: self.client.get_all_notes(
                     invitation=invitation,
                     content={"authors": first_author},
-                    details="original",
-                    limit=100,
+                    details="original"
                 )
             )
+            
+            # Apply manual limit to avoid memory issues  
+            if len(submissions) > 100:
+                submissions = submissions[:100]
 
             # Check author overlap
             for submission in submissions:
