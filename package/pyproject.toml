@@ -23,6 +23,9 @@ dependencies = [
     "google-api-python-client>=2.100.0",
     "google-auth>=2.20.0",
     "python-dotenv>=1.0.0",
+    "lxml>=5.0.0",
+    "docker>=7.0.0",
+    "pypdf>=4.0.0",
 ]
 
 [dependency-groups]
