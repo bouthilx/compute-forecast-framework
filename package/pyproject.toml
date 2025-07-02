@@ -19,6 +19,7 @@ dependencies = [
     "rapidfuzz>=3.13.0",
     "openreview-py>=1.50.1",
     "beautifulsoup4>=4.13.4",
+    "semanticscholar>=0.10.0",
 ]
 
 [dependency-groups]
