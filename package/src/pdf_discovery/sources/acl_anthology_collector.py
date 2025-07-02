@@ -34,6 +34,7 @@ from typing import Optional, List, Tuple
 from difflib import SequenceMatcher
 
 import requests
+from bs4 import BeautifulSoup
 
 from src.data.models import Paper
 from src.pdf_discovery.core.collectors import BasePDFCollector
@@ -116,21 +117,28 @@ class ACLAnthologyCollector(BasePDFCollector):
                 logger.warning(f"Failed to fetch proceedings from {proceedings_url}: {response.status_code}")
                 return None
             
-            # Parse proceedings HTML to find paper
+            # Parse proceedings HTML to find paper using BeautifulSoup
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
             # Look for links with paper URLs matching pattern /{year}.{venue_code}.{id}/
             pattern = rf'/{year}\.{re.escape(venue_code)}\.(\d+)/'
             
-            # Find all paper entries - look for href and the title text after the tag
-            for match in re.finditer(rf'<a[^>]+href="({pattern})"[^>]*>([^<]+)</a>', response.text, re.IGNORECASE):
-                full_match = match.group(0)
-                url_match = match.group(1)
-                paper_id = match.group(2)
-                link_title = match.group(3)
+            # Find all anchor tags with href attributes
+            for link in soup.find_all('a', href=True):
+                href = link.get('href')
                 
-                # Check if title matches (fuzzy matching)
-                if self._fuzzy_match_title(link_title, title):
-                    logger.info(f"Found paper ID {paper_id} for title: {title}")
-                    return paper_id
+                # Check if href matches the pattern
+                match = re.search(pattern, href)
+                if match:
+                    paper_id = match.group(1)
+                    
+                    # Get the text content of the link (handles nested HTML tags)
+                    link_title = link.get_text(strip=True)
+                    
+                    # Check if title matches (fuzzy matching)
+                    if self._fuzzy_match_title(link_title, title):
+                        logger.info(f"Found paper ID {paper_id} for title: {title}")
+                        return paper_id
             
             logger.debug(f"Paper not found in proceedings: {title}")
             return None

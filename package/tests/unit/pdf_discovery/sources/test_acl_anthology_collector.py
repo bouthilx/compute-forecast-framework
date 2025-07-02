@@ -93,6 +93,56 @@ class TestACLAnthologyCollector:
             # Verify correct URL was called
             expected_url = "https://aclanthology.org/events/emnlp-2023/"
             mock_get.assert_called_with(expected_url, timeout=30)
+
+    def test_search_proceedings_complex_html(self, collector):
+        """Test proceedings search with complex HTML structure using BeautifulSoup."""
+        # Mock proceedings page with more complex HTML structure
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.text = """
+        <html>
+        <body>
+            <div class="anthology-content">
+                <div class="paper-entry">
+                    <p class="d-flex justify-content-between">
+                        <span class="title">
+                            <a href="/2023.emnlp-main.456/" class="text-decoration-none">
+                                Neural Machine Translation by Jointly Learning to Align and Translate
+                            </a>
+                        </span>
+                        <span class="badge badge-secondary">Main</span>
+                    </p>
+                    <p class="authors">Author One, Author Two</p>
+                </div>
+                <div class="paper-entry">
+                    <p class="d-flex justify-content-between">
+                        <span class="title">
+                            <a href="/2023.emnlp-main.789/" class="text-decoration-none">
+                                Another Complex Paper Title with <em>Emphasis</em> and Other Tags
+                            </a>
+                        </span>
+                        <span class="badge badge-secondary">Main</span>
+                    </p>
+                    <p class="authors">Author Three, Author Four</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        with patch.object(collector.session, 'get', return_value=mock_response):
+            paper_id = collector._search_proceedings(
+                "emnlp-main", 2023, 
+                "Neural Machine Translation by Jointly Learning to Align and Translate"
+            )
+            assert paper_id == "456"
+            
+            # Test with the second paper that has HTML tags in title
+            paper_id = collector._search_proceedings(
+                "emnlp-main", 2023,
+                "Another Complex Paper Title with Emphasis and Other Tags"
+            )
+            assert paper_id == "789"
     
     def test_search_proceedings_not_found(self, collector):
         """Test proceedings search when paper not found."""
