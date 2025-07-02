@@ -5,6 +5,7 @@ from .venue_mappings import OPENREVIEW_VENUES, get_venue_invitation, is_venue_su
 from .pmlr_collector import PMLRCollector
 from .pubmed_central_collector import PubMedCentralCollector
 from .acl_anthology_collector import ACLAnthologyCollector
+from .openalex_collector import OpenAlexPDFCollector
 
 __all__ = [
     "OpenReviewPDFCollector",
@@ -13,5 +14,6 @@ __all__ = [
     "is_venue_supported",
     "PMLRCollector",
     "PubMedCentralCollector",
-    "ACLAnthologyCollector"
+    "ACLAnthologyCollector",
+    "OpenAlexPDFCollector"
 ]
