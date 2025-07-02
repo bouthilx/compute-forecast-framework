@@ -103,6 +103,7 @@ class GROBIDExtractor(BaseExtractor):
                 'authors_with_affiliations': parsed_data.get('authors', []),
                 'title': parsed_data.get('title', ''),
                 'abstract': parsed_data.get('abstract', ''),
+                'text': response.text,  # Include raw text for validation
                 'method': 'grobid',
                 'confidence': 0.8  # GROBID is generally reliable for academic papers
             }
@@ -245,11 +246,11 @@ class GROBIDExtractor(BaseExtractor):
                     'affiliations': affiliations
                 })
             
-            # Create unique list of all affiliations
+            # Create unique list of all affiliations formatted for validator
             all_affiliations = []
             for author in authors:
                 all_affiliations.extend(author['affiliations'])
-            unique_affiliations = list(set(all_affiliations))
+            unique_affiliations = [{'name': aff} for aff in list(set(all_affiliations))]
             
             return {
                 'title': title,

@@ -152,8 +152,9 @@ class TestGROBIDExtractor:
         
         # Check unique affiliations list
         assert len(result['affiliations']) == 2
-        assert any('University of Test' in aff for aff in result['affiliations'])
-        assert any('Test Institute' in aff for aff in result['affiliations'])
+        affiliation_names = [aff['name'] for aff in result['affiliations']]
+        assert any('University of Test' in name for name in affiliation_names)
+        assert any('Test Institute' in name for name in affiliation_names)
     
     def test_parse_grobid_xml_empty_elements(self):
         """Test parsing XML with empty or missing elements."""
@@ -246,7 +247,7 @@ class TestGROBIDExtractor:
         assert result['method'] == 'grobid'
         assert result['confidence'] == 0.8
         assert len(result['affiliations']) == 1
-        assert 'Test University' in result['affiliations'][0]
+        assert result['affiliations'][0]['name'] == 'Test University'
         assert len(result['authors_with_affiliations']) == 1
         assert result['title'] == 'Test Title'
     
