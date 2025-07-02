@@ -10,6 +10,7 @@ from datetime import datetime
 from src.data.models import Paper
 from src.pdf_discovery.core.models import PDFRecord
 from src.pdf_discovery.core.collectors import BasePDFCollector
+from src.core.exceptions import UnsupportedSourceError, PDFNotAvailableError, PDFNetworkError
 from .doi_resolver_collector import DOIResolverCollector
 
 logger = logging.getLogger(__name__)
@@ -148,6 +149,9 @@ class NaturePDFCollector(BasePDFCollector):
                 logger.debug(f"Article {article_id} requires authentication - not open access")
                 return None
                 
+        except requests.RequestException as e:
+            logger.warning(f"Network error checking Nature PDF availability for {article_id}: {e}")
+            raise PDFNetworkError(f"Failed to check PDF availability due to network error: {e}")
         except Exception as e:
             logger.warning(f"Error checking Nature PDF availability for {article_id}: {e}")
             
@@ -163,13 +167,15 @@ class NaturePDFCollector(BasePDFCollector):
             PDFRecord with discovered PDF information
             
         Raises:
-            Exception: If paper is not from Nature or no open access PDF found
+            UnsupportedSourceError: If paper is not from a supported Nature journal
+            PDFNotAvailableError: If no open access PDF can be found
+            PDFNetworkError: If network requests fail during PDF discovery
         """
         logger.debug(f"Attempting Nature PDF discovery for paper {paper.paper_id}")
         
         # First check if this is actually a Nature paper
         if not self.is_nature_paper(paper):
-            raise Exception(f"Paper {paper.paper_id} is not from a supported Nature journal")
+            raise UnsupportedSourceError(f"Paper {paper.paper_id} is not from a supported Nature journal")
         
         # If paper has DOI, try multiple strategies
         if paper.doi:
@@ -192,6 +198,10 @@ class NaturePDFCollector(BasePDFCollector):
                             'journal': self._identify_journal(paper)
                         },
                         validation_status="pending",
+                        # License assignment based on Nature journal policies:
+                        # Nature Communications (ncomms, s41467): typically CC-BY
+                        # Scientific Reports (srep): typically CC-BY-NC  
+                        # Note: Actual license may vary per article - this is a reasonable default
                         license="CC-BY" if "ncomms" in article_id or "s41467" in article_id else "CC-BY-NC"
                     )
             
@@ -208,7 +218,7 @@ class NaturePDFCollector(BasePDFCollector):
                 logger.debug(f"DOI resolver failed: {e}")
         
         # No PDF found
-        raise Exception(f"No open access PDF found for Nature paper {paper.paper_id}")
+        raise PDFNotAvailableError(f"No open access PDF found for Nature paper {paper.paper_id}")
     
     def _identify_journal(self, paper: Paper) -> str:
         """Identify which Nature journal the paper is from.

@@ -294,17 +294,19 @@ class TestNaturePDFCollector:
     
     def test_discover_single_non_nature_paper(self, collector, non_nature_paper):
         """Test that non-Nature papers are rejected."""
-        with pytest.raises(Exception, match="not from a supported Nature journal"):
+        from src.core.exceptions import UnsupportedSourceError
+        with pytest.raises(UnsupportedSourceError, match="not from a supported Nature journal"):
             collector._discover_single(non_nature_paper)
     
     @patch.object(NaturePDFCollector, '_check_open_access_availability')
     def test_discover_single_no_pdf_found(self, mock_check, collector, nature_comms_paper):
         """Test when no PDF can be found."""
+        from src.core.exceptions import PDFNotAvailableError
         mock_check.return_value = None  # Direct access fails
         
         # Mock DOI resolver to also fail
         with patch.object(collector.doi_resolver, '_discover_single', side_effect=Exception("No PDF")):
-            with pytest.raises(Exception, match="No open access PDF found"):
+            with pytest.raises(PDFNotAvailableError, match="No open access PDF found"):
                 collector._discover_single(nature_comms_paper)
     
     def test_discover_pdfs_batch(self, collector, nature_comms_paper, sci_reports_paper):
