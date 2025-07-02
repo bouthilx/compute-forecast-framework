@@ -17,11 +17,13 @@ dependencies = [
     "psutil>=5.9.0",
     "pandas>=2.0.0",
     "rapidfuzz>=3.13.0",
+    "openreview-py>=1.50.1",
 ]
 
 [dependency-groups]
 dev = [
     "pytest-cov>=6.2.1",
+    "ruff>=0.12.1",
 ]
 test = [
     "pytest>=8.4.1",
