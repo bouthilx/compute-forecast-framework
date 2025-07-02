@@ -3,6 +3,7 @@
 import pytest
 from datetime import datetime
 from typing import List
+from unittest.mock import Mock, patch
 
 from src.pdf_discovery.deduplication.matchers import (
     IdentifierNormalizer,
@@ -304,3 +305,186 @@ class TestFuzzyMatch:
         assert match.author_similarity == 0.87
         assert match.venue_year_match is True
         assert match.confidence > 0.9  # Combined confidence
+
+
+class TestVenueNormalizationIntegration:
+    """Test venue normalization integration with PDF deduplication."""
+    
+    def test_venue_normalizer_integration(self):
+        """Test that PaperFuzzyMatcher integrates with VenueNormalizer."""
+        matcher = PaperFuzzyMatcher()
+        
+        # Should have venue_normalizer attribute
+        assert hasattr(matcher, 'venue_normalizer')
+        assert matcher.venue_normalizer is not None
+    
+    @patch('src.pdf_discovery.deduplication.matchers.VenueNormalizer')
+    def test_calculate_venue_year_match_with_normalization(self, mock_venue_normalizer_class):
+        """Test venue matching uses venue normalization."""
+        # Setup mock
+        mock_normalizer = Mock()
+        mock_venue_normalizer_class.return_value = mock_normalizer
+        
+        # Mock normalization results for different venue formats
+        from src.data.processors.venue_normalizer import VenueNormalizationResult
+        nips_result = VenueNormalizationResult(
+            original_venue="NIPS 2023",
+            normalized_venue="NeurIPS",
+            confidence=1.0,
+            mapping_type="exact",
+            alternatives=[]
+        )
+        neurips_result = VenueNormalizationResult(
+            original_venue="NeurIPS 2023",
+            normalized_venue="NeurIPS", 
+            confidence=1.0,
+            mapping_type="exact",
+            alternatives=[]
+        )
+        
+        mock_normalizer.normalize_venue.side_effect = [nips_result, neurips_result]
+        
+        # Create matcher
+        matcher = PaperFuzzyMatcher()
+        
+        # Create test papers with different venue formats
+        paper1 = Paper(
+            title="Test Paper",
+            authors=[],
+            venue="NIPS 2023",
+            year=2023,
+            citations=0,
+            abstract="",
+            doi="",
+            paper_id="1"
+        )
+        paper2 = Paper(
+            title="Test Paper",
+            authors=[],
+            venue="NeurIPS 2023",
+            year=2023,
+            citations=0,
+            abstract="",
+            doi="",
+            paper_id="2"
+        )
+        
+        # Test venue matching
+        result = matcher.calculate_venue_year_match(paper1, paper2)
+        
+        # Should match because both normalize to "NeurIPS"
+        assert result is True
+        
+        # Verify venue normalizer was called
+        assert mock_normalizer.normalize_venue.call_count == 2
+        mock_normalizer.normalize_venue.assert_any_call("NIPS 2023")
+        mock_normalizer.normalize_venue.assert_any_call("NeurIPS 2023")
+    
+    @patch('src.pdf_discovery.deduplication.matchers.VenueNormalizer')
+    def test_venue_confidence_threshold(self, mock_venue_normalizer_class):
+        """Test venue matching respects confidence thresholds."""
+        # Setup mock
+        mock_normalizer = Mock()
+        mock_venue_normalizer_class.return_value = mock_normalizer
+        
+        from src.data.processors.venue_normalizer import VenueNormalizationResult
+        low_confidence_result = VenueNormalizationResult(
+            original_venue="Unknown Conf 2023",
+            normalized_venue="ICML",
+            confidence=0.7,  # Below 0.8 threshold
+            mapping_type="fuzzy",
+            alternatives=[]
+        )
+        high_confidence_result = VenueNormalizationResult(
+            original_venue="ICML 2023",
+            normalized_venue="ICML",
+            confidence=1.0,
+            mapping_type="exact", 
+            alternatives=[]
+        )
+        
+        mock_normalizer.normalize_venue.side_effect = [low_confidence_result, high_confidence_result]
+        
+        matcher = PaperFuzzyMatcher()
+        
+        paper1 = Paper(
+            title="Test Paper",
+            authors=[],
+            venue="Unknown Conf 2023",
+            year=2023,
+            citations=0,
+            abstract="",
+            doi="",
+            paper_id="1"
+        )
+        paper2 = Paper(
+            title="Test Paper", 
+            authors=[],
+            venue="ICML 2023",
+            year=2023,
+            citations=0,
+            abstract="",
+            doi="",
+            paper_id="2"
+        )
+        
+        # Should not match due to low confidence
+        result = matcher.calculate_venue_year_match(paper1, paper2)
+        assert result is False
+    
+    @patch('src.pdf_discovery.deduplication.matchers.VenueNormalizer')
+    def test_venue_match_different_years(self, mock_venue_normalizer_class):
+        """Test venue matching fails for different years."""
+        # Setup mock
+        mock_normalizer = Mock()
+        mock_venue_normalizer_class.return_value = mock_normalizer
+        
+        matcher = PaperFuzzyMatcher()
+        
+        paper1 = Paper(
+            title="Test Paper",
+            authors=[],
+            venue="ICML 2023",
+            year=2023,
+            citations=0,
+            abstract="",
+            doi="",
+            paper_id="1"
+        )
+        paper2 = Paper(
+            title="Test Paper",
+            authors=[],
+            venue="ICML 2024", 
+            year=2024,
+            citations=0,
+            abstract="",
+            doi="",
+            paper_id="2"
+        )
+        
+        # Should not match due to different years
+        result = matcher.calculate_venue_year_match(paper1, paper2)
+        assert result is False
+        
+        # Venue normalizer should not be called if years differ
+        mock_normalizer.normalize_venue.assert_not_called()
+    
+    def test_fuzzy_match_confidence_boost_with_venue(self):
+        """Test that venue matching provides confidence boost in FuzzyMatch."""
+        match_with_venue = FuzzyMatch(
+            record_ids=["paper1", "paper2"],
+            title_similarity=0.90,
+            author_similarity=0.85,
+            venue_year_match=True,
+        )
+        
+        match_without_venue = FuzzyMatch(
+            record_ids=["paper1", "paper2"], 
+            title_similarity=0.90,
+            author_similarity=0.85,
+            venue_year_match=False,
+        )
+        
+        # Venue match should provide confidence boost
+        assert match_with_venue.confidence > match_without_venue.confidence
+        assert match_with_venue.confidence > 0.9  # Should get 1.15x boost

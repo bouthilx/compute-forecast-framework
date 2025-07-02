@@ -8,6 +8,7 @@ import logging
 from rapidfuzz import fuzz
 from src.data.models import Paper, Author
 from src.pdf_discovery.core.models import PDFRecord
+from src.data.processors.venue_normalizer import VenueNormalizer
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +35,9 @@ class FuzzyMatch:
         """Calculate overall confidence score."""
         # Weighted combination
         base_score = (self.title_similarity * 0.6 + self.author_similarity * 0.4)
-        # Boost if venue and year match
+        # Higher boost if venue and year match (using sophisticated venue normalization)
         if self.venue_year_match:
-            base_score = min(1.0, base_score * 1.1)
+            base_score = min(1.0, base_score * 1.15)
         return base_score
 
 
@@ -148,6 +149,7 @@ class PaperFuzzyMatcher:
         self.title_threshold = title_threshold
         self.author_threshold = author_threshold
         self.identifier_normalizer = IdentifierNormalizer()
+        self.venue_normalizer = VenueNormalizer()
         
         # Common title suffixes to remove for comparison
         self.title_suffixes = [
@@ -293,6 +295,21 @@ class PaperFuzzyMatcher:
         
         return True
     
+    def calculate_venue_year_match(self, paper1: Paper, paper2: Paper) -> bool:
+        """Calculate if papers are from same venue and year using sophisticated venue normalization."""
+        if paper1.year != paper2.year:
+            return False
+        
+        if not paper1.venue or not paper2.venue:
+            return False
+        
+        # Use sophisticated venue normalization
+        norm1 = self.venue_normalizer.normalize_venue(paper1.venue)
+        norm2 = self.venue_normalizer.normalize_venue(paper2.venue)
+        
+        return (norm1.normalized_venue == norm2.normalized_venue and
+                norm1.confidence > 0.8 and norm2.confidence > 0.8)
+    
     def find_duplicates_exact(self, records: List[PDFRecord]) -> List[ExactMatch]:
         """Find exact duplicates based on identifiers."""
         matches = []
@@ -386,13 +403,8 @@ class PaperFuzzyMatcher:
                 if author_sim < self.author_threshold:
                     continue
                 
-                # Check venue and year
-                venue_year_match = (
-                    paper1.year == paper2.year and 
-                    paper1.venue and paper2.venue and
-                    (paper1.venue.lower() in paper2.venue.lower() or 
-                     paper2.venue.lower() in paper1.venue.lower())
-                )
+                # Check venue and year using sophisticated venue normalization
+                venue_year_match = self.calculate_venue_year_match(paper1, paper2)
                 
                 matches.append(FuzzyMatch(
                     record_ids=[record1.paper_id, record2.paper_id],
