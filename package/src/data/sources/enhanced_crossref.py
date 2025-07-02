@@ -5,7 +5,7 @@ Simplified real implementation with API integration and error handling
 
 import time
 import requests
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from ..models import Paper, Author, APIResponse, ResponseMetadata, APIError
 from datetime import datetime
 import logging
@@ -340,6 +340,202 @@ class EnhancedCrossrefClient:
             total_results=0,
             returned_count=0,
             query_used=query,
+            response_time_ms=response_time_ms,
+            api_name="crossref",
+            timestamp=datetime.now()
+        )
+        
+        return APIResponse(success=False, papers=[], metadata=metadata, errors=[error])
+    
+    def normalize_doi(self, doi: str) -> str:
+        """Normalize DOI to standard format.
+        
+        Args:
+            doi: DOI in various formats (with or without prefix)
+            
+        Returns:
+            Normalized DOI without prefix
+        """
+        if not doi:
+            return ""
+        
+        # Remove common DOI prefixes and normalize
+        doi = doi.strip()
+        doi = re.sub(r'^(https?://)?(dx\.)?doi\.org/', '', doi, flags=re.IGNORECASE)
+        doi = re.sub(r'^doi:\s*', '', doi, flags=re.IGNORECASE)
+        
+        return doi
+    
+    def lookup_doi(self, doi: str) -> APIResponse:
+        """Look up a specific paper by DOI.
+        
+        Args:
+            doi: The DOI to look up
+            
+        Returns:
+            APIResponse with paper information if found
+        """
+        start_time = time.time()
+        normalized_doi = self.normalize_doi(doi)
+        
+        if not normalized_doi:
+            error = APIError(
+                error_type="invalid_doi",
+                message="Invalid or empty DOI provided",
+                timestamp=datetime.now()
+            )
+            metadata = ResponseMetadata(
+                total_results=0,
+                returned_count=0,
+                query_used=doi,
+                response_time_ms=0,
+                api_name="crossref",
+                timestamp=datetime.now()
+            )
+            return APIResponse(success=False, papers=[], metadata=metadata, errors=[error])
+        
+        # Construct DOI lookup URL
+        url = f"{self.base_url}/works/{normalized_doi}"
+        
+        # Attempt request with retries
+        for attempt in range(self.max_retries):
+            try:
+                response = requests.get(url, headers=self.headers, timeout=30)
+                response_time_ms = (time.time() - start_time) * 1000
+                
+                if response.status_code == 200:
+                    return self._parse_doi_response(response, normalized_doi, response_time_ms)
+                elif response.status_code == 404:
+                    return self._handle_doi_not_found(normalized_doi, response_time_ms)
+                elif response.status_code == 429:
+                    return self._handle_rate_limit(response, normalized_doi, response_time_ms)
+                elif response.status_code >= 500:
+                    if attempt < self.max_retries - 1:
+                        wait_time = self.retry_delay * (2 ** attempt)
+                        logger.warning(f"Crossref server error {response.status_code}, retrying in {wait_time}s")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        return self._handle_server_error(response, normalized_doi, response_time_ms)
+                else:
+                    return self._handle_client_error(response, normalized_doi, response_time_ms)
+                    
+            except requests.exceptions.Timeout:
+                response_time_ms = (time.time() - start_time) * 1000
+                if attempt < self.max_retries - 1:
+                    wait_time = self.retry_delay * (2 ** attempt)
+                    logger.warning(f"Crossref request timeout, retrying in {wait_time}s")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    return self._handle_timeout_error(normalized_doi, response_time_ms)
+                    
+            except requests.exceptions.RequestException as e:
+                response_time_ms = (time.time() - start_time) * 1000
+                if attempt < self.max_retries - 1:
+                    wait_time = self.retry_delay * (2 ** attempt)
+                    logger.warning(f"Crossref request error: {e}, retrying in {wait_time}s")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    return self._handle_network_error(e, normalized_doi, response_time_ms)
+        
+        # Should not reach here, but handle it just in case
+        response_time_ms = (time.time() - start_time) * 1000
+        return self._handle_max_retries_exceeded(normalized_doi, response_time_ms)
+    
+    def _parse_doi_response(self, response: requests.Response, doi: str, response_time_ms: float) -> APIResponse:
+        """Parse response from DOI lookup."""
+        try:
+            data = response.json()
+            message = data.get("message", {})
+            
+            # Extract PDF URLs from links if available
+            pdf_urls = []
+            if "link" in message:
+                pdf_urls = self._extract_pdf_urls_from_links(message["link"])
+            
+            # Create paper object
+            paper = Paper(
+                title=message.get("title", [""])[0] if message.get("title") else "",
+                authors=[
+                    Author(
+                        name=f"{author.get('given', '')} {author.get('family', '')}".strip(),
+                        affiliation=author.get("affiliation", [{}])[0].get("name", "") if author.get("affiliation") else ""
+                    )
+                    for author in message.get("author", [])
+                ],
+                venue=message.get("container-title", [""])[0] if message.get("container-title") else "",
+                year=message.get("published-print", {}).get("date-parts", [[0]])[0][0] or 
+                     message.get("published-online", {}).get("date-parts", [[0]])[0][0] or 0,
+                citations=message.get("is-referenced-by-count", 0),
+                abstract=self._clean_jats_abstract(message.get("abstract", "")),
+                doi=message.get("DOI", doi),
+                urls=pdf_urls,
+                paper_id=f"crossref_{doi}"
+            )
+            
+            metadata = ResponseMetadata(
+                total_results=1,
+                returned_count=1,
+                query_used=doi,
+                response_time_ms=response_time_ms,
+                api_name="crossref",
+                timestamp=datetime.now()
+            )
+            
+            return APIResponse(
+                success=True,
+                papers=[paper],
+                metadata=metadata,
+                errors=[]
+            )
+            
+        except Exception as e:
+            logger.error(f"Failed to parse Crossref DOI response: {e}")
+            error = APIError(
+                error_type="parse_error",
+                message=f"Failed to parse Crossref DOI response: {str(e)}",
+                timestamp=datetime.now()
+            )
+            
+            metadata = ResponseMetadata(
+                total_results=0,
+                returned_count=0,
+                query_used=doi,
+                response_time_ms=response_time_ms,
+                api_name="crossref",
+                timestamp=datetime.now()
+            )
+            
+            return APIResponse(
+                success=False,
+                papers=[],
+                metadata=metadata,
+                errors=[error]
+            )
+    
+    def _extract_pdf_urls_from_links(self, links: List[Dict[str, Any]]) -> List[str]:
+        """Extract PDF URLs from CrossRef link data."""
+        pdf_urls = []
+        for link in links:
+            if link.get("content-type") == "application/pdf" and "URL" in link:
+                pdf_urls.append(link["URL"])
+        return pdf_urls
+    
+    def _handle_doi_not_found(self, doi: str, response_time_ms: float) -> APIResponse:
+        """Handle DOI not found response."""
+        error = APIError(
+            error_type="not_found",
+            message=f"DOI not found: {doi}",
+            status_code=404,
+            timestamp=datetime.now()
+        )
+        
+        metadata = ResponseMetadata(
+            total_results=0,
+            returned_count=0,
+            query_used=doi,
             response_time_ms=response_time_ms,
             api_name="crossref",
             timestamp=datetime.now()
