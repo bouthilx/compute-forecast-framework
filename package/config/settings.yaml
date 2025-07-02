@@ -17,6 +17,13 @@ citation_sources:
     retry_attempts: 3
     timeout: 30
 
+pdf_discovery:
+  doi_resolver:
+    email: null  # Required for CrossRef and Unpaywall APIs
+    rate_limit: 0.5  # Combined rate limit for both APIs
+    retry_attempts: 3
+    timeout: 120
+
 collection_targets:
   papers_per_domain_year: 8
   total_target_min: 360
