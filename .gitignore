@@ -3,3 +3,17 @@ __pycache__
 *.pyc
 .pytest_cache/
 htmlcov/
+
+# PDF Storage
+temp_pdf_cache/
+pdf_cache/
+credentials.json
+service-account-*.json
+.env
+
+# PDFs (keep out of repo)
+*.pdf
+
+# Local data caches
+data/cache/
+data/raw/cache/
