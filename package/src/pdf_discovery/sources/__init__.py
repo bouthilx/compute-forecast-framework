@@ -13,6 +13,8 @@ from .arxiv_collector import ArXivPDFCollector
 from .semantic_scholar_collector import SemanticScholarPDFCollector
 from .doi_resolver_collector import DOIResolverCollector
 from .jmlr_collector import JMLRCollector
+from .core_collector import COREPDFCollector
+from .hal_collector import HALPDFCollector
 
 __all__ = [
     "OpenReviewPDFCollector",
@@ -29,5 +31,7 @@ __all__ = [
     "ArXivPDFCollector",
     "SemanticScholarPDFCollector",
     "DOIResolverCollector",
-    "JMLRCollector"
+    "JMLRCollector",
+    "COREPDFCollector",
+    "HALPDFCollector"
 ]
