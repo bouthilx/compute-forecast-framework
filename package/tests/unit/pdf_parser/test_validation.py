@@ -1,7 +1,5 @@
 """Tests for PDF extraction validation logic."""
 
-import pytest
-from pathlib import Path
 
 from src.pdf_parser.core.validation import AffiliationValidator
 

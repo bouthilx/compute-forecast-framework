@@ -1,10 +1,9 @@
 """Tests for OptimizedPDFProcessor orchestration class."""
 
-import pytest
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from src.pdf_parser.core.processor import OptimizedPDFProcessor
 from src.pdf_parser.core.base_extractor import BaseExtractor

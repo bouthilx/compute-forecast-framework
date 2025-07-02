@@ -3,7 +3,7 @@
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 from src.pdf_parser.core.base_extractor import BaseExtractor
 from src.pdf_parser.core.validation import AffiliationValidator

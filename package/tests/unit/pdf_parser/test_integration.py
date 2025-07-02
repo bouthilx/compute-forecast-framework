@@ -1,6 +1,5 @@
 """Integration tests for PDF parser framework with existing systems."""
 
-import pytest
 from pathlib import Path
 from typing import Dict, List
 from unittest.mock import Mock, patch

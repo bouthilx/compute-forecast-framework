@@ -1,6 +1,5 @@
 """Tests for PDF extraction cost tracking system."""
 
-import pytest
 from datetime import datetime
 
 from src.pdf_parser.core.cost_tracker import CostTracker
