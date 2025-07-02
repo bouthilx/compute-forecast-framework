@@ -16,6 +16,7 @@ dependencies = [
     "eventlet>=0.36.1",
     "psutil>=5.9.0",
     "pandas>=2.0.0",
+    "rapidfuzz>=3.13.0",
 ]
 
 [dependency-groups]
