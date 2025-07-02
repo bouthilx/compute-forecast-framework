@@ -1,11 +1,11 @@
 # Package Script Classification Analysis
 
-**Date**: 2025-01-02  
+**Date**: 2025-01-02 (Updated: 2025-07-02)
 **Purpose**: Classify all Python scripts in the package directory to identify which can be removed, archived, or kept for the final report
 
 ## Summary
 
-The package directory contains ~170+ Python scripts accumulated during development. Many are temporary tests, debugging scripts, or iterative improvements that are no longer needed. This analysis classifies each script to enable cleanup.
+The package directory contains ~310+ Python files accumulated during development. Many are temporary tests, debugging scripts, or iterative improvements that are no longer needed. This analysis classifies each script to enable cleanup.
 
 ## Classification Categories
 
@@ -206,3 +206,134 @@ package/
 - **Core Package**: ~40 modules in src/ (24%)
 
 This cleanup will reduce the root directory from ~170 Python files to just 25 active scripts plus the organized src/ directory.
+
+## Detailed Category Explanations
+
+### Why Scripts Belong in REMOVE Category
+
+These scripts share common characteristics:
+- **Test scripts (test_*.py)**: Created to test specific functionality during development. Now superseded by formal test suite in tests/
+- **Debug scripts (debug_*.py)**: Temporary debugging tools for troubleshooting specific issues
+- **Demo scripts (demo_*.py)**: Proof-of-concept demonstrations no longer needed
+- **Investigation scripts (investigate_*.py)**: One-off scripts to investigate specific papers or patterns
+- **Simple/minimal versions**: Early iterations like simple_collection.py replaced by more complete versions
+- **Enhanced versions**: Intermediate iterations (e.g., enhanced_google_scholar.py) replaced by final implementations
+
+### Why Scripts Belong in ARCHIVE Category
+
+These completed their purpose but may be useful for reference:
+- **Analysis output scripts (analyze_*.py)**: Completed analyses that generated data for the report
+- **Correction scripts (*_corrections.py)**: Data quality fixes that have been applied
+- **Venue cleanup scripts**: Scripts that cleaned venue data (find_venue_duplicates.py, correct_venue_mergers.py)
+- **Collection iterations**: Multiple versions showing evolution (collection_fixed.py → collection_with_dashboard.py → collection_realtime_final.py)
+- **Domain extraction iterations**: Progressive fixes (extract_domains.py → extract_domains_fixed.py → extract_domains_final_fix.py)
+- **Completed accounting**: Scripts like complete_paper_accounting.py that finished their analysis
+
+### Why Scripts Belong in KEEP Category
+
+These are actively used for report generation:
+- **analyze_mila_papers.py**: Core analysis of Mila's computational requirements
+- **collection_realtime_final.py**: The final, working collection script with monitoring
+- **create_*_temporal_analysis.py**: Generate temporal trends for the report
+- **visualize_*.py**: Create charts and visualizations for the report
+- **detailed_rl_subdomain_analysis.py**: Deep dive analysis referenced in report
+- **extract_venue_statistics.py**: Generates venue statistics used in report
+- **paper_filtering_diagram.py**: Creates filtering methodology diagram
+
+### Why src/ is Core Package
+
+The src/ directory contains the actual implementation:
+- **Modular architecture**: Well-organized into functional components
+- **Reusable components**: Used by multiple scripts
+- **Quality controls**: Validation, testing, and monitoring systems
+- **Data pipeline**: Complete workflow from collection to analysis
+
+### Development Pattern Observations
+
+1. **Iterative refinement**: Many scripts show evolution (basic → fixed → final)
+2. **Dashboard feature**: Extensive iteration (demo → streaming → working → guaranteed)
+3. **Google Scholar integration**: Multiple test iterations due to API complexity
+4. **Domain extraction**: Particularly challenging, requiring 5+ iterations
+5. **Temporal features**: Clear evolution from single to multi-label support
+
+## Specific Script Explanations
+
+### Scripts to REMOVE - Detailed Reasoning
+
+**Testing Scripts:**
+- `test_scholar_simple.py`, `test_scholar_fixed.py`, `test_scholar_internal.py`: Progressive attempts to test Google Scholar integration, superseded by `test_google_scholar_final.py`
+- `test_enhanced_minimal.py`: Minimal test case for enhanced features, no longer needed
+- `test_streaming_logs.py`, `test_stdout_capture.py`: Testing output capture mechanisms, functionality now integrated
+- `simple_collection_test.py`, `simple_dashboard_test.py`: Basic functionality tests, replaced by comprehensive test suite
+
+**Debug/Investigation Scripts:**
+- `debug_collection.py`: Used to troubleshoot collection issues, problems now resolved
+- `investigate_2024_paper.py`: One-off investigation of a specific 2024 paper
+- `investigate_early_years_pattern.py`: Analyzed pattern in early years data, analysis complete
+- `debug_temporal_classification.py`: Fixed temporal classification bugs, no longer needed
+
+**Demo Scripts:**
+- `demo_dashboard.py`, `demo_streaming_working.py`: Dashboard proof-of-concepts, functionality now in production
+- `demo_complete_monitoring.py`: Demonstrated full monitoring, now integrated into main collection
+
+### Scripts to ARCHIVE - Detailed Reasoning
+
+**Completed Analyses:**
+- `analyze_datasets.py`: Analyzed initial dataset structure, findings incorporated
+- `analyze_overlap.py`: Checked overlap between data sources, results documented
+- `detailed_agreement_analysis.py`: Analyzed agreement between different data sources
+
+**Venue Processing Evolution:**
+- `find_venue_duplicates.py`: Initial duplicate detection
+- `correct_venue_mergers.py`: Fixed merged venue issues
+- `final_cleanup_venues.py`: Final venue cleanup pass
+- `venue_statistics_generator.py`: Generated venue stats, now using `extract_venue_statistics.py`
+
+**Collection Script Evolution:**
+- `simple_collection.py` → `collection_with_progress.py` → `collection_with_dashboard.py` → `collection_realtime_final.py`
+- Each iteration added features: progress tracking, dashboard, real-time updates
+
+**Domain Extraction Evolution:**
+- `extract_domains.py`: Initial implementation, had accuracy issues
+- `extract_domains_fixed.py`: First bug fix, still had edge cases
+- `extract_domains_final_fix.py`: Second attempt, classification issues remained
+- `extract_domains_completely_fixed.py`: Third iteration, performance problems
+- `extract_domains_actual_fix.py`: Final working version with all issues resolved
+
+### Scripts to KEEP - Detailed Reasoning
+
+**Core Analysis:**
+- `analyze_mila_papers.py`: Primary script for analyzing Mila's computational requirements, generates key metrics for report
+- `multi_domain_analysis.py`: Analyzes papers across multiple domains, essential for showing research diversity
+
+**Temporal Analysis Suite:**
+- `create_final_temporal_analysis.py`: Generates temporal trends showing computational growth
+- `create_multi_label_temporal_analysis.py`: Handles papers with multiple domain labels
+- `temporal_stacked_charts.py`: Creates stacked area charts showing domain evolution
+
+**Visualization Scripts:**
+- `visualize_venue_trends.py`: Shows publication venue trends over time
+- `visualize_primary_venues.py`: Highlights top venues for Mila publications
+- `paper_filtering_diagram.py`: Creates methodology diagram for report
+
+**Specialized Analysis:**
+- `detailed_rl_subdomain_analysis.py`: Deep dive into reinforcement learning subdomains
+- `rl_pattern_analysis.py`: Analyzes RL-specific computational patterns
+- `extract_venue_statistics.py`: Generates venue-level statistics for report
+
+**Collection Infrastructure:**
+- `collection_realtime_final.py`: The production collection script with full monitoring
+- `main.py`: Entry point script (minimal, just imports and runs)
+- `create_proof_of_concept.py`: Generates proof-of-concept demonstrations
+
+### Scripts and Examples Directory Explanations
+
+**scripts/ Directory:**
+- `analyze_mila_papers_detailed.py`: More detailed version of Mila analysis with additional metrics
+- `check_paper_abstracts.py`: Validates that papers have abstracts for quality control
+- `extract_mila_computational_requirements.py`: Specialized extraction for Mila papers
+- `select_mila_papers.py`: Paper selection logic for Mila-specific analysis
+
+**examples/ Directory:**
+- `computational_filtering_usage.py`: Shows how to use computational filtering features
+- `quality_system_demo.py`: Demonstrates quality control system usage
