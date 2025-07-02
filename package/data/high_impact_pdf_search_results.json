@@ -1,0 +1,142 @@
+[
+  {
+    "title": "Computer-Vision Benchmark Segment-Anything Model (SAM) in Medical Images: Accuracy in 12 Datasets",
+    "year": 2023,
+    "venue": "",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  },
+  {
+    "title": "Transformers: State-of-the-Art Natural Language Processing",
+    "year": 2020,
+    "venue": "",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  },
+  {
+    "title": "Covid-twitter-bert: A natural language processing model to analyse covid-19 content on twitter",
+    "year": 2022,
+    "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  },
+  {
+    "title": "GPT-3 and InstructGPT: technological dystopianism, utopianism, and \u201cContextual\u201d perspectives in AI ethics and industry",
+    "year": 2022,
+    "venue": "AI and Ethics",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  },
+  {
+    "title": "New meaning for NLP: the trials and tribulations of natural language processing with GPT-3 in ophthalmology",
+    "year": 2022,
+    "venue": "British Journal of Ophthalmology",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  },
+  {
+    "title": "A Systematic Literature Review on Phishing Email Detection Using Natural Language Processing Techniques",
+    "year": 2022,
+    "venue": "IEEE Access",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  },
+  {
+    "title": "Is ChatGPT a General-Purpose Natural Language Processing Task Solver?",
+    "year": 2023,
+    "venue": "Conference on Empirical Methods in Natural Language Processing",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  },
+  {
+    "title": "COVID-Twitter-BERT: A natural language processing model to analyse COVID-19 content on Twitter",
+    "year": 2023,
+    "venue": "Frontiers in Artificial Intelligence",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  },
+  {
+    "title": "Potential and Pitfalls of ChatGPT and Natural-Language Artificial Intelligence Models for Diabetes Education",
+    "year": 2023,
+    "venue": "Diabetes Care",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  },
+  {
+    "title": "A Comprehensive Study of ChatGPT: Advancements, Limitations, and Ethical Considerations in Natural Language Processing and Cybersecurity",
+    "year": 2023,
+    "venue": "Inf.",
+    "sources_tried": [
+      "arxiv",
+      "conference_proceedings",
+      "openreview",
+      "repositories"
+    ],
+    "pdf_found": false,
+    "pdf_url": null,
+    "source": null
+  }
+]

@@ -1,0 +1,100 @@
+ArXiv API error: string indices must be integers, not 'str'
+ArXiv API error: string indices must be integers, not 'str'
+ArXiv API error: string indices must be integers, not 'str'
+Testing PDF acquisition on 10 papers
+
+
+============================================================
+Paper 1/10: EfficientNet: Rethinking Model Scaling for Convolutional Neural Networ...
+Year: 2019
+✓ SUCCESS: PDF acquired via ArXivPDFSource
+  URL: http://arxiv.org/pdf/1905.11946v5...
+  Path: data/pdf_cache/4f2eda8077dc7a69bb2b4e0a1a086cf054adb3f9.pdf
+  Time: 0.9s
+
+============================================================
+Paper 2/10: A survey of the recent architectures of deep convolutional neural netw...
+Year: 2019
+✗ FAILED: No PDF found
+  Sources tried: SemanticScholarPDFSource, ArXivPDFSource, UnpaywallPDFSource, GoogleScholarPDFSource, RepositoryPDFSource, ConferencePDFSource
+
+============================================================
+Paper 3/10: Autonomous concrete crack detection using deep fully convolutional neu...
+Year: 2019
+✗ FAILED: No PDF found
+  Sources tried: SemanticScholarPDFSource, ArXivPDFSource, UnpaywallPDFSource, GoogleScholarPDFSource, RepositoryPDFSource, ConferencePDFSource
+
+============================================================
+Paper 4/10: Relation-Shape Convolutional Neural Network for Point Cloud Analysis...
+Year: 2019
+✓ SUCCESS: PDF acquired via SemanticScholarPDFSource
+  URL: https://arxiv.org/pdf/1904.07601...
+  Path: data/pdf_cache/a58715797b61588cbd020b9a98292a98f8483420.pdf
+  Time: 2.0s
+
+============================================================
+Paper 5/10: Convolutional Neural Network...
+Year: 2019
+✗ FAILED: No PDF found
+  Sources tried: SemanticScholarPDFSource, ArXivPDFSource, UnpaywallPDFSource, GoogleScholarPDFSource, RepositoryPDFSource, ConferencePDFSource
+
+============================================================
+Paper 6/10: A Complete Survey on Automatically Diagnosing COVID-19 In the field of...
+Year: 2020
+✗ FAILED: No PDF found
+  Sources tried: SemanticScholarPDFSource, ArXivPDFSource, UnpaywallPDFSource, GoogleScholarPDFSource, RepositoryPDFSource, ConferencePDFSource
+
+============================================================
+Paper 7/10: Computer-Vision Benchmark Segment-Anything Model (SAM) in Medical Imag...
+Year: 2023
+✗ FAILED: No PDF found
+  Sources tried: SemanticScholarPDFSource, ArXivPDFSource, UnpaywallPDFSource, GoogleScholarPDFSource, RepositoryPDFSource, ConferencePDFSource
+
+============================================================
+Paper 8/10: Intuitive Surgical SurgToolLoc Challenge Results: 2022-2023...
+Year: 2023
+✓ SUCCESS: PDF acquired via ArXivPDFSource
+  URL: http://arxiv.org/pdf/2305.07152v3...
+  Path: data/pdf_cache/.pdf
+  Time: 11.6s
+
+============================================================
+Paper 9/10: GPT-3 and InstructGPT: technological dystopianism, utopianism, and “Co...
+Year: 2022
+✓ SUCCESS: PDF acquired via cache
+  From cache
+  Path: data/pdf_cache/.pdf
+  Time: 0.0s
+
+============================================================
+Paper 10/10: A Systematic Literature Review on Phishing Email Detection Using Natur...
+Year: 2022
+✓ SUCCESS: PDF acquired via cache
+  From cache
+  Path: data/pdf_cache/.pdf
+  Time: 0.0s
+
+============================================================
+PDF ACQUISITION SUMMARY
+============================================================
+Total papers: 10
+PDFs acquired: 5 (50.0%)
+
+PDFs by source:
+  ArXivPDFSource: 2
+  cache: 2
+  SemanticScholarPDFSource: 1
+
+Average search time: 2.2s
+
+Failed acquisitions (5):
+  - A survey of the recent architectures of deep convolutional n...
+  - Autonomous concrete crack detection using deep fully convolu...
+  - Convolutional Neural Network...
+  - A Complete Survey on Automatically Diagnosing COVID-19 In th...
+  - Computer-Vision Benchmark Segment-Anything Model (SAM) in Me...
+
+Successful downloads saved to: data/successful_pdf_downloads.json
+
+PDF files in cache: 3
+Total cache size: 30.0 MB

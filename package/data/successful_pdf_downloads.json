@@ -1,0 +1,32 @@
+[
+  {
+    "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+    "year": 2019,
+    "pdf_url": "http://arxiv.org/pdf/1905.11946v5",
+    "source": "ArXivPDFSource"
+  },
+  {
+    "title": "Relation-Shape Convolutional Neural Network for Point Cloud Analysis",
+    "year": 2019,
+    "pdf_url": "https://arxiv.org/pdf/1904.07601",
+    "source": "SemanticScholarPDFSource"
+  },
+  {
+    "title": "Intuitive Surgical SurgToolLoc Challenge Results: 2022-2023",
+    "year": 2023,
+    "pdf_url": "http://arxiv.org/pdf/2305.07152v3",
+    "source": "ArXivPDFSource"
+  },
+  {
+    "title": "GPT-3 and InstructGPT: technological dystopianism, utopianism, and \u201cContextual\u201d perspectives in AI ethics and industry",
+    "year": 2022,
+    "pdf_url": null,
+    "source": "cache"
+  },
+  {
+    "title": "A Systematic Literature Review on Phishing Email Detection Using Natural Language Processing Techniques",
+    "year": 2022,
+    "pdf_url": null,
+    "source": "cache"
+  }
+]

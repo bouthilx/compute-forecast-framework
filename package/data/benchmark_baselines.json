@@ -1,0 +1,17 @@
+{
+  "computational_baselines": {
+    "gpu_hours": {
+      "median": 0,
+      "p25": 0,
+      "p75": 0
+    },
+    "parameters": {
+      "median": 0,
+      "ranges_by_year": {}
+    }
+  },
+  "extraction_stats": {
+    "total_papers": 129,
+    "high_confidence": 0
+  }
+}

@@ -1,0 +1,57 @@
+2025-07-01 17:56:21,414 - src.core.logging - INFO - Starting benchmark extraction pipeline
+2025-07-01 17:56:21,414 - src.core.logging - INFO - Loading papers from data/raw_collected_papers.json
+2025-07-01 17:56:21,424 - src.core.logging - INFO - Loaded 804 papers
+2025-07-01 17:56:21,449 - src.core.logging - INFO - Filtering statistics:
+2025-07-01 17:56:21,449 - src.core.logging - INFO -   Total papers: 804
+2025-07-01 17:56:21,449 - src.core.logging - INFO -   SOTA papers: 275
+2025-07-01 17:56:21,449 - src.core.logging - INFO -   Target org papers: 162
+2025-07-01 17:56:21,449 - src.core.logging - INFO -   Selected benchmark papers: 362
+2025-07-01 17:56:21,449 - src.core.logging - INFO -   By year: {2020: 64, 2022: 62, 2023: 57, 2019: 72, 2024: 49, 2021: 58}
+2025-07-01 17:56:21,449 - src.core.logging - INFO - Planning extraction batches
+2025-07-01 17:56:21,462 - src.core.logging - INFO - Created 18 extraction batches:
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   computer_vision_2020: 16 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   computer_vision_2022: 13 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   computer_vision_2023: 13 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   nlp_2023: 24 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   nlp_2020: 24 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   nlp_2022: 23 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   reinforcement_learning_2019: 22 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   reinforcement_learning_2020: 24 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   reinforcement_learning_2022: 26 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   reinforcement_learning_2023: 20 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   reinforcement_learning_2024: 17 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   computer_vision_2019: 27 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   computer_vision_2024: 7 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   nlp_2024: 25 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   nlp_2019: 23 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   computer_vision_2021: 17 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   nlp_2021: 19 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO -   reinforcement_learning_2021: 22 papers
+2025-07-01 17:56:21,463 - src.core.logging - INFO - Executing parallel extraction
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+Extraction failed for batch: 'ComputationalAnalyzer' object has no attribute 'analyze_paper'
+2025-07-01 17:56:21,493 - src.core.logging - INFO - Generating extraction report
+Traceback (most recent call last):
+  File "/home/bouthilx/projects/compute_forecast_sandbox/worker-2/package/execute_benchmark_extraction.py", line 253, in <module>
+    main()
+    ~~~~^^
+  File "/home/bouthilx/projects/compute_forecast_sandbox/worker-2/package/execute_benchmark_extraction.py", line 187, in main
+    qa_results = qa.validate_extraction_batch(extraction_results)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ExtractionQualityAssurance' object has no attribute 'validate_extraction_batch'. Did you mean: 'calculate_extraction_stats'?

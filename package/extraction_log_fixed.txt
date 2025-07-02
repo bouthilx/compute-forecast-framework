@@ -1,0 +1,77 @@
+2025-07-01 17:58:10,403 - src.core.logging - INFO - Starting benchmark extraction pipeline
+2025-07-01 17:58:10,403 - src.core.logging - INFO - Loading papers from data/raw_collected_papers.json
+2025-07-01 17:58:10,413 - src.core.logging - INFO - Loaded 804 papers
+2025-07-01 17:58:10,440 - src.core.logging - INFO - Filtering statistics:
+2025-07-01 17:58:10,440 - src.core.logging - INFO -   Total papers: 804
+2025-07-01 17:58:10,440 - src.core.logging - INFO -   SOTA papers: 275
+2025-07-01 17:58:10,440 - src.core.logging - INFO -   Target org papers: 162
+2025-07-01 17:58:10,440 - src.core.logging - INFO -   Selected benchmark papers: 362
+2025-07-01 17:58:10,440 - src.core.logging - INFO -   By year: {2020: 64, 2022: 62, 2023: 57, 2019: 72, 2024: 49, 2021: 58}
+2025-07-01 17:58:10,440 - src.core.logging - INFO - Planning extraction batches
+2025-07-01 17:58:10,454 - src.core.logging - INFO - Created 18 extraction batches:
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   computer_vision_2020: 16 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   computer_vision_2022: 13 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   computer_vision_2023: 13 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   nlp_2023: 24 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   nlp_2020: 24 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   nlp_2022: 23 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   reinforcement_learning_2019: 22 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   reinforcement_learning_2020: 24 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   reinforcement_learning_2022: 26 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   reinforcement_learning_2023: 20 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   reinforcement_learning_2024: 17 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   computer_vision_2019: 27 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   computer_vision_2024: 7 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   nlp_2024: 25 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   nlp_2019: 23 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   computer_vision_2021: 17 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   nlp_2021: 19 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO -   reinforcement_learning_2021: 22 papers
+2025-07-01 17:58:10,454 - src.core.logging - INFO - Executing parallel extraction
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+Extraction failed for batch: 'dict' object has no attribute 'resource_metrics'
+2025-07-01 17:58:10,496 - src.core.logging - INFO - Generating extraction report
+2025-07-01 17:58:10,497 - src.core.logging - INFO - Exporting results
+2025-07-01 17:58:10,498 - src.core.logging - INFO - ============================================================
+2025-07-01 17:58:10,498 - src.core.logging - INFO - Extraction Complete!
+2025-07-01 17:58:10,498 - src.core.logging - INFO - Processed 362 benchmark papers
+2025-07-01 17:58:10,498 - src.core.logging - INFO - Successful extractions: 0
+2025-07-01 17:58:10,498 - src.core.logging - INFO - High confidence: 0
+2025-07-01 17:58:10,498 - src.core.logging - INFO - Success rate: 0.0%
+2025-07-01 17:58:10,498 - src.core.logging - INFO - ============================================================
+Traceback (most recent call last):
+  File "/home/bouthilx/projects/compute_forecast_sandbox/worker-2/package/execute_benchmark_extraction.py", line 253, in <module>
+    main()
+    ~~~~^^
+  File "/home/bouthilx/projects/compute_forecast_sandbox/worker-2/package/execute_benchmark_extraction.py", line 247, in main
+    json.dump(summary, f, indent=2)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bouthilx/.local/share/uv/python/cpython-3.13.2-linux-x86_64-gnu/lib/python3.13/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+                 ^^^^^^^^
+  File "/home/bouthilx/.local/share/uv/python/cpython-3.13.2-linux-x86_64-gnu/lib/python3.13/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/home/bouthilx/.local/share/uv/python/cpython-3.13.2-linux-x86_64-gnu/lib/python3.13/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/home/bouthilx/.local/share/uv/python/cpython-3.13.2-linux-x86_64-gnu/lib/python3.13/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+  File "/home/bouthilx/.local/share/uv/python/cpython-3.13.2-linux-x86_64-gnu/lib/python3.13/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                    f'is not JSON serializable')
+TypeError: Object of type DataFrame is not JSON serializable

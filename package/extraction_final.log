@@ -1,0 +1,51 @@
+2025-07-01 18:00:37,572 - src.core.logging - INFO - Starting benchmark extraction pipeline
+2025-07-01 18:00:37,572 - src.core.logging - INFO - Loading papers from data/raw_collected_papers.json
+2025-07-01 18:00:37,583 - src.core.logging - INFO - Loaded 804 papers
+2025-07-01 18:00:37,610 - src.core.logging - INFO - Filtering statistics:
+2025-07-01 18:00:37,611 - src.core.logging - INFO -   Total papers: 804
+2025-07-01 18:00:37,611 - src.core.logging - INFO -   SOTA papers: 275
+2025-07-01 18:00:37,611 - src.core.logging - INFO -   Target org papers: 162
+2025-07-01 18:00:37,611 - src.core.logging - INFO -   Selected benchmark papers: 362
+2025-07-01 18:00:37,611 - src.core.logging - INFO -   By year: {2020: 64, 2022: 62, 2023: 57, 2019: 72, 2024: 49, 2021: 58}
+2025-07-01 18:00:37,611 - src.core.logging - INFO - Planning extraction batches
+2025-07-01 18:00:37,624 - src.core.logging - INFO - Created 18 extraction batches:
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   computer_vision_2020: 16 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   computer_vision_2022: 13 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   computer_vision_2023: 13 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   nlp_2023: 24 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   nlp_2020: 24 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   nlp_2022: 23 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   reinforcement_learning_2019: 22 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   reinforcement_learning_2020: 24 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   reinforcement_learning_2022: 26 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   reinforcement_learning_2023: 20 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   reinforcement_learning_2024: 17 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   computer_vision_2019: 27 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   computer_vision_2024: 7 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   nlp_2024: 25 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   nlp_2019: 23 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   computer_vision_2021: 17 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   nlp_2021: 19 papers
+2025-07-01 18:00:37,624 - src.core.logging - INFO -   reinforcement_learning_2021: 22 papers
+2025-07-01 18:00:37,625 - src.core.logging - INFO - Executing parallel extraction
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+Extraction failed for batch: expected string or bytes-like object, got 'NoneType'
+2025-07-01 18:00:37,782 - src.core.logging - INFO - Generating extraction report
+2025-07-01 18:00:37,783 - src.core.logging - INFO - Exporting results
+2025-07-01 18:00:37,788 - src.core.logging - INFO - ============================================================
+2025-07-01 18:00:37,788 - src.core.logging - INFO - Extraction Complete!
+2025-07-01 18:00:37,788 - src.core.logging - INFO - Processed 362 benchmark papers
+2025-07-01 18:00:37,788 - src.core.logging - INFO - Successful extractions: 7
+2025-07-01 18:00:37,788 - src.core.logging - INFO - High confidence: 0
+2025-07-01 18:00:37,788 - src.core.logging - INFO - Success rate: 1.9%
+2025-07-01 18:00:37,788 - src.core.logging - INFO - ============================================================
+2025-07-01 18:00:37,789 - src.core.logging - INFO - Summary saved to data/benchmark_extraction_summary.json

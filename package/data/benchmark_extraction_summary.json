@@ -1,0 +1,19 @@
+{
+  "execution_timestamp": "2025-07-01T18:00:37.789005",
+  "total_papers": 804,
+  "benchmark_papers": 362,
+  "extraction_summary": {
+    "successful_extractions": 7,
+    "high_confidence_count": 0,
+    "success_rate": 1.9337016574585635
+  },
+  "qa_results": {
+    "extraction_rate": 1.0,
+    "high_confidence_rate": 0.0,
+    "manual_review_rate": 1.0
+  },
+  "output_files": {
+    "computational_requirements": "data/benchmark_computational_requirements.csv",
+    "baselines": "data/benchmark_baselines.json"
+  }
+}

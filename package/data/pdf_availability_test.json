@@ -1,0 +1,56 @@
+{
+  "total_tested": 20,
+  "has_pdf": 8,
+  "has_arxiv": 4,
+  "has_doi": 5,
+  "pdf_sources": [
+    {
+      "paper_id": "4f2eda8077dc7a69bb2b4e0a1a086cf054adb3f9",
+      "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+      "pdf_url": "",
+      "pdf_status": null
+    },
+    {
+      "paper_id": "7b4eb85b64ffd2b46b1d0ca84de4a65b980d6a95",
+      "title": "Convolutional Neural Network",
+      "pdf_url": "",
+      "pdf_status": "CLOSED"
+    },
+    {
+      "paper_id": "f2d32b9a81b78dbbccfa1616c019bbc32b2a8efb",
+      "title": "Large image datasets: A pyrrhic win for computer vision?",
+      "pdf_url": "https://arxiv.org/pdf/2006.16923",
+      "pdf_status": "GREEN"
+    },
+    {
+      "paper_id": "5c5921fd0c127a344baf9f0dee8dab2c1960674f",
+      "title": "Fuzzy System Based Medical Image Processing for Brain Disease Prediction",
+      "pdf_url": "https://www.frontiersin.org/articles/10.3389/fnins.2021.714318/pdf",
+      "pdf_status": "GOLD"
+    },
+    {
+      "paper_id": "c18bcbed5e7c8712e3c6bcb14af5faca779f440d",
+      "title": "Lung Cancer Detection Using Image Processing Techniques",
+      "pdf_url": "",
+      "pdf_status": null
+    },
+    {
+      "paper_id": "3931426d96cebe82db7866c7e246143422a54802",
+      "title": "Common Limitations of Image Processing Metrics: A Picture Story",
+      "pdf_url": "",
+      "pdf_status": null
+    },
+    {
+      "paper_id": "b8fe1d6965b78b26c8eefb072ca2bba524e3bbdd",
+      "title": "Effect of Attention Mechanism in Deep Learning-Based Remote Sensing Image Processing: A Systematic Literature Review",
+      "pdf_url": "https://www.mdpi.com/2072-4292/13/15/2965/pdf?version=1627568111",
+      "pdf_status": "GOLD"
+    },
+    {
+      "paper_id": "6520358a6fee542f9f6a6c1c08691d21a63dd20d",
+      "title": "A comprehensive review of image analysis methods for microorganism counting: from classical image processing to deep learning approaches",
+      "pdf_url": "https://link.springer.com/content/pdf/10.1007/s10462-021-10082-4.pdf",
+      "pdf_status": "BRONZE"
+    }
+  ]
+}

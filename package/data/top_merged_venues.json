@@ -1,0 +1,386 @@
+{
+  "total_papers": 1358,
+  "top_venues": [
+    {
+      "rank": 1,
+      "venue": "NeurIPS",
+      "total": 152,
+      "by_year": {
+        "2024": 66,
+        "2023": 68,
+        "2022": 17,
+        "2019": 0,
+        "2021": 1
+      }
+    },
+    {
+      "rank": 2,
+      "venue": "ICML",
+      "total": 122,
+      "by_year": {
+        "2024": 62,
+        "2023": 48,
+        "2022": 12
+      }
+    },
+    {
+      "rank": 3,
+      "venue": "ICLR",
+      "total": 94,
+      "by_year": {
+        "2024": 53,
+        "2023": 37,
+        "2022": 4
+      }
+    },
+    {
+      "rank": 4,
+      "venue": "TMLR",
+      "total": 54,
+      "by_year": {
+        "2024": 28,
+        "2023": 20,
+        "2022": 6
+      }
+    },
+    {
+      "rank": 5,
+      "venue": "AAAI",
+      "total": 49,
+      "by_year": {
+        "2024": 24,
+        "2023": 17,
+        "2022": 6,
+        "2019": 1,
+        "2020": 1
+      }
+    },
+    {
+      "rank": 6,
+      "venue": "EMNLP",
+      "total": 41,
+      "by_year": {
+        "2024": 8,
+        "2023": 29,
+        "2022": 4
+      }
+    },
+    {
+      "rank": 7,
+      "venue": "EACL",
+      "total": 31,
+      "by_year": {
+        "2024": 8,
+        "2023": 11,
+        "2022": 12
+      }
+    },
+    {
+      "rank": 8,
+      "venue": "Radiotherapy and Oncology",
+      "total": 18,
+      "by_year": {
+        "2024": 2,
+        "2023": 16
+      }
+    },
+    {
+      "rank": 9,
+      "venue": "Journal of Pediatric Surgery",
+      "total": 17,
+      "by_year": {
+        "2024": 10,
+        "2023": 7
+      }
+    },
+    {
+      "rank": 10,
+      "venue": "CVPR",
+      "total": 16,
+      "by_year": {
+        "2024": 3,
+        "2023": 6,
+        "2022": 7
+      }
+    },
+    {
+      "rank": 11,
+      "venue": "Nature Communications",
+      "total": 15,
+      "by_year": {
+        "2024": 6,
+        "2023": 5,
+        "2022": 4
+      }
+    },
+    {
+      "rank": 12,
+      "venue": "ICRA",
+      "total": 12,
+      "by_year": {
+        "2024": 6,
+        "2023": 4,
+        "2022": 2
+      }
+    },
+    {
+      "rank": 13,
+      "venue": "Scientific Reports",
+      "total": 11,
+      "by_year": {
+        "2024": 3,
+        "2023": 3,
+        "2022": 5
+      }
+    },
+    {
+      "rank": 14,
+      "venue": "colmweb.org/COLM/2024/Conference",
+      "total": 11,
+      "by_year": {
+        "2024": 11
+      }
+    },
+    {
+      "rank": 15,
+      "venue": "Trans. Mach. Learn. Res.",
+      "total": 11,
+      "by_year": {
+        "2024": 2,
+        "2023": 8,
+        "2022": 1
+      }
+    },
+    {
+      "rank": 16,
+      "venue": "Empirical Software Engineering",
+      "total": 9,
+      "by_year": {
+        "2024": 2,
+        "2023": 6,
+        "2022": 1
+      }
+    },
+    {
+      "rank": 17,
+      "venue": "NeuroImage",
+      "total": 8,
+      "by_year": {
+        "2023": 7,
+        "2022": 1
+      }
+    },
+    {
+      "rank": 18,
+      "venue": "Lecture Notes in Computer Science",
+      "total": 7,
+      "by_year": {
+        "2024": 7
+      }
+    },
+    {
+      "rank": 19,
+      "venue": "AISTATS",
+      "total": 7,
+      "by_year": {
+        "2024": 5,
+        "2023": 1,
+        "2022": 1
+      }
+    },
+    {
+      "rank": 20,
+      "venue": "Nature MI",
+      "total": 6,
+      "by_year": {
+        "2023": 4,
+        "2022": 2
+      }
+    },
+    {
+      "rank": 21,
+      "venue": "2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "total": 6,
+      "by_year": {
+        "2024": 2,
+        "2023": 3,
+        "2022": 1
+      }
+    },
+    {
+      "rank": 22,
+      "venue": "ICC 2023 - IEEE International Conference on Communications",
+      "total": 6,
+      "by_year": {
+        "2024": 1,
+        "2023": 5
+      }
+    },
+    {
+      "rank": 23,
+      "venue": "CHI Conference on Human Factors in Computing Systems",
+      "total": 6,
+      "by_year": {
+        "2024": 2,
+        "2023": 3,
+        "2022": 1
+      }
+    },
+    {
+      "rank": 24,
+      "venue": "Proceedings of The 1st Conference on Lifelong Learning Agents",
+      "total": 6,
+      "by_year": {
+        "2023": 5,
+        "2022": 1
+      }
+    },
+    {
+      "rank": 25,
+      "venue": "The 2024 ACM Conference on Fairness, Accountability, and Transparency",
+      "total": 5,
+      "by_year": {
+        "2024": 5
+      }
+    },
+    {
+      "rank": 26,
+      "venue": "Biological Psychiatry",
+      "total": 5,
+      "by_year": {
+        "2024": 2,
+        "2023": 1,
+        "2022": 2
+      }
+    },
+    {
+      "rank": 27,
+      "venue": "iScience",
+      "total": 5,
+      "by_year": {
+        "2024": 0,
+        "2023": 2,
+        "2022": 3
+      }
+    },
+    {
+      "rank": 28,
+      "venue": "Information and Software Technology",
+      "total": 5,
+      "by_year": {
+        "2023": 5
+      }
+    },
+    {
+      "rank": 29,
+      "venue": "Molecular Autism",
+      "total": 5,
+      "by_year": {
+        "2023": 4,
+        "2022": 1
+      }
+    },
+    {
+      "rank": 30,
+      "venue": "UAI",
+      "total": 5,
+      "by_year": {
+        "2023": 3,
+        "2022": 2
+      }
+    },
+    {
+      "rank": 31,
+      "venue": "Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval",
+      "total": 5,
+      "by_year": {
+        "2024": 1,
+        "2022": 4
+      }
+    },
+    {
+      "rank": 32,
+      "venue": "ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "total": 5,
+      "by_year": {
+        "2024": 2,
+        "2023": 1,
+        "2022": 2
+      }
+    },
+    {
+      "rank": 33,
+      "venue": "BMJ Open",
+      "total": 4,
+      "by_year": {
+        "2024": 1,
+        "2023": 3
+      }
+    },
+    {
+      "rank": 34,
+      "venue": "ACM Transactions on Software Engineering and Methodology",
+      "total": 4,
+      "by_year": {
+        "2024": 3,
+        "2022": 1,
+        "2023": 0
+      }
+    },
+    {
+      "rank": 35,
+      "venue": "Magnetic Resonance in Medicine",
+      "total": 4,
+      "by_year": {
+        "2024": 3,
+        "2022": 1
+      }
+    },
+    {
+      "rank": 36,
+      "venue": "Communications Biology",
+      "total": 4,
+      "by_year": {
+        "2024": 4,
+        "2023": 0
+      }
+    },
+    {
+      "rank": 37,
+      "venue": "rl-conference.cc/RLC/2024/Conference",
+      "total": 4,
+      "by_year": {
+        "2024": 4
+      }
+    },
+    {
+      "rank": 38,
+      "venue": "The Astrophysical Journal",
+      "total": 4,
+      "by_year": {
+        "2024": 1,
+        "2023": 3
+      }
+    },
+    {
+      "rank": 39,
+      "venue": "Frontiers in Neuroscience",
+      "total": 4,
+      "by_year": {
+        "2024": 1,
+        "2023": 1,
+        "2022": 2
+      }
+    },
+    {
+      "rank": 40,
+      "venue": "J. Mach. Learn. Res.",
+      "total": 4,
+      "by_year": {
+        "2024": 2,
+        "2023": 2
+      }
+    }
+  ],
+  "extraction_date": "2025-07-01"
+}
