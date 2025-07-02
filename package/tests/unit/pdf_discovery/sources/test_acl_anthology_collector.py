@@ -330,6 +330,9 @@ class TestACLAnthologyCollector:
             Paper(title="Paper 2", authors=[], venue="ACL", year=2023, citations=20, paper_id="p2")
         ]
         
+        # Disable batch mode for this test to test single paper discovery
+        collector.supports_batch = False
+        
         with patch.object(collector, '_discover_single') as mock_discover:
             # First paper succeeds, second fails
             mock_discover.side_effect = [
@@ -356,3 +359,56 @@ class TestACLAnthologyCollector:
             assert stats["attempted"] == 2
             assert stats["successful"] == 1
             assert stats["failed"] == 1
+    
+    def test_batch_discovery(self, collector):
+        """Test batch discovery of PDFs."""
+        papers = [
+            Paper(title="Neural Machine Translation with Attention", authors=[], venue="EMNLP", year=2023, citations=10, paper_id="p1"),
+            Paper(title="Transformer Networks for Language Understanding", authors=[], venue="EMNLP", year=2023, citations=20, paper_id="p2"),
+            Paper(title="BERT: Pre-training of Deep Bidirectional Transformers", authors=[], venue="ACL", year=2022, citations=30, paper_id="p3")
+        ]
+        
+        # Mock proceedings HTML with multiple papers
+        mock_emnlp_proceedings = """
+        <html>
+        <div class="paper">
+            <a href="/2023.emnlp-main.100/">Neural Machine Translation with Attention</a>
+            <a href="/2023.emnlp-main.200/">Transformer Networks for Language Understanding</a>
+        </div>
+        </html>
+        """
+        
+        mock_acl_proceedings = """
+        <html>
+        <div class="paper">
+            <a href="/2022.acl-long.300/">BERT: Pre-training of Deep Bidirectional Transformers</a>
+        </div>
+        </html>
+        """
+        
+        # Mock different responses for different URLs
+        def mock_get(url, timeout=None):
+            response = Mock()
+            if "emnlp-2023" in url:
+                response.status_code = 200
+                response.text = mock_emnlp_proceedings
+            elif "acl-2022" in url:
+                response.status_code = 200
+                response.text = mock_acl_proceedings
+            else:
+                response.status_code = 404
+            return response
+        
+        # Mock PDF validation
+        with patch.object(collector.session, 'get', side_effect=mock_get):
+            with patch.object(collector, '_validate_pdf_url', return_value=(True, 1048576)):
+                results = collector.discover_pdfs_batch(papers)
+                
+                # All papers should be found
+                assert len(results) == 3
+                assert all(f"p{i}" in results for i in range(1, 4))
+                
+                # Verify URLs are correct
+                assert results["p1"].pdf_url == "https://aclanthology.org/2023.emnlp-main.100.pdf"
+                assert results["p2"].pdf_url == "https://aclanthology.org/2023.emnlp-main.200.pdf"
+                assert results["p3"].pdf_url == "https://aclanthology.org/2022.acl-long.300.pdf"
