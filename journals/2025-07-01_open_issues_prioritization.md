@@ -1,3 +1,8 @@
+**####**
+This was a bad analysis based on local file-system instead of github.
+See `journals/2025-07-01_final_issue_prioritization.md` instead.
+**####**
+
 # Open Issues Prioritization Analysis
 
 **Date**: 2025-07-01
