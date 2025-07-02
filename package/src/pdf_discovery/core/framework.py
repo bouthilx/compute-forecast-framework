@@ -9,6 +9,7 @@ import time
 from src.data.models import Paper
 from .models import PDFRecord, DiscoveryResult
 from .collectors import BasePDFCollector
+from ..deduplication.engine import PaperDeduplicator
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,7 @@ class PDFDiscoveryFramework:
         self.url_to_papers: Dict[str, List[str]] = {}
         self.collectors: List[BasePDFCollector] = []
         self.venue_priorities: Dict[str, List[str]] = {}
+        self.deduplicator = PaperDeduplicator()
     
     def add_collector(self, collector: BasePDFCollector):
         """Add a PDF collector to the framework.
@@ -91,6 +93,9 @@ class PDFDiscoveryFramework:
         # Collect statistics
         source_stats = {}
         
+        # Collect all discovered records for deduplication
+        all_discovered_records: Dict[str, List[PDFRecord]] = {}
+        
         # Run collectors in parallel
         with ThreadPoolExecutor(max_workers=max(1, len(self.collectors))) as executor:
             # Submit all collector tasks
@@ -114,9 +119,19 @@ class PDFDiscoveryFramework:
                 try:
                     results = future.result()
                     
-                    # Process discovered PDFs
+                    # Collect discovered PDFs for deduplication
                     for paper_id, pdf_record in results.items():
-                        self._add_discovery(pdf_record)
+                        # Attach paper data for deduplication
+                        paper = next((p for p in papers if p.paper_id == paper_id), None)
+                        if paper:
+                            pdf_record.paper_data = paper
+                        
+                        # Group by base paper ID for deduplication
+                        base_id = paper_id
+                        if base_id not in all_discovered_records:
+                            all_discovered_records[base_id] = []
+                        all_discovered_records[base_id].append(pdf_record)
+                        
                         failed_papers.discard(paper_id)
                     
                     # Update progress
@@ -134,6 +149,46 @@ class PDFDiscoveryFramework:
                 # Collect statistics
                 stats = collector.get_statistics()
                 source_stats[collector.source_name] = stats
+        
+        # Apply sophisticated deduplication
+        if all_discovered_records:
+            logger.info(f"Running deduplication on {sum(len(records) for records in all_discovered_records.values())} records")
+            
+            try:
+                deduplicated_records = self.deduplicator.deduplicate_records(all_discovered_records)
+                
+                # Update discovered_papers with deduplicated results
+                self.discovered_papers.clear()
+                self.url_to_papers.clear()
+                
+                for group_id, best_record in deduplicated_records.items():
+                    # Use the paper_id from the best record
+                    self.discovered_papers[best_record.paper_id] = best_record
+                    
+                    # Track URL to paper mapping
+                    url = best_record.pdf_url
+                    if url not in self.url_to_papers:
+                        self.url_to_papers[url] = []
+                    if best_record.paper_id not in self.url_to_papers[url]:
+                        self.url_to_papers[url].append(best_record.paper_id)
+                        
+            except Exception as e:
+                logger.error(f"Deduplication failed: {e}. Falling back to simple mode.")
+                # Fall back to simple deduplication (first-come-first-served)
+                self.discovered_papers.clear()
+                self.url_to_papers.clear()
+                
+                for base_id, records in all_discovered_records.items():
+                    if records:
+                        # Just take the first record as fallback
+                        best_record = records[0]
+                        self.discovered_papers[best_record.paper_id] = best_record
+                        
+                        url = best_record.pdf_url
+                        if url not in self.url_to_papers:
+                            self.url_to_papers[url] = []
+                        if best_record.paper_id not in self.url_to_papers[url]:
+                            self.url_to_papers[url].append(best_record.paper_id)
         
         # Build final result
         discovered_records = list(self.discovered_papers.values())
@@ -208,29 +263,6 @@ class PDFDiscoveryFramework:
         
         return papers_for_collector
     
-    def _add_discovery(self, pdf_record: PDFRecord):
-        """Add a discovered PDF to the framework.
-        
-        Args:
-            pdf_record: The discovered PDF record
-        """
-        paper_id = pdf_record.paper_id
-        
-        # Check if we already have a record for this paper
-        if paper_id in self.discovered_papers:
-            existing = self.discovered_papers[paper_id]
-            # Keep the one with higher confidence
-            if pdf_record.confidence_score > existing.confidence_score:
-                logger.debug(f"Replacing PDF for {paper_id}: "
-                           f"{existing.source} ({existing.confidence_score:.2f}) -> "
-                           f"{pdf_record.source} ({pdf_record.confidence_score:.2f})")
-                self.discovered_papers[paper_id] = pdf_record
-        else:
-            self.discovered_papers[paper_id] = pdf_record
-        
-        # Track URL to paper mapping
-        url = pdf_record.pdf_url
-        if url not in self.url_to_papers:
-            self.url_to_papers[url] = []
-        if paper_id not in self.url_to_papers[url]:
-            self.url_to_papers[url].append(paper_id)
+    def get_deduplication_stats(self) -> Dict:
+        """Get statistics about the last deduplication run."""
+        return self.deduplicator.get_deduplication_stats()

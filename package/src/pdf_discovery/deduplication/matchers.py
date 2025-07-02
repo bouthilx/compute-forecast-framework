@@ -362,24 +362,27 @@ class PaperFuzzyMatcher:
         """Find fuzzy duplicates based on title/author similarity."""
         matches = []
         
+        # Skip fuzzy matching if dataset is too large to avoid O(n²) performance issues
+        if len(records) > 5000:
+            logger.warning(f"Skipping fuzzy matching for {len(records)} records (too large)")
+            return matches
+        
+        # Pre-filter records that have paper_data
+        valid_records = [r for r in records if hasattr(r, 'paper_data')]
+        
         # Compare all pairs
-        for i in range(len(records)):
-            for j in range(i + 1, len(records)):
-                record1, record2 = records[i], records[j]
-                
-                if not (hasattr(record1, 'paper_data') and hasattr(record2, 'paper_data')):
-                    continue
-                
+        for i in range(len(valid_records)):
+            for j in range(i + 1, len(valid_records)):
+                record1, record2 = valid_records[i], valid_records[j]
                 paper1, paper2 = record1.paper_data, record2.paper_data
                 
-                # Calculate similarities
+                # Quick title check first (fastest filter)
                 title_sim = self.calculate_title_similarity(paper1.title, paper2.title)
-                
                 if title_sim < self.title_threshold:
                     continue
                 
+                # Only calculate expensive author similarity if title matches
                 author_sim = self.calculate_author_similarity(paper1.authors, paper2.authors)
-                
                 if author_sim < self.author_threshold:
                     continue
                 
@@ -387,8 +390,8 @@ class PaperFuzzyMatcher:
                 venue_year_match = (
                     paper1.year == paper2.year and 
                     paper1.venue and paper2.venue and
-                    paper1.venue.lower() in paper2.venue.lower() or 
-                    paper2.venue.lower() in paper1.venue.lower()
+                    (paper1.venue.lower() in paper2.venue.lower() or 
+                     paper2.venue.lower() in paper1.venue.lower())
                 )
                 
                 matches.append(FuzzyMatch(
