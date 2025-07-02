@@ -281,9 +281,9 @@ class TestSimplePDFDownloader:
         assert "fail-1" in result["failed"]
         assert result["success_rate"] == pytest.approx(2/3)
     
-    @patch("src.pdf_download.downloader.tqdm")
+    @patch("src.pdf_download.downloader.Progress")
     @patch("requests.Session.get")
-    def test_download_batch_progress_tracking(self, mock_get, mock_tqdm, downloader):
+    def test_download_batch_progress_tracking(self, mock_get, mock_progress_class, downloader):
         """Test that batch download shows progress bar."""
         pdf_records = {
             f"paper-{i}": PDFRecord(
@@ -306,16 +306,18 @@ class TestSimplePDFDownloader:
         mock_response.raise_for_status = Mock()
         mock_get.return_value = mock_response
         
-        # Mock tqdm to track progress updates
+        # Mock rich Progress to track progress updates
         mock_progress = MagicMock()
-        mock_tqdm.return_value = mock_progress
+        mock_progress_class.return_value.__enter__.return_value = mock_progress
+        mock_task_id = 1
+        mock_progress.add_task.return_value = mock_task_id
         
         downloader.download_batch(pdf_records, show_progress=True)
         
         # Verify progress bar was created and updated
-        mock_tqdm.assert_called_once_with(total=3, desc="Downloading PDFs", unit="pdf")
+        mock_progress_class.assert_called_once()
+        mock_progress.add_task.assert_called_once_with("Downloading PDFs", total=3)
         assert mock_progress.update.call_count == 3  # One update per PDF
-        mock_progress.close.assert_called_once()
     
     def test_get_cache_stats(self, downloader, temp_cache_dir):
         """Test cache statistics reporting."""

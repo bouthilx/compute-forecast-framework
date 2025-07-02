@@ -4,10 +4,10 @@ import logging
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Dict, Optional, Any
+from typing import Dict, Any
 
 import requests
-from tqdm import tqdm
+from rich.progress import Progress
 
 from src.pdf_discovery.core.models import PDFRecord
 from src.pdf_download.cache_manager import PDFCacheManager
@@ -133,12 +133,36 @@ class SimplePDFDownloader:
         successful = {}
         failed = {}
         
-        # Progress bar setup
-        progress_bar = None
+        # Progress bar setup using rich
         if show_progress:
-            progress_bar = tqdm(total=len(pdf_records), desc="Downloading PDFs", unit="pdf")
-        
-        try:
+            with Progress() as progress:
+                task_id = progress.add_task("Downloading PDFs", total=len(pdf_records))
+                
+                with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                    # Submit all download tasks
+                    future_to_paper = {
+                        executor.submit(
+                            self.download_pdf, 
+                            record.pdf_url, 
+                            paper_id
+                        ): (paper_id, record)
+                        for paper_id, record in pdf_records.items()
+                    }
+                    
+                    # Process completed downloads
+                    for future in as_completed(future_to_paper):
+                        paper_id, record = future_to_paper[future]
+                        
+                        try:
+                            path = future.result()
+                            successful[paper_id] = path
+                            logger.info(f"Successfully processed {paper_id}")
+                        except Exception as e:
+                            failed[paper_id] = str(e)
+                            logger.error(f"Failed to download {paper_id}: {str(e)}")
+                        
+                        progress.update(task_id, advance=1)
+        else:
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 # Submit all download tasks
                 future_to_paper = {
@@ -161,13 +185,6 @@ class SimplePDFDownloader:
                     except Exception as e:
                         failed[paper_id] = str(e)
                         logger.error(f"Failed to download {paper_id}: {str(e)}")
-                    
-                    if progress_bar:
-                        progress_bar.update(1)
-        
-        finally:
-            if progress_bar:
-                progress_bar.close()
         
         total = len(pdf_records)
         success_count = len(successful)
