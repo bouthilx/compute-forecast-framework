@@ -1,0 +1,49 @@
+{
+  "venue_volumes": {
+    "ICML": {
+      "2024": "v235",
+      "2023": "v202",
+      "2022": "v162",
+      "2021": "v139",
+      "2020": "v119",
+      "2019": "v97",
+      "2018": "v80",
+      "2017": "v70",
+      "2016": "v48",
+      "2015": "v37"
+    },
+    "AISTATS": {
+      "2024": "v238",
+      "2023": "v206",
+      "2022": "v151",
+      "2021": "v130",
+      "2020": "v108",
+      "2019": "v89",
+      "2018": "v84",
+      "2017": "v54"
+    },
+    "UAI": {
+      "2023": "v216",
+      "2022": "v180",
+      "2021": "v161",
+      "2020": "v124",
+      "2019": "v115"
+    },
+    "COLT": {
+      "2024": "v247",
+      "2023": "v195",
+      "2022": "v178",
+      "2021": "v134",
+      "2020": "v125"
+    }
+  },
+  "base_url": "https://proceedings.mlr.press/",
+  "pdf_pattern": "{volume}/{paper_id}.pdf",
+  "proceedings_pattern": "{volume}/",
+  "aliases": {
+    "International Conference on Machine Learning": "ICML",
+    "International Conference on Artificial Intelligence and Statistics": "AISTATS",
+    "Conference on Learning Theory": "COLT",
+    "Conference on Uncertainty in Artificial Intelligence": "UAI"
+  }
+}
