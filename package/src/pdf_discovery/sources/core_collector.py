@@ -1,7 +1,6 @@
 """CORE API PDF collector for institutional repository access."""
 
 import logging
-import time
 import requests
 from typing import Optional, Dict, Any, List
 from datetime import datetime
@@ -10,47 +9,26 @@ from urllib.parse import quote
 from src.data.models import Paper
 from src.pdf_discovery.core.models import PDFRecord
 from src.pdf_discovery.core.collectors import BasePDFCollector
+from src.pdf_discovery.utils import RateLimiter, APIError, NoResultsError, NoPDFFoundError
 
 logger = logging.getLogger(__name__)
-
-
-class RateLimiter:
-    """Rate limiter for CORE API requests."""
-    
-    def __init__(self, requests_per_minute: int = 100):
-        """Initialize rate limiter.
-        
-        Args:
-            requests_per_minute: Maximum requests per minute (CORE limit is 100)
-        """
-        self.min_interval = 60.0 / requests_per_minute
-        self.last_request_time = 0.0
-    
-    def wait(self):
-        """Wait if necessary to respect rate limit."""
-        current_time = time.time()
-        time_since_last = current_time - self.last_request_time
-        
-        if time_since_last < self.min_interval:
-            sleep_time = self.min_interval - time_since_last
-            time.sleep(sleep_time)
-        
-        self.last_request_time = time.time()
 
 
 class COREPDFCollector(BasePDFCollector):
     """CORE API collector for discovering PDFs from institutional repositories."""
     
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, api_url: Optional[str] = None, requests_per_minute: int = 100):
         """Initialize CORE collector.
         
         Args:
             api_key: Optional CORE API key for higher rate limits
+            api_url: Optional custom API URL (defaults to CORE v3)
+            requests_per_minute: Rate limit for requests (default: 100)
         """
         super().__init__("core")
-        self.api_url = "https://api.core.ac.uk/v3/search/outputs"
+        self.api_url = api_url or "https://api.core.ac.uk/v3/search/outputs"
         self.api_key = api_key
-        self.rate_limiter = RateLimiter(100)  # 100 requests per minute
+        self.rate_limiter = RateLimiter.per_minute(requests_per_minute)
         
         # Set up headers
         self.headers = {
@@ -94,12 +72,16 @@ class COREPDFCollector(BasePDFCollector):
             )
             
             if response.status_code != 200:
-                raise Exception(f"CORE API error: {response.status_code} - {response.text}")
+                raise APIError(
+                    f"CORE API error: {response.status_code}",
+                    status_code=response.status_code,
+                    response_text=response.text
+                )
             
             data = response.json()
             
             if data.get("totalHits", 0) == 0:
-                raise Exception("No results found in CORE")
+                raise NoResultsError("No results found in CORE", query=query)
             
             # Find best matching result with PDF
             for result in data.get("results", []):
@@ -121,10 +103,13 @@ class COREPDFCollector(BasePDFCollector):
                         license=self._extract_license(result)
                     )
             
-            raise Exception("No PDF found in CORE results")
+            raise NoPDFFoundError(
+                "No PDF found in CORE results", 
+                results_count=len(data.get("results", []))
+            )
             
         except requests.RequestException as e:
-            raise Exception(f"CORE API request failed: {str(e)}")
+            raise APIError(f"CORE API request failed: {str(e)}") from e
     
     def _build_search_query(self, paper: Paper) -> str:
         """Build search query for CORE API.

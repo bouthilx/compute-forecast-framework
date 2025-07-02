@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 from src.data.models import Paper, Author
 from src.pdf_discovery.sources.hal_collector import HALPDFCollector
 from src.pdf_discovery.core.models import PDFRecord
+from src.pdf_discovery.utils import APIError, NoResultsError, NoPDFFoundError
 
 
 class TestHALPDFCollector:
@@ -169,7 +170,7 @@ class TestHALPDFCollector:
             
             mock_get.side_effect = [oai_response, search_response]
             
-            with pytest.raises(Exception, match="No PDF found"):
+            with pytest.raises(NoPDFFoundError, match="No PDF found"):
                 collector._discover_single(sample_paper)
     
     def test_discover_single_no_results(self, collector, sample_paper):
@@ -191,7 +192,7 @@ class TestHALPDFCollector:
             
             mock_get.side_effect = [oai_response, search_response]
             
-            with pytest.raises(Exception, match="No results found"):
+            with pytest.raises(NoResultsError, match="No results found"):
                 collector._discover_single(sample_paper)
     
     def test_extract_pdf_url_from_identifiers(self, collector):
@@ -271,5 +272,5 @@ class TestHALPDFCollector:
         </OAI-PMH>"""
         
         root = ET.fromstring(error_xml)
-        with pytest.raises(Exception, match="OAI-PMH error"):
+        with pytest.raises(APIError, match="OAI-PMH error"):
             collector._parse_oai_response(error_xml)

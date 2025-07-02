@@ -1,7 +1,6 @@
 """HAL (Hyper Articles en Ligne) PDF collector for French research repositories."""
 
 import logging
-import time
 import re
 import requests
 import xml.etree.ElementTree as ET
@@ -12,43 +11,26 @@ from urllib.parse import quote
 from src.data.models import Paper
 from src.pdf_discovery.core.models import PDFRecord
 from src.pdf_discovery.core.collectors import BasePDFCollector
+from src.pdf_discovery.utils import RateLimiter, APIError, NoResultsError, NoPDFFoundError
 
 logger = logging.getLogger(__name__)
-
-
-class RateLimiter:
-    """Rate limiter for HAL API requests."""
-    
-    def __init__(self, requests_per_second: float = 1.0):
-        """Initialize rate limiter.
-        
-        Args:
-            requests_per_second: Maximum requests per second
-        """
-        self.min_interval = 1.0 / requests_per_second
-        self.last_request_time = 0.0
-    
-    def wait(self):
-        """Wait if necessary to respect rate limit."""
-        current_time = time.time()
-        time_since_last = current_time - self.last_request_time
-        
-        if time_since_last < self.min_interval:
-            sleep_time = self.min_interval - time_since_last
-            time.sleep(sleep_time)
-        
-        self.last_request_time = time.time()
 
 
 class HALPDFCollector(BasePDFCollector):
     """HAL PDF collector using OAI-PMH protocol and Search API."""
     
-    def __init__(self):
-        """Initialize HAL collector."""
+    def __init__(self, oai_url: Optional[str] = None, search_url: Optional[str] = None, requests_per_second: float = 1.0):
+        """Initialize HAL collector.
+        
+        Args:
+            oai_url: Optional custom OAI-PMH URL
+            search_url: Optional custom search API URL
+            requests_per_second: Rate limit for requests (default: 1.0)
+        """
         super().__init__("hal")
-        self.oai_url = "https://api.archives-ouvertes.fr/oai/hal"
-        self.search_url = "https://api.archives-ouvertes.fr/search"
-        self.rate_limiter = RateLimiter(1.0)  # 1 request per second
+        self.oai_url = oai_url or "https://api.archives-ouvertes.fr/oai/hal"
+        self.search_url = search_url or "https://api.archives-ouvertes.fr/search"
+        self.rate_limiter = RateLimiter.per_second(requests_per_second)
         
         # Compile regex for HAL ID extraction
         self.hal_id_pattern = re.compile(r'(hal-\d+)')
@@ -96,7 +78,7 @@ class HALPDFCollector(BasePDFCollector):
         """
         identifier = self._build_oai_identifier(paper)
         if not identifier:
-            raise Exception("No identifier available for OAI-PMH")
+            raise NoResultsError("No identifier available for OAI-PMH")
         
         # Apply rate limiting
         self.rate_limiter.wait()
@@ -112,7 +94,10 @@ class HALPDFCollector(BasePDFCollector):
             response = requests.get(self.oai_url, params=params, timeout=30)
             
             if response.status_code != 200:
-                raise Exception(f"OAI-PMH error: {response.status_code}")
+                raise APIError(
+                    f"OAI-PMH error: {response.status_code}",
+                    status_code=response.status_code
+                )
             
             # Parse XML response
             root = self._parse_oai_response(response.text)
@@ -120,7 +105,7 @@ class HALPDFCollector(BasePDFCollector):
             # Extract metadata
             record = root.find('.//oai:record', self.namespaces)
             if record is None:
-                raise Exception("No record found in OAI-PMH response")
+                raise NoResultsError("No record found in OAI-PMH response")
             
             # Extract PDF URL from identifiers
             identifiers = record.findall('.//dc:identifier', self.namespaces)
@@ -129,7 +114,7 @@ class HALPDFCollector(BasePDFCollector):
             )
             
             if not pdf_url:
-                raise Exception("No PDF found in OAI-PMH record")
+                raise NoPDFFoundError("No PDF found in OAI-PMH record")
             
             # Extract other metadata
             rights = record.findall('.//dc:rights', self.namespaces)
@@ -150,7 +135,7 @@ class HALPDFCollector(BasePDFCollector):
             )
             
         except requests.RequestException as e:
-            raise Exception(f"OAI-PMH request failed: {str(e)}")
+            raise APIError(f"OAI-PMH request failed: {str(e)}") from e
     
     def _discover_via_search(self, paper: Paper) -> PDFRecord:
         """Discover PDF using HAL Search API.
@@ -185,13 +170,16 @@ class HALPDFCollector(BasePDFCollector):
             response = requests.get(self.search_url, params=params, timeout=30)
             
             if response.status_code != 200:
-                raise Exception(f"Search API error: {response.status_code}")
+                raise APIError(
+                    f"Search API error: {response.status_code}",
+                    status_code=response.status_code
+                )
             
             data = response.json()
             docs = data.get("response", {}).get("docs", [])
             
             if not docs:
-                raise Exception("No results found in HAL")
+                raise NoResultsError("No results found in HAL", query=" OR ".join(query_parts))
             
             # Find document with PDF
             for doc in docs:
@@ -212,10 +200,13 @@ class HALPDFCollector(BasePDFCollector):
                         license="open_access" if doc.get("openAccess_bool", False) else None
                     )
             
-            raise Exception("No PDF found in HAL search results")
+            raise NoPDFFoundError(
+                "No PDF found in HAL search results",
+                results_count=len(docs)
+            )
             
         except requests.RequestException as e:
-            raise Exception(f"Search API request failed: {str(e)}")
+            raise APIError(f"Search API request failed: {str(e)}") from e
     
     def _build_oai_identifier(self, paper: Paper) -> Optional[str]:
         """Build OAI identifier for HAL.
@@ -303,6 +294,6 @@ class HALPDFCollector(BasePDFCollector):
         if error is not None:
             error_code = error.get('code', 'unknown')
             error_text = error.text or 'Unknown error'
-            raise Exception(f"OAI-PMH error ({error_code}): {error_text}")
+            raise APIError(f"OAI-PMH error ({error_code}): {error_text}")
         
         return root

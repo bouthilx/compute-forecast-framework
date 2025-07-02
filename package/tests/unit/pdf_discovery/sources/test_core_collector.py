@@ -8,6 +8,7 @@ import json
 from src.data.models import Paper, Author
 from src.pdf_discovery.sources.core_collector import COREPDFCollector
 from src.pdf_discovery.core.models import PDFRecord
+from src.pdf_discovery.utils import APIError, NoResultsError, NoPDFFoundError
 
 
 class TestCOREPDFCollector:
@@ -96,7 +97,7 @@ class TestCOREPDFCollector:
             mock_response.json.return_value = response
             mock_get.return_value = mock_response
             
-            with pytest.raises(Exception, match="No PDF found"):
+            with pytest.raises(NoPDFFoundError, match="No PDF found"):
                 collector._discover_single(sample_paper)
     
     def test_discover_single_no_results(self, collector, sample_paper):
@@ -112,7 +113,7 @@ class TestCOREPDFCollector:
             mock_response.json.return_value = response
             mock_get.return_value = mock_response
             
-            with pytest.raises(Exception, match="No results found"):
+            with pytest.raises(NoResultsError, match="No results found"):
                 collector._discover_single(sample_paper)
     
     def test_discover_single_api_error(self, collector, sample_paper):
@@ -123,7 +124,7 @@ class TestCOREPDFCollector:
             mock_response.text = "Internal Server Error"
             mock_get.return_value = mock_response
             
-            with pytest.raises(Exception, match="CORE API error"):
+            with pytest.raises(APIError, match="CORE API error"):
                 collector._discover_single(sample_paper)
     
     def test_search_by_title(self, collector, sample_paper, core_api_response):
