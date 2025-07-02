@@ -128,6 +128,43 @@ class TestPMLRCollector:
         paper_id = collector._search_proceedings_page("v202", "Deep Learning for Computer Vision")
         assert paper_id is None
     
+    @patch('requests.get')
+    def test_search_proceedings_page_complex_html(self, mock_get, collector):
+        """Test BeautifulSoup parsing with complex HTML structure."""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.text = '''
+        <!DOCTYPE html>
+        <html>
+        <head><title>ICML 2023 Proceedings</title></head>
+        <body>
+        <div class="proceedings">
+            <h1>ICML 2023</h1>
+            <div class="paper-list">
+                <div class="paper-entry">
+                    <span class="paper-number">1</span>
+                    <a href="/v202/smith23a.html" class="paper-link">
+                        Deep Learning for Computer Vision
+                    </a>
+                    <span class="authors">John Smith, Jane Doe</span>
+                </div>
+                <div class="paper-entry">
+                    <span class="paper-number">2</span>
+                    <a href="/v202/jones23b.html" class="paper-link">
+                        Another Paper Title
+                    </a>
+                    <span class="authors">Bob Jones</span>
+                </div>
+            </div>
+        </div>
+        </body>
+        </html>
+        '''
+        mock_get.return_value = mock_response
+        
+        paper_id = collector._search_proceedings_page("v202", "Deep Learning for Computer Vision")
+        assert paper_id == "smith23a"
+
     def test_construct_pdf_url(self, collector):
         """Test PDF URL construction."""
         url = collector._construct_pdf_url("v202", "doe23a")

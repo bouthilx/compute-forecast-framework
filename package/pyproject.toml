@@ -18,6 +18,7 @@ dependencies = [
     "pandas>=2.0.0",
     "rapidfuzz>=3.13.0",
     "openreview-py>=1.50.1",
+    "beautifulsoup4>=4.13.4",
 ]
 
 [dependency-groups]

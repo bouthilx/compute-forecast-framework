@@ -11,6 +11,7 @@ from pathlib import Path
 import requests
 from rapidfuzz import fuzz
 from rapidfuzz import process
+from bs4 import BeautifulSoup
 
 from src.pdf_discovery.core.collectors import BasePDFCollector
 from src.pdf_discovery.core.models import PDFRecord
@@ -21,6 +22,11 @@ logger = logging.getLogger(__name__)
 
 class PMLRCollector(BasePDFCollector):
     """Collector for PMLR proceedings papers."""
+    
+    # Class constants
+    FUZZY_MATCH_THRESHOLD = 85
+    REQUEST_TIMEOUT = 30
+    CONFIDENCE_SCORE = 0.95
     
     def __init__(self):
         """Initialize PMLR collector."""
@@ -38,7 +44,7 @@ class PMLRCollector(BasePDFCollector):
         self._proceedings_cache = {}
         
         # Configure timeout for HTTP requests
-        self.request_timeout = 30
+        self.request_timeout = self.REQUEST_TIMEOUT
     
     def _load_volume_mapping(self):
         """Load volume mapping from JSON file."""
@@ -125,17 +131,30 @@ class PMLRCollector(BasePDFCollector):
             response = requests.get(proceedings_url, timeout=self.request_timeout)
             response.raise_for_status()
             
-            # Parse paper links
-            # Pattern: <a href="/v202/doe23a.html">Paper Title</a>
-            pattern = r'<a href="/' + volume + r'/([^"]+)\.html">([^<]+)</a>'
-            matches = re.findall(pattern, response.text)
+            # Parse HTML using BeautifulSoup
+            soup = BeautifulSoup(response.text, 'html.parser')
             
-            if not matches:
+            # Find all links that match the pattern /{volume}/paperid.html
+            paper_links = soup.find_all('a', href=lambda href: href and f'/{volume}/' in href and href.endswith('.html'))
+            
+            if not paper_links:
                 logger.warning(f"No papers found in proceedings {volume}")
                 return None
             
-            # Extract titles and IDs
-            papers_data = [(paper_id, title.strip()) for paper_id, title in matches]
+            # Extract titles and IDs from found links
+            papers_data = []
+            for link in paper_links:
+                href = link.get('href')
+                title = link.get_text(strip=True)
+                if href and title:
+                    # Extract paper ID from href like "/v202/smith23a.html"
+                    paper_id = href.split('/')[-1].replace('.html', '')
+                    papers_data.append((paper_id, title))
+            
+            if not papers_data:
+                logger.warning(f"No valid papers found in proceedings {volume}")
+                return None
+            
             titles = [title for _, title in papers_data]
             
             # Use fuzzy matching to find best match
@@ -143,7 +162,7 @@ class PMLRCollector(BasePDFCollector):
                 paper_title,
                 titles,
                 scorer=fuzz.token_sort_ratio,
-                score_cutoff=85  # Minimum similarity threshold
+                score_cutoff=self.FUZZY_MATCH_THRESHOLD
             )
             
             if best_match:
@@ -206,7 +225,7 @@ class PMLRCollector(BasePDFCollector):
             pdf_url=pdf_url,
             source=self.source_name,
             discovery_timestamp=datetime.now(),
-            confidence_score=0.95,  # High confidence for direct venue links
+            confidence_score=self.CONFIDENCE_SCORE,  # High confidence for direct venue links
             version_info={
                 "volume": volume,
                 "paper_id": paper_id,
