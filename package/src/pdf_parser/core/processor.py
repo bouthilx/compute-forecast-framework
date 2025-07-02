@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Dict, Any, List
 
 from src.pdf_parser.core.base_extractor import BaseExtractor
+from src.pdf_parser.core.validation import AffiliationValidator
+from src.pdf_parser.core.cost_tracker import CostTracker
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +23,8 @@ class OptimizedPDFProcessor:
         """
         self.extractors = {}  # Will store {name: {'extractor': BaseExtractor, 'level': int}}
         self.config = config
+        self.validator = AffiliationValidator()
+        self.cost_tracker = CostTracker()
     
     def register_extractor(self, name: str, extractor: BaseExtractor, level: int) -> None:
         """Register an extractor with its priority level.
@@ -97,8 +101,13 @@ class OptimizedPDFProcessor:
                 logger.info(f"Trying extractor '{name}' for affiliations")
                 result = extractor.extract_first_pages(pdf_path, pages=[0, 1])
                 
-                if self._validate_affiliations(result, metadata):
+                if self.validator.validate_affiliations(result, metadata):
                     logger.info(f"Successfully extracted affiliations using '{name}'")
+                    
+                    # Record cost for this extraction
+                    extraction_cost = self._calculate_extraction_cost(name, 'affiliation_extraction', result)
+                    self.cost_tracker.record_extraction_cost(name, 'affiliation_extraction', extraction_cost)
+                    
                     return {
                         'affiliations': result.get('affiliations', []),
                         'method': result.get('method', name),
@@ -140,7 +149,13 @@ class OptimizedPDFProcessor:
         for level, name, extractor in available_extractors:
             try:
                 logger.info(f"Extracting full text using '{name}'")
-                return extractor.extract_full_text(pdf_path)
+                full_text = extractor.extract_full_text(pdf_path)
+                
+                # Record cost for full text extraction
+                extraction_cost = self._calculate_extraction_cost(name, 'full_text', {'text': full_text})
+                self.cost_tracker.record_extraction_cost(name, 'full_text', extraction_cost)
+                
+                return full_text
             except Exception as e:
                 logger.error(f"Full text extraction failed with '{name}': {str(e)}")
                 continue
@@ -170,19 +185,49 @@ class OptimizedPDFProcessor:
             'has_computational_content': len(found_keywords) > 0
         }
     
-    def _validate_affiliations(self, result: Dict, metadata: Dict) -> bool:
-        """Validate extracted affiliations against paper metadata.
+    def _calculate_extraction_cost(self, extractor_name: str, operation: str, result: Dict) -> float:
+        """Calculate cost for an extraction operation.
         
         Args:
-            result: Extraction result to validate
-            metadata: Paper metadata for cross-reference
+            extractor_name: Name of the extractor used
+            operation: Type of operation performed
+            result: Result of the extraction
             
         Returns:
-            True if validation passes
+            Cost in dollars for this operation
         """
-        # Basic validation - check if we got some affiliations
-        affiliations = result.get('affiliations', [])
-        confidence = result.get('confidence', 0.0)
+        # Cost mapping for different extractors
+        cost_map = {
+            'claude_vision': {
+                'affiliation_extraction': 0.10,  # Per 2-page extraction
+                'full_text': 0.15  # Per full document
+            },
+            'google_vision': {
+                'affiliation_extraction': 0.05,  # Per 2-page extraction
+                'full_text': 0.08,  # Per full document
+                'ocr': 0.03  # Per page
+            },
+            'pymupdf': {
+                'affiliation_extraction': 0.0,  # Free
+                'full_text': 0.0  # Free
+            },
+            'easyocr': {
+                'affiliation_extraction': 0.0,  # Free but uses local compute
+                'full_text': 0.0,
+                'ocr': 0.0
+            },
+            'grobid': {
+                'affiliation_extraction': 0.0,  # Free
+                'full_text': 0.0
+            }
+        }
         
-        # Pass if we have affiliations and reasonable confidence
-        return len(affiliations) > 0 and confidence > 0.5
+        return cost_map.get(extractor_name, {}).get(operation, 0.0)
+    
+    def get_cost_summary(self) -> Dict[str, Any]:
+        """Get summary of extraction costs.
+        
+        Returns:
+            Dictionary with cost breakdown
+        """
+        return self.cost_tracker.get_cost_summary()
