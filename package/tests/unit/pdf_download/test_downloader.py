@@ -52,23 +52,23 @@ class TestSimplePDFDownloader:
         assert downloader.session.headers["User-Agent"] == "Mozilla/5.0 (compatible; Academic PDF Collector)"
     
     def test_get_cache_path(self, downloader):
-        """Test cache path generation."""
+        """Test cache path generation through cache manager."""
         paper_id = "test-123"
-        cache_path = downloader._get_cache_path(paper_id)
-        assert cache_path.parent == downloader.cache_dir
+        cache_path = downloader.cache_manager.get_cache_path(paper_id)
+        assert cache_path.parent == downloader.cache_manager.cache_dir
         assert cache_path.name == "test-123.pdf"
     
     def test_is_cached_returns_true_for_existing_file(self, downloader, temp_cache_dir):
-        """Test that is_cached returns True for existing files."""
+        """Test that cache manager's is_cached returns True for existing files."""
         paper_id = "cached-paper"
         cache_file = temp_cache_dir / f"{paper_id}.pdf"
         cache_file.write_bytes(b"PDF content")
         
-        assert downloader._is_cached(paper_id) is True
+        assert downloader.cache_manager.is_cached(paper_id) is True
     
     def test_is_cached_returns_false_for_missing_file(self, downloader):
-        """Test that is_cached returns False for missing files."""
-        assert downloader._is_cached("non-existent") is False
+        """Test that cache manager's is_cached returns False for missing files."""
+        assert downloader.cache_manager.is_cached("non-existent") is False
     
     @patch("requests.Session.get")
     def test_download_pdf_uses_cache(self, mock_get, downloader, temp_cache_dir):
@@ -328,7 +328,7 @@ class TestSimplePDFDownloader:
         
         assert stats["total_files"] == 3
         assert stats["total_size_bytes"] == 1024 + 2048 + 3072
-        assert stats["cache_dir"] == str(downloader.cache_dir)
+        assert stats["cache_dir"] == str(downloader.cache_manager.cache_dir)
     
     def test_clear_cache(self, downloader, temp_cache_dir):
         """Test cache clearing functionality."""

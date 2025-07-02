@@ -10,6 +10,7 @@ import requests
 from tqdm import tqdm
 
 from src.pdf_discovery.core.models import PDFRecord
+from src.pdf_download.cache_manager import PDFCacheManager
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,7 @@ class SimplePDFDownloader:
         Args:
             cache_dir: Directory to store downloaded PDFs
         """
-        self.cache_dir = Path(cache_dir)
-        self.cache_dir.mkdir(exist_ok=True)
+        self.cache_manager = PDFCacheManager(cache_dir)
         
         self.session = requests.Session()
         self.session.headers.update({
@@ -35,28 +35,6 @@ class SimplePDFDownloader:
         self.max_retries = 3
         self.timeout = 30
         self.min_file_size = 10 * 1024  # 10KB minimum
-    
-    def _get_cache_path(self, paper_id: str) -> Path:
-        """Get the cache file path for a paper ID.
-        
-        Args:
-            paper_id: Unique identifier for the paper
-            
-        Returns:
-            Path to the cached file
-        """
-        return self.cache_dir / f"{paper_id}.pdf"
-    
-    def _is_cached(self, paper_id: str) -> bool:
-        """Check if a paper is already cached.
-        
-        Args:
-            paper_id: Unique identifier for the paper
-            
-        Returns:
-            True if the paper is cached
-        """
-        return self._get_cache_path(paper_id).exists()
     
     def _validate_pdf_content(self, response: requests.Response) -> None:
         """Validate that the response contains a valid PDF.
@@ -89,10 +67,10 @@ class SimplePDFDownloader:
             ValueError: If content validation fails
         """
         # Check cache first
-        cache_path = self._get_cache_path(paper_id)
-        if self._is_cached(paper_id):
+        cached_file = self.cache_manager.get_cached_file(paper_id)
+        if cached_file:
             logger.info(f"Using cached PDF for {paper_id}")
-            return cache_path
+            return cached_file
         
         # Download with retry logic
         last_exception = None
@@ -107,7 +85,7 @@ class SimplePDFDownloader:
                 self._validate_pdf_content(response)
                 
                 # Save to cache
-                cache_path.write_bytes(response.content)
+                cache_path = self.cache_manager.save_to_cache(paper_id, response.content)
                 logger.info(f"Successfully downloaded PDF for {paper_id}")
                 return cache_path
                 
@@ -207,14 +185,7 @@ class SimplePDFDownloader:
         Returns:
             Dictionary with cache statistics
         """
-        pdf_files = list(self.cache_dir.glob("*.pdf"))
-        total_size = sum(f.stat().st_size for f in pdf_files)
-        
-        return {
-            "cache_dir": str(self.cache_dir),
-            "total_files": len(pdf_files),
-            "total_size_bytes": total_size
-        }
+        return self.cache_manager.get_cache_stats()
     
     def clear_cache(self) -> int:
         """Clear all cached PDFs.
@@ -222,10 +193,4 @@ class SimplePDFDownloader:
         Returns:
             Number of files cleared
         """
-        pdf_files = list(self.cache_dir.glob("*.pdf"))
-        
-        for pdf_file in pdf_files:
-            pdf_file.unlink()
-        
-        logger.info(f"Cleared {len(pdf_files)} files from cache")
-        return len(pdf_files)
+        return self.cache_manager.clear_cache()
