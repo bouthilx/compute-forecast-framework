@@ -1,7 +1,7 @@
 """PDF Discovery Framework for orchestrating multiple sources."""
 
 import logging
-from typing import Dict, List, Optional, Callable, Set
+from typing import Dict, List, Optional, Callable, Set, TYPE_CHECKING, Any
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
@@ -11,19 +11,27 @@ from .models import PDFRecord, DiscoveryResult
 from .collectors import BasePDFCollector
 from ..deduplication.engine import PaperDeduplicator
 
+if TYPE_CHECKING:
+    from src.pdf_storage.discovery_integration import PDFDiscoveryStorage
+
 logger = logging.getLogger(__name__)
 
 
 class PDFDiscoveryFramework:
     """Orchestrates PDF discovery from multiple sources with parallel execution."""
     
-    def __init__(self):
-        """Initialize the PDF discovery framework."""
+    def __init__(self, storage_backend: Optional['PDFDiscoveryStorage'] = None):
+        """Initialize the PDF discovery framework.
+        
+        Args:
+            storage_backend: Optional storage backend for PDFs
+        """
         self.discovered_papers: Dict[str, PDFRecord] = {}
         self.url_to_papers: Dict[str, List[str]] = {}
         self.collectors: List[BasePDFCollector] = []
         self.venue_priorities: Dict[str, List[str]] = {}
         self.deduplicator = PaperDeduplicator()
+        self.storage_backend = storage_backend
     
     def add_collector(self, collector: BasePDFCollector):
         """Add a PDF collector to the framework.
@@ -290,3 +298,47 @@ class PDFDiscoveryFramework:
     def get_deduplication_stats(self) -> Dict:
         """Get statistics about the last deduplication run."""
         return self.deduplicator.get_deduplication_stats()
+    
+    def discover_and_store_pdfs(
+        self, 
+        papers: List[Paper],
+        progress_callback: Optional[Callable[[int, int, str], None]] = None,
+        download_pdfs: bool = True,
+        upload_to_drive: bool = True
+    ) -> Dict[str, Any]:
+        """Discover PDFs and store them using the storage backend.
+        
+        Args:
+            papers: List of papers to discover PDFs for
+            progress_callback: Optional callback for progress updates
+            download_pdfs: Whether to download PDFs after discovery
+            upload_to_drive: Whether to upload PDFs to Google Drive
+            
+        Returns:
+            Combined discovery and storage statistics
+        """
+        if not self.storage_backend:
+            raise ValueError("Storage backend not configured. Initialize framework with storage_backend parameter.")
+        
+        # First, discover PDFs
+        discovery_result = self.discover_pdfs(papers, progress_callback)
+        
+        # Then process with storage backend
+        storage_stats = self.storage_backend.process_discovery_results(
+            discovery_result,
+            download_pdfs=download_pdfs,
+            upload_to_drive=upload_to_drive,
+            show_progress=True
+        )
+        
+        # Return combined statistics
+        return {
+            "discovery": {
+                "total_papers": discovery_result.total_papers,
+                "discovered_count": discovery_result.discovered_count,
+                "failed_papers": len(discovery_result.failed_papers),
+                "execution_time": discovery_result.execution_time_seconds
+            },
+            "storage": storage_stats,
+            "source_statistics": discovery_result.source_statistics
+        }
