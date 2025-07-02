@@ -8,6 +8,10 @@ from .acl_anthology_collector import ACLAnthologyCollector
 from .openalex_collector import OpenAlexPDFCollector
 from .cvf_collector import CVFCollector
 from .aaai_collector import AAICollector
+from .nature_collector import NaturePDFCollector
+from .arxiv_collector import ArXivPDFCollector
+from .semantic_scholar_collector import SemanticScholarPDFCollector
+from .doi_resolver_collector import DOIResolverCollector
 
 __all__ = [
     "OpenReviewPDFCollector",
@@ -19,5 +23,9 @@ __all__ = [
     "ACLAnthologyCollector",
     "OpenAlexPDFCollector",
     "CVFCollector",
-    "AAICollector"
+    "AAICollector",
+    "NaturePDFCollector",
+    "ArXivPDFCollector",
+    "SemanticScholarPDFCollector",
+    "DOIResolverCollector"
 ]
