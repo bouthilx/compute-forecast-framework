@@ -41,6 +41,30 @@ class PDFDiscoveryFramework:
             priorities: Dict mapping venue names to ordered list of preferred sources
         """
         self.venue_priorities = priorities
+        
+        # Convert venue priorities to source priority rankings for deduplication
+        source_rankings = {}
+        max_priority = 10  # Start with high base priority
+        
+        for venue, sources in priorities.items():
+            for i, source in enumerate(sources):
+                # Higher priority = higher score (reverse order)
+                # First source gets highest score, subsequent sources get lower scores
+                priority_score = max_priority - i
+                if source not in source_rankings:
+                    source_rankings[source] = priority_score
+                else:
+                    # Use highest priority seen across all venues
+                    source_rankings[source] = max(source_rankings[source], priority_score)
+        
+        # Update deduplication engine with source priorities
+        from ..deduplication.version_manager import SourcePriority
+        if source_rankings:
+            custom_priorities = SourcePriority(
+                source_rankings=source_rankings,
+                prefer_published=True
+            )
+            self.deduplicator.version_manager.set_priorities(custom_priorities)
     
     def discover_pdfs(
         self, 
