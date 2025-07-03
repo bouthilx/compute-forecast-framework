@@ -4,8 +4,8 @@ import pytest
 from datetime import datetime
 from unittest.mock import patch
 
-from src.data.models import Paper, Author
-from src.data.processors.adaptive_threshold_calculator import AdaptiveThresholdCalculator
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.data.processors.adaptive_threshold_calculator import AdaptiveThresholdCalculator
 
 
 class TestAdaptiveThresholdCalculator:

@@ -3,8 +3,8 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from src.data.models import Paper
-from src.pdf_discovery.sources.jmlr_collector import JMLRCollector
+from compute_forecast.data.models import Paper
+from compute_forecast.pdf_discovery.sources.jmlr_collector import JMLRCollector
 
 
 class TestJMLRCollector:

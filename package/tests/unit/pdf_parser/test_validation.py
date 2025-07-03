@@ -1,7 +1,7 @@
 """Tests for PDF extraction validation logic."""
 
 
-from src.pdf_parser.core.validation import AffiliationValidator
+from compute_forecast.pdf_parser.core.validation import AffiliationValidator
 
 
 class TestAffiliationValidator:

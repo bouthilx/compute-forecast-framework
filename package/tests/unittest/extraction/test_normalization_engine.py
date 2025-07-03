@@ -2,8 +2,8 @@
 
 import pytest
 
-from src.extraction.normalization_engine import NormalizationEngine
-from src.extraction.template_engine import ExtractionField
+from compute_forecast.extraction.normalization_engine import NormalizationEngine
+from compute_forecast.extraction.template_engine import ExtractionField
 
 
 class TestNormalizationEngine:

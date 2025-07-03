@@ -3,10 +3,10 @@
 import pytest
 from datetime import datetime
 
-from src.pdf_discovery.core.framework import PDFDiscoveryFramework
-from src.pdf_discovery.core.models import PDFRecord
-from src.pdf_discovery.core.collectors import BasePDFCollector
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pdf_discovery.core.collectors import BasePDFCollector
+from compute_forecast.data.models import Paper, Author
 
 
 class SimpleCollector(BasePDFCollector):

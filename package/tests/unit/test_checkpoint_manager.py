@@ -17,12 +17,12 @@ from pathlib import Path
 package_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(package_root))
 
-from src.data.collectors.checkpoint_manager import CheckpointManager
-from src.data.collectors.state_persistence import StatePersistence
-from src.data.collectors.state_structures import (
+from compute_forecast.data.collectors.checkpoint_manager import CheckpointManager
+from compute_forecast.data.collectors.state_persistence import StatePersistence
+from compute_forecast.data.collectors.state_structures import (
     CheckpointData, ErrorContext, CheckpointValidationResult
 )
-from src.data.models import APIHealthStatus, RateLimitStatus
+from compute_forecast.data.models import APIHealthStatus, RateLimitStatus
 
 
 class TestCheckpointManager:

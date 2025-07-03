@@ -4,9 +4,9 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from src.pdf_discovery.sources.doi_resolver_collector import DOIResolverCollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper, Author, APIResponse, ResponseMetadata
+from compute_forecast.pdf_discovery.sources.doi_resolver_collector import DOIResolverCollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper, Author, APIResponse, ResponseMetadata
 
 
 class TestDOIResolverCollector:

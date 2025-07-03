@@ -4,10 +4,10 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from src.pdf_discovery.sources.doi_resolver_collector import DOIResolverCollector
-from src.pdf_discovery.core.framework import PDFDiscoveryFramework
-from src.pdf_discovery.core.models import PDFRecord, DiscoveryResult
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.doi_resolver_collector import DOIResolverCollector
+from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
+from compute_forecast.pdf_discovery.core.models import PDFRecord, DiscoveryResult
+from compute_forecast.data.models import Paper, Author
 
 
 class TestDOIResolverIntegration:
@@ -59,7 +59,7 @@ class TestDOIResolverIntegration:
             
             # Setup mock responses for successful lookups
             def crossref_side_effect(doi):
-                from src.data.models import APIResponse, ResponseMetadata
+                from compute_forecast.data.models import APIResponse, ResponseMetadata
                 if doi in ["10.1038/nature12373", "10.1126/science.123456"]:
                     return APIResponse(
                         success=True,
@@ -86,7 +86,7 @@ class TestDOIResolverIntegration:
                 return APIResponse(success=False, papers=[], metadata=None, errors=[])
             
             def unpaywall_side_effect(doi):
-                from src.data.models import APIResponse, ResponseMetadata
+                from compute_forecast.data.models import APIResponse, ResponseMetadata
                 if doi == "10.1038/nature12373":  # Only first DOI has OA
                     return APIResponse(
                         success=True,

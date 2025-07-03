@@ -5,9 +5,9 @@ import time
 from datetime import datetime
 from typing import List
 
-from src.pdf_discovery.deduplication.engine import PaperDeduplicator
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.deduplication.engine import PaperDeduplicator
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper, Author
 
 
 class TestDeduplicationPerformance:

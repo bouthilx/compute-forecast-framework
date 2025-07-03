@@ -6,7 +6,7 @@ import pytest
 from unittest.mock import Mock, MagicMock
 from typing import List, Dict, Any
 
-from src.testing.integration.phase_validators import (
+from compute_forecast.testing.integration.phase_validators import (
     PhaseValidator,
     CollectionPhaseValidator,
     ExtractionPhaseValidator,
@@ -17,8 +17,8 @@ from src.testing.integration.phase_validators import (
     ValidationResult,
     DataIntegrityChecker
 )
-from src.testing.integration.pipeline_test_framework import PipelinePhase
-from src.data.models import Paper, ComputationalAnalysis
+from compute_forecast.testing.integration.pipeline_test_framework import PipelinePhase
+from compute_forecast.data.models import Paper, ComputationalAnalysis
 
 
 class TestValidationResult:

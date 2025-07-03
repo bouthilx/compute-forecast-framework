@@ -3,8 +3,8 @@
 import pytest
 from datetime import datetime
 
-from src.data.models import Paper, Author, ComputationalAnalysis, AuthorshipAnalysis, VenueAnalysis
-from src.testing.mock_data import MockDataGenerator, MockDataConfig, DataQuality
+from compute_forecast.data.models import Paper, Author, ComputationalAnalysis, AuthorshipAnalysis, VenueAnalysis
+from compute_forecast.testing.mock_data import MockDataGenerator, MockDataConfig, DataQuality
 
 
 class TestMockDataGenerator:

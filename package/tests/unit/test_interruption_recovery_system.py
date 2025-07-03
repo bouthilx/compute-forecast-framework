@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import Mock, MagicMock, patch
 from datetime import datetime, timedelta
 
-from src.orchestration.recovery_system import (
+from compute_forecast.orchestration.recovery_system import (
     InterruptionRecoverySystem,
     RecoveryStrategy,
     InterruptionType,
@@ -12,8 +12,8 @@ from src.orchestration.recovery_system import (
     RecoveryPlan,
     RecoveryResult
 )
-from src.data.models import Paper
-from src.orchestration.venue_collection_orchestrator import CollectionSession, SessionState
+from compute_forecast.data.models import Paper
+from compute_forecast.orchestration.venue_collection_orchestrator import CollectionSession, SessionState
 
 
 class TestInterruptionRecoverySystem:

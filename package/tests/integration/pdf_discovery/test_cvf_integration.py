@@ -3,9 +3,9 @@
 import pytest
 from unittest.mock import patch, Mock
 
-from src.pdf_discovery import PDFDiscoveryFramework
-from src.pdf_discovery.sources import CVFCollector
-from src.data.models import Paper
+from compute_forecast.pdf_discovery import PDFDiscoveryFramework
+from compute_forecast.pdf_discovery.sources import CVFCollector
+from compute_forecast.data.models import Paper
 
 
 class TestCVFIntegration:

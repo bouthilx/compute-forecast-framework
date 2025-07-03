@@ -6,8 +6,8 @@ import pytest
 from datetime import datetime, timedelta
 from unittest.mock import Mock
 
-from src.monitoring.alert_suppression import AlertSuppressionManager, SuppressionRuleManager
-from src.monitoring.alert_structures import Alert, SuppressionRule
+from compute_forecast.monitoring.alert_suppression import AlertSuppressionManager, SuppressionRuleManager
+from compute_forecast.monitoring.alert_structures import Alert, SuppressionRule
 
 
 class TestAlertSuppressionManager:

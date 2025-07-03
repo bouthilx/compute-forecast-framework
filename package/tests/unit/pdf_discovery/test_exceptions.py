@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.pdf_discovery.utils.exceptions import (
+from compute_forecast.pdf_discovery.utils.exceptions import (
     PDFDiscoveryError,
     APIError,
     NoResultsError,

@@ -9,11 +9,11 @@ import threading
 from datetime import datetime
 from unittest.mock import Mock, patch
 
-from src.monitoring.dashboard_server import CollectionDashboard
-from src.monitoring.advanced_dashboard_server import AdvancedAnalyticsDashboard
-from src.monitoring.intelligent_alerting_system import IntelligentAlertingSystem
-from src.monitoring.metrics_collector import MetricsCollector
-from src.monitoring.dashboard_metrics import SystemMetrics, CollectionProgressMetrics, APIMetrics, ProcessingMetrics, SystemResourceMetrics, StateManagementMetrics
+from compute_forecast.monitoring.dashboard_server import CollectionDashboard
+from compute_forecast.monitoring.advanced_dashboard_server import AdvancedAnalyticsDashboard
+from compute_forecast.monitoring.intelligent_alerting_system import IntelligentAlertingSystem
+from compute_forecast.monitoring.metrics_collector import MetricsCollector
+from compute_forecast.monitoring.dashboard_metrics import SystemMetrics, CollectionProgressMetrics, APIMetrics, ProcessingMetrics, SystemResourceMetrics, StateManagementMetrics
 
 
 class TestDashboardAlertingIntegration:
@@ -121,7 +121,7 @@ class TestDashboardAlertingIntegration:
         # Test integration
         try:
             # This would normally integrate via the adapter
-            from src.monitoring.advanced_dashboard_server import AnalyticsDashboardAdapter
+            from compute_forecast.monitoring.advanced_dashboard_server import AnalyticsDashboardAdapter
             adapter = AnalyticsDashboardAdapter(dashboard)
             adapter.integrate_with_alerting_system(alerting_system)
             
@@ -180,7 +180,7 @@ class TestDashboardAlertingIntegration:
     def test_notification_channel_integration(self):
         """Test notification channels can be integrated with dashboard"""
         try:
-            from src.monitoring.notification_channels import DashboardNotificationChannel
+            from compute_forecast.monitoring.notification_channels import DashboardNotificationChannel
             
             # Create mock dashboard
             dashboard = Mock()

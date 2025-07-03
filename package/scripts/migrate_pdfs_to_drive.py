@@ -17,7 +17,7 @@ from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 from rich.console import Console
 from rich.table import Table
 
-from src.pdf_storage import GoogleDriveStore, PDFManager
+from compute_forecast.pdf_storage import GoogleDriveStore, PDFManager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

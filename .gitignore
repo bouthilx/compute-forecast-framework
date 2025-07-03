@@ -1,19 +1,83 @@
-__pycache__
-.coverage
-*.pyc
-.pytest_cache/
-htmlcov/
-
 # PDF Storage
 temp_pdf_cache/
 pdf_cache/
 credentials.json
 service-account-*.json
-.env
-
-# PDFs (keep out of repo)
-*.pdf
 
 # Local data caches
 data/cache/
 data/raw/cache/
+
+# Python
+__pycache__/
+*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+
+# Documentation
+docs/_build/
+site/
+
+# Data and cache
+neurips_2024_test_cache/
+*.json
+*.csv
+*.pdf
+!examples/*.json
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

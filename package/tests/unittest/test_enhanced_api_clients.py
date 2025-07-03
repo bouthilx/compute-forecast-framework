@@ -9,7 +9,7 @@ from datetime import datetime
 import requests
 from typing import List
 
-from src.data.models import (
+from compute_forecast.data.models import (
     Paper, Author, APIResponse, ResponseMetadata, APIError
 )
 
@@ -19,7 +19,7 @@ class TestEnhancedSemanticScholarClient:
     
     def setup_method(self):
         """Setup test fixtures"""
-        from src.data.sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
+        from compute_forecast.data.sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
         self.client = EnhancedSemanticScholarClient()
     
     def test_search_papers_basic_functionality(self):
@@ -216,7 +216,7 @@ class TestEnhancedOpenAlexClient:
     
     def setup_method(self):
         """Setup test fixtures"""
-        from src.data.sources.enhanced_openalex import EnhancedOpenAlexClient
+        from compute_forecast.data.sources.enhanced_openalex import EnhancedOpenAlexClient
         self.client = EnhancedOpenAlexClient()
     
     def test_search_papers_basic_functionality(self):
@@ -327,7 +327,7 @@ class TestEnhancedCrossrefClient:
     
     def setup_method(self):
         """Setup test fixtures"""
-        from src.data.sources.enhanced_crossref import EnhancedCrossrefClient
+        from compute_forecast.data.sources.enhanced_crossref import EnhancedCrossrefClient
         self.client = EnhancedCrossrefClient()
     
     def test_search_papers_basic_functionality(self):
@@ -465,9 +465,9 @@ class TestAPIClientIntegration:
     
     def test_all_clients_return_consistent_paper_format(self):
         """Test that all clients return papers in consistent format"""
-        from src.data.sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
-        from src.data.sources.enhanced_openalex import EnhancedOpenAlexClient
-        from src.data.sources.enhanced_crossref import EnhancedCrossrefClient
+        from compute_forecast.data.sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
+        from compute_forecast.data.sources.enhanced_openalex import EnhancedOpenAlexClient
+        from compute_forecast.data.sources.enhanced_crossref import EnhancedCrossrefClient
         
         clients = [
             EnhancedSemanticScholarClient(),
@@ -495,9 +495,9 @@ class TestAPIClientIntegration:
     
     def test_all_clients_support_batch_venue_search(self):
         """Test that all clients support batch venue searching"""
-        from src.data.sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
-        from src.data.sources.enhanced_openalex import EnhancedOpenAlexClient
-        from src.data.sources.enhanced_crossref import EnhancedCrossrefClient
+        from compute_forecast.data.sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
+        from compute_forecast.data.sources.enhanced_openalex import EnhancedOpenAlexClient
+        from compute_forecast.data.sources.enhanced_crossref import EnhancedCrossrefClient
         
         venues = ["ICML", "NeurIPS"]
         year = 2023
@@ -517,9 +517,9 @@ class TestAPIClientIntegration:
     
     def test_client_error_recovery_patterns(self):
         """Test error recovery patterns across all clients"""
-        from src.data.sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
-        from src.data.sources.enhanced_openalex import EnhancedOpenAlexClient
-        from src.data.sources.enhanced_crossref import EnhancedCrossrefClient
+        from compute_forecast.data.sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
+        from compute_forecast.data.sources.enhanced_openalex import EnhancedOpenAlexClient
+        from compute_forecast.data.sources.enhanced_crossref import EnhancedCrossrefClient
         
         clients = [
             EnhancedSemanticScholarClient(),

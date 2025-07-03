@@ -1,0 +1,23 @@
+package:
+  - changed-files:
+    - any-glob-to-any-file: 'package/**/*'
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: 
+      - '**/*.md'
+      - 'docs/**/*'
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file: 'package/tests/**/*'
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file: '.github/**/*'
+
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'package/pyproject.toml'
+      - 'package/uv.lock'

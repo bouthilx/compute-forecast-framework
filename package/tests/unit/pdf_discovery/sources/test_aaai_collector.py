@@ -5,9 +5,9 @@ from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 import requests
 
-from src.pdf_discovery.sources.aaai_collector import AAICollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.aaai_collector import AAICollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper, Author
 
 
 class TestAAICollector:

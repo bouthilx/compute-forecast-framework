@@ -5,9 +5,9 @@ from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 import requests
 
-from src.pdf_discovery.sources.ieee_xplore_collector import IEEEXplorePDFCollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper
+from compute_forecast.pdf_discovery.sources.ieee_xplore_collector import IEEEXplorePDFCollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper
 
 
 class TestIEEEXplorePDFCollector:

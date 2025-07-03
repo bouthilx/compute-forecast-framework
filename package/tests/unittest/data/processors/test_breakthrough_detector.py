@@ -5,8 +5,8 @@ from datetime import datetime
 from unittest.mock import patch, mock_open
 import json
 
-from src.data.models import Paper, Author
-from src.data.processors.breakthrough_detector import BreakthroughDetector
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.data.processors.breakthrough_detector import BreakthroughDetector
 
 
 class TestBreakthroughDetector:

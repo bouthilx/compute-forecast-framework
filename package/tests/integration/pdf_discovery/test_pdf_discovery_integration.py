@@ -5,13 +5,13 @@ from datetime import datetime
 import time
 from typing import List
 
-from src.pdf_discovery import (
+from compute_forecast.pdf_discovery import (
     PDFRecord, 
     DiscoveryResult,
     BasePDFCollector,
     PDFDiscoveryFramework
 )
-from src.data.models import Paper
+from compute_forecast.data.models import Paper
 
 
 class ArxivCollector(BasePDFCollector):

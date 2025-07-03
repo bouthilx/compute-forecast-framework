@@ -3,9 +3,9 @@
 import pytest
 from datetime import datetime
 
-from src.data.models import Paper, ComputationalAnalysis, Author
-from src.quality.contracts.base_contracts import ContractViolationType
-from src.quality.contracts.analysis_contracts import (
+from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
+from compute_forecast.quality.contracts.base_contracts import ContractViolationType
+from compute_forecast.quality.contracts.analysis_contracts import (
     ComputationalAnalysisContract,
     PaperMetadataContract,
     ResourceMetricsContract,

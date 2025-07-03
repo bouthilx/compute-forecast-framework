@@ -4,10 +4,10 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 from typing import List, Dict, Any
 
-from src.analysis.benchmark.extractor import AcademicBenchmarkExtractor
-from src.analysis.benchmark.models import BenchmarkDomain, BenchmarkPaper, ExtractionBatch
-from src.data.models import Paper, ComputationalAnalysis, Author
-from src.analysis.computational.analyzer import ComputationalAnalyzer
+from compute_forecast.analysis.benchmark.extractor import AcademicBenchmarkExtractor
+from compute_forecast.analysis.benchmark.models import BenchmarkDomain, BenchmarkPaper, ExtractionBatch
+from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
+from compute_forecast.analysis.computational.analyzer import ComputationalAnalyzer
 
 
 class TestAcademicBenchmarkExtractor:

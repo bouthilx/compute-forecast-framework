@@ -1,12 +1,12 @@
 """Test suite for error injection scenarios."""
 
 import pytest
-from src.testing.error_injection.scenarios import (
+from compute_forecast.testing.error_injection.scenarios import (
     APIFailureScenarios,
     DataCorruptionScenarios,
     ResourceExhaustionScenarios
 )
-from src.testing.error_injection import ErrorType
+from compute_forecast.testing.error_injection import ErrorType
 
 
 class TestAPIFailureScenarios:

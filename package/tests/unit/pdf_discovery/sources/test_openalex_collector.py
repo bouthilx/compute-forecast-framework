@@ -5,9 +5,9 @@ from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 import time
 
-from src.pdf_discovery.sources.openalex_collector import OpenAlexPDFCollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper
+from compute_forecast.pdf_discovery.sources.openalex_collector import OpenAlexPDFCollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper
 
 
 class TestOpenAlexPDFCollector:

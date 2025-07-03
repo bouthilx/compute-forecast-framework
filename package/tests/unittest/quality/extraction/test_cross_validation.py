@@ -5,8 +5,8 @@ Tests for CrossValidationFramework.
 import pytest
 from unittest.mock import Mock, patch
 
-from src.quality.extraction.cross_validation import CrossValidationFramework
-from src.data.models import Paper
+from compute_forecast.quality.extraction.cross_validation import CrossValidationFramework
+from compute_forecast.data.models import Paper
 
 
 class TestCrossValidationFramework:

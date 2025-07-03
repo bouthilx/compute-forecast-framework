@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import threading
 from concurrent.futures import Future
 
-from src.orchestration.venue_collection_orchestrator import (
+from compute_forecast.orchestration.venue_collection_orchestrator import (
     VenueCollectionOrchestrator,
     OrchestrationConfig,
     WorkflowPhase,
@@ -14,7 +14,7 @@ from src.orchestration.venue_collection_orchestrator import (
     ComponentHealth,
     WorkflowState
 )
-from src.data.models import Paper
+from compute_forecast.data.models import Paper
 
 # Mock classes for testing
 from dataclasses import dataclass

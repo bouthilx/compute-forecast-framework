@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Dict, List
 from unittest.mock import Mock, patch
 
-from src.analysis.mila.paper_selector import (
+from compute_forecast.analysis.mila.paper_selector import (
     MilaPaperSelector,
     PaperSelectionCriteria,
     DomainClassifier,

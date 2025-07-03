@@ -4,7 +4,7 @@ import asyncio
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 import pytest
-from src.data.collectors.enhanced_orchestrator import EnhancedCollectionOrchestrator as EnhancedOrchestrator
+from compute_forecast.data.collectors.enhanced_orchestrator import EnhancedCollectionOrchestrator as EnhancedOrchestrator
 
 
 class TestAllSourcesIntegration:

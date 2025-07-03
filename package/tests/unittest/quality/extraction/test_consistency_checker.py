@@ -6,11 +6,11 @@ import pytest
 import numpy as np
 from unittest.mock import Mock
 
-from src.quality.extraction.consistency_checker import (
+from compute_forecast.quality.extraction.consistency_checker import (
     ExtractionConsistencyChecker,
     ConsistencyCheck
 )
-from src.data.models import Paper
+from compute_forecast.data.models import Paper
 from .test_helpers import MockComputationalAnalysis as ComputationalAnalysis
 
 

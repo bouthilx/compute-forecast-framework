@@ -5,14 +5,14 @@ from datetime import datetime
 from typing import List
 from unittest.mock import Mock, patch
 
-from src.pdf_discovery.deduplication.matchers import (
+from compute_forecast.pdf_discovery.deduplication.matchers import (
     IdentifierNormalizer,
     PaperFuzzyMatcher,
     ExactMatch,
     FuzzyMatch,
 )
-from src.data.models import Paper, Author
-from src.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.pdf_discovery.core.models import PDFRecord
 
 
 class TestIdentifierNormalizer:
@@ -326,7 +326,7 @@ class TestVenueNormalizationIntegration:
         mock_venue_normalizer_class.return_value = mock_normalizer
         
         # Mock normalization results for different venue formats
-        from src.data.processors.venue_normalizer import VenueNormalizationResult
+        from compute_forecast.data.processors.venue_normalizer import VenueNormalizationResult
         nips_result = VenueNormalizationResult(
             original_venue="NIPS 2023",
             normalized_venue="NeurIPS",
@@ -387,7 +387,7 @@ class TestVenueNormalizationIntegration:
         mock_normalizer = Mock()
         mock_venue_normalizer_class.return_value = mock_normalizer
         
-        from src.data.processors.venue_normalizer import VenueNormalizationResult
+        from compute_forecast.data.processors.venue_normalizer import VenueNormalizationResult
         low_confidence_result = VenueNormalizationResult(
             original_venue="Unknown Conf 2023",
             normalized_venue="ICML",

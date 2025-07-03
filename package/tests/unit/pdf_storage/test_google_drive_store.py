@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import os
 
-from src.pdf_storage.google_drive_store import GoogleDriveStore
+from compute_forecast.pdf_storage.google_drive_store import GoogleDriveStore
 
 
 class TestGoogleDriveStore(unittest.TestCase):

@@ -12,8 +12,8 @@ from dataclasses import dataclass, field
 from collections import defaultdict
 import logging
 
-from src.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
-from src.data.models import CollectionConfig, Paper, Author
+from compute_forecast.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
+from compute_forecast.data.models import CollectionConfig, Paper, Author
 
 logger = logging.getLogger(__name__)
 

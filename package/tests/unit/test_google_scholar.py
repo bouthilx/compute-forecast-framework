@@ -6,8 +6,8 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 
-from src.data.sources.google_scholar import GoogleScholarClient
-from src.data.models import Paper, Author, APIResponse, APIError
+from compute_forecast.data.sources.google_scholar import GoogleScholarClient
+from compute_forecast.data.models import Paper, Author, APIResponse, APIError
 
 
 class TestGoogleScholarClient:

@@ -7,10 +7,10 @@ from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 import time
 
-from src.data.collectors.enhanced_orchestrator import (
+from compute_forecast.data.collectors.enhanced_orchestrator import (
     EnhancedCollectionOrchestrator, CollectionResult
 )
-from src.data.models import (
+from compute_forecast.data.models import (
     Paper, Author, APIResponse, CollectionQuery,
     ResponseMetadata, APIError
 )
@@ -331,7 +331,7 @@ class TestEnhancedCollectionOrchestrator:
     def test_get_source_statistics(self, orchestrator):
         """Test source statistics retrieval"""
         # Mock rate limiter usage
-        from src.data.models import RateLimitStatus
+        from compute_forecast.data.models import RateLimitStatus
         mock_status = RateLimitStatus(
             api_name="semantic_scholar",
             requests_in_window=50,

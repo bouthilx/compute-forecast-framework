@@ -3,7 +3,7 @@
 import os
 import pytest
 from unittest.mock import patch, MagicMock
-from src.data.collectors.enhanced_orchestrator import EnhancedCollectionOrchestrator
+from compute_forecast.data.collectors.enhanced_orchestrator import EnhancedCollectionOrchestrator
 
 
 class TestEnhancedOrchestratorEnvironment:

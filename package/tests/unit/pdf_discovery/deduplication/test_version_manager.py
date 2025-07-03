@@ -3,8 +3,8 @@
 import pytest
 from datetime import datetime
 
-from src.pdf_discovery.deduplication.version_manager import VersionManager, SourcePriority
-from src.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pdf_discovery.deduplication.version_manager import VersionManager, SourcePriority
+from compute_forecast.pdf_discovery.core.models import PDFRecord
 
 
 class TestSourcePriority:

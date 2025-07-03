@@ -4,9 +4,9 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from src.pdf_discovery.sources.nature_collector import NaturePDFCollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.nature_collector import NaturePDFCollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper, Author
 
 
 class TestNaturePDFCollector:
@@ -294,14 +294,14 @@ class TestNaturePDFCollector:
     
     def test_discover_single_non_nature_paper(self, collector, non_nature_paper):
         """Test that non-Nature papers are rejected."""
-        from src.core.exceptions import UnsupportedSourceError
+        from compute_forecast.core.exceptions import UnsupportedSourceError
         with pytest.raises(UnsupportedSourceError, match="not from a supported Nature journal"):
             collector._discover_single(non_nature_paper)
     
     @patch.object(NaturePDFCollector, '_check_open_access_availability')
     def test_discover_single_no_pdf_found(self, mock_check, collector, nature_comms_paper):
         """Test when no PDF can be found."""
-        from src.core.exceptions import PDFNotAvailableError
+        from compute_forecast.core.exceptions import PDFNotAvailableError
         mock_check.return_value = None  # Direct access fails
         
         # Mock DOI resolver to also fail

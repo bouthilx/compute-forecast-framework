@@ -3,14 +3,14 @@
 import pytest
 from typing import List, Dict
 
-from src.analysis.benchmark.quality_assurance import ExtractionQualityAssurance
-from src.analysis.benchmark.models import (
+from compute_forecast.analysis.benchmark.quality_assurance import ExtractionQualityAssurance
+from compute_forecast.analysis.benchmark.models import (
     BenchmarkDomain,
     ExtractionBatch,
     BenchmarkPaper,
     ExtractionQA,
 )
-from src.data.models import Paper, ComputationalAnalysis
+from compute_forecast.data.models import Paper, ComputationalAnalysis
 
 
 class TestExtractionQualityAssurance:

@@ -1,7 +1,7 @@
 """Test suite for enhanced affiliation parser."""
 
 import pytest
-from src.analysis.classification.enhanced_affiliation_parser import EnhancedAffiliationParser
+from compute_forecast.analysis.classification.enhanced_affiliation_parser import EnhancedAffiliationParser
 
 
 class TestEnhancedAffiliationParser:

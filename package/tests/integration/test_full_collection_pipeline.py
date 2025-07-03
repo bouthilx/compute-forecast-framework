@@ -11,8 +11,8 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
-from src.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
-from src.data.models import CollectionConfig, Paper, Author
+from compute_forecast.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
+from compute_forecast.data.models import CollectionConfig, Paper, Author
 
 @dataclass
 class TestResult:
@@ -592,7 +592,7 @@ class FullPipelineIntegrationTest:
         
         try:
             # Test metrics collection
-            from src.orchestration.monitoring_components import SimpleMetricsCollector
+            from compute_forecast.orchestration.monitoring_components import SimpleMetricsCollector
             metrics_collector = SimpleMetricsCollector()
             
             session_id = "test_session"
@@ -604,7 +604,7 @@ class FullPipelineIntegrationTest:
             test_result.assertions_passed += 1
             
             # Test dashboard creation
-            from src.orchestration.monitoring_components import SimpleDashboard
+            from compute_forecast.orchestration.monitoring_components import SimpleDashboard
             dashboard = SimpleDashboard()
             
             dashboard.create_session_dashboard(session_id)
@@ -613,7 +613,7 @@ class FullPipelineIntegrationTest:
             test_result.assertions_passed += 1
             
             # Test alert system
-            from src.orchestration.monitoring_components import SimpleAlertSystem
+            from compute_forecast.orchestration.monitoring_components import SimpleAlertSystem
             alert_system = SimpleAlertSystem()
             
             # Trigger test alert

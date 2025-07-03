@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from src.pdf_parser.core.cost_tracker import CostTracker
+from compute_forecast.pdf_parser.core.cost_tracker import CostTracker
 
 
 class TestCostTracker:

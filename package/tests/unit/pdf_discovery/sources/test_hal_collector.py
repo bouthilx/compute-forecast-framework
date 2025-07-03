@@ -5,10 +5,10 @@ from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 import xml.etree.ElementTree as ET
 
-from src.data.models import Paper, Author
-from src.pdf_discovery.sources.hal_collector import HALPDFCollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.pdf_discovery.utils import APIError, NoResultsError, NoPDFFoundError
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.hal_collector import HALPDFCollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pdf_discovery.utils import APIError, NoResultsError, NoPDFFoundError
 
 
 class TestHALPDFCollector:

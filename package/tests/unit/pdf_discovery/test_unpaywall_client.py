@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 import requests
 from datetime import datetime
 
-from src.pdf_discovery.sources.unpaywall_client import UnpaywallClient
-from src.data.models import APIResponse, ResponseMetadata, APIError
+from compute_forecast.pdf_discovery.sources.unpaywall_client import UnpaywallClient
+from compute_forecast.data.models import APIResponse, ResponseMetadata, APIError
 
 
 class TestUnpaywallClient:

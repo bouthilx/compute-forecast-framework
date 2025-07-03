@@ -6,15 +6,15 @@ from concurrent.futures import Future
 import pandas as pd
 from typing import List, Dict
 
-from src.analysis.benchmark.workflow_manager import ExtractionWorkflowManager
-from src.analysis.benchmark.models import BenchmarkDomain, ExtractionBatch, BenchmarkPaper
-from src.analysis.benchmark.extractor import AcademicBenchmarkExtractor
-from src.analysis.benchmark.domain_extractors import (
+from compute_forecast.analysis.benchmark.workflow_manager import ExtractionWorkflowManager
+from compute_forecast.analysis.benchmark.models import BenchmarkDomain, ExtractionBatch, BenchmarkPaper
+from compute_forecast.analysis.benchmark.extractor import AcademicBenchmarkExtractor
+from compute_forecast.analysis.benchmark.domain_extractors import (
     NLPBenchmarkExtractor,
     CVBenchmarkExtractor,
     RLBenchmarkExtractor,
 )
-from src.data.models import Paper, ComputationalAnalysis
+from compute_forecast.data.models import Paper, ComputationalAnalysis
 
 
 class TestExtractionWorkflowManager:

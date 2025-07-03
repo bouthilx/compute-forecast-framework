@@ -6,12 +6,12 @@ import pytest
 import numpy as np
 from unittest.mock import Mock
 
-from src.quality.extraction.outlier_detection import (
+from compute_forecast.quality.extraction.outlier_detection import (
     OutlierDetector,
     OutlierMethod,
     OutlierResult
 )
-from src.data.models import Paper
+from compute_forecast.data.models import Paper
 
 
 class TestOutlierDetector:

@@ -4,6 +4,13 @@ __pycache__/
 *$py.class
 *.so
 .Python
+env/
+venv/
+.venv/
+.env
+
+# Distribution / packaging
+.Python
 build/
 develop-eggs/
 dist/
@@ -19,44 +26,40 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
-# Virtual environments
-venv/
-ENV/
-env/
+MANIFEST
 
 # Testing
-.coverage
 .pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
 htmlcov/
 .tox/
 
-# IDE
-.idea/
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# IDEs
 .vscode/
+.idea/
 *.swp
 *.swo
 *~
 
-# Google Drive Storage
-.env
-google_credentials.json
-temp_pdf_cache/
-pdf_download_cache/
-pdf_cache/
-
-# PDFs (to avoid repository bloat)
-*.pdf
-
-# Logs
-logs/
-*.log
-
-# Data files
-data/raw/
-data/processed/
-data/states/
-
-# Temporary files
-*.tmp
+# OS
 .DS_Store
+Thumbs.db
+
+# Project specific
+neurips_*_cache/
+*.log
+*.tmp
+temp/
+tmp/
+
+# UV
+.uv/

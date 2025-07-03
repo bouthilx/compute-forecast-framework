@@ -7,13 +7,13 @@ import time
 from unittest.mock import Mock, patch
 from typing import List, Dict, Any
 
-from src.testing.integration.performance_monitor import (
+from compute_forecast.testing.integration.performance_monitor import (
     PerformanceMonitor,
     PerformanceProfile,
     ResourceSnapshot,
     BottleneckAnalyzer
 )
-from src.testing.integration.pipeline_test_framework import PipelinePhase
+from compute_forecast.testing.integration.pipeline_test_framework import PipelinePhase
 
 
 class TestResourceSnapshot:

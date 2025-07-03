@@ -1,7 +1,7 @@
 """Additional unit tests for PDF discovery models to improve coverage."""
 
 import pytest
-from src.pdf_discovery.core.models import PDFRecord, DiscoveryResult
+from compute_forecast.pdf_discovery.core.models import PDFRecord, DiscoveryResult
 from datetime import datetime
 
 

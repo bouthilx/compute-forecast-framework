@@ -2,7 +2,7 @@
 
 import pytest
 from datetime import datetime
-from src.pdf_discovery.core.models import PDFRecord, DiscoveryResult
+from compute_forecast.pdf_discovery.core.models import PDFRecord, DiscoveryResult
 
 
 class TestPDFRecord:

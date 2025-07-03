@@ -4,19 +4,19 @@ import pytest
 from unittest.mock import Mock, MagicMock
 from datetime import datetime
 
-from src.testing.error_injection import (
+from compute_forecast.testing.error_injection import (
     ErrorInjectionFramework,
     RecoveryValidator,
     ErrorType,
     ErrorScenario,
     RecoveryMetrics
 )
-from src.testing.error_injection.component_handlers import (
+from compute_forecast.testing.error_injection.component_handlers import (
     CollectorErrorHandler,
     AnalyzerErrorHandler,
     ReporterErrorHandler
 )
-from src.testing.error_injection.scenarios import (
+from compute_forecast.testing.error_injection.scenarios import (
     APIFailureScenarios,
     DataCorruptionScenarios,
     ResourceExhaustionScenarios

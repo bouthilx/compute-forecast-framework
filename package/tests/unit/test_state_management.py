@@ -17,11 +17,11 @@ from pathlib import Path
 package_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(package_root))
 
-from src.data.collectors.state_management import StateManager
-from src.data.collectors.state_structures import (
+from compute_forecast.data.collectors.state_management import StateManager
+from compute_forecast.data.collectors.state_structures import (
     VenueConfig, CheckpointData, CollectionSession, RecoveryPlan, SessionResumeResult
 )
-from src.data.models import APIHealthStatus, RateLimitStatus
+from compute_forecast.data.models import APIHealthStatus, RateLimitStatus
 
 
 class TestStateManager:

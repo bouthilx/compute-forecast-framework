@@ -7,9 +7,9 @@ from typing import Dict, List
 import asyncio
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 
-from src.pdf_discovery.core.models import PDFRecord
-from src.pdf_discovery.core.collectors import BasePDFCollector
-from src.data.models import Paper
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pdf_discovery.core.collectors import BasePDFCollector
+from compute_forecast.data.models import Paper
 
 
 class MockPDFCollector(BasePDFCollector):

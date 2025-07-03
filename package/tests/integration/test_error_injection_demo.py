@@ -3,13 +3,13 @@
 import pytest
 from unittest.mock import Mock
 
-from src.testing.error_injection import (
+from compute_forecast.testing.error_injection import (
     ErrorInjectionFramework,
     RecoveryValidator,
     ErrorType,
     ErrorScenario
 )
-from src.testing.error_injection.component_handlers import (
+from compute_forecast.testing.error_injection.component_handlers import (
     CollectorErrorHandler,
     AnalyzerErrorHandler,
     ReporterErrorHandler

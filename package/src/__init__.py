@@ -1,1 +1,0 @@
-"""Paper collection and analysis system for Milestone 1."""

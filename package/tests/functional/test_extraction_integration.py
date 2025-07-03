@@ -8,10 +8,10 @@ import pytest
 from unittest.mock import Mock
 from datetime import datetime
 
-from src.analysis.computational.extraction_protocol import ExtractionProtocol
-from src.analysis.computational.extraction_forms import FormManager, ExtractionFormTemplate
-from src.analysis.computational.extraction_patterns import PatternMatcher
-from src.analysis.computational.quality_control import QualityController
+from compute_forecast.analysis.computational.extraction_protocol import ExtractionProtocol
+from compute_forecast.analysis.computational.extraction_forms import FormManager, ExtractionFormTemplate
+from compute_forecast.analysis.computational.extraction_patterns import PatternMatcher
+from compute_forecast.analysis.computational.quality_control import QualityController
 
 
 @pytest.fixture
@@ -99,7 +99,7 @@ class TestExtractionPipelineIntegration:
         assert isinstance(pattern_results, dict)
         
         # Should find explicit resource patterns
-        from src.analysis.computational.extraction_patterns import PatternType
+        from compute_forecast.analysis.computational.extraction_patterns import PatternType
         if pattern_results:
             # Verify we can extract meaningful information
             assert len(pattern_results) > 0

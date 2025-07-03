@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime, timedelta
 from typing import List, Dict
 
-from src.data.models import (
+from compute_forecast.data.models import (
     Paper, Author, APIResponse, BatchCollectionResult, VenueCollectionResult,
     CollectionConfig, CollectionEstimate, ResponseMetadata, APIError,
     APIHealthStatus, RateLimitStatus
@@ -21,9 +21,9 @@ class TestVenueCollectionEngine:
     def setup_method(self):
         """Setup test fixtures"""
         # This will fail until we create the actual classes
-        from src.data.collectors.api_integration_layer import VenueCollectionEngine
-        from src.data.collectors.rate_limit_manager import RateLimitManager
-        from src.data.collectors.api_health_monitor import APIHealthMonitor
+        from compute_forecast.data.collectors.api_integration_layer import VenueCollectionEngine
+        from compute_forecast.data.collectors.rate_limit_manager import RateLimitManager
+        from compute_forecast.data.collectors.api_health_monitor import APIHealthMonitor
         
         self.mock_rate_limiter = Mock(spec=RateLimitManager)
         self.mock_health_monitor = Mock(spec=APIHealthMonitor)
@@ -123,7 +123,7 @@ class TestVenueCollectionEngine:
         # Use very short timeout for testing
         short_config = CollectionConfig(batch_timeout_seconds=1)
         
-        from src.data.collectors.api_integration_layer import VenueCollectionEngine
+        from compute_forecast.data.collectors.api_integration_layer import VenueCollectionEngine
         engine = VenueCollectionEngine(
             config=short_config,
             rate_limiter=self.mock_rate_limiter,
@@ -259,9 +259,9 @@ class TestVenueCollectionEngineIntegration:
         years = [2022, 2023, 2024]
         
         # This should fail until implementation exists
-        from src.data.collectors.api_integration_layer import VenueCollectionEngine
-        from src.data.collectors.rate_limit_manager import RateLimitManager  
-        from src.data.collectors.api_health_monitor import APIHealthMonitor
+        from compute_forecast.data.collectors.api_integration_layer import VenueCollectionEngine
+        from compute_forecast.data.collectors.rate_limit_manager import RateLimitManager  
+        from compute_forecast.data.collectors.api_health_monitor import APIHealthMonitor
         
         config = CollectionConfig(max_venues_per_batch=6)
         rate_limiter = RateLimitManager({})  # Will fail until implemented
@@ -282,7 +282,7 @@ class TestVenueCollectionEngineIntegration:
         venues = [f"venue_{i}" for i in range(20)]  # 20 venues
         years = [2023]  # 1 year
         
-        from src.data.collectors.api_integration_layer import VenueCollectionEngine
+        from compute_forecast.data.collectors.api_integration_layer import VenueCollectionEngine
         
         # This should fail until implementation exists
         engine = VenueCollectionEngine(
@@ -310,7 +310,7 @@ class TestVenueCollectionEnginePerformance:
         venues = ["ICML", "NeurIPS", "ICLR", "AAAI", "IJCAI", "KDD"]
         year = 2023
         
-        from src.data.collectors.api_integration_layer import VenueCollectionEngine
+        from compute_forecast.data.collectors.api_integration_layer import VenueCollectionEngine
         
         # This should fail until implementation exists
         engine = VenueCollectionEngine(
@@ -331,7 +331,7 @@ class TestVenueCollectionEnginePerformance:
         venue = "ArXiv_CS_AI"  # Simulate large venue
         year = 2023
         
-        from src.data.collectors.api_integration_layer import VenueCollectionEngine
+        from compute_forecast.data.collectors.api_integration_layer import VenueCollectionEngine
         
         # This should fail until implementation exists
         engine = VenueCollectionEngine(

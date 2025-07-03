@@ -5,9 +5,9 @@ from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 from typing import Dict, Any
 
-from src.data.models import Paper, Author
-from src.pdf_discovery.core.models import PDFRecord
-from src.pdf_discovery.sources.arxiv_collector import ArXivPDFCollector
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pdf_discovery.sources.arxiv_collector import ArXivPDFCollector
 
 
 class TestArXivPDFCollector:

@@ -18,7 +18,7 @@ import threading
 import time
 >>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
 
-from src.monitoring.dashboard_metrics import (
+from compute_forecast.monitoring.dashboard_metrics import (
     SystemMetrics,
     CollectionProgressMetrics,
     APIMetrics,

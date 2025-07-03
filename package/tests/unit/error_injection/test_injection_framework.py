@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch, call
 from datetime import datetime
 from typing import Dict, Any
 
-from src.testing.error_injection.injection_framework import (
+from compute_forecast.testing.error_injection.injection_framework import (
     ErrorType, ErrorScenario, ErrorInjectionFramework
 )
 
