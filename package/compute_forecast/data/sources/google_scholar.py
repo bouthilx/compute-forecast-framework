@@ -225,7 +225,12 @@ class GoogleScholarSource(BaseCitationSource):
         parts = []
         
         if query.venue:
-            if query.venue in ['NeurIPS', 'ICML', 'ICLR']:
+            # Google Scholar doesn't always recognize venue names consistently
+            # Use more general search terms for better results
+            if query.venue.upper() == 'NEURIPS':
+                # Try multiple variants for NeurIPS
+                parts.append('("Neural Information Processing Systems" OR "NeurIPS" OR "NIPS")')
+            elif query.venue in ['ICML', 'ICLR']:
                 parts.append(f'source:"{query.venue}"')
             else:
                 parts.append(f'venue:"{query.venue}"')
@@ -244,16 +249,28 @@ class GoogleScholarSource(BaseCitationSource):
         if not result:
             raise ValueError("Empty result provided")
         
-        title = result.get('title', '').strip()
+        # Google Scholar returns data in 'bib' field
+        bib = result.get('bib', {})
+        title = bib.get('title', '').strip()
         if not title:
             raise ValueError("Paper title is required")
         
         # Parse authors with validation
         authors = []
-        author_list = result.get('author', [])
+        author_list = bib.get('author', [])
         if isinstance(author_list, list):
             for author_data in author_list:
-                if isinstance(author_data, dict):
+                # In Google Scholar, authors are simple strings, not dicts
+                if isinstance(author_data, str):
+                    author_name = author_data.strip()
+                    if author_name:  # Only add authors with names
+                        author = Author(
+                            name=author_name,
+                            affiliation='',  # Google Scholar doesn't provide affiliation in search results
+                            author_id=''  # No author ID in search results
+                        )
+                        authors.append(author)
+                elif isinstance(author_data, dict):
                     author_name = author_data.get('name', '').strip()
                     if author_name:  # Only add authors with names
                         author = Author(
@@ -268,15 +285,37 @@ class GoogleScholarSource(BaseCitationSource):
         if not isinstance(citations, int) or citations < 0:
             citations = 0
         
+        # Extract year from bib
+        pub_year = bib.get('pub_year', 'NA')
+        if pub_year == 'NA' or not pub_year.isdigit():
+            year = query.year  # Use query year if not available
+        else:
+            year = int(pub_year)
+        
+        # Extract venue from bib
+        venue = bib.get('venue', '').strip()
+        if not venue:
+            venue = query.venue or ''
+        
+        # Extract abstract from bib
+        abstract = bib.get('abstract', '').strip()
+        
+        # Get PDF URL if available
+        urls = []
+        if result.get('eprint_url'):
+            urls.append(result.get('eprint_url'))
+        elif result.get('pub_url'):
+            urls.append(result.get('pub_url'))
+        
         # Create paper object
         paper = Paper(
             title=title,
             authors=authors,
-            venue=query.venue or result.get('venue', ''),
-            year=query.year,
+            venue=venue,
+            year=year,
             citations=citations,
-            abstract=result.get('abstract', '').strip(),
-            urls=[result.get('url', '')] if result.get('url') else [],
+            abstract=abstract,
+            urls=urls,
             source="google_scholar",
             collection_timestamp=datetime.now().isoformat(),
             mila_domain=query.domain

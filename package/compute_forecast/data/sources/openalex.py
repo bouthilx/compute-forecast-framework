@@ -72,22 +72,29 @@ class OpenAlexSource(BaseCitationSource):
     def _build_search_params(self, query: CollectionQuery) -> dict:
         """Build OpenAlex API parameters"""
         filters = []
+        search_terms = []
         
+        # Use search parameter for venue (filter doesn't support venue filtering)
         if query.venue:
-            filters.append(f'locations.source.display_name.search:{query.venue}')
+            search_terms.append(query.venue)
         
         if query.year:
             filters.append(f'publication_year:{query.year}')
         
         if query.keywords:
-            keyword_filter = ' OR '.join(query.keywords[:3])
-            filters.append(f'title.search:({keyword_filter})')
+            # Add keywords to search terms
+            search_terms.extend(query.keywords[:2])  # Limit keywords
         
         params = {
-            'filter': ','.join(filters),
             'per-page': min(query.max_results, 200),
             'select': 'id,title,display_name,publication_year,cited_by_count,doi,authorships,locations'
         }
+        
+        if filters:
+            params['filter'] = ','.join(filters)
+        
+        if search_terms:
+            params['search'] = ' '.join(search_terms)
         
         return params
     
