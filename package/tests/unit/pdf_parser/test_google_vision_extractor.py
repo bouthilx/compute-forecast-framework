@@ -3,6 +3,7 @@
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 from pathlib import Path
+from google.api_core.exceptions import ServiceUnavailable, DeadlineExceeded
 from src.pdf_parser.extractors.google_vision_extractor import GoogleCloudVisionExtractor
 
 
@@ -43,109 +44,116 @@ class TestGoogleCloudVisionExtractor:
         with pytest.raises(NotImplementedError, match="Use PyMuPDF for full document extraction"):
             extractor.extract_full_text(Path("/fake/path.pdf"))
             
+    @patch('src.pdf_parser.extractors.google_vision_extractor.pdf2image')
     @patch('src.pdf_parser.extractors.google_vision_extractor.cv2')
     @patch('google.cloud.vision.ImageAnnotatorClient')
-    def test_extract_first_pages_limits_to_page_limit(self, mock_client_class, mock_cv2):
+    def test_extract_first_pages_limits_to_page_limit(self, mock_client_class, mock_cv2, mock_pdf2image):
         """Test that extraction is limited to first 2 pages."""
         mock_client = Mock()
         mock_client_class.return_value = mock_client
         
         extractor = GoogleCloudVisionExtractor(self.credentials_path)
         
-        with patch.object(extractor, '_pdf_to_images') as mock_pdf_to_images:
-            mock_pdf_to_images.return_value = [Mock(), Mock()]
+        # Mock pdf2image to return images
+        mock_pdf2image.convert_from_path.return_value = [Mock()]
+        
+        # Mock cv2.imencode
+        mock_buffer = Mock()
+        mock_buffer.tobytes.return_value = b'fake_image_bytes'
+        mock_cv2.imencode.return_value = (True, mock_buffer)
+        
+        # Mock Vision API response
+        mock_annotation = Mock()
+        mock_annotation.description = "Page text content"
+        mock_response = Mock()
+        mock_response.text_annotations = [mock_annotation]
+        mock_client.text_detection.return_value = mock_response
+        
+        # Mock vision.Image
+        with patch('google.cloud.vision.Image') as mock_image_class:
+            mock_image_class.return_value = Mock()
+            result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0, 1, 2, 3, 4])
+        
+        # Should only process first 2 pages (indices 0, 1)
+        assert mock_pdf2image.convert_from_path.call_count == 2
+        assert result['pages_processed'] == 2
             
-            # Mock cv2.imencode
-            mock_cv2.imencode.return_value = (True, Mock())
-            
-            # Mock Vision API response
-            mock_annotation = Mock()
-            mock_annotation.description = "Page text content"
-            mock_response = Mock()
-            mock_response.text_annotations = [mock_annotation]
-            mock_client.text_detection.return_value = mock_response
-            
-            # Mock vision.Image
-            with patch('google.cloud.vision.Image') as mock_image_class:
-                mock_image_class.return_value = Mock()
-                result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0, 1, 2, 3, 4])
-            
-            # Should only process first 2 pages (indices 0, 1)
-            mock_pdf_to_images.assert_called_once_with(Path("/fake/path.pdf"), [0, 1])
-            
+    @patch('src.pdf_parser.extractors.google_vision_extractor.pdf2image')
     @patch('src.pdf_parser.extractors.google_vision_extractor.cv2')
     @patch('google.cloud.vision.ImageAnnotatorClient')
-    def test_extract_first_pages_successful_extraction(self, mock_client_class, mock_cv2):
+    def test_extract_first_pages_successful_extraction(self, mock_client_class, mock_cv2, mock_pdf2image):
         """Test successful text extraction from pages."""
         mock_client = Mock()
         mock_client_class.return_value = mock_client
         
         extractor = GoogleCloudVisionExtractor(self.credentials_path)
         
-        with patch.object(extractor, '_pdf_to_images') as mock_pdf_to_images:
-            # Mock two pages of images
-            mock_pdf_to_images.return_value = [Mock(), Mock()]
+        # Mock pdf2image to return images for each page
+        mock_pdf2image.convert_from_path.side_effect = [[Mock()], [Mock()]]
+        
+        # Mock cv2.imencode
+        mock_buffer = Mock()
+        mock_buffer.tobytes.return_value = b'fake_image_bytes'
+        mock_cv2.imencode.return_value = (True, mock_buffer)
+        
+        # Mock Vision API responses
+        mock_annotation1 = Mock()
+        mock_annotation1.description = "Page 1 text content"
+        mock_response1 = Mock()
+        mock_response1.text_annotations = [mock_annotation1]
+        
+        mock_annotation2 = Mock()
+        mock_annotation2.description = "Page 2 text content"
+        mock_response2 = Mock()
+        mock_response2.text_annotations = [mock_annotation2]
+        
+        mock_client.text_detection.side_effect = [mock_response1, mock_response2]
+        
+        # Mock vision.Image
+        with patch('google.cloud.vision.Image') as mock_image_class:
+            mock_image_class.return_value = Mock()
+            result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0, 1])
+        
+        expected_text = "[Page 1]\nPage 1 text content\n[Page 2]\nPage 2 text content"
+        assert result['text'] == expected_text
+        assert result['method'] == 'google_cloud_vision'
+        assert result['confidence'] == 0.9
+        assert result['cost'] == 0.003  # 2 pages * 0.0015
+        assert result['pages_processed'] == 2
+        assert 'extraction_time' in result
             
-            # Mock cv2.imencode
-            mock_buffer = Mock()
-            mock_buffer.tobytes.return_value = b'fake_image_bytes'
-            mock_cv2.imencode.return_value = (True, mock_buffer)
-            
-            # Mock Vision API responses
-            mock_annotation1 = Mock()
-            mock_annotation1.description = "Page 1 text content"
-            mock_response1 = Mock()
-            mock_response1.text_annotations = [mock_annotation1]
-            
-            mock_annotation2 = Mock()
-            mock_annotation2.description = "Page 2 text content"
-            mock_response2 = Mock()
-            mock_response2.text_annotations = [mock_annotation2]
-            
-            mock_client.text_detection.side_effect = [mock_response1, mock_response2]
-            
-            # Mock vision.Image
-            with patch('google.cloud.vision.Image') as mock_image_class:
-                mock_image_class.return_value = Mock()
-                result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0, 1])
-            
-            expected_text = "[Page 1]\nPage 1 text content\n[Page 2]\nPage 2 text content"
-            assert result['text'] == expected_text
-            assert result['method'] == 'google_cloud_vision'
-            assert result['confidence'] == 0.9
-            assert result['cost'] == 0.003  # 2 pages * 0.0015
-            assert result['pages_processed'] == 2
-            
+    @patch('src.pdf_parser.extractors.google_vision_extractor.pdf2image')
     @patch('src.pdf_parser.extractors.google_vision_extractor.cv2')
     @patch('google.cloud.vision.ImageAnnotatorClient')
-    def test_extract_first_pages_no_text_found(self, mock_client_class, mock_cv2):
+    def test_extract_first_pages_no_text_found(self, mock_client_class, mock_cv2, mock_pdf2image):
         """Test extraction when no text is found."""
         mock_client = Mock()
         mock_client_class.return_value = mock_client
         
         extractor = GoogleCloudVisionExtractor(self.credentials_path)
         
-        with patch.object(extractor, '_pdf_to_images') as mock_pdf_to_images:
-            mock_pdf_to_images.return_value = [Mock()]
-            
-            # Mock cv2.imencode
-            mock_buffer = Mock()
-            mock_buffer.tobytes.return_value = b'fake_image_bytes'
-            mock_cv2.imencode.return_value = (True, mock_buffer)
-            
-            # Mock Vision API response with no text
-            mock_response = Mock()
-            mock_response.text_annotations = []
-            mock_client.text_detection.return_value = mock_response
-            
-            # Mock vision.Image
-            with patch('google.cloud.vision.Image') as mock_image_class:
-                mock_image_class.return_value = Mock()
-                result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0])
-            
-            assert result['text'] == ""
-            assert result['pages_processed'] == 1
-            assert result['cost'] == 0.0015
+        # Mock pdf2image to return an image
+        mock_pdf2image.convert_from_path.return_value = [Mock()]
+        
+        # Mock cv2.imencode
+        mock_buffer = Mock()
+        mock_buffer.tobytes.return_value = b'fake_image_bytes'
+        mock_cv2.imencode.return_value = (True, mock_buffer)
+        
+        # Mock Vision API response with no text
+        mock_response = Mock()
+        mock_response.text_annotations = []
+        mock_client.text_detection.return_value = mock_response
+        
+        # Mock vision.Image
+        with patch('google.cloud.vision.Image') as mock_image_class:
+            mock_image_class.return_value = Mock()
+            result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0])
+        
+        assert result['text'] == ""
+        assert result['pages_processed'] == 1
+        assert result['cost'] == 0.0015
+        assert 'extraction_time' in result
             
     @patch('src.pdf_parser.extractors.google_vision_extractor.pdf2image')
     @patch('google.cloud.vision.ImageAnnotatorClient')
@@ -182,3 +190,153 @@ class TestGoogleCloudVisionExtractor:
             last_page=2
         )
         assert result == mock_images
+        
+    @patch('src.pdf_parser.extractors.google_vision_extractor.pdf2image')
+    @patch('src.pdf_parser.extractors.google_vision_extractor.cv2')
+    @patch('google.cloud.vision.ImageAnnotatorClient')
+    def test_extract_with_retry_on_service_unavailable(self, mock_client_class, mock_cv2, mock_pdf2image):
+        """Test that API calls are retried on ServiceUnavailable errors."""
+        mock_client = Mock()
+        mock_client_class.return_value = mock_client
+        
+        extractor = GoogleCloudVisionExtractor(self.credentials_path)
+        
+        # Mock pdf2image to return an image
+        mock_pdf2image.convert_from_path.return_value = [Mock()]
+        
+        # Mock cv2.imencode
+        mock_buffer = Mock()
+        mock_buffer.tobytes.return_value = b'fake_image_bytes'
+        mock_cv2.imencode.return_value = (True, mock_buffer)
+        
+        # Mock Vision API to fail twice then succeed
+        mock_annotation = Mock()
+        mock_annotation.description = "Page text after retry"
+        mock_response = Mock()
+        mock_response.text_annotations = [mock_annotation]
+        
+        mock_client.text_detection.side_effect = [
+            ServiceUnavailable("Service temporarily unavailable"),
+            ServiceUnavailable("Service temporarily unavailable"),
+            mock_response
+        ]
+        
+        # Mock vision.Image
+        with patch('google.cloud.vision.Image') as mock_image_class:
+            mock_image_class.return_value = Mock()
+            result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0])
+        
+        assert result['text'] == "[Page 1]\nPage text after retry"
+        assert mock_client.text_detection.call_count == 3
+            
+    @patch('src.pdf_parser.extractors.google_vision_extractor.pdf2image')
+    @patch('src.pdf_parser.extractors.google_vision_extractor.cv2')
+    @patch('google.cloud.vision.ImageAnnotatorClient')
+    def test_extract_fails_after_max_retries(self, mock_client_class, mock_cv2, mock_pdf2image):
+        """Test that extraction fails gracefully after max retries."""
+        mock_client = Mock()
+        mock_client_class.return_value = mock_client
+        
+        extractor = GoogleCloudVisionExtractor(self.credentials_path)
+        
+        # Mock pdf2image to return an image
+        mock_pdf2image.convert_from_path.return_value = [Mock()]
+        
+        # Mock cv2.imencode
+        mock_buffer = Mock()
+        mock_buffer.tobytes.return_value = b'fake_image_bytes'
+        mock_cv2.imencode.return_value = (True, mock_buffer)
+            
+        # Mock Vision API to always fail
+        mock_client.text_detection.side_effect = ServiceUnavailable("Service unavailable")
+        
+        # Mock vision.Image
+        with patch('google.cloud.vision.Image') as mock_image_class:
+            mock_image_class.return_value = Mock()
+            result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0])
+        
+        # Should have empty result after retries exhausted
+        assert result['text'] == ""
+        assert result['pages_processed'] == 0
+        # Should have tried 3 times (initial + 2 retries)
+        assert mock_client.text_detection.call_count == 3
+            
+    @patch('src.pdf_parser.extractors.google_vision_extractor.pdf2image')
+    @patch('src.pdf_parser.extractors.google_vision_extractor.cv2')
+    @patch('google.cloud.vision.ImageAnnotatorClient')
+    def test_extract_tracks_processing_time(self, mock_client_class, mock_cv2, mock_pdf2image):
+        """Test that extraction tracks processing time."""
+        mock_client = Mock()
+        mock_client_class.return_value = mock_client
+        
+        extractor = GoogleCloudVisionExtractor(self.credentials_path)
+        
+        # Mock pdf2image to return an image
+        mock_pdf2image.convert_from_path.return_value = [Mock()]
+        
+        # Mock cv2.imencode
+        mock_buffer = Mock()
+        mock_buffer.tobytes.return_value = b'fake_image_bytes'
+        mock_cv2.imencode.return_value = (True, mock_buffer)
+            
+        # Mock Vision API response
+        mock_annotation = Mock()
+        mock_annotation.description = "Page text content"
+        mock_response = Mock()
+        mock_response.text_annotations = [mock_annotation]
+        mock_client.text_detection.return_value = mock_response
+        
+        # Mock vision.Image
+        with patch('google.cloud.vision.Image') as mock_image_class:
+            mock_image_class.return_value = Mock()
+            result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0])
+        
+        assert 'extraction_time' in result
+        assert result['extraction_time'] >= 0
+            
+    @patch('src.pdf_parser.extractors.google_vision_extractor.pdf2image')
+    @patch('src.pdf_parser.extractors.google_vision_extractor.cv2')
+    @patch('google.cloud.vision.ImageAnnotatorClient')
+    def test_memory_efficient_page_processing(self, mock_client_class, mock_cv2, mock_pdf2image):
+        """Test that pages are processed one at a time for memory efficiency."""
+        mock_client = Mock()
+        mock_client_class.return_value = mock_client
+        
+        extractor = GoogleCloudVisionExtractor(self.credentials_path)
+        
+        # Mock pdf2image to return one image at a time
+        mock_image1 = Mock()
+        mock_image2 = Mock()
+        mock_pdf2image.convert_from_path.side_effect = [[mock_image1], [mock_image2]]
+        
+        # Mock cv2.imencode
+        mock_buffer = Mock()
+        mock_buffer.tobytes.return_value = b'fake_image_bytes'
+        mock_cv2.imencode.return_value = (True, mock_buffer)
+        
+        # Mock Vision API responses
+        mock_annotation = Mock()
+        mock_annotation.description = "Page text content"
+        mock_response = Mock()
+        mock_response.text_annotations = [mock_annotation]
+        mock_client.text_detection.return_value = mock_response
+        
+        # Mock vision.Image
+        with patch('google.cloud.vision.Image') as mock_image_class:
+            mock_image_class.return_value = Mock()
+            result = extractor.extract_first_pages(Path("/fake/path.pdf"), [0, 1])
+        
+        # Verify pdf2image was called separately for each page
+        assert mock_pdf2image.convert_from_path.call_count == 2
+        mock_pdf2image.convert_from_path.assert_any_call(
+            Path("/fake/path.pdf"),
+            first_page=1,
+            last_page=1
+        )
+        mock_pdf2image.convert_from_path.assert_any_call(
+            Path("/fake/path.pdf"),
+            first_page=2,
+            last_page=2
+        )
+        
+        assert result['pages_processed'] == 2

@@ -1,12 +1,17 @@
 """Google Cloud Vision OCR extractor for PDF documents."""
 
-import os
 import logging
-import cv2
-import numpy as np
+import os
+import time
 from pathlib import Path
 from typing import Dict, List
+
+import cv2
+import numpy as np
 import pdf2image
+from PIL import Image
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from google.api_core.exceptions import ServiceUnavailable, DeadlineExceeded
 
 from src.pdf_parser.core.base_extractor import BaseExtractor
 
@@ -33,6 +38,22 @@ class GoogleCloudVisionExtractor(BaseExtractor):
         
         logger.info(f"Initialized Google Cloud Vision extractor with page limit {self.page_limit}")
     
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((ServiceUnavailable, DeadlineExceeded))
+    )
+    def _call_vision_api(self, vision_image):
+        """Call Vision API with retry logic for transient errors.
+        
+        Args:
+            vision_image: Google Cloud Vision Image object
+            
+        Returns:
+            Text detection response
+        """
+        return self.client.text_detection(image=vision_image)
+    
     def extract_first_pages(self, pdf_path: Path, pages: List[int]) -> Dict:
         """Use Google Cloud Vision for OCR on first pages.
         
@@ -50,6 +71,9 @@ class GoogleCloudVisionExtractor(BaseExtractor):
         """
         from google.cloud import vision
         
+        # Track extraction time
+        start_time = time.time()
+        
         # Limit to first pages for cost control
         pages_to_process = [p for p in pages if p < self.page_limit]
         
@@ -60,19 +84,32 @@ class GoogleCloudVisionExtractor(BaseExtractor):
                 'method': 'google_cloud_vision',
                 'confidence': 0.0,
                 'cost': 0.0,
-                'pages_processed': 0
+                'pages_processed': 0,
+                'extraction_time': time.time() - start_time
             }
         
         logger.info(f"Processing {len(pages_to_process)} pages with Google Cloud Vision")
         
-        # Convert PDF pages to images
-        images = self._pdf_to_images(pdf_path, pages_to_process)
-        
         all_text = []
         total_cost = 0.0
+        successfully_processed = 0
         
-        for page_num, image in zip(pages_to_process, images):
+        # Process pages one at a time for memory efficiency
+        for page_num in pages_to_process:
             try:
+                # Convert single page to image for memory efficiency
+                images = pdf2image.convert_from_path(
+                    pdf_path,
+                    first_page=page_num + 1,
+                    last_page=page_num + 1
+                )
+                
+                if not images:
+                    logger.warning(f"Failed to convert page {page_num + 1} to image")
+                    continue
+                    
+                image = images[0]
+                
                 # Convert PIL image to numpy array for OpenCV
                 image_array = np.array(image)
                 
@@ -83,8 +120,8 @@ class GoogleCloudVisionExtractor(BaseExtractor):
                 # Create Vision API image
                 vision_image = vision.Image(content=image_bytes)
                 
-                # Perform text detection
-                response = self.client.text_detection(image=vision_image)
+                # Perform text detection with retry logic
+                response = self._call_vision_api(vision_image)
                 
                 if response.text_annotations:
                     # First annotation contains all text
@@ -96,6 +133,7 @@ class GoogleCloudVisionExtractor(BaseExtractor):
                 
                 # Track cost ($0.0015 per page)
                 total_cost += 0.0015
+                successfully_processed += 1
                 
             except Exception as e:
                 logger.error(f"Failed to process page {page_num + 1}: {str(e)}")
@@ -110,7 +148,8 @@ class GoogleCloudVisionExtractor(BaseExtractor):
             'method': 'google_cloud_vision',
             'confidence': 0.9,  # GCV is very reliable
             'cost': total_cost,
-            'pages_processed': len(pages_to_process)
+            'pages_processed': successfully_processed,
+            'extraction_time': time.time() - start_time
         }
     
     def can_extract_affiliations(self) -> bool:
@@ -132,7 +171,7 @@ class GoogleCloudVisionExtractor(BaseExtractor):
         """
         raise NotImplementedError('Use PyMuPDF for full document extraction')
     
-    def _pdf_to_images(self, pdf_path: Path, pages: List[int]) -> List:
+    def _pdf_to_images(self, pdf_path: Path, pages: List[int]) -> List[Image.Image]:
         """Convert PDF pages to images for OCR processing.
         
         Args:

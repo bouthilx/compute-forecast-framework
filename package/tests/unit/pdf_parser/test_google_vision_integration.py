@@ -187,9 +187,9 @@ class TestGoogleVisionIntegration:
         processor.register_extractor('google_vision', extractor, level=0)
         
         # Mock PDF to images and extraction
-        with patch.object(extractor, '_pdf_to_images') as mock_pdf_to_images:
+        with patch('src.pdf_parser.extractors.google_vision_extractor.pdf2image') as mock_pdf2image:
             with patch.object(processor.validator, 'validate_affiliations') as mock_validate:
-                mock_pdf_to_images.return_value = [Mock(), Mock()]  # 2 images
+                mock_pdf2image.convert_from_path.return_value = [Mock()]  # 1 image per call
                 mock_validate.return_value = True
                 
                 # Mock the Vision API response
@@ -212,5 +212,5 @@ class TestGoogleVisionIntegration:
                         )
                         
                         # Verify only 2 pages were processed despite potentially more being available
-                        mock_pdf_to_images.assert_called_once_with(Path("/fake/paper.pdf"), [0, 1])
+                        assert mock_pdf2image.convert_from_path.call_count == 2
                         assert 'affiliations' in result
