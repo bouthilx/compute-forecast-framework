@@ -86,6 +86,24 @@ class TestPyMuPDFExtractor:
             self.extractor.extract_first_pages(self.test_pdf_path, [0, 1])
     
     @patch.object(PyMuPDFExtractor, '_create_fitz_doc')
+    def test_extract_first_pages_ensures_cleanup_on_error(self, mock_create_doc):
+        """Test that document is closed even when processing fails."""
+        mock_doc = Mock()
+        mock_page = Mock()
+        mock_page.get_text.side_effect = Exception("Text extraction failed")
+        mock_doc.__len__ = Mock(return_value=5)
+        mock_doc.__getitem__ = Mock(return_value=mock_page)
+        mock_doc.close = Mock()
+        
+        mock_create_doc.return_value = mock_doc
+        
+        with pytest.raises(Exception):
+            self.extractor.extract_first_pages(self.test_pdf_path, [0])
+        
+        # Verify document was closed despite the error
+        mock_doc.close.assert_called_once()
+    
+    @patch.object(PyMuPDFExtractor, '_create_fitz_doc')
     def test_extract_full_text_success(self, mock_create_doc):
         """Test successful full text extraction."""
         # Mock document with multiple pages
@@ -122,6 +140,23 @@ class TestPyMuPDFExtractor:
         result = self.extractor.extract_full_text(self.test_pdf_path)
         
         assert result == ''
+        mock_doc.close.assert_called_once()
+    
+    @patch.object(PyMuPDFExtractor, '_create_fitz_doc')
+    def test_extract_full_text_ensures_cleanup_on_error(self, mock_create_doc):
+        """Test that document is closed even when full text extraction fails."""
+        mock_doc = Mock()
+        mock_page = Mock()
+        mock_page.get_text.side_effect = Exception("Page extraction failed")
+        mock_doc.__iter__ = Mock(return_value=iter([mock_page]))
+        mock_doc.close = Mock()
+        
+        mock_create_doc.return_value = mock_doc
+        
+        with pytest.raises(Exception):
+            self.extractor.extract_full_text(self.test_pdf_path)
+        
+        # Verify document was closed despite the error
         mock_doc.close.assert_called_once()
     
     def test_calculate_confidence_high_quality(self):
@@ -162,6 +197,17 @@ class TestPyMuPDFExtractor:
         
         # Should be medium confidence
         assert 0.3 <= confidence <= 0.8
+    
+    def test_calculate_confidence_extreme_garbage(self):
+        """Test confidence calculation never goes negative even with extreme garbage."""
+        # Text with extreme garbage characters and short words
+        text = "!@#$%^&*()_+ a b c d e f g h i j k l m n o p !@#$%^&*()_+"
+        
+        confidence = self.extractor._calculate_confidence(text)
+        
+        # Should never be negative
+        assert confidence >= 0.0
+        assert confidence <= 1.0
     
     @patch('src.pdf_parser.extractors.pymupdf_extractor.fitz')
     def test_integration_with_base_extractor_interface(self, mock_fitz):
