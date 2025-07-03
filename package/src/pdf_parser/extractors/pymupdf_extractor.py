@@ -82,7 +82,7 @@ class PyMuPDFExtractor(BaseExtractor):
             }
             
         except Exception as e:
-            logger.error(f"PyMuPDF extraction failed for {pdf_path}: {str(e)}")
+            logger.error(f"PyMuPDF extraction failed for {pdf_path} (pages: {pages}): {type(e).__name__}: {str(e)}")
             raise
         finally:
             if doc:
@@ -109,7 +109,7 @@ class PyMuPDFExtractor(BaseExtractor):
             return full_text
             
         except Exception as e:
-            logger.error(f"PyMuPDF full text extraction failed for {pdf_path}: {str(e)}")
+            logger.error(f"PyMuPDF full text extraction failed for {pdf_path}: {type(e).__name__}: {str(e)}")
             raise
         finally:
             if doc:

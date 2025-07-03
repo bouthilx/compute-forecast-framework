@@ -1,0 +1,98 @@
+{
+  "papers_collected": 5,
+  "pdfs_downloaded": 5,
+  "successful_extractions": 5,
+  "failed_extractions": 0,
+  "extraction_details": [
+    {
+      "paper_id": "neurips_2024_attention_analysis",
+      "title": "Understanding the Role of Attention in Transformer Models",
+      "status": "success",
+      "extraction_time": 0.11,
+      "method": "pymupdf",
+      "confidence": 0.0,
+      "metrics": {
+        "text_length": 67367,
+        "word_count": 10638,
+        "page_count": 22,
+        "has_abstract": true,
+        "has_references": true,
+        "has_introduction": true
+      },
+      "text_preview": "\n[Page 1]\nPublished as a conference paper at ICLR 2021\nAN IMAGE IS WORTH 16X16 WORDS:\nTRANSFORMERS FOR IMAGE RECOGNITION AT SCALE\nAlexey Dosovitskiy\u2217,\u2020, Lucas Beyer\u2217, Alexander Kolesnikov\u2217, Dirk Weiss..."
+    },
+    {
+      "paper_id": "neurips_2024_cv_review",
+      "title": "Deep Learning for Computer Vision: A Brief Review",
+      "status": "success",
+      "extraction_time": 0.14,
+      "method": "pymupdf",
+      "confidence": 0.0,
+      "metrics": {
+        "text_length": 135606,
+        "word_count": 20289,
+        "page_count": 23,
+        "has_abstract": true,
+        "has_references": true,
+        "has_introduction": true
+      },
+      "text_preview": "\n[Page 1]\n1\nDeepFakes and Beyond: A Survey of\nFace Manipulation and Fake Detection\nRuben Tolosana, Ruben Vera-Rodriguez, Julian Fierrez, Aythami Morales and Javier Ortega-Garcia\nBiometrics and Data Pa..."
+    },
+    {
+      "paper_id": "neurips_2024_nips_advances",
+      "title": "Advances in Neural Information Processing Systems",
+      "status": "success",
+      "extraction_time": 0.09,
+      "method": "pymupdf",
+      "confidence": 0.0,
+      "metrics": {
+        "text_length": 59536,
+        "word_count": 9365,
+        "page_count": 13,
+        "has_abstract": true,
+        "has_references": true,
+        "has_introduction": true
+      },
+      "text_preview": "\n[Page 1]\nCNN-generated images are surprisingly easy to spot... for now\nSheng-Yu Wang1\nOliver Wang2\nRichard Zhang2\nAndrew Owens1,3\nAlexei A. Efros1\nUC Berkeley1\nAdobe Research2\nUniversity of Michigan3..."
+    },
+    {
+      "paper_id": "neurips_2024_ml_theory",
+      "title": "Machine Learning Theory and Applications",
+      "status": "success",
+      "extraction_time": 0.1,
+      "method": "pymupdf",
+      "confidence": 0.0,
+      "metrics": {
+        "text_length": 58885,
+        "word_count": 9050,
+        "page_count": 18,
+        "has_abstract": true,
+        "has_references": true,
+        "has_introduction": true
+      },
+      "text_preview": "\n[Page 1]\nBig Self-Supervised Models are\nStrong Semi-Supervised Learners\nTing Chen, Simon Kornblith, Kevin Swersky, Mohammad Norouzi, Geoffrey Hinton\nGoogle Research, Brain Team\nAbstract\nOne paradigm ..."
+    },
+    {
+      "paper_id": "neurips_2024_optimization",
+      "title": "Optimization Methods for Deep Learning",
+      "status": "success",
+      "extraction_time": 0.03,
+      "method": "pymupdf",
+      "confidence": 0.0,
+      "metrics": {
+        "text_length": 37546,
+        "word_count": 6024,
+        "page_count": 14,
+        "has_abstract": true,
+        "has_references": true,
+        "has_introduction": true
+      },
+      "text_preview": "\n[Page 1]\nAn overview of gradient descent optimization\nalgorithms\u2217\nSebastian Ruder\nInsight Centre for Data Analytics, NUI Galway\nAylien Ltd., Dublin\nruder.sebastian@gmail.com\nAbstract\nGradient descent..."
+    }
+  ],
+  "pipeline_summary": {
+    "total_runtime": 8.69,
+    "success_rate": 100.0,
+    "papers_per_minute": 5.0
+  }
+}
