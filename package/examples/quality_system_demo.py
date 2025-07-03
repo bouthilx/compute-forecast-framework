@@ -13,7 +13,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.quality import (
+from compute_forecast.quality import (
     AdaptiveThresholdEngine,
     QualityAnalyzer,
     QualityFilter,
@@ -126,7 +126,7 @@ def demonstrate_quality_filtering():
         'min_combined_quality_score': 0.3
     }
     
-    from src.quality.quality_structures import QualityThresholds
+    from compute_forecast.quality.quality_structures import QualityThresholds
     
     strict_filter = QualityFilter(QualityThresholds(**strict_thresholds))
     lenient_filter = QualityFilter(QualityThresholds(**lenient_thresholds))
@@ -184,7 +184,7 @@ def demonstrate_adaptive_thresholds():
     print(f"  Adaptation Count: {initial_thresholds.adaptation_count}")
     
     # Simulate poor performance (low precision)
-    from src.quality.quality_structures import QualityPerformanceMetrics
+    from compute_forecast.quality.quality_structures import QualityPerformanceMetrics
     
     poor_performance = QualityPerformanceMetrics(
         venue="ICML",
@@ -299,7 +299,7 @@ def demonstrate_performance_comparison():
         engines[name] = AdaptiveThresholdEngine(config)
     
     # Simulate same poor performance for all engines
-    from src.quality.quality_structures import QualityPerformanceMetrics
+    from compute_forecast.quality.quality_structures import QualityPerformanceMetrics
     
     performance_data = QualityPerformanceMetrics(
         venue="ICML",

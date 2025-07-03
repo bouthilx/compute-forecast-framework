@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 from typing import Dict, List, Any
 
-from src.quality.quality_structures import (
+from compute_forecast.quality.quality_structures import (
     QualityMetrics,
     QualityThresholds,
     AdaptationConfig,
@@ -21,10 +21,10 @@ from src.quality.quality_structures import (
 )
 
 # Import components to test (these will fail initially)
-from src.quality.adaptive_thresholds import AdaptiveThresholdEngine
-from src.quality.quality_analyzer import QualityAnalyzer
-from src.quality.threshold_optimizer import ThresholdOptimizer
-from src.quality.quality_filter import QualityFilter
+from compute_forecast.quality.adaptive_thresholds import AdaptiveThresholdEngine
+from compute_forecast.quality.quality_analyzer import QualityAnalyzer
+from compute_forecast.quality.threshold_optimizer import ThresholdOptimizer
+from compute_forecast.quality.quality_filter import QualityFilter
 
 
 class TestQualityAnalyzer:

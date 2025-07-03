@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.analysis.mila.paper_selector import (
+from compute_forecast.analysis.mila.paper_selector import (
     MilaPaperSelector,
     PaperSelectionCriteria
 )

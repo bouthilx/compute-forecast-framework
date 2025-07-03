@@ -12,7 +12,7 @@ from typing import Optional
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.pdf_storage.google_drive_store import GoogleDriveStore
+from compute_forecast.pdf_storage.google_drive_store import GoogleDriveStore
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
@@ -262,9 +262,9 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-from src.pdf_storage import GoogleDriveStore, PDFManager, PDFDiscoveryStorage
-from src.pdf_discovery.core import PDFDiscoveryFramework
-from src.data.models import Paper
+from compute_forecast.pdf_storage import GoogleDriveStore, PDFManager, PDFDiscoveryStorage
+from compute_forecast.pdf_discovery.core import PDFDiscoveryFramework
+from compute_forecast.data.models import Paper
 
 # Load environment variables
 load_dotenv()

@@ -8,9 +8,9 @@ from unittest.mock import Mock, patch
 from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional
 
-from src.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
-from src.orchestration.component_validator import ComponentValidator
-from src.data.models import CollectionConfig, Paper, Author
+from compute_forecast.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
+from compute_forecast.orchestration.component_validator import ComponentValidator
+from compute_forecast.data.models import CollectionConfig, Paper, Author
 
 @dataclass
 class TestResult:
@@ -83,7 +83,7 @@ class ComponentIntegrationTest:
             }
             
             # Mock checkpoint data structure
-            from src.orchestration.state_manager import CheckpointData
+            from compute_forecast.orchestration.state_manager import CheckpointData
             from datetime import datetime
             
             checkpoint = CheckpointData(
@@ -307,7 +307,7 @@ class ComponentIntegrationTest:
             test_result.assertions_passed += 1
             
             # Test state checkpoint with processing results
-            from src.orchestration.state_manager import CheckpointData
+            from compute_forecast.orchestration.state_manager import CheckpointData
             from datetime import datetime
             
             processing_checkpoint = CheckpointData(

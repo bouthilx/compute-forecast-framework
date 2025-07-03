@@ -9,7 +9,7 @@ import pytest
 from unittest.mock import Mock
 from datetime import datetime
 
-from src.analysis.computational.extraction_workflow import (
+from compute_forecast.analysis.computational.extraction_workflow import (
     ExtractionWorkflow,
     WorkflowStep,
     WorkflowState,

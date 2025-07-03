@@ -4,9 +4,9 @@ import pytest
 from datetime import datetime
 from typing import Dict, List
 
-from src.pdf_discovery.deduplication.engine import PaperDeduplicator
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.deduplication.engine import PaperDeduplicator
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper, Author
 
 
 class TestPaperDeduplicator:

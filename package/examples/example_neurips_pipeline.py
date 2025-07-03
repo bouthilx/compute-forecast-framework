@@ -17,9 +17,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Import our PDF parsing components
-from src.pdf_parser.core.processor import OptimizedPDFProcessor
-from src.pdf_parser.extractors.pymupdf_extractor import PyMuPDFExtractor
-from src.pdf_download.downloader import SimplePDFDownloader
+from compute_forecast.pdf_parser.core.processor import OptimizedPDFProcessor
+from compute_forecast.pdf_parser.extractors.pymupdf_extractor import PyMuPDFExtractor
+from compute_forecast.pdf_download.downloader import SimplePDFDownloader
+from compute_forecast.pdf_discovery.sources.openreview_collector import OpenReviewPDFCollector
+from compute_forecast.data.models import Paper, CollectionQuery
+from compute_forecast.data.collectors.citation_collector import CitationCollector
 
 
 class NeurIPS2024PipelineTest:

@@ -4,14 +4,14 @@ import pytest
 from unittest.mock import Mock, patch
 import time
 
-from src.data.models import Paper, ComputationalAnalysis, Author
-from src.core.exceptions import ValidationError
-from src.quality.contracts.base_contracts import (
+from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
+from compute_forecast.core.exceptions import ValidationError
+from compute_forecast.quality.contracts.base_contracts import (
     ContractViolation,
     ContractViolationType,
     ContractValidationResult,
 )
-from src.quality.contracts.pipeline_validator import (
+from compute_forecast.quality.contracts.pipeline_validator import (
     AnalysisContractValidator,
     PipelineIntegrationValidator,
     PipelineValidationReport,

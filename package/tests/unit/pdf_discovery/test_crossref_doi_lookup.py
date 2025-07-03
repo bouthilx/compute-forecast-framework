@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 import requests
 from datetime import datetime
 
-from src.data.sources.enhanced_crossref import EnhancedCrossrefClient
-from src.data.models import APIResponse, ResponseMetadata, APIError
+from compute_forecast.data.sources.enhanced_crossref import EnhancedCrossrefClient
+from compute_forecast.data.models import APIResponse, ResponseMetadata, APIError
 
 
 class TestCrossrefDOILookup:

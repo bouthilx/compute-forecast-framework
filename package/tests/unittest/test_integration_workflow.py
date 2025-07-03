@@ -9,12 +9,12 @@ import threading
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from src.data.models import (
+from compute_forecast.data.models import (
     APIConfig, Paper, Author, CollectionQuery, 
     HealthMonitoringConfig, RateLimitingConfig
 )
-from src.data.collectors.rate_limit_manager import RateLimitManager
-from src.data.collectors.api_health_monitor import APIHealthMonitor
+from compute_forecast.data.collectors.rate_limit_manager import RateLimitManager
+from compute_forecast.data.collectors.api_health_monitor import APIHealthMonitor
 
 
 class TestIntegrationWorkflow:

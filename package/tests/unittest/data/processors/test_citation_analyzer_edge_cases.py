@@ -2,9 +2,9 @@
 
 import pytest
 from datetime import datetime
-from src.data.models import Paper, Author
-from src.data.collectors.state_structures import VenueConfig
-from src.data.processors import CitationAnalyzer, CitationConfig
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.data.collectors.state_structures import VenueConfig
+from compute_forecast.data.processors import CitationAnalyzer, CitationConfig
 
 
 class TestCitationAnalyzerEdgeCases:

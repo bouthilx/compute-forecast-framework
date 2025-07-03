@@ -8,7 +8,7 @@ import json
 import os
 from datetime import datetime, timedelta
 
-from src.pdf_storage.pdf_manager import PDFManager
+from compute_forecast.pdf_storage.pdf_manager import PDFManager
 
 
 class TestPDFManager(unittest.TestCase):

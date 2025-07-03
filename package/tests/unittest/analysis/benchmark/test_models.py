@@ -5,14 +5,14 @@ from dataclasses import asdict
 from typing import List
 
 # Import future models
-from src.analysis.benchmark.models import (
+from compute_forecast.analysis.benchmark.models import (
     BenchmarkDomain,
     BenchmarkPaper,
     ExtractionBatch,
     BenchmarkExport,
     ExtractionQA,
 )
-from src.data.models import Paper, ComputationalAnalysis, Author
+from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
 
 
 class TestBenchmarkModels:

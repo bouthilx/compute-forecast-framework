@@ -4,7 +4,7 @@ import pytest
 import time
 from unittest.mock import patch
 
-from src.pdf_discovery.utils.rate_limiter import RateLimiter
+from compute_forecast.pdf_discovery.utils.rate_limiter import RateLimiter
 
 
 class TestRateLimiter:

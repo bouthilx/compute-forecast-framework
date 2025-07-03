@@ -6,15 +6,15 @@ Shows how to integrate the filtering system with paper collection.
 import logging
 from typing import List
 
-from src.data.models import Paper, Author
-from src.data.collectors.api_integration_layer import APIIntegrationLayer
-from src.filtering import (
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.data.collectors.api_integration_layer import APIIntegrationLayer
+from compute_forecast.filtering import (
     ComputationalResearchFilter,
     FilteringConfig,
     FilteringPipelineIntegration,
     setup_computational_filtering
 )
-from src.monitoring.metrics_collector import MetricsCollector
+from compute_forecast.monitoring.metrics_collector import MetricsCollector
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

@@ -4,7 +4,7 @@ import asyncio
 import time
 from unittest.mock import Mock, patch, AsyncMock
 import pytest
-from src.data.collectors.enhanced_orchestrator import EnhancedCollectionOrchestrator as EnhancedOrchestrator
+from compute_forecast.data.collectors.enhanced_orchestrator import EnhancedCollectionOrchestrator as EnhancedOrchestrator
 
 
 class TestOrchestratorPerformance:

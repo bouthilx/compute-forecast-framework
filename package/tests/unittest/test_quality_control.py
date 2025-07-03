@@ -6,7 +6,7 @@ Tests quality assurance, validation, and consistency checking for extraction res
 
 import pytest
 
-from src.analysis.computational.quality_control import (
+from compute_forecast.analysis.computational.quality_control import (
     QualityController,
     QualityMetrics,
     ValidationRule,

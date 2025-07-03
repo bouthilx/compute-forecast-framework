@@ -8,9 +8,9 @@ import threading
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch, MagicMock
 
-from src.monitoring.metrics_collector import MetricsCollector
-from src.monitoring.dashboard_metrics import SystemMetrics, CollectionProgressMetrics
-from src.data.models import APIHealthStatus
+from compute_forecast.monitoring.metrics_collector import MetricsCollector
+from compute_forecast.monitoring.dashboard_metrics import SystemMetrics, CollectionProgressMetrics
+from compute_forecast.data.models import APIHealthStatus
 
 
 class TestMetricsCollector:
@@ -268,7 +268,7 @@ class TestMetricsCollector:
     
     def _create_test_metrics(self, papers_collected: int, papers_per_minute: float) -> SystemMetrics:
         """Helper to create test metrics"""
-        from src.monitoring.dashboard_metrics import (
+        from compute_forecast.monitoring.dashboard_metrics import (
             SystemMetrics, CollectionProgressMetrics, ProcessingMetrics,
             SystemResourceMetrics, StateManagementMetrics
         )

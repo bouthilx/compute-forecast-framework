@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import Dict, List
 from unittest.mock import patch
 
-from src.pdf_parser.core.processor import OptimizedPDFProcessor
-from src.pdf_parser.core.base_extractor import BaseExtractor
+from compute_forecast.pdf_parser.core.processor import OptimizedPDFProcessor
+from compute_forecast.pdf_parser.core.base_extractor import BaseExtractor
 
 
 class MockExtractor(BaseExtractor):

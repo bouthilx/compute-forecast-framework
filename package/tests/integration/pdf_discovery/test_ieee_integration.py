@@ -4,9 +4,9 @@ import pytest
 from unittest.mock import patch, Mock
 import os
 
-from src.pdf_discovery.sources.ieee_xplore_collector import IEEEXplorePDFCollector
-from src.pdf_discovery.core.framework import PDFDiscoveryFramework
-from src.data.models import Paper
+from compute_forecast.pdf_discovery.sources.ieee_xplore_collector import IEEEXplorePDFCollector
+from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
+from compute_forecast.data.models import Paper
 
 
 class TestIEEEXploreIntegration:

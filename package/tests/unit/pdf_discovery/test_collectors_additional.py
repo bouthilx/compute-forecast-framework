@@ -2,8 +2,8 @@
 
 import pytest
 from unittest.mock import Mock, patch
-from src.pdf_discovery.core.collectors import BasePDFCollector
-from src.data.models import Paper
+from compute_forecast.pdf_discovery.core.collectors import BasePDFCollector
+from compute_forecast.data.models import Paper
 
 
 class SimpleCollector(BasePDFCollector):

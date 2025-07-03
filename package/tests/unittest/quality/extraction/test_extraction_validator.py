@@ -5,12 +5,12 @@ Tests for ExtractionQualityValidator.
 import pytest
 from unittest.mock import Mock
 
-from src.quality.extraction.extraction_validator import (
+from compute_forecast.quality.extraction.extraction_validator import (
     ExtractionQualityValidator, 
     ExtractionValidation, 
     ExtractionQuality
 )
-from src.data.models import Paper
+from compute_forecast.data.models import Paper
 from .test_helpers import MockComputationalAnalysis as ComputationalAnalysis
 
 

@@ -8,7 +8,7 @@ from unittest.mock import Mock
 from datetime import datetime
 import requests
 
-from src.data.models import APIHealthStatus, APIError
+from compute_forecast.data.models import APIHealthStatus, APIError
 
 
 class TestAPIHealthMonitor:
@@ -16,7 +16,7 @@ class TestAPIHealthMonitor:
     
     def setup_method(self):
         """Setup test fixtures"""
-        from src.data.collectors.api_health_monitor import APIHealthMonitor
+        from compute_forecast.data.collectors.api_health_monitor import APIHealthMonitor
         self.monitor = APIHealthMonitor()
     
     def test_monitor_api_health_successful_response(self):

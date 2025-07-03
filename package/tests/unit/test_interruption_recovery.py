@@ -18,16 +18,16 @@ from pathlib import Path
 package_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(package_root))
 
-from src.data.collectors.interruption_recovery import (
+from compute_forecast.data.collectors.interruption_recovery import (
     InterruptionRecoveryEngine, InterruptionType, RecoveryStrategy
 )
-from src.data.collectors.state_management import StateManager
-from src.data.collectors.state_structures import (
+from compute_forecast.data.collectors.state_management import StateManager
+from compute_forecast.data.collectors.state_structures import (
     VenueConfig, CheckpointData, CollectionSession, RecoveryPlan, 
     SessionResumeResult, InterruptionAnalysis, InterruptionCause,
     ErrorContext
 )
-from src.data.models import APIHealthStatus, RateLimitStatus
+from compute_forecast.data.models import APIHealthStatus, RateLimitStatus
 
 
 class TestInterruptionRecoveryEngine:
@@ -460,7 +460,7 @@ class TestInterruptionRecoveryEngine:
         """Test recovery when checkpoint is corrupted"""
         # Mock checkpoint manager to return invalid checkpoint
         with patch.object(state_manager.checkpoint_manager, 'validate_checkpoint') as mock_validate:
-            from src.data.collectors.state_structures import CheckpointValidationResult
+            from compute_forecast.data.collectors.state_structures import CheckpointValidationResult
             
             mock_validate.return_value = CheckpointValidationResult(
                 checkpoint_id="corrupted_checkpoint",

@@ -4,14 +4,14 @@ import pytest
 import time
 from typing import List, Dict, Any
 
-from src.data.models import Paper, ComputationalAnalysis, Author
-from src.quality.contracts import (
+from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
+from compute_forecast.quality.contracts import (
     AnalysisContractValidator,
     PipelineIntegrationValidator,
     ContractValidationResult,
     ContractViolationType,
 )
-from src.quality.contracts.contract_tests import ContractTestSuite
+from compute_forecast.quality.contracts.contract_tests import ContractTestSuite
 
 
 class TestContractValidationIntegration:

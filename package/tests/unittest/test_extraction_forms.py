@@ -11,13 +11,13 @@ from pathlib import Path
 import tempfile
 import shutil
 
-from src.analysis.computational.extraction_forms import (
+from compute_forecast.analysis.computational.extraction_forms import (
     ExtractionFormTemplate,
     FormValidator,
     FormValidationResult,
     FormManager
 )
-from src.analysis.computational.extraction_protocol import ExtractionResult, ExtractionMetadata, HardwareSpecs, TrainingSpecs, ModelSpecs, DatasetSpecs, ComputationSpecs, ValidationResults, ExtractionNotes, ConfidenceLevel
+from compute_forecast.analysis.computational.extraction_protocol import ExtractionResult, ExtractionMetadata, HardwareSpecs, TrainingSpecs, ModelSpecs, DatasetSpecs, ComputationSpecs, ValidationResults, ExtractionNotes, ConfidenceLevel
 
 
 @pytest.fixture

@@ -5,9 +5,9 @@ from unittest.mock import Mock, patch
 from datetime import datetime
 from requests.exceptions import RequestException
 
-from src.pdf_discovery.sources.cvf_collector import CVFCollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper
+from compute_forecast.pdf_discovery.sources.cvf_collector import CVFCollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper
 
 
 class TestCVFCollector:

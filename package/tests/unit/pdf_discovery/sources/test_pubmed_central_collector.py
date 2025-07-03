@@ -6,9 +6,9 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 import time
 
-from src.pdf_discovery.sources.pubmed_central_collector import PubMedCentralCollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper
+from compute_forecast.pdf_discovery.sources.pubmed_central_collector import PubMedCentralCollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper
 
 
 class TestPubMedCentralCollector:

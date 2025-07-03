@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.extraction import (
+from compute_forecast.extraction import (
     CoverageReporter,
     ExtractionField,
     ExtractionTemplate,

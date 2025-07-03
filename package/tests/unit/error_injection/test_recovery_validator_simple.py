@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any
 
 # Import only what we need
-from src.testing.error_injection.injection_framework import ErrorType, ErrorScenario
+from compute_forecast.testing.error_injection.injection_framework import ErrorType, ErrorScenario
 
 
 class TestRecoveryValidatorSimple:

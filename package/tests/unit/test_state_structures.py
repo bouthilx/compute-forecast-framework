@@ -15,12 +15,12 @@ from pathlib import Path
 package_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(package_root))
 
-from src.data.collectors.state_structures import (
+from compute_forecast.data.collectors.state_structures import (
     CheckpointData, ErrorContext, InterruptionAnalysis, InterruptionCause,
     RecoveryPlan, CollectionSession, VenueConfig, IntegrityCheckResult,
     DataIntegrityAssessment, ValidationResult
 )
-from src.data.models import APIHealthStatus, RateLimitStatus
+from compute_forecast.data.models import APIHealthStatus, RateLimitStatus
 
 
 class TestCheckpointData:

@@ -11,12 +11,12 @@ from datetime import datetime
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.analysis.mila.paper_selector import DomainClassifier
-from src.extraction.suppression_templates import (
+from compute_forecast.analysis.mila.paper_selector import DomainClassifier
+from compute_forecast.extraction.suppression_templates import (
     SuppressionTemplates,
     SuppressionIndicators
 )
-from src.analysis.computational.extraction_patterns import ExtractionRegexPatterns
+from compute_forecast.analysis.computational.extraction_patterns import ExtractionRegexPatterns
 
 
 class MilaExtractionPipeline:

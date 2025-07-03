@@ -4,12 +4,12 @@ import pytest
 from unittest.mock import Mock, patch
 from typing import Dict, Any
 
-from src.analysis.benchmark.domain_extractors import (
+from compute_forecast.analysis.benchmark.domain_extractors import (
     NLPBenchmarkExtractor,
     CVBenchmarkExtractor,
     RLBenchmarkExtractor,
 )
-from src.data.models import Paper, Author
+from compute_forecast.data.models import Paper, Author
 
 
 class TestNLPBenchmarkExtractor:

@@ -7,10 +7,10 @@ from typing import Dict, List
 from concurrent.futures import ThreadPoolExecutor
 import time
 
-from src.pdf_discovery.core.models import PDFRecord, DiscoveryResult
-from src.pdf_discovery.core.collectors import BasePDFCollector
-from src.pdf_discovery.core.framework import PDFDiscoveryFramework
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.core.models import PDFRecord, DiscoveryResult
+from compute_forecast.pdf_discovery.core.collectors import BasePDFCollector
+from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
+from compute_forecast.data.models import Paper, Author
 
 
 class MockCollector(BasePDFCollector):

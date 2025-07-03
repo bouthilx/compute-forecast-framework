@@ -8,8 +8,8 @@ from concurrent.futures import Future
 import pytest
 import requests
 
-from src.pdf_download.downloader import SimplePDFDownloader
-from src.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pdf_download.downloader import SimplePDFDownloader
+from compute_forecast.pdf_discovery.core.models import PDFRecord
 from datetime import datetime
 
 

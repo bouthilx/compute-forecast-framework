@@ -4,9 +4,9 @@ import pytest
 from unittest.mock import patch, Mock
 from datetime import datetime
 
-from src.pdf_discovery.core.framework import PDFDiscoveryFramework
-from src.pdf_discovery.sources.pmlr_collector import PMLRCollector
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
+from compute_forecast.pdf_discovery.sources.pmlr_collector import PMLRCollector
+from compute_forecast.data.models import Paper, Author
 
 
 class TestPMLRIntegration:

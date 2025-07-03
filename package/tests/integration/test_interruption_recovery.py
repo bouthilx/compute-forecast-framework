@@ -11,8 +11,8 @@ from unittest.mock import Mock, patch, MagicMock
 from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional
 
-from src.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
-from src.data.models import CollectionConfig, Paper, Author
+from compute_forecast.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
+from compute_forecast.data.models import CollectionConfig, Paper, Author
 
 @dataclass
 class TestResult:
@@ -455,7 +455,7 @@ class InterruptionRecoveryTest:
                 # Try to save checkpoint (should fail due to disk space)
                 try:
                     if orchestrator.state_manager:
-                        from src.orchestration.state_manager import CheckpointData
+                        from compute_forecast.orchestration.state_manager import CheckpointData
                         from datetime import datetime
                         
                         test_checkpoint = CheckpointData(
@@ -489,7 +489,7 @@ class InterruptionRecoveryTest:
             # Normal file operations should work now (no mock)
             if orchestrator.state_manager:
                 try:
-                    from src.orchestration.state_manager import CheckpointData
+                    from compute_forecast.orchestration.state_manager import CheckpointData
                     from datetime import datetime
                     
                     recovery_checkpoint = CheckpointData(

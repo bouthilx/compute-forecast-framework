@@ -8,10 +8,10 @@ from unittest.mock import patch
 import psutil
 import os
 
-from src.data.models import Paper, Author
-from src.data.collectors.state_structures import VenueConfig
-from src.data.processors.citation_analyzer import CitationAnalyzer
-from src.data.processors.breakthrough_detector import BreakthroughDetector
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.data.collectors.state_structures import VenueConfig
+from compute_forecast.data.processors.citation_analyzer import CitationAnalyzer
+from compute_forecast.data.processors.breakthrough_detector import BreakthroughDetector
 
 
 class TestCitationAnalysisPerformance:

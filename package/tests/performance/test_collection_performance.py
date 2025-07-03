@@ -9,8 +9,8 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
-from src.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
-from src.data.models import CollectionConfig, Paper, Author
+from compute_forecast.orchestration.venue_collection_orchestrator import VenueCollectionOrchestrator
+from compute_forecast.data.models import CollectionConfig, Paper, Author
 
 @dataclass
 class PerformanceTestResult:

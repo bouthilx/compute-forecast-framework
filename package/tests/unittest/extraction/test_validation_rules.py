@@ -2,8 +2,8 @@
 
 import pytest
 
-from src.extraction.validation_rules import ValidationRulesEngine, ValidationRule
-from src.extraction.template_engine import ExtractionField
+from compute_forecast.extraction.validation_rules import ValidationRulesEngine, ValidationRule
+from compute_forecast.extraction.template_engine import ExtractionField
 
 
 class TestValidationRule:

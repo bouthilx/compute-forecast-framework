@@ -3,7 +3,7 @@
 import pytest
 from typing import Dict, List
 
-from src.extraction.suppression_templates import (
+from compute_forecast.extraction.suppression_templates import (
     SuppressionTemplates,
     SuppressionField,
     SuppressionIndicators,

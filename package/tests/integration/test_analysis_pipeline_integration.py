@@ -17,9 +17,9 @@ import random
 import string
 
 # Core imports
-from src.data.models import Paper, Author, CollectionConfig
-from src.core.config import ConfigManager
-from src.core.exceptions import ValidationError
+from compute_forecast.data.models import Paper, Author, CollectionConfig
+from compute_forecast.core.config import ConfigManager
+from compute_forecast.core.exceptions import ValidationError
 
 @dataclass
 class MockDataConfig:
@@ -547,7 +547,7 @@ class EndToEndPipelineTester:
         """Test venue normalization component"""
         try:
             # Mock venue normalizer component
-            from src.data.processors.venue_normalizer import VenueNormalizer
+            from compute_forecast.data.processors.venue_normalizer import VenueNormalizer
             normalizer = VenueNormalizer()
             
             issues_found = []
@@ -602,7 +602,7 @@ class EndToEndPipelineTester:
     def _test_deduplication(self, papers: List[Paper]) -> ValidationResult:
         """Test deduplication component"""
         try:
-            from src.data.processors.deduplicator import Deduplicator
+            from compute_forecast.data.processors.deduplicator import Deduplicator
             deduplicator = Deduplicator()
             
             # Add some duplicate papers for testing
@@ -667,7 +667,7 @@ class EndToEndPipelineTester:
     def _test_citation_analysis(self, papers: List[Paper]) -> ValidationResult:
         """Test citation analysis component"""
         try:
-            from src.data.processors.citation_analyzer import CitationAnalyzer
+            from compute_forecast.data.processors.citation_analyzer import CitationAnalyzer
             analyzer = CitationAnalyzer()
             
             result = analyzer.analyze_citation_distributions(papers)

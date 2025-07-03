@@ -5,9 +5,9 @@ from unittest.mock import Mock, patch
 from datetime import datetime
 import time
 
-from src.pdf_discovery.core.framework import PDFDiscoveryFramework
-from src.pdf_discovery.sources.semantic_scholar_collector import SemanticScholarPDFCollector
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
+from compute_forecast.pdf_discovery.sources.semantic_scholar_collector import SemanticScholarPDFCollector
+from compute_forecast.data.models import Paper, Author
 
 
 class TestSemanticScholarIntegration:
@@ -132,7 +132,7 @@ class TestSemanticScholarIntegration:
     @patch('src.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar')
     def test_deduplication_with_other_sources(self, mock_ss_class, mock_sleep):
         """Test that SS PDFs are properly deduplicated with other sources."""
-        from src.pdf_discovery.core.models import PDFRecord
+        from compute_forecast.pdf_discovery.core.models import PDFRecord
         
         # Create mock other collector
         class MockArxivCollector:

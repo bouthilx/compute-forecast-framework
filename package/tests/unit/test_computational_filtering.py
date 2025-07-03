@@ -6,14 +6,14 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from src.data.models import Paper, Author
-from src.filtering.computational_analyzer import ComputationalAnalyzer
-from src.filtering.authorship_classifier import AuthorshipClassifier
-from src.filtering.venue_relevance_scorer import VenueRelevanceScorer
-from src.filtering.computational_filter import (
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.filtering.computational_analyzer import ComputationalAnalyzer
+from compute_forecast.filtering.authorship_classifier import AuthorshipClassifier
+from compute_forecast.filtering.venue_relevance_scorer import VenueRelevanceScorer
+from compute_forecast.filtering.computational_filter import (
     ComputationalResearchFilter, FilteringConfig, FilteringResult
 )
-from src.filtering.pipeline_integration import FilteringPipelineIntegration
+from compute_forecast.filtering.pipeline_integration import FilteringPipelineIntegration
 
 
 class TestComputationalAnalyzer:

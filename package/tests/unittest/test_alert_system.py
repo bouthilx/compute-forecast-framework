@@ -9,11 +9,11 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 from collections import deque
 
-from src.monitoring.alert_system import IntelligentAlertSystem
-from src.monitoring.alert_structures import (
+from compute_forecast.monitoring.alert_system import IntelligentAlertSystem
+from compute_forecast.monitoring.alert_structures import (
     AlertConfiguration, AlertRule, Alert, BUILT_IN_ALERT_RULES
 )
-from src.monitoring.dashboard_metrics import (
+from compute_forecast.monitoring.dashboard_metrics import (
     SystemMetrics, CollectionProgressMetrics, APIMetrics, 
 =======
 Unit tests for Issue #12 Intelligent Alerting System.
@@ -26,18 +26,18 @@ import threading
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
-from src.monitoring.alert_system import IntelligentAlertSystem, AlertRuleEvaluator
-from src.monitoring.alert_suppression import AlertSuppressionManager
-from src.monitoring.notification_channels import (
+from compute_forecast.monitoring.alert_system import IntelligentAlertSystem, AlertRuleEvaluator
+from compute_forecast.monitoring.alert_suppression import AlertSuppressionManager
+from compute_forecast.monitoring.notification_channels import (
     NotificationChannelManager, 
     ConsoleNotificationChannel,
     LogNotificationChannel
 )
-from src.monitoring.alert_structures import (
+from compute_forecast.monitoring.alert_structures import (
     Alert, AlertRule, AlertSeverity, AlertStatus, EvaluationContext,
     AlertConfiguration, SuppressionRule, BUILT_IN_ALERT_RULES
 )
-from src.monitoring.dashboard_metrics import (
+from compute_forecast.monitoring.dashboard_metrics import (
     SystemMetrics, CollectionProgressMetrics, APIMetrics,
 >>>>>>> 79c0ec5 (Implement Intelligent Alerting System (Issue #12) - Complete Implementation)
     ProcessingMetrics, SystemResourceMetrics, StateManagementMetrics

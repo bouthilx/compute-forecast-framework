@@ -3,13 +3,13 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from src.extraction import (
+from compute_forecast.extraction import (
     ExtractionTemplateEngine,
     ExtractionTemplate,
     ExtractionField,
     DefaultTemplates
 )
-from src.data.models import Paper
+from compute_forecast.data.models import Paper
 
 
 class TestExtractionIntegration:

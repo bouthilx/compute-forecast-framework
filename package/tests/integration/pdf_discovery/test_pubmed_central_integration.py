@@ -3,9 +3,9 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from src.pdf_discovery.core.framework import PDFDiscoveryFramework
-from src.pdf_discovery.sources.pubmed_central_collector import PubMedCentralCollector
-from src.data.models import Paper
+from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
+from compute_forecast.pdf_discovery.sources.pubmed_central_collector import PubMedCentralCollector
+from compute_forecast.data.models import Paper
 
 
 class TestPubMedCentralIntegration:

@@ -4,8 +4,8 @@ import pytest
 from unittest.mock import Mock, patch
 from pathlib import Path
 
-from src.pdf_parser.core.processor import OptimizedPDFProcessor
-from src.pdf_parser.extractors.pymupdf_extractor import PyMuPDFExtractor
+from compute_forecast.pdf_parser.core.processor import OptimizedPDFProcessor
+from compute_forecast.pdf_parser.extractors.pymupdf_extractor import PyMuPDFExtractor
 
 
 class TestPyMuPDFIntegration:

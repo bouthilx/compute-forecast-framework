@@ -3,7 +3,7 @@
 import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime, timedelta
-from src.testing.error_injection import RecoveryValidator, ErrorType, ErrorScenario, RecoveryMetrics
+from compute_forecast.testing.error_injection import RecoveryValidator, ErrorType, ErrorScenario, RecoveryMetrics
 
 
 class TestRecoveryValidatorFixed:

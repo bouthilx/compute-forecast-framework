@@ -5,10 +5,10 @@ from unittest.mock import Mock, patch
 from datetime import datetime, timedelta
 from typing import Dict, Any
 
-from src.testing.error_injection.recovery_validator import (
+from compute_forecast.testing.error_injection.recovery_validator import (
     RecoveryMetrics, RecoveryValidator
 )
-from src.testing.error_injection.injection_framework import ErrorType, ErrorScenario
+from compute_forecast.testing.error_injection.injection_framework import ErrorType, ErrorScenario
 
 
 class TestRecoveryValidator:

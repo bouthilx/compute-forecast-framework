@@ -3,8 +3,8 @@
 import pytest
 from datetime import datetime
 
-from src.pdf_discovery.sources.aaai_collector import AAICollector
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.aaai_collector import AAICollector
+from compute_forecast.data.models import Paper, Author
 
 
 @pytest.mark.integration

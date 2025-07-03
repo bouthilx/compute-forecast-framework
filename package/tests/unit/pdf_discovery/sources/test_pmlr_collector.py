@@ -6,9 +6,9 @@ from datetime import datetime
 import json
 import os
 
-from src.pdf_discovery.sources.pmlr_collector import PMLRCollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.pmlr_collector import PMLRCollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper, Author
 
 
 class TestPMLRCollector:

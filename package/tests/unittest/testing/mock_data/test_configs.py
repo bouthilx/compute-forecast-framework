@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.testing.mock_data import MockDataConfig, DataQuality
+from compute_forecast.testing.mock_data import MockDataConfig, DataQuality
 
 
 class TestMockDataConfig:

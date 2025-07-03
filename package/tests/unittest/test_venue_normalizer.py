@@ -9,7 +9,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 
-from src.data.processors import (
+from compute_forecast.data.processors import (
     VenueNormalizer, 
     VenueNormalizationResult,
     BatchNormalizationResult,
@@ -17,7 +17,7 @@ from src.data.processors import (
     VenueMappingLoader,
     VenueConfig
 )
-from src.data.models import Paper, Author
+from compute_forecast.data.models import Paper, Author
 
 
 class TestFuzzyVenueMatcher:
@@ -204,7 +204,7 @@ class TestVenueNormalizer:
     
     def _create_mock_load_result(self):
         """Create mock load result for testing"""
-        from src.data.processors.venue_mapping_loader import VenueMappingLoadResult
+        from compute_forecast.data.processors.venue_mapping_loader import VenueMappingLoadResult
         
         return VenueMappingLoadResult(
             venue_mappings={

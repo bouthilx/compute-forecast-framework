@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch, MagicMock
 from pathlib import Path
 from typing import Dict, List
 
-from src.pdf_parser.extractors.pymupdf_extractor import PyMuPDFExtractor
+from compute_forecast.pdf_parser.extractors.pymupdf_extractor import PyMuPDFExtractor
 
 
 class TestPyMuPDFExtractor:
@@ -212,7 +212,7 @@ class TestPyMuPDFExtractor:
     @patch('src.pdf_parser.extractors.pymupdf_extractor.fitz')
     def test_integration_with_base_extractor_interface(self, mock_fitz):
         """Test that PyMuPDFExtractor properly implements BaseExtractor interface."""
-        from src.pdf_parser.core.base_extractor import BaseExtractor
+        from compute_forecast.pdf_parser.core.base_extractor import BaseExtractor
         
         # Verify inheritance
         assert isinstance(self.extractor, BaseExtractor)

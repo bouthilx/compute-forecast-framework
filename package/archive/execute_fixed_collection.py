@@ -11,9 +11,9 @@ import os
 from datetime import datetime
 sys.path.insert(0, 'src')
 
-from src.data.collectors.collection_executor import CollectionExecutor
-from src.data.collectors.domain_collector import DomainCollector
-from src.core.logging import setup_logging
+from compute_forecast.data.collectors.collection_executor import CollectionExecutor
+from compute_forecast.data.collectors.domain_collector import DomainCollector
+from compute_forecast.core.logging import setup_logging
 
 def save_progress(papers, domain_stats, filename="incremental_papers.json"):
     """Save progress incrementally"""

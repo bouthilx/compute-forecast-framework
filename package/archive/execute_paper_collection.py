@@ -10,9 +10,9 @@ import os
 from datetime import datetime
 sys.path.insert(0, 'src')
 
-from src.data.collectors.collection_executor import CollectionExecutor
-from src.data.collectors.domain_collector import DomainCollector
-from src.core.logging import setup_logging
+from compute_forecast.data.collectors.collection_executor import CollectionExecutor
+from compute_forecast.data.collectors.domain_collector import DomainCollector
+from compute_forecast.core.logging import setup_logging
 
 def update_collection_status(status_data):
     """Update collection progress status"""

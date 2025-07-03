@@ -4,10 +4,10 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 from typing import Any
 
-from src.testing.error_injection.component_handlers.collector_errors import CollectorErrorHandler
-from src.testing.error_injection.component_handlers.analyzer_errors import AnalyzerErrorHandler
-from src.testing.error_injection.component_handlers.reporter_errors import ReporterErrorHandler
-from src.testing.error_injection.injection_framework import ErrorType
+from compute_forecast.testing.error_injection.component_handlers.collector_errors import CollectorErrorHandler
+from compute_forecast.testing.error_injection.component_handlers.analyzer_errors import AnalyzerErrorHandler
+from compute_forecast.testing.error_injection.component_handlers.reporter_errors import ReporterErrorHandler
+from compute_forecast.testing.error_injection.injection_framework import ErrorType
 
 
 class TestCollectorErrorHandler:

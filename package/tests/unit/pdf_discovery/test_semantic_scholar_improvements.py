@@ -4,14 +4,14 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from src.pdf_discovery.sources.semantic_scholar_collector import (
+from compute_forecast.pdf_discovery.sources.semantic_scholar_collector import (
     SemanticScholarPDFCollector,
     SEMANTIC_SCHOLAR_MAX_BATCH_SIZE,
     DEFAULT_MAX_RETRIES,
     CONFIDENCE_SCORE_WITH_IDENTIFIER,
     CONFIDENCE_SCORE_TITLE_SEARCH
 )
-from src.data.models import Paper, Author
+from compute_forecast.data.models import Paper, Author
 
 
 class TestSemanticScholarImprovements:

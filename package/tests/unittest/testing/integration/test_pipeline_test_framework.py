@@ -9,13 +9,13 @@ from dataclasses import dataclass
 from typing import Dict, List, Any, Optional
 
 # Import components to test (will fail initially)
-from src.testing.integration.pipeline_test_framework import (
+from compute_forecast.testing.integration.pipeline_test_framework import (
     PipelinePhase,
     PhaseMetrics,
     PipelineConfig,
     EndToEndTestFramework
 )
-from src.data.models import Paper
+from compute_forecast.data.models import Paper
 
 
 class TestPipelinePhase:

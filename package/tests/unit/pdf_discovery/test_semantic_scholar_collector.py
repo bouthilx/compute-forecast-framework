@@ -6,9 +6,9 @@ from datetime import datetime
 from typing import Dict, List
 import time
 
-from src.pdf_discovery.core.models import PDFRecord
-from src.pdf_discovery.sources.semantic_scholar_collector import SemanticScholarPDFCollector
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pdf_discovery.sources.semantic_scholar_collector import SemanticScholarPDFCollector
+from compute_forecast.data.models import Paper, Author
 
 
 class TestSemanticScholarPDFCollector:

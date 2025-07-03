@@ -4,9 +4,9 @@ import pytest
 from datetime import datetime
 from unittest.mock import Mock, patch, MagicMock
 
-from src.pdf_discovery.sources.acl_anthology_collector import ACLAnthologyCollector
-from src.pdf_discovery.core.models import PDFRecord
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.acl_anthology_collector import ACLAnthologyCollector
+from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.data.models import Paper, Author
 
 
 class TestACLAnthologyCollector:

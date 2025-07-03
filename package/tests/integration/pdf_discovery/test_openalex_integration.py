@@ -5,9 +5,9 @@ import os
 from datetime import datetime
 from unittest.mock import patch, Mock
 
-from src.pdf_discovery.sources.openalex_collector import OpenAlexPDFCollector
-from src.pdf_discovery import PDFDiscoveryFramework
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.openalex_collector import OpenAlexPDFCollector
+from compute_forecast.pdf_discovery import PDFDiscoveryFramework
+from compute_forecast.data.models import Paper, Author
 
 
 class TestOpenAlexIntegration:

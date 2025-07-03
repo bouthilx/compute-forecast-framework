@@ -3,7 +3,7 @@
 import pytest
 from datetime import datetime
 
-from src.quality.contracts.base_contracts import (
+from compute_forecast.quality.contracts.base_contracts import (
     ContractViolationType,
     ContractViolation,
     ContractValidationResult,

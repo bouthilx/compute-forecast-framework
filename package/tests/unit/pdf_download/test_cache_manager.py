@@ -4,7 +4,7 @@ import tempfile
 from pathlib import Path
 import pytest
 
-from src.pdf_download.cache_manager import PDFCacheManager
+from compute_forecast.pdf_download.cache_manager import PDFCacheManager
 
 
 class TestPDFCacheManager:

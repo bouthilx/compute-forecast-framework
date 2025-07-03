@@ -3,8 +3,8 @@
 import pytest
 from unittest.mock import patch, Mock
 
-from src.pdf_discovery.sources.nature_collector import NaturePDFCollector
-from src.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.nature_collector import NaturePDFCollector
+from compute_forecast.data.models import Paper, Author
 
 
 @pytest.mark.integration
