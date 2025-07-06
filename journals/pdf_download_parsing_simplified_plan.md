@@ -21,25 +21,25 @@ class SimplePDFDownloader:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (compatible; Academic PDF Collector)'
         })
-    
+
     def download_pdf(self, url: str, paper_id: str) -> Path:
         """Simple, reliable PDF download with caching"""
         # Check cache first
         pdf_path = self.cache_dir / f"{paper_id}.pdf"
         if pdf_path.exists():
             return pdf_path
-        
+
         # Download with retries
         for attempt in range(3):
             try:
                 response = self.session.get(url, timeout=30)
                 response.raise_for_status()
-                
+
                 # Verify it's actually a PDF
                 if 'application/pdf' in response.headers.get('content-type', ''):
                     pdf_path.write_bytes(response.content)
                     return pdf_path
-                    
+
             except Exception as e:
                 if attempt == 2:
                     raise
@@ -139,18 +139,18 @@ class PDFProcessor:
     def __init__(self):
         self.downloader = SimplePDFDownloader()
         self.parser = PyMuPDFParser()  # Already proven to work
-        
+
     def process_paper(self, paper: Paper, pdf_url: str) -> ExtractedContent:
         # Download
         pdf_path = self.downloader.download_pdf(pdf_url, paper.paper_id)
-        
+
         # Parse
         text = self.parser.extract_text(pdf_path)
-        
+
         # If text is too short/empty, trigger OCR
         if len(text) < 1000:
             text = self.ocr_fallback(pdf_path)
-            
+
         return ExtractedContent(text=text, source="pdf")
 ```
 

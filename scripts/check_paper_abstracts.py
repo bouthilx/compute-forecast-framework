@@ -3,7 +3,10 @@
 
 import json
 
-with open("/home/bouthilx/projects/paperext/data/paperoni-2019-01-01-2025-01-01-PR_2025-05-29.json", 'r') as f:
+with open(
+    "/home/bouthilx/projects/paperext/data/paperoni-2019-01-01-2025-01-01-PR_2025-05-29.json",
+    "r",
+) as f:
     papers = json.load(f)
 
 # Count papers with/without abstracts

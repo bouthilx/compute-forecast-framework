@@ -9,8 +9,8 @@ from .venue_relevance_scorer import VenueRelevanceScorer
 from .computational_filter import ComputationalResearchFilter
 
 __all__ = [
-    'ComputationalAnalyzer',
-    'AuthorshipClassifier',
-    'VenueRelevanceScorer',
-    'ComputationalResearchFilter'
+    "ComputationalAnalyzer",
+    "AuthorshipClassifier",
+    "VenueRelevanceScorer",
+    "ComputationalResearchFilter",
 ]

@@ -8,11 +8,11 @@
 
 ## Key Deliverables for Worker 7
 
-### 1. **Collection Infrastructure** ✅ 
+### 1. **Collection Infrastructure** ✅
 - **Complete collection system** in `src/data/collectors/`
 - **Multi-API integration** (Semantic Scholar + OpenAlex working)
 - **Domain-specific collection strategies**
-- **Paper enrichment pipeline** 
+- **Paper enrichment pipeline**
 - **Validation framework**
 
 ### 2. **Proof of Concept Dataset** ✅
@@ -54,7 +54,7 @@
 ### **What You Receive**
 1. **Working collection system** ready for immediate use
 2. **8 papers** as proof-of-concept dataset
-3. **Complete validation reports** 
+3. **Complete validation reports**
 4. **Production-ready infrastructure**
 
 ### **What You Can Do Immediately**
@@ -75,12 +75,12 @@
 
 ### **Working APIs**
 - **Semantic Scholar**: `https://api.semanticscholar.org/graph/v1/paper/search`
-- **OpenAlex**: `https://api.openalex.org/works` 
+- **OpenAlex**: `https://api.openalex.org/works`
 - **Rate Limiting**: Required for both APIs
 
 ### **Collection Domains**
 - Computer Vision & Medical Imaging
-- Natural Language Processing  
+- Natural Language Processing
 - Reinforcement Learning & Robotics
 - Graph Learning & Network Analysis
 - Scientific Computing & Applications
@@ -100,7 +100,7 @@ data/
 └── collection_validation_report.json   # Complete validation
 
 src/data/collectors/
-├── collection_executor.py              # Main collection coordinator  
+├── collection_executor.py              # Main collection coordinator
 ├── domain_collector.py                 # Domain-specific collection
 └── citation_collector.py               # API integrations
 

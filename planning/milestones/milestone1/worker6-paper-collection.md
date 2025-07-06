@@ -26,60 +26,60 @@ class CollectionExecutor:
         self.venue_analysis = None
         self.computational_analyzer = None
         self.rate_limiter = None
-        
+
     def setup_collection_environment(self):
         """Initialize all required systems from other workers"""
-        
+
         # Load citation infrastructure (Worker 1)
         try:
             from ...data.collectors.citation_collector import CitationCollector
             from ...data.sources.google_scholar import GoogleScholarSource
             from ...data.sources.semantic_scholar import SemanticScholarSource
-            
+
             self.citation_apis = setup_citation_apis()
             self.rate_limiter = RateLimiter()
             self.paper_collector = PaperCollector()
-            
-            # Test API connectivity  
+
+            # Test API connectivity
             api_status = self.test_api_connectivity()
             working_apis = [api for api, status in api_status.items() if status]
             if len(working_apis) < 2:  # Require at least 2 working APIs
                 raise Exception(f"Insufficient working APIs: {api_status}")
             else:
                 print(f"Proceeding with {len(working_apis)} working APIs: {working_apis}")
-                
+
         except ImportError as e:
             raise Exception(f"Worker 1 outputs not available: {e}")
-        
+
         # Load venue analysis (Worker 3)
         try:
             from ...analysis.venues.venue_analyzer import analyze_mila_venues
             from ...analysis.venues.venue_database import VenueClassifier
             from ...analysis.venues.collection_strategy import generate_collection_strategy
-            
+
             self.venue_analysis = analyze_mila_venues()
             self.venue_classifier = VenueClassifier()
             self.collection_strategy = generate_collection_strategy()
-            
+
         except ImportError as e:
             raise Exception(f"Worker 3 outputs not available: {e}")
-        
+
         # Load computational analyzer (Worker 4)
         try:
             from ...analysis.computational.analyzer import ComputationalAnalyzer
             from ...analysis.computational.filter import ComputationalFilter
-            
+
             self.computational_analyzer = ComputationalAnalyzer()
             self.computational_filter = ComputationalFilter()
-            
+
         except ImportError as e:
             raise Exception(f"Worker 4 outputs not available: {e}")
-        
+
         # Load current domain analysis results
         self.domain_analysis = self.load_domain_results()
-        
+
         return True
-    
+
     def load_domain_results(self):
         """Load finalized domain analysis from ongoing work"""
         # This reads the latest domain analysis results
@@ -106,7 +106,7 @@ class CollectionExecutor:
   },
   "api_status": {
     "google_scholar": "ok",
-    "semantic_scholar": "ok", 
+    "semantic_scholar": "ok",
     "openalex": "ok"
   },
   "collection_targets": {
@@ -124,51 +124,51 @@ class CollectionExecutor:
 # File: src/data/collectors/domain_collector.py
 def execute_domain_collection(self, target_per_domain_year=8):
     """Execute collection for each domain and year combination"""
-    
+
     collection_results = {
         'raw_papers': [],
         'collection_stats': defaultdict(lambda: defaultdict(int)),
         'failed_searches': [],
         'source_distribution': defaultdict(int)
     }
-    
+
     domains = self.get_domains_from_analysis()
-    
+
     for domain_name in domains:
         print(f"\n=== Collecting papers for {domain_name} ===")
-        
+
         for year in range(2019, 2025):
             print(f"Processing {domain_name} - {year}")
-            
+
             year_papers = self.collect_domain_year_papers(
                 domain_name, year, target_per_domain_year
             )
-            
+
             # Enrich papers with computational analysis
             enriched_papers = self.enrich_papers_with_analysis(
                 year_papers, domain_name, year
             )
-            
+
             collection_results['raw_papers'].extend(enriched_papers)
             collection_results['collection_stats'][domain_name][year] = len(enriched_papers)
-            
+
             # Track source distribution
             for paper in enriched_papers:
                 source = paper.get('source', 'unknown')
                 collection_results['source_distribution'][source] += 1
-            
+
             print(f"  Collected {len(enriched_papers)} papers for {domain_name} {year}")
-            
+
             # Rate limiting between domain/year combinations
             time.sleep(2)
-    
+
     return collection_results
 
 def collect_domain_year_papers(self, domain_name, year, target_count):
     """Collect papers for specific domain and year"""
-    
+
     collected_papers = []
-    
+
     # Method 1: Domain-specific venues
     domain_venues = self.collection_strategy[domain_name]['primary_venues']
     for venue in domain_venues[:3]:  # Top 3 venues per domain
@@ -178,7 +178,7 @@ def collect_domain_year_papers(self, domain_name, year, target_count):
             )
             collected_papers.extend(venue_papers)
             self.rate_limiter.wait('venue_search')
-            
+
         except Exception as e:
             self.collection_results['failed_searches'].append({
                 'venue': venue,
@@ -186,11 +186,11 @@ def collect_domain_year_papers(self, domain_name, year, target_count):
                 'domain': domain_name,
                 'error': str(e)
             })
-    
+
     # Method 2: Major ML venues with domain keywords
     major_venues = ['NeurIPS', 'ICML', 'ICLR']
     domain_keywords = self.get_domain_keywords(domain_name)
-    
+
     for venue in major_venues:
         try:
             keyword_papers = self.paper_collector.collect_from_venue_year_with_keywords(
@@ -198,7 +198,7 @@ def collect_domain_year_papers(self, domain_name, year, target_count):
             )
             collected_papers.extend(keyword_papers)
             self.rate_limiter.wait('keyword_search')
-            
+
         except Exception as e:
             self.collection_results['failed_searches'].append({
                 'venue': venue,
@@ -207,7 +207,7 @@ def collect_domain_year_papers(self, domain_name, year, target_count):
                 'method': 'keyword_search',
                 'error': str(e)
             })
-    
+
     # Method 3: Direct keyword search (backup)
     if len(collected_papers) < target_count:
         try:
@@ -215,30 +215,30 @@ def collect_domain_year_papers(self, domain_name, year, target_count):
                 domain_keywords, year, domain_name
             )
             collected_papers.extend(keyword_papers)
-            
+
         except Exception as e:
             print(f"    Keyword search failed for {domain_name} {year}: {e}")
-    
+
     # Remove duplicates and sort by citations
     unique_papers = self.deduplicate_papers(collected_papers)
     sorted_papers = sorted(unique_papers, key=lambda x: x.get('citations', 0), reverse=True)
-    
+
     # Select top papers for this domain/year
     selected_papers = sorted_papers[:target_count]
-    
+
     return selected_papers
 
 def enrich_papers_with_analysis(self, papers, domain_name, year):
     """Add computational analysis and metadata to papers"""
-    
+
     enriched_papers = []
-    
+
     for paper in papers:
         # Add collection metadata
         paper['mila_domain'] = domain_name
         paper['collection_year'] = year
         paper['collection_timestamp'] = datetime.now().isoformat()
-        
+
         # Add computational analysis
         try:
             computational_analysis = self.computational_analyzer.analyze_paper_content(paper)
@@ -248,7 +248,7 @@ def enrich_papers_with_analysis(self, papers, domain_name, year):
                 'error': str(e),
                 'computational_richness': 0.0
             }
-        
+
         # Add venue scoring
         try:
             venue = paper.get('venue', '')
@@ -256,9 +256,9 @@ def enrich_papers_with_analysis(self, papers, domain_name, year):
             paper['venue_score'] = venue_score
         except Exception as e:
             paper['venue_score'] = 0.5  # Default score
-        
+
         enriched_papers.append(paper)
-    
+
     return enriched_papers
 ```
 
@@ -269,28 +269,28 @@ def enrich_papers_with_analysis(self, papers, domain_name, year):
 # File: src/data/collectors/collection_validator.py
 def validate_collection_results(self, collection_results):
     """Validate collection completeness and quality"""
-    
+
     validation = {
         'collection_completeness': {},
         'quality_indicators': {},
         'coverage_gaps': [],
         'recommendations': []
     }
-    
+
     # Check domain/year coverage
     expected_combinations = 7 * 6  # 7 domains × 6 years = 42 combinations
     actual_combinations = sum(
         1 for domain_stats in collection_results['collection_stats'].values()
         for year_count in domain_stats.values() if year_count > 0
     )
-    
+
     validation['collection_completeness'] = {
         'expected_combinations': expected_combinations,
         'actual_combinations': actual_combinations,
         'coverage_percentage': actual_combinations / expected_combinations,
         'total_papers': len(collection_results['raw_papers'])
     }
-    
+
     # Identify coverage gaps
     for domain, year_stats in collection_results['collection_stats'].items():
         for year in range(2019, 2025):
@@ -300,37 +300,37 @@ def validate_collection_results(self, collection_results):
                     'year': year,
                     'papers_found': 0
                 })
-    
+
     # Quality indicators
     papers_with_citations = len([
-        p for p in collection_results['raw_papers'] 
+        p for p in collection_results['raw_papers']
         if p.get('citations', 0) > 0
     ])
-    
+
     papers_with_computational_analysis = len([
         p for p in collection_results['raw_papers']
         if 'computational_analysis' in p
     ])
-    
+
     validation['quality_indicators'] = {
         'papers_with_citations_pct': papers_with_citations / len(collection_results['raw_papers']),
         'papers_with_computational_analysis_pct': papers_with_computational_analysis / len(collection_results['raw_papers']),
         'avg_citations_per_paper': sum(p.get('citations', 0) for p in collection_results['raw_papers']) / len(collection_results['raw_papers']),
         'source_diversity': len(collection_results['source_distribution'])
     }
-    
+
     # Generate recommendations
     if validation['collection_completeness']['coverage_percentage'] < 0.8:
         validation['recommendations'].append('Significant coverage gaps - consider additional collection methods')
-    
+
     if validation['quality_indicators']['papers_with_citations_pct'] < 0.9:
         validation['recommendations'].append('High number of papers without citation data - verify API sources')
-    
+
     return validation
 
 def generate_collection_statistics(self, collection_results, validation):
     """Generate comprehensive collection statistics"""
-    
+
     stats = {
         'collection_summary': {
             'total_papers_collected': len(collection_results['raw_papers']),
@@ -347,7 +347,7 @@ def generate_collection_statistics(self, collection_results, validation):
         'failed_searches': len(collection_results['failed_searches']),
         'quality_metrics': validation['quality_indicators']
     }
-    
+
     return stats
 ```
 
@@ -355,7 +355,7 @@ def generate_collection_statistics(self, collection_results, validation):
 
 ## Output Files
 - `data/raw_collected_papers.json` - All collected papers with metadata
-- `data/collection_statistics.json` - Detailed collection metrics  
+- `data/collection_statistics.json` - Detailed collection metrics
 - `data/failed_searches.json` - Failed search attempts for debugging
 - `status/worker6-*.json` - Progress documentation files
 - **PROOF OF CONCEPT**: `data/simple_collected_papers.json` - 8 papers collected from working APIs
@@ -363,7 +363,7 @@ def generate_collection_statistics(self, collection_results, validation):
 
 ## Success Criteria
 - [x] Collection infrastructure implemented and tested
-- [x] Multi-API integration working (Semantic Scholar + OpenAlex)  
+- [x] Multi-API integration working (Semantic Scholar + OpenAlex)
 - [x] Domain-specific collection strategies developed
 - [x] Paper enrichment pipeline operational
 - [x] Collection validation framework created
@@ -376,7 +376,7 @@ def generate_collection_statistics(self, collection_results, validation):
 - [ ] **REQUIRED**: Generate production dataset for academic/industry classification
 
 ## Coordination Points
-- **Critical Dependencies**: 
+- **Critical Dependencies**:
   - Worker 1: Citation APIs must be functional
   - Worker 3: Venue analysis and collection strategy required
   - Worker 4: Computational analyzer for paper enrichment
@@ -386,7 +386,7 @@ def generate_collection_statistics(self, collection_results, validation):
 
 ## Risk Mitigation
 - **API failures**: Multiple backup sources per paper, accept partial API availability
-- **Google Scholar IP blocking**: Focus collection on Semantic Scholar + OpenAlex  
+- **Google Scholar IP blocking**: Focus collection on Semantic Scholar + OpenAlex
 - **Rate limiting**: Conservative delays with exponential backoff
 - **Collection gaps**: Multiple collection methods per domain/year
 - **Data quality**: Validation and enrichment at collection time

@@ -3,7 +3,7 @@
   "status": "completed",
   "features_implemented": [
     "affiliation_normalization",
-    "primary_institution_extraction", 
+    "primary_institution_extraction",
     "keyword_based_classification",
     "confidence_scoring"
   ],

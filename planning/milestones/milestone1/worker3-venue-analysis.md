@@ -21,22 +21,22 @@ Map academic venues to research domains and build venue importance scoring to en
 # File: src/analysis/venues/venue_analyzer.py
 def analyze_mila_venues():
     """Extract and categorize venues from current Mila publication data"""
-    
+
     # Read current domain analysis results (READ-ONLY)
     domain_analysis = load_current_domain_results()
-    
+
     # Extract venue patterns by domain
     venue_by_domain = {}
     for domain_id, domain_info in domain_analysis['domains'].items():
         domain_name = domain_analysis['domain_names'][domain_id]
         venues = domain_info['top_venues']
-        
+
         venue_by_domain[domain_name] = {
             'primary_venues': list(venues.keys())[:3],
             'all_venues': venues,
             'paper_count': domain_info['paper_count']
         }
-    
+
     return venue_by_domain
 ```
 
@@ -89,10 +89,10 @@ VENUE_DATABASE = {
 class VenueClassifier:
     def classify_venue_domain(self, venue_name):
         """Determine primary research domain for a venue"""
-        
+
     def get_venue_computational_score(self, venue_name):
         """Score venue by computational research focus (0-1)"""
-        
+
     def rank_venues_by_importance(self, domain):
         """Rank venues by paper collection priority"""
 ```
@@ -111,34 +111,34 @@ class VenueScorer:
             'yearly_consistency': 0.15,    # Consistent publication venue
             'domain_specificity': 0.1      # Domain relevance
         }
-    
+
     def calculate_venue_score(self, venue, domain, mila_data):
         """Comprehensive venue scoring for paper collection priority"""
-        
+
         scores = {}
-        
+
         # Mila publication frequency
         mila_papers = mila_data.get(venue, {})
         scores['mila_paper_count'] = min(len(mila_papers) / 10, 1.0)
-        
+
         # Computational focus (manual scoring + keyword analysis)
         scores['computational_focus'] = self.assess_computational_focus(venue)
-        
+
         # Citation impact (h5-index, venue rankings)
         scores['citation_impact'] = self.get_venue_impact_score(venue)
-        
+
         # Yearly consistency (appears across multiple years)
         scores['yearly_consistency'] = self.assess_consistency(mila_papers)
-        
-        # Domain specificity 
+
+        # Domain specificity
         scores['domain_specificity'] = self.assess_domain_match(venue, domain)
-        
+
         # Weighted final score
         final_score = sum(
-            scores[factor] * weight 
+            scores[factor] * weight
             for factor, weight in self.scoring_factors.items()
         )
-        
+
         return {
             'final_score': final_score,
             'component_scores': scores,
@@ -153,12 +153,12 @@ class VenueScorer:
 # File: src/analysis/venues/collection_strategy.py
 def generate_collection_strategy():
     """Create optimized venue selection for each domain"""
-    
+
     strategy = {}
-    
+
     for domain in RESEARCH_DOMAINS:
         venue_scores = rank_venues_for_domain(domain)
-        
+
         # Select top venues ensuring diversity
         strategy[domain] = {
             'primary_venues': venue_scores[:3],      # Top 3 for focused collection
@@ -166,11 +166,11 @@ def generate_collection_strategy():
             'general_ml_venues': ['NeurIPS', 'ICML', 'ICLR'],  # Always include
             'papers_per_venue': 8,                   # Target per venue/year
             'citation_threshold_by_year': {
-                2024: 10, 2023: 20, 2022: 30, 
+                2024: 10, 2023: 20, 2022: 30,
                 2021: 50, 2020: 75, 2019: 100
             }
         }
-    
+
     return strategy
 ```
 

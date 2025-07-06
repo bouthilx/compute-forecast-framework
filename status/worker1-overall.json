@@ -9,7 +9,7 @@
   "ready_for_handoff": true,
   "outputs_available": [
     "src/data/sources/google_scholar.py",
-    "src/data/sources/semantic_scholar.py", 
+    "src/data/sources/semantic_scholar.py",
     "src/data/sources/openalex.py",
     "src/data/collectors/citation_collector.py"
   ],
@@ -22,7 +22,7 @@
   "dependencies_added": ["scholarly>=1.7.11", "requests>=2.32.4", "pyyaml>=6.0.2"],
   "implementation_complete": {
     "search_papers": "✓ Implemented for all 3 sources",
-    "get_paper_details": "✓ Implemented for all 3 sources", 
+    "get_paper_details": "✓ Implemented for all 3 sources",
     "test_connectivity": "✓ Implemented for all 3 sources",
     "error_handling": "✓ Comprehensive validation and logging",
     "rate_limiting": "✓ Configured per source",

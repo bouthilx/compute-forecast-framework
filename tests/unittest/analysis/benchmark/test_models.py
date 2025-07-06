@@ -1,9 +1,5 @@
 """Tests for benchmark extraction data models."""
 
-import pytest
-from dataclasses import asdict
-from typing import List
-
 # Import future models
 from compute_forecast.analysis.benchmark.models import (
     BenchmarkDomain,
@@ -58,7 +54,10 @@ class TestBenchmarkModels:
         assert benchmark_paper.is_sota is True
         assert len(benchmark_paper.benchmark_datasets) == 2
         assert benchmark_paper.extraction_confidence == 0.85
-        assert benchmark_paper.computational_requirements.resource_metrics["gpu_hours"] == 100.0
+        assert (
+            benchmark_paper.computational_requirements.resource_metrics["gpu_hours"]
+            == 100.0
+        )
 
     def test_extraction_batch_creation(self):
         """Test creating an ExtractionBatch instance."""

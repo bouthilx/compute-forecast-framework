@@ -12,7 +12,7 @@ computational_indicators:
     - "parallel processing"
     - "NVIDIA"
     - "tensor processing unit"
-  
+
   training_resources:
     - "training time"
     - "compute hours"
@@ -24,7 +24,7 @@ computational_indicators:
     - "compute budget"
     - "resource consumption"
     - "energy consumption"
-  
+
   model_scale:
     - "parameters"
     - "billion parameters"
@@ -36,7 +36,7 @@ computational_indicators:
     - "deep network"
     - "architecture"
     - "layers"
-  
+
   dataset_scale:
     - "dataset size"
     - "training data"
@@ -48,7 +48,7 @@ computational_indicators:
     - "mini-batch"
     - "data loading"
     - "storage requirements"
-  
+
   optimization_compute:
     - "hyperparameter tuning"
     - "grid search"
@@ -59,7 +59,7 @@ computational_indicators:
     - "cross-validation"
     - "ablation study"
     - "experimental validation"
-  
+
   infrastructure:
     - "cluster"
     - "distributed"

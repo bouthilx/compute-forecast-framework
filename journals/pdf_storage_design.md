@@ -1,7 +1,7 @@
 # PDF Storage Design - Google Drive Integration
 
-**Date**: 2025-07-02  
-**Issue**: PDF storage without repository bloat  
+**Date**: 2025-07-02
+**Issue**: PDF storage without repository bloat
 **Time**: ~3 hours
 
 ## Analysis Request

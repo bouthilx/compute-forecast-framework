@@ -4,7 +4,7 @@
   "features_implemented": [
     "known_organization_testing",
     "edge_case_detection",
-    "confidence_score_analysis", 
+    "confidence_score_analysis",
     "validation_scoring",
     "human_readable_reports"
   ],

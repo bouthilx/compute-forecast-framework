@@ -4,12 +4,12 @@ from .paper_selector import (
     MilaPaperSelector,
     PaperSelectionCriteria,
     DomainClassifier,
-    ComputationalContentFilter
+    ComputationalContentFilter,
 )
 
 __all__ = [
     "MilaPaperSelector",
     "PaperSelectionCriteria",
-    "DomainClassifier", 
-    "ComputationalContentFilter"
+    "DomainClassifier",
+    "ComputationalContentFilter",
 ]

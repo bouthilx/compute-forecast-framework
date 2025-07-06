@@ -13,7 +13,7 @@
 
 ### Papers by Year
 - 2019: 119 papers
-- 2020: 213 papers  
+- 2020: 213 papers
 - 2021: 279 papers
 - 2022: 427 papers
 - 2023: 714 papers

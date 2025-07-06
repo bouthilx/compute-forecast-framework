@@ -12,11 +12,11 @@ from .checkpoint_manager import CheckpointManager
 from .recovery_system import InterruptionRecoverySystem
 
 __all__ = [
-    'VenueCollectionOrchestrator',
-    'ComponentValidator', 
-    'SystemInitializer',
-    'WorkflowCoordinator',
-    'StatePersistenceManager', 
-    'CheckpointManager',
-    'InterruptionRecoverySystem'
+    "VenueCollectionOrchestrator",
+    "ComponentValidator",
+    "SystemInitializer",
+    "WorkflowCoordinator",
+    "StatePersistenceManager",
+    "CheckpointManager",
+    "InterruptionRecoverySystem",
 ]

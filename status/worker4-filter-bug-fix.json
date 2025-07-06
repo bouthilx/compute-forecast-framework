@@ -18,7 +18,7 @@
     "filter_test_suite": "22/22 tests passed (100%)",
     "categories_tested": [
       "paper_filtering",
-      "priority_scoring", 
+      "priority_scoring",
       "report_generation",
       "top_papers_selection",
       "error_handling"

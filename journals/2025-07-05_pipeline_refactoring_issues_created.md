@@ -1,7 +1,7 @@
 # Pipeline Refactoring Issues Created
 
-**Date**: 2025-07-05  
-**Title**: Created GitHub Milestone and Issues for Pipeline Refactoring  
+**Date**: 2025-07-05
+**Title**: Created GitHub Milestone and Issues for Pipeline Refactoring
 **Purpose**: Document the creation of milestone and issues for the pipeline refactoring project
 
 ## Summary
@@ -10,10 +10,10 @@ Successfully created a milestone and 5 sequential issues on GitHub for the pipel
 
 ## Milestone Created
 
-**Title**: Pipeline Refactoring: Paper vs PDF Collection  
-**Number**: 20  
-**URL**: https://github.com/bouthilx/compute-forecast/milestone/20  
-**Due Date**: January 31, 2025  
+**Title**: Pipeline Refactoring: Paper vs PDF Collection
+**Number**: 20
+**URL**: https://github.com/bouthilx/compute-forecast/milestone/20
+**Due Date**: January 31, 2025
 **Description**: Major refactoring to clarify the distinction between paper metadata collection and PDF acquisition by creating clear pipeline stages and removing the ambiguous shared directory.
 
 ## Issues Created

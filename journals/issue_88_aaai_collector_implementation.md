@@ -1,9 +1,9 @@
 # AAAI Proceedings Scraper Implementation
 
-**Date**: July 2, 2025  
-**Issue**: #88  
-**Time Estimate**: M (4-6h)  
-**Actual Time**: ~2h  
+**Date**: July 2, 2025
+**Issue**: #88
+**Time Estimate**: M (4-6h)
+**Actual Time**: ~2h
 
 ## Analysis Summary
 

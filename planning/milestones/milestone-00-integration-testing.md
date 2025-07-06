@@ -48,13 +48,13 @@ framework_components:
     - publication_data (DataFrame): normal, incomplete_authors, temporal_gaps
     - infrastructure_timeline (DataFrame): normal, rapid_changes, maintenance_periods
     - external_institution_data (DataFrame): normal, quality_variations, incomplete_coverage
-  
+
   validation_engines:
     - schema_validator: 100% compliance required
     - data_quality_scorer: 90% minimum threshold
     - temporal_consistency_checker: 100% alignment required
     - interface_contract_enforcer: automatic validation
-  
+
   test_suites:
     - unit_tests: individual component testing
     - integration_tests: cross-component validation

@@ -95,12 +95,9 @@ class OpenReviewPDFCollector(BasePDFCollector):
 
         # Search for papers in the venue
         submissions = self._make_api_request(
-            lambda: self.client.get_all_notes(
-                invitation=invitation,
-                details="original"
-            )
+            lambda: self.client.get_all_notes(invitation=invitation, details="original")
         )
-        
+
         # Apply manual limit to avoid memory issues
         if len(submissions) > 1000:
             submissions = submissions[:1000]
@@ -156,11 +153,11 @@ class OpenReviewPDFCollector(BasePDFCollector):
                 lambda: self.client.get_all_notes(
                     invitation=invitation,
                     content={"authors": first_author},
-                    details="original"
+                    details="original",
                 )
             )
-            
-            # Apply manual limit to avoid memory issues  
+
+            # Apply manual limit to avoid memory issues
             if len(submissions) > 100:
                 submissions = submissions[:100]
 

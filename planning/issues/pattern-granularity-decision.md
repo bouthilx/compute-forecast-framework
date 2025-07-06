@@ -80,7 +80,7 @@ outputs:
 - **Constraint integration**: Weight clustering features by constraint-adjusted importance
 
 ## Quality Assessment Framework
-- **Statistical validity**: 
+- **Statistical validity**:
   - Minimum samples per cluster (config: min_cluster_size = 20)
   - Silhouette score > 0.3
   - Within-cluster sum of squares minimization

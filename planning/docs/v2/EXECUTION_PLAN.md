@@ -24,7 +24,7 @@
 - **External validation**: Compare with other institutions' paper-based analysis
 - **Uncertainty quantification**: Confidence intervals for projections
 
-### Day 6-7: Report Generation  
+### Day 6-7: Report Generation
 - **Data visualization**: Computational requirements by domain and time
 - **Report writing**: 3-4 page preliminary report focused on paper-based projections
 - **Resource justification**: Demonstrate research potential with adequate compute

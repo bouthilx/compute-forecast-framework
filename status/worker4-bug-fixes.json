@@ -23,7 +23,7 @@
   ],
   "validation_results": {
     "basic_patterns": "10/10 passed",
-    "edge_cases": "4/4 passed", 
+    "edge_cases": "4/4 passed",
     "normalization": "4/4 passed",
     "error_handling": "5/5 passed",
     "real_world_examples": "3/3 passed",

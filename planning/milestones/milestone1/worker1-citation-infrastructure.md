@@ -29,43 +29,43 @@ from ...core.logging import setup_logging
 
 class GoogleScholarSource(BaseCitationSource):
     """Google Scholar citation data source implementation"""
-    
+
     def __init__(self):
         config_manager = ConfigManager()
         config = config_manager.get_citation_config('google_scholar')
         super().__init__(config.__dict__)
         self.logger = setup_logging()
-        
+
     def search_papers(self, query: CollectionQuery) -> CollectionResult:
         """Search Google Scholar for papers matching query"""
-        
+
         papers = []
         errors = []
-        
+
         try:
             # Construct search query
             search_query = self._build_search_query(query)
-            
+
             search_results = scholarly.search_pubs(search_query)
-            
+
             for i, result in enumerate(search_results):
                 if i >= query.max_results:
                     break
-                
+
                 try:
                     paper = self._parse_scholar_result(result, query)
                     if paper.citations >= query.min_citations:
                         papers.append(paper)
-                        
+
                 except Exception as e:
                     errors.append(f"Failed to parse result {i}: {e}")
-                
+
                 # Rate limiting
                 time.sleep(self.rate_limit)
-        
+
         except Exception as e:
             errors.append(f"Search failed: {e}")
-        
+
         return CollectionResult(
             papers=papers,
             query=query,
@@ -75,28 +75,28 @@ class GoogleScholarSource(BaseCitationSource):
             failed_count=len(errors),
             errors=errors
         )
-    
+
     def _build_search_query(self, query: CollectionQuery) -> str:
         """Build Google Scholar search query string"""
         parts = []
-        
+
         if query.venue:
             if query.venue in ['NeurIPS', 'ICML', 'ICLR']:
                 parts.append(f'source:"{query.venue}"')
             else:
                 parts.append(f'venue:"{query.venue}"')
-        
+
         if query.keywords:
             keyword_str = ' OR '.join(query.keywords[:3])  # Limit keywords
             parts.append(f'({keyword_str})')
-        
+
         parts.append(f'year:{query.year}')
-        
+
         return ' '.join(parts)
-    
+
     def _parse_scholar_result(self, result: dict, query: CollectionQuery) -> Paper:
         """Parse Google Scholar result into Paper object"""
-        
+
         # Parse authors
         authors = []
         for author_data in result.get('author', []):
@@ -106,7 +106,7 @@ class GoogleScholarSource(BaseCitationSource):
                 author_id=author_data.get('scholar_id', '')
             )
             authors.append(author)
-        
+
         # Create paper object
         paper = Paper(
             title=result.get('title', ''),
@@ -120,14 +120,14 @@ class GoogleScholarSource(BaseCitationSource):
             collection_timestamp=datetime.now().isoformat(),
             mila_domain=query.domain
         )
-        
+
         return paper
-    
+
     def get_paper_details(self, paper_id: str) -> Paper:
         """Get detailed paper information by Google Scholar ID"""
         # Implementation for getting detailed paper info
         raise NotImplementedError("Detailed paper retrieval not yet implemented")
-    
+
     def test_connectivity(self) -> bool:
         """Test Google Scholar connectivity"""
         try:
@@ -168,29 +168,29 @@ from ...core.logging import setup_logging
 
 class SemanticScholarSource(BaseCitationSource):
     """Semantic Scholar API citation source implementation"""
-    
+
     def __init__(self):
         config_manager = ConfigManager()
         config = config_manager.get_citation_config('semantic_scholar')
         super().__init__(config.__dict__)
         self.base_url = "https://api.semanticscholar.org/graph/v1"
         self.logger = setup_logging()
-        
+
     def search_papers(self, query: CollectionQuery) -> CollectionResult:
         """Search Semantic Scholar for papers matching query"""
-        
+
         papers = []
         errors = []
-        
+
         try:
             search_url = f"{self.base_url}/paper/search"
             params = self._build_search_params(query)
-            
+
             response = requests.get(search_url, params=params, timeout=self.config.get('timeout', 30))
-            
+
             if response.status_code == 200:
                 data = response.json()
-                
+
                 for paper_data in data.get('data', []):
                     try:
                         paper = self._parse_semantic_result(paper_data, query)
@@ -200,10 +200,10 @@ class SemanticScholarSource(BaseCitationSource):
                         errors.append(f"Failed to parse paper: {e}")
             else:
                 errors.append(f"API request failed: {response.status_code}")
-                
+
         except Exception as e:
             errors.append(f"Search failed: {e}")
-        
+
         return CollectionResult(
             papers=papers,
             query=query,
@@ -213,33 +213,33 @@ class SemanticScholarSource(BaseCitationSource):
             failed_count=len(errors),
             errors=errors
         )
-    
+
     def _build_search_params(self, query: CollectionQuery) -> dict:
         """Build Semantic Scholar API parameters"""
         params = {
             'limit': min(query.max_results, 100),
             'fields': 'title,authors,venue,year,citationCount,abstract,url,paperId'
         }
-        
+
         # Build query string
         query_parts = []
-        
+
         if query.venue:
             query_parts.append(f'venue:"{query.venue}"')
-        
+
         if query.keywords:
             keyword_str = ' '.join(query.keywords[:3])
             query_parts.append(keyword_str)
-        
+
         query_parts.append(f'year:{query.year}')
-        
+
         params['query'] = ' '.join(query_parts)
-        
+
         return params
-    
+
     def _parse_semantic_result(self, result: dict, query: CollectionQuery) -> Paper:
         """Parse Semantic Scholar result into Paper object"""
-        
+
         # Parse authors
         authors = []
         for author_data in result.get('authors', []):
@@ -249,7 +249,7 @@ class SemanticScholarSource(BaseCitationSource):
                 author_id=author_data.get('authorId', '')
             )
             authors.append(author)
-        
+
         # Create paper object
         paper = Paper(
             title=result.get('title', ''),
@@ -263,14 +263,14 @@ class SemanticScholarSource(BaseCitationSource):
             collection_timestamp=datetime.now().isoformat(),
             mila_domain=query.domain
         )
-        
+
         return paper
-    
+
     def get_paper_details(self, paper_id: str) -> Paper:
         """Get detailed paper information by Semantic Scholar ID"""
         # Implementation for getting detailed paper info
         raise NotImplementedError("Detailed paper retrieval not yet implemented")
-    
+
     def test_connectivity(self) -> bool:
         """Test Semantic Scholar API connectivity"""
         try:
@@ -297,29 +297,29 @@ from ...core.logging import setup_logging
 
 class OpenAlexSource(BaseCitationSource):
     """OpenAlex API citation source implementation"""
-    
+
     def __init__(self):
         config_manager = ConfigManager()
         config = config_manager.get_citation_config('openalex')
         super().__init__(config.__dict__)
         self.base_url = "https://api.openalex.org"
         self.logger = setup_logging()
-        
+
     def search_papers(self, query: CollectionQuery) -> CollectionResult:
         """Search OpenAlex for papers matching query"""
-        
+
         papers = []
         errors = []
-        
+
         try:
             search_url = f"{self.base_url}/works"
             params = self._build_search_params(query)
-            
+
             response = requests.get(search_url, params=params, timeout=self.config.get('timeout', 30))
-            
+
             if response.status_code == 200:
                 data = response.json()
-                
+
                 for work in data.get('results', []):
                     try:
                         paper = self._parse_openalex_result(work, query)
@@ -329,10 +329,10 @@ class OpenAlexSource(BaseCitationSource):
                         errors.append(f"Failed to parse work: {e}")
             else:
                 errors.append(f"API request failed: {response.status_code}")
-                
+
         except Exception as e:
             errors.append(f"Search failed: {e}")
-        
+
         return CollectionResult(
             papers=papers,
             query=query,
@@ -342,45 +342,45 @@ class OpenAlexSource(BaseCitationSource):
             failed_count=len(errors),
             errors=errors
         )
-    
+
     def _build_search_params(self, query: CollectionQuery) -> dict:
         """Build OpenAlex API parameters"""
         filters = []
-        
+
         if query.venue:
             filters.append(f'host_venue.display_name.search:{query.venue}')
-        
+
         if query.year:
             filters.append(f'publication_year:{query.year}')
-        
+
         if query.keywords:
             keyword_filter = ' OR '.join(query.keywords[:3])
             filters.append(f'title.search:({keyword_filter})')
-        
+
         params = {
             'filter': ','.join(filters),
             'per-page': min(query.max_results, 200),
             'select': 'id,title,display_name,publication_year,cited_by_count,abstract,doi,authorships'
         }
-        
+
         return params
-    
+
     def _parse_openalex_result(self, work: dict, query: CollectionQuery) -> Paper:
         """Parse OpenAlex work into Paper object"""
-        
+
         # Parse authors from authorships
         authors = []
         for authorship in work.get('authorships', []):
             author_info = authorship.get('author', {})
             institution_info = authorship.get('institutions', [{}])[0] if authorship.get('institutions') else {}
-            
+
             author = Author(
                 name=author_info.get('display_name', ''),
                 affiliation=institution_info.get('display_name', ''),
                 author_id=author_info.get('id', '')
             )
             authors.append(author)
-        
+
         # Create paper object
         paper = Paper(
             title=work.get('display_name', ''),
@@ -395,13 +395,13 @@ class OpenAlexSource(BaseCitationSource):
             collection_timestamp=datetime.now().isoformat(),
             mila_domain=query.domain
         )
-        
+
         return paper
-    
+
     def get_paper_details(self, work_id: str) -> Paper:
         """Get detailed work information by OpenAlex ID"""
         raise NotImplementedError("Detailed work retrieval not yet implemented")
-    
+
     def test_connectivity(self) -> bool:
         """Test OpenAlex API connectivity"""
         try:
@@ -429,7 +429,7 @@ from ...core.exceptions import APIError
 
 class CitationCollector:
     """Unified collector that manages all citation sources"""
-    
+
     def __init__(self):
         self.sources = {
             'google_scholar': GoogleScholarSource(),
@@ -437,20 +437,20 @@ class CitationCollector:
             'openalex': OpenAlexSource()
         }
         self.logger = setup_logging()
-    
+
     def collect_from_all_sources(self, query: CollectionQuery) -> Dict[str, CollectionResult]:
         """Collect papers from all available citation sources"""
-        
+
         results = {}
-        
+
         for source_name, source in self.sources.items():
             try:
                 self.logger.info(f"Collecting from {source_name} for {query.domain} {query.year}")
                 result = source.search_papers(query)
                 results[source_name] = result
-                
+
                 self.logger.info(f"Collected {result.success_count} papers from {source_name}")
-                
+
             except Exception as e:
                 self.logger.error(f"Failed to collect from {source_name}: {e}")
                 results[source_name] = CollectionResult(
@@ -462,14 +462,14 @@ class CitationCollector:
                     failed_count=1,
                     errors=[str(e)]
                 )
-        
+
         return results
-    
+
     def test_all_sources(self) -> Dict[str, bool]:
         """Test connectivity for all citation sources"""
-        
+
         connectivity = {}
-        
+
         for source_name, source in self.sources.items():
             try:
                 connectivity[source_name] = source.test_connectivity()
@@ -478,17 +478,17 @@ class CitationCollector:
             except Exception as e:
                 connectivity[source_name] = False
                 self.logger.error(f"{source_name} connectivity test failed: {e}")
-        
+
         return connectivity
-    
+
     def get_combined_papers(self, results: Dict[str, CollectionResult]) -> List[Paper]:
         """Combine papers from all sources (before deduplication)"""
-        
+
         all_papers = []
-        
+
         for source_name, result in results.items():
             all_papers.extend(result.papers)
-        
+
         return all_papers
 ```
 

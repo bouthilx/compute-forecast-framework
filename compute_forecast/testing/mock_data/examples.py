@@ -3,7 +3,11 @@
 import json
 from pathlib import Path
 
-from compute_forecast.testing.mock_data import DataQuality, MockDataConfig, MockDataGenerator
+from compute_forecast.testing.mock_data import (
+    DataQuality,
+    MockDataConfig,
+    MockDataGenerator,
+)
 
 
 def generate_sample_datasets():

@@ -23,7 +23,7 @@
 ```python
 class PDFAcquisitionManager:
     """Manages PDF acquisition from multiple sources"""
-    
+
     def __init__(self):
         self.sources = [
             SemanticScholarPDFSource(),
@@ -33,19 +33,19 @@ class PDFAcquisitionManager:
         ]
         self.cache_dir = Path("data/pdf_cache")
         self.metadata_db = Path("data/pdf_metadata.json")
-    
+
     def acquire_pdf(self, paper: Paper) -> Optional[Path]:
         """Try multiple sources to get PDF"""
         # Check cache first
         if cached_pdf := self.check_cache(paper):
             return cached_pdf
-            
+
         # Try each source
         for source in self.sources:
             if pdf_path := source.download(paper):
                 self.cache_pdf(paper, pdf_path)
                 return pdf_path
-        
+
         return None
 ```
 
@@ -53,7 +53,7 @@ class PDFAcquisitionManager:
 ```python
 class PDFParser:
     """Extract text and structure from PDFs"""
-    
+
     def __init__(self):
         self.parsers = [
             PyMuPDFParser(),      # Fast, good for most PDFs
@@ -61,7 +61,7 @@ class PDFParser:
             GrobidParser(),       # Academic paper structure
             OCRParser()           # Fallback for scanned PDFs
         ]
-    
+
     def parse_pdf(self, pdf_path: Path) -> ParsedPaper:
         """Extract structured content from PDF"""
         # Try parsers in order of preference
@@ -70,7 +70,7 @@ class PDFParser:
                 return parser.parse(pdf_path)
             except ParsingError:
                 continue
-        
+
         raise PDFParsingError(f"All parsers failed for {pdf_path}")
 ```
 
@@ -78,30 +78,30 @@ class PDFParser:
 ```python
 class EnhancedComputationalExtractor:
     """Extract computational requirements from full papers"""
-    
+
     def __init__(self):
         self.section_detector = AcademicSectionDetector()
         self.table_extractor = TableExtractor()
         self.affiliation_parser = EnhancedAffiliationParser()
-        
+
     def extract_from_paper(self, parsed_paper: ParsedPaper) -> ExtractionResult:
         # Extract affiliations from author section
         affiliations = self.affiliation_parser.extract_from_full_text(
             parsed_paper.author_section
         )
-        
+
         # Extract computational details from relevant sections
         comp_details = self.extract_computational_details(
             parsed_paper.methodology,
             parsed_paper.experiments,
             parsed_paper.appendix
         )
-        
+
         # Extract from tables
         table_data = self.table_extractor.extract_computational_tables(
             parsed_paper.tables
         )
-        
+
         return ExtractionResult(
             affiliations=affiliations,
             computational_requirements=comp_details,

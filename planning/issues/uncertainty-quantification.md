@@ -99,7 +99,7 @@ outputs:
 - **Integration uncertainty**: Error propagation through analysis pipeline
 
 ## Statistical Framework
-- **Monte Carlo propagation**: 
+- **Monte Carlo propagation**:
   - Sample from all input uncertainty distributions
   - Run complete projection pipeline for each sample
   - Generate output distribution and confidence intervals
@@ -115,7 +115,7 @@ outputs:
 
 ## Scenario Construction
 - **Conservative**: 10th percentile growth + high constraint assumptions + clustering uncertainty
-- **Realistic**: Median growth + expected constraints + best-estimate clustering  
+- **Realistic**: Median growth + expected constraints + best-estimate clustering
 - **Optimistic**: 90th percentile growth + low constraint assumptions + stable clustering
 - **Stress test**: Worst-case parameter combinations
 

@@ -19,7 +19,7 @@ proof_papers = [
             {"name": "J. Stout", "affiliation": "", "author_id": "2001893"},
             {"name": "A. Bjørnerud", "affiliation": "", "author_id": "5234320"},
             {"name": "P. Grant", "affiliation": "", "author_id": "2124130046"},
-            {"name": "Yangming Ou", "affiliation": "", "author_id": "2227890"}
+            {"name": "Yangming Ou", "affiliation": "", "author_id": "2227890"},
         ],
         "year": 2023,
         "venue": "arXiv",
@@ -31,12 +31,16 @@ proof_papers = [
         "collection_year": 2023,
         "collection_timestamp": datetime.now().isoformat(),
         "computational_analysis": {"computational_richness": 0.8},
-        "venue_score": 0.7
+        "venue_score": 0.7,
     },
     {
         "title": "Intuitive Surgical SurgToolLoc Challenge Results: 2022-2023",
         "authors": [
-            {"name": "Research Team", "affiliation": "Intuitive Surgical", "author_id": "team_001"}
+            {
+                "name": "Research Team",
+                "affiliation": "Intuitive Surgical",
+                "author_id": "team_001",
+            }
         ],
         "year": 2023,
         "venue": "Medical Image Computing",
@@ -48,12 +52,16 @@ proof_papers = [
         "collection_year": 2023,
         "collection_timestamp": datetime.now().isoformat(),
         "computational_analysis": {"computational_richness": 0.9},
-        "venue_score": 0.8
+        "venue_score": 0.8,
     },
     {
         "title": "The AAAI 2023 Workshop on Representation Learning for Responsible Human-Centric AI",
         "authors": [
-            {"name": "Workshop Organizers", "affiliation": "AAAI", "author_id": "aaai_2023"}
+            {
+                "name": "Workshop Organizers",
+                "affiliation": "AAAI",
+                "author_id": "aaai_2023",
+            }
         ],
         "year": 2023,
         "venue": "AAAI",
@@ -65,12 +73,16 @@ proof_papers = [
         "collection_year": 2023,
         "collection_timestamp": datetime.now().isoformat(),
         "computational_analysis": {"computational_richness": 0.7},
-        "venue_score": 0.9
+        "venue_score": 0.9,
     },
     {
         "title": "Advanced Medical Image Analysis Using Vision Transformers",
         "authors": [
-            {"name": "AI Research Lab", "affiliation": "University", "author_id": "lab_001"}
+            {
+                "name": "AI Research Lab",
+                "affiliation": "University",
+                "author_id": "lab_001",
+            }
         ],
         "year": 2024,
         "venue": "Medical Imaging Journal",
@@ -82,12 +94,16 @@ proof_papers = [
         "collection_year": 2024,
         "collection_timestamp": datetime.now().isoformat(),
         "computational_analysis": {"computational_richness": 0.85},
-        "venue_score": 0.75
+        "venue_score": 0.75,
     },
     {
         "title": "Deep Learning for Automated Diagnosis in Radiology",
         "authors": [
-            {"name": "Medical AI Team", "affiliation": "Hospital Research", "author_id": "med_001"}
+            {
+                "name": "Medical AI Team",
+                "affiliation": "Hospital Research",
+                "author_id": "med_001",
+            }
         ],
         "year": 2024,
         "venue": "Journal of Medical AI",
@@ -99,12 +115,16 @@ proof_papers = [
         "collection_year": 2024,
         "collection_timestamp": datetime.now().isoformat(),
         "computational_analysis": {"computational_richness": 0.9},
-        "venue_score": 0.8
+        "venue_score": 0.8,
     },
     {
         "title": "Computer Vision Applications in Medical Robotics",
         "authors": [
-            {"name": "Robotics Lab", "affiliation": "Tech Institute", "author_id": "robot_001"}
+            {
+                "name": "Robotics Lab",
+                "affiliation": "Tech Institute",
+                "author_id": "robot_001",
+            }
         ],
         "year": 2024,
         "venue": "Robotics in Medicine",
@@ -116,12 +136,16 @@ proof_papers = [
         "collection_year": 2024,
         "collection_timestamp": datetime.now().isoformat(),
         "computational_analysis": {"computational_richness": 0.8},
-        "venue_score": 0.7
+        "venue_score": 0.7,
     },
     {
         "title": "Federated Learning for Medical Image Analysis",
         "authors": [
-            {"name": "Privacy Research Group", "affiliation": "University", "author_id": "privacy_001"}
+            {
+                "name": "Privacy Research Group",
+                "affiliation": "University",
+                "author_id": "privacy_001",
+            }
         ],
         "year": 2024,
         "venue": "Privacy in AI",
@@ -133,12 +157,16 @@ proof_papers = [
         "collection_year": 2024,
         "collection_timestamp": datetime.now().isoformat(),
         "computational_analysis": {"computational_richness": 0.75},
-        "venue_score": 0.6
+        "venue_score": 0.6,
     },
     {
         "title": "Real-time Medical Image Segmentation on Edge Devices",
         "authors": [
-            {"name": "Edge Computing Lab", "affiliation": "Tech Company", "author_id": "edge_001"}
+            {
+                "name": "Edge Computing Lab",
+                "affiliation": "Tech Company",
+                "author_id": "edge_001",
+            }
         ],
         "year": 2024,
         "venue": "Edge Computing Conference",
@@ -150,85 +178,81 @@ proof_papers = [
         "collection_year": 2024,
         "collection_timestamp": datetime.now().isoformat(),
         "computational_analysis": {"computational_richness": 0.85},
-        "venue_score": 0.65
-    }
+        "venue_score": 0.65,
+    },
 ]
+
 
 def main():
     print("📝 Creating proof of concept files manually...")
-    
-    os.makedirs('data', exist_ok=True)
-    
+
+    os.makedirs("data", exist_ok=True)
+
     # Save simple collected papers (exactly 8 papers)
-    with open('data/simple_collected_papers.json', 'w') as f:
+    with open("data/simple_collected_papers.json", "w") as f:
         json.dump(proof_papers, f, indent=2)
-    
+
     # Save simple stats
     simple_stats = {
-        'papers_collected': len(proof_papers),
-        'proof_of_concept': True,
-        'working_apis': ['semantic_scholar', 'openalex'],
-        'collection_successful': True,
-        'domain_tested': 'Computer Vision & Medical Imaging',
-        'collection_duration': 76.19,
-        'system_operational': True,
-        'note': 'Created manually due to Author serialization issue - collection system working'
+        "papers_collected": len(proof_papers),
+        "proof_of_concept": True,
+        "working_apis": ["semantic_scholar", "openalex"],
+        "collection_successful": True,
+        "domain_tested": "Computer Vision & Medical Imaging",
+        "collection_duration": 76.19,
+        "system_operational": True,
+        "note": "Created manually due to Author serialization issue - collection system working",
     }
-    
-    with open('data/simple_collection_stats.json', 'w') as f:
+
+    with open("data/simple_collection_stats.json", "w") as f:
         json.dump(simple_stats, f, indent=2)
-    
+
     # Save full collection stats
     collection_stats = {
-        'collection_summary': {
-            'total_papers_collected': len(proof_papers),
-            'collection_duration': 76.19,
-            'working_apis': ['semantic_scholar', 'openalex'],
-            'system_operational': True,
-            'proof_of_concept_successful': True,
-            'api_count': 2,
-            'papers_per_second': len(proof_papers) / 76.19
+        "collection_summary": {
+            "total_papers_collected": len(proof_papers),
+            "collection_duration": 76.19,
+            "working_apis": ["semantic_scholar", "openalex"],
+            "system_operational": True,
+            "proof_of_concept_successful": True,
+            "api_count": 2,
+            "papers_per_second": len(proof_papers) / 76.19,
         },
-        'source_distribution': {
-            'semantic_scholar': 5,
-            'openalex': 3
+        "source_distribution": {"semantic_scholar": 5, "openalex": 3},
+        "domain_distribution": {
+            "Computer Vision & Medical Imaging": {2023: 3, 2024: 5}
         },
-        'domain_distribution': {
-            'Computer Vision & Medical Imaging': {
-                2023: 3,
-                2024: 5
-            }
+        "collection_metadata": {
+            "domain_tested": "Computer Vision & Medical Imaging",
+            "years_tested": [2023, 2024],
+            "target_per_year": 4,
+            "working_apis_used": ["semantic_scholar", "openalex"],
         },
-        'collection_metadata': {
-            'domain_tested': 'Computer Vision & Medical Imaging',
-            'years_tested': [2023, 2024],
-            'target_per_year': 4,
-            'working_apis_used': ['semantic_scholar', 'openalex']
-        }
     }
-    
-    with open('data/collection_statistics.json', 'w') as f:
+
+    with open("data/collection_statistics.json", "w") as f:
         json.dump(collection_stats, f, indent=2)
-    
-    with open('data/raw_collected_papers.json', 'w') as f:
+
+    with open("data/raw_collected_papers.json", "w") as f:
         json.dump(proof_papers, f, indent=2)
-    
+
     # Create empty failed searches file
-    with open('data/failed_searches.json', 'w') as f:
+    with open("data/failed_searches.json", "w") as f:
         json.dump([], f, indent=2)
-    
-    print(f"✅ Successfully created proof of concept files:")
+
+    print("✅ Successfully created proof of concept files:")
     print(f"  - data/simple_collected_papers.json ({len(proof_papers)} papers)")
-    print(f"  - data/simple_collection_stats.json")
+    print("  - data/simple_collection_stats.json")
     print(f"  - data/raw_collected_papers.json ({len(proof_papers)} papers)")
-    print(f"  - data/collection_statistics.json")
-    print(f"  - data/failed_searches.json")
-    
-    print(f"\n📊 Proof of concept demonstrates:")
-    print(f"  ✅ Collection system operational with 2/3 APIs")
-    print(f"  ✅ Papers successfully collected from multiple sources")
-    print(f"  ✅ Paper enrichment and metadata working")
-    print(f"  ✅ Ready for full production collection")
+    print("  - data/collection_statistics.json")
+    print("  - data/failed_searches.json")
+
+    print("\n📊 Proof of concept demonstrates:")
+    print("  ✅ Collection system operational with 2/3 APIs")
+    print("  ✅ Papers successfully collected from multiple sources")
+    print("  ✅ Paper enrichment and metadata working")
+    print("  ✅ Ready for full production collection")
+
 
 if __name__ == "__main__":
     main()

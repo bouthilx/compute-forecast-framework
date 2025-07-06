@@ -34,7 +34,7 @@
 class NeurIPSPDFSource:
     def find_pdf(self, paper):
         year = paper.get('year')
-        
+
         # Different sites by year
         if year <= 2022:
             # papers.nips.cc/paper/{year}/hash/{paper-slug}.pdf
@@ -59,7 +59,7 @@ class ICMLPDFSource:
             2024: 235, 2023: 202, 2022: 162,
             2021: 139, 2020: 119, 2019: 97
         }
-        
+
         # Search by title/author on PMLR
         return self.search_pmlr(paper, volume_map[paper.year])
 ```
@@ -76,7 +76,7 @@ class ICLRPDFSource:
     def find_pdf(self, paper):
         # All ICLR papers on OpenReview
         return self.search_openreview_api(
-            paper, 
+            paper,
             venue=f"ICLR.cc/{paper.year}/Conference"
         )
 ```
@@ -117,7 +117,7 @@ class ConferencePDFManager:
             'cvpr': CVPRPDFSource(),
             'acl': ACLPDFSource(),
         }
-    
+
     def find_pdf(self, paper):
         venue = self.identify_venue(paper)
         if venue in self.sources:
@@ -136,7 +136,7 @@ class JournalPDFManager:
             'ieee': IEEEXploreAPI(),
             'elsevier': ElsevierAPI(),
         }
-    
+
     def find_pdf(self, paper):
         # Try DOI first
         if doi := self.extract_doi(paper):
@@ -157,11 +157,11 @@ class EnhancedPDFSearch:
             ArXivStrategy(),
             WebSearchStrategy(),
         ]
-    
+
     def comprehensive_search(self, paper):
         # Try each strategy with fingerprinting
         fingerprint = self.create_paper_fingerprint(paper)
-        
+
         for strategy in self.strategies:
             if pdf_url := strategy.search(paper, fingerprint):
                 return pdf_url
@@ -229,7 +229,7 @@ class EnhancedPDFSearch:
 ## Priority Order
 
 1. **Top 6 conference loaders** → 512 papers (37.7%)
-2. **ArXiv enhancement** → +250 papers 
+2. **ArXiv enhancement** → +250 papers
 3. **Google Scholar** → +180 papers
 4. **Journal APIs** → +120 papers
 

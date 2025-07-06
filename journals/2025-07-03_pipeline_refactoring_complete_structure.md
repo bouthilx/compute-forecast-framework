@@ -1,7 +1,7 @@
 # Pipeline Refactoring: Complete Structure
 
-**Date**: 2025-07-03  
-**Title**: Complete Refactored Package Structure  
+**Date**: 2025-07-03
+**Title**: Complete Refactored Package Structure
 **Purpose**: Document the entire proposed refactoring of the package/ directory to clarify the distinction between paper collection and PDF collection
 
 ## Overview
@@ -848,7 +848,7 @@ package/
 1. **Clear Pipeline Stages**: The five stages are explicitly separated and named according to their function
 2. **Eliminates Confusion**: "Paper collection" becomes "metadata collection", "PDF collection" becomes "PDF acquisition"
 3. **Consolidated PDF Handling**: All PDF-related operations (discovery, download, storage) are in one logical unit
-4. **Better Infrastructure Organization**: 
+4. **Better Infrastructure Organization**:
    - Core infrastructure in `core/` (only truly generic utilities)
    - Monitoring elevated to top-level system
    - Orchestration as standalone coordination system

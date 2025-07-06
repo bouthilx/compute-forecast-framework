@@ -4,20 +4,20 @@ venues_by_domain:
     tier2: ["BMVC", "WACV", "ACCV"]
     medical: ["MICCAI", "IPMI", "ISBI"]
     specialized: ["3DV", "ICCV Workshops"]
-  
+
   nlp:
     tier1: ["ACL", "EMNLP", "NAACL"]
     tier2: ["COLING", "EACL", "CoNLL"]
     specialized: ["WMT", "SemEval"]
-  
+
   ml_general:
     tier1: ["NeurIPS", "ICML", "ICLR"]
     tier2: ["AISTATS", "UAI", "COLT"]
-  
+
   reinforcement_learning:
     specialized: ["AAMAS", "AAAI", "IJCAI"]
     robotics: ["ICRA", "IROS", "RSS"]
-  
+
   graph_learning:
     specialized: ["WWW", "KDD", "WSDM"]
     theory: ["SODA", "FOCS", "STOC"]

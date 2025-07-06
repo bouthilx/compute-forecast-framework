@@ -46,7 +46,7 @@ class GoogleDriveStore:
         self.folder_id = folder_id
         self.metadata_file = Path('data/pdf_metadata.json')
         self.metadata = self._load_metadata()
-    
+
     def upload_pdf(self, local_path, paper_id):
         """Upload PDF and store metadata"""
         file_metadata = {
@@ -59,7 +59,7 @@ class GoogleDriveStore:
             media_body=media,
             fields='id, webViewLink'
         ).execute()
-        
+
         # Store metadata
         self.metadata[paper_id] = {
             'drive_id': file['id'],
@@ -69,18 +69,18 @@ class GoogleDriveStore:
         }
         self._save_metadata()
         return file['id']
-    
+
     def get_pdf_url(self, paper_id):
         """Get shareable link for PDF"""
         if paper_id in self.metadata:
             return self.metadata[paper_id]['drive_url']
         return None
-    
+
     def download_pdf(self, paper_id, local_path):
         """Download PDF from Drive"""
         if paper_id not in self.metadata:
             return False
-        
+
         request = self.service.files().get_media(
             fileId=self.metadata[paper_id]['drive_id']
         )
@@ -100,29 +100,29 @@ class PDFManager:
         self.drive_store = drive_store
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
-    
+
     def get_pdf(self, paper_id):
         """Get PDF with local caching"""
         cache_path = self.cache_dir / f"{paper_id}.pdf"
-        
+
         # Check cache first
         if cache_path.exists():
             return cache_path
-        
+
         # Download from Drive if available
         if self.drive_store:
             success = self.drive_store.download_pdf(paper_id, cache_path)
             if success:
                 return cache_path
-        
+
         return None
-    
+
     def store_pdf(self, local_path, paper_id):
         """Store PDF in Drive and update metadata"""
         if self.drive_store:
             return self.drive_store.upload_pdf(local_path, paper_id)
         return None
-    
+
     def cleanup_cache(self, max_age_days=1):
         """Clean old files from cache"""
         cutoff = time.time() - (max_age_days * 24 * 60 * 60)

@@ -10,14 +10,14 @@ from compute_forecast.data.models import Paper
 
 class TestCVFIntegration:
     """Integration tests for CVF collector."""
-    
+
     @pytest.fixture
     def framework(self):
         """Create framework with CVF collector."""
         framework = PDFDiscoveryFramework()
         framework.add_collector(CVFCollector())
         return framework
-    
+
     @pytest.fixture
     def cvf_papers(self):
         """Create sample CVF conference papers."""
@@ -28,7 +28,7 @@ class TestCVFIntegration:
                 authors=["John Doe", "Jane Smith"],
                 year=2023,
                 citations=50,
-                venue="CVPR"
+                venue="CVPR",
             ),
             Paper(
                 paper_id="iccv_2023_1",
@@ -36,7 +36,7 @@ class TestCVFIntegration:
                 authors=["Alice Brown"],
                 year=2023,
                 citations=30,
-                venue="ICCV"
+                venue="ICCV",
             ),
             Paper(
                 paper_id="eccv_2022_1",
@@ -44,7 +44,7 @@ class TestCVFIntegration:
                 authors=["Bob Wilson"],
                 year=2022,
                 citations=25,
-                venue="ECCV"
+                venue="ECCV",
             ),
             Paper(
                 paper_id="icml_2023_1",
@@ -52,94 +52,106 @@ class TestCVFIntegration:
                 authors=["Charlie Davis"],
                 year=2023,
                 citations=40,
-                venue="ICML"  # Not a CVF venue
-            )
+                venue="ICML",  # Not a CVF venue
+            ),
         ]
-    
-    @patch('requests.get')
+
+    @patch("requests.get")
     def test_framework_discovery_with_cvf(self, mock_get, framework, cvf_papers):
         """Test PDF discovery through framework with CVF collector."""
+
         # Mock successful proceedings fetch for each venue
         def mock_response(url, **kwargs):
             response = Mock()
             response.status_code = 200
-            
+
             if "CVPR2023" in url:
-                response.text = '''
+                response.text = """
                 <html><body>
                 <a href="/content/CVPR2023/papers/Doe23_Deep_Learning_Object_Detection_CVPR_2023_paper.pdf">
                     Deep Learning for Object Detection
                 </a>
                 </body></html>
-                '''
+                """
             elif "ICCV2023" in url:
-                response.text = '''
+                response.text = """
                 <html><body>
                 <a href="/content/ICCV2023/papers/Brown23_Vision_Transformers_ICCV_2023_paper.pdf">
                     Vision Transformers for Image Classification
                 </a>
                 </body></html>
-                '''
+                """
             elif "ECCV2022" in url:
-                response.text = '''
+                response.text = """
                 <html><body>
                 <a href="/content/ECCV2022/papers/Wilson22_Neural_Rendering_ECCV_2022_paper.pdf">
                     Neural Rendering Techniques
                 </a>
                 </body></html>
-                '''
+                """
             else:
-                response.text = '<html><body>No papers</body></html>'
-            
+                response.text = "<html><body>No papers</body></html>"
+
             return response
-        
+
         mock_get.side_effect = mock_response
-        
+
         # Run discovery
         result = framework.discover_pdfs(cvf_papers)
-        
+
         # Verify results
         assert result.total_papers == 4
         assert result.discovered_count == 3  # 3 CVF papers found
         assert len(result.records) == 3
         assert len(result.failed_papers) == 1
         assert "icml_2023_1" in result.failed_papers
-        
+
         # Check discovered PDFs
         pdf_by_id = {r.paper_id: r for r in result.records}
-        
+
         # CVPR paper
         assert "cvpr_2023_1" in pdf_by_id
         cvpr_pdf = pdf_by_id["cvpr_2023_1"]
         assert cvpr_pdf.source == "cvf"
-        assert "CVPR2023/papers/Doe23_Deep_Learning_Object_Detection_CVPR_2023_paper.pdf" in cvpr_pdf.pdf_url
+        assert (
+            "CVPR2023/papers/Doe23_Deep_Learning_Object_Detection_CVPR_2023_paper.pdf"
+            in cvpr_pdf.pdf_url
+        )
         assert cvpr_pdf.confidence_score == 0.95
-        
+
         # ICCV paper
         assert "iccv_2023_1" in pdf_by_id
         iccv_pdf = pdf_by_id["iccv_2023_1"]
-        assert "ICCV2023/papers/Brown23_Vision_Transformers_ICCV_2023_paper.pdf" in iccv_pdf.pdf_url
-        
+        assert (
+            "ICCV2023/papers/Brown23_Vision_Transformers_ICCV_2023_paper.pdf"
+            in iccv_pdf.pdf_url
+        )
+
         # ECCV paper
         assert "eccv_2022_1" in pdf_by_id
         eccv_pdf = pdf_by_id["eccv_2022_1"]
-        assert "ECCV2022/papers/Wilson22_Neural_Rendering_ECCV_2022_paper.pdf" in eccv_pdf.pdf_url
-    
+        assert (
+            "ECCV2022/papers/Wilson22_Neural_Rendering_ECCV_2022_paper.pdf"
+            in eccv_pdf.pdf_url
+        )
+
     def test_cvf_venue_priority(self, framework):
         """Test that CVF collector can be prioritized for CV venues."""
         # Set CVF as priority for computer vision conferences
-        framework.set_venue_priorities({
-            "CVPR": ["cvf", "semantic_scholar"],
-            "ICCV": ["cvf", "semantic_scholar"],
-            "ECCV": ["cvf", "semantic_scholar"],
-            "WACV": ["cvf", "semantic_scholar"]
-        })
-        
+        framework.set_venue_priorities(
+            {
+                "CVPR": ["cvf", "semantic_scholar"],
+                "ICCV": ["cvf", "semantic_scholar"],
+                "ECCV": ["cvf", "semantic_scholar"],
+                "WACV": ["cvf", "semantic_scholar"],
+            }
+        )
+
         # Verify priorities were set
         assert framework.venue_priorities["CVPR"][0] == "cvf"
         assert framework.venue_priorities["ICCV"][0] == "cvf"
-    
-    @patch('requests.get')
+
+    @patch("requests.get")
     def test_cvf_biannual_conference_validation(self, mock_get, framework):
         """Test that biannual conferences are validated correctly."""
         # ICCV should work for odd years
@@ -149,9 +161,9 @@ class TestCVFIntegration:
             authors=[],
             year=2023,
             citations=0,
-            venue="ICCV"
+            venue="ICCV",
         )
-        
+
         # ICCV should fail for even years
         paper_2022 = Paper(
             paper_id="test2",
@@ -159,22 +171,22 @@ class TestCVFIntegration:
             authors=[],
             year=2022,
             citations=0,
-            venue="ICCV"
+            venue="ICCV",
         )
-        
+
         # Mock proceedings
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.text = '''
+        mock_response.text = """
         <html><body>
         <a href="/content/ICCV2023/papers/Test_Paper_ICCV_2023_paper.pdf">Test Paper</a>
         </body></html>
-        '''
+        """
         mock_get.return_value = mock_response
-        
+
         # Test discovery
         result = framework.discover_pdfs([paper_2023, paper_2022])
-        
+
         # Should only find the 2023 paper
         assert result.discovered_count == 1
         assert result.records[0].paper_id == "test1"

@@ -8,12 +8,12 @@ jobs:
   pr-checks:
     name: PR Checks
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
+
     - name: Check PR Title
       uses: amannn/action-semantic-pull-request@v5
       env:
@@ -31,7 +31,7 @@ jobs:
           ci
           chore
           revert
-    
+
     - name: Check file sizes
       run: |
         # Prevent large files from being committed
@@ -48,7 +48,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    
+
     steps:
     - uses: actions/labeler@v5
       with:

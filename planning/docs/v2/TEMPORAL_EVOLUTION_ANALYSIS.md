@@ -43,7 +43,7 @@ Mila Trends (2019-2024) vs. Academic Benchmarks (2019-2024) vs. Industry Benchma
 ```
 Annual Growth Rates:
 - Mila_Growth_Rate[2019-2024]
-- Academic_Growth_Rate[2019-2024]  
+- Academic_Growth_Rate[2019-2024]
 - Industry_Growth_Rate[2019-2024]
 ```
 

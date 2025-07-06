@@ -122,27 +122,27 @@ All issues will have:
 - **Core Infrastructure**:
   - #77: PDF Discovery Framework
   - #78: Deduplication Engine
-  
+
 - **Tier 1 Sources**:
   - #79: arXiv Enhanced Discovery
   - #80: OpenReview API Integration
   - #81: PMLR Direct Scraper
   - #82: ACL Anthology Scraper
   - #83: Semantic Scholar Collector
-  
+
 - **Tier 2 Sources**:
   - #84: PubMed Central Harvester
   - #85: CrossRef/Unpaywall Resolver
   - #86: OpenAlex Integration
   - #87: CVF Open Access Scraper
   - #88: AAAI Proceedings Scraper
-  
+
 - **Tier 3 Sources**:
   - #91: IEEE Xplore Metadata Extractor
   - #92: Nature.com Scraper
   - #93: JMLR/TMLR Site Scraper
   - #94: CORE/HAL API Integration
-  
+
 - **System Components**:
   - #89: Simple PDF Download Manager
   - #90: Optimized PDF Parser (Split Strategy)
@@ -168,7 +168,7 @@ Issue #90 ([PDF-Parser] Optimized PDF Parser) was identified as too large, conta
 1. **Update #90** to be just the core parser framework
 2. **Create 5 new issues** for individual integrations:
    - PyMuPDF Basic Text Extractor
-   - EasyOCR Integration  
+   - EasyOCR Integration
    - GROBID Academic Structure Extractor
    - Google Cloud Vision OCR
    - Claude Vision for Affiliation Extraction
@@ -284,10 +284,10 @@ L = Large (6-8h)
    - 5 developers can work on Tier 1 sources simultaneously after core is done
    - PDF Download (#89) and Parser Core (#90) can start immediately (no dependencies)
    - Parser integrations (#96-100) can be developed in parallel after #90
-3. **Bottlenecks**: 
+3. **Bottlenecks**:
    - Core framework (#77, #78) blocks everything else
    - Parser Core (#90) blocks all parser integrations (#96-100)
-4. **Optimization Strategy**: 
+4. **Optimization Strategy**:
    - Start #89 and #90 early since they have no dependencies
    - Assign strongest developers to #77 and #78 to unblock others quickly
    - Run all Tier 1 sources in parallel with 5 developers

@@ -1,7 +1,7 @@
 # Compute Forecast Package Structure After Refactoring
 
-**Date**: 2025-07-06  
-**Title**: Complete structure of compute_forecast package after refactoring  
+**Date**: 2025-07-06
+**Title**: Complete structure of compute_forecast package after refactoring
 **Purpose**: Document the full tree structure (depth 3) of the refactored package
 
 ## Package Structure

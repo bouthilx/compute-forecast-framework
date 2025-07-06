@@ -7,7 +7,7 @@
 
 ## Data Sources Available
 1. **Cluster usage data**: Job-level with requested resources + actual usage
-2. **Paper corpus**: Mila researchers 2019-2025 for research trends/domains analysis  
+2. **Paper corpus**: Mila researchers 2019-2025 for research trends/domains analysis
 3. **Research group data**: Group compositions and student counts
 4. **External benchmarks**: Data from other research labs (papers + surveys)
 
@@ -28,7 +28,7 @@ Many research sub-domains share similar computational usage patterns, making pat
 - Identify pattern characteristics: GPU count, memory usage, job duration, frequency
 - Correlate patterns with research domains from paper analysis
 
-### Phase 2: Trend Analysis  
+### Phase 2: Trend Analysis
 - Analyze historical growth in each usage pattern cluster
 - Apply both **historical trend extrapolation** and **research domain shift** considerations
 - Use paper trends to validate and adjust usage pattern projections

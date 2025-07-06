@@ -1,18 +1,20 @@
 """Tests for extraction workflow manager."""
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
-from concurrent.futures import Future
+from unittest.mock import patch
 import pandas as pd
-from typing import List, Dict
 
-from compute_forecast.analysis.benchmark.workflow_manager import ExtractionWorkflowManager
-from compute_forecast.analysis.benchmark.models import BenchmarkDomain, ExtractionBatch, BenchmarkPaper
+from compute_forecast.analysis.benchmark.workflow_manager import (
+    ExtractionWorkflowManager,
+)
+from compute_forecast.analysis.benchmark.models import (
+    BenchmarkDomain,
+    ExtractionBatch,
+    BenchmarkPaper,
+)
 from compute_forecast.analysis.benchmark.extractor import AcademicBenchmarkExtractor
 from compute_forecast.analysis.benchmark.domain_extractors import (
     NLPBenchmarkExtractor,
-    CVBenchmarkExtractor,
-    RLBenchmarkExtractor,
 )
 from compute_forecast.data.models import Paper, ComputationalAnalysis
 
@@ -26,7 +28,7 @@ class TestExtractionWorkflowManager:
         papers = []
         domains = ["NLP", "Computer Vision", "Reinforcement Learning"]
         years = [2019, 2020, 2021, 2022, 2023, 2024]
-        
+
         paper_id = 0
         for year in years:
             for domain in domains:
@@ -41,7 +43,7 @@ class TestExtractionWorkflowManager:
                     )
                     papers.append(paper)
                     paper_id += 1
-        
+
         return papers
 
     @pytest.fixture
@@ -58,7 +60,9 @@ class TestExtractionWorkflowManager:
         ]
         assert workflow_manager.years == [2019, 2020, 2021, 2022, 2023, 2024]
         assert len(workflow_manager.extractors) == 3
-        assert isinstance(workflow_manager.extractors[BenchmarkDomain.NLP], NLPBenchmarkExtractor)
+        assert isinstance(
+            workflow_manager.extractors[BenchmarkDomain.NLP], NLPBenchmarkExtractor
+        )
 
     def test_plan_extraction(self, workflow_manager, sample_papers):
         """Test planning extraction batches."""
@@ -66,7 +70,7 @@ class TestExtractionWorkflowManager:
 
         # Should have batches for each domain-year combination
         assert len(batches) > 0
-        
+
         # Check batch keys follow expected format
         for key in batches:
             assert "_" in key  # Format: "domain_year"
@@ -81,9 +85,12 @@ class TestExtractionWorkflowManager:
     def test_execute_parallel_extraction(self, workflow_manager, sample_papers):
         """Test parallel extraction execution."""
         batches = workflow_manager.plan_extraction(sample_papers)
-        
+
         # Mock the base extractor to return test results
-        with patch.object(AcademicBenchmarkExtractor, "extract_benchmark_batch") as mock_extract:
+        with patch.object(
+            AcademicBenchmarkExtractor, "extract_benchmark_batch"
+        ) as mock_extract:
+
             def create_mock_batch(papers, domain):
                 return ExtractionBatch(
                     domain=domain,
@@ -106,9 +113,9 @@ class TestExtractionWorkflowManager:
                     high_confidence_count=len(papers) - 1,
                     requires_manual_review=[],
                 )
-            
+
             mock_extract.side_effect = create_mock_batch
-            
+
             results = workflow_manager.execute_parallel_extraction(batches)
 
         assert len(results) == len(batches)
@@ -145,7 +152,7 @@ class TestExtractionWorkflowManager:
         # Create mock papers and batches
         papers_needing_review = []
         results = []
-        
+
         for i in range(3):
             paper = Paper(
                 paper_id=f"review_{i}",
@@ -155,18 +162,20 @@ class TestExtractionWorkflowManager:
                 authors=[f"Author {i}"],
             )
             papers_needing_review.append(paper)
-            
+
             batch_papers = [
                 BenchmarkPaper(
                     paper=paper,
                     domain=BenchmarkDomain.NLP,
                     is_sota=False,
                     benchmark_datasets=[],
-                    computational_requirements=ComputationalAnalysis(confidence_score=0.4),
+                    computational_requirements=ComputationalAnalysis(
+                        confidence_score=0.4
+                    ),
                     extraction_confidence=0.4,
                 )
             ]
-            
+
             batch = ExtractionBatch(
                 domain=BenchmarkDomain.NLP,
                 year=2023,
@@ -185,11 +194,19 @@ class TestExtractionWorkflowManager:
     def test_parallel_extraction_error_handling(self, workflow_manager):
         """Test error handling in parallel extraction."""
         batches = {
-            "nlp_2023": [Paper(paper_id="1", title="Test", year=2023, venue="ACL", authors=["A"])],
-            "cv_2023": [Paper(paper_id="2", title="Test2", year=2023, venue="CVPR", authors=["B"])],
+            "nlp_2023": [
+                Paper(paper_id="1", title="Test", year=2023, venue="ACL", authors=["A"])
+            ],
+            "cv_2023": [
+                Paper(
+                    paper_id="2", title="Test2", year=2023, venue="CVPR", authors=["B"]
+                )
+            ],
         }
-        
-        with patch.object(AcademicBenchmarkExtractor, "extract_benchmark_batch") as mock_extract:
+
+        with patch.object(
+            AcademicBenchmarkExtractor, "extract_benchmark_batch"
+        ) as mock_extract:
             # Make one extraction fail
             def side_effect(papers, domain):
                 if domain == BenchmarkDomain.NLP:
@@ -202,9 +219,9 @@ class TestExtractionWorkflowManager:
                     high_confidence_count=1,
                     requires_manual_review=[],
                 )
-            
+
             mock_extract.side_effect = side_effect
-            
+
             results = workflow_manager.execute_parallel_extraction(batches)
 
         # Should still get results for successful extractions
@@ -221,7 +238,7 @@ class TestExtractionWorkflowManager:
             authors=["NLP Researcher"],
             abstract="We present improvements to transformer models for NLP tasks.",
         )
-        
+
         cv_paper = Paper(
             paper_id="cv_test",
             title="Vision Transformer for Image Classification",
@@ -230,7 +247,7 @@ class TestExtractionWorkflowManager:
             authors=["CV Researcher"],
             abstract="We apply transformers to computer vision and image recognition.",
         )
-        
+
         rl_paper = Paper(
             paper_id="rl_test",
             title="Deep Reinforcement Learning for Atari Games",
@@ -251,7 +268,7 @@ class TestExtractionWorkflowManager:
     def test_extraction_report_aggregation(self, workflow_manager):
         """Test that extraction report properly aggregates statistics."""
         results = []
-        
+
         # Create multiple batches for same domain/year
         for i in range(3):
             batch = ExtractionBatch(
@@ -265,9 +282,11 @@ class TestExtractionWorkflowManager:
             results.append(batch)
 
         report_df = workflow_manager.generate_extraction_report(results)
-        
+
         # Should aggregate the 3 batches into one row
-        nlp_2023 = report_df[(report_df["domain"] == "nlp") & (report_df["year"] == 2023)]
+        nlp_2023 = report_df[
+            (report_df["domain"] == "nlp") & (report_df["year"] == 2023)
+        ]
         assert len(nlp_2023) == 1
         assert nlp_2023.iloc[0]["total_extracted"] == 30  # 3 × 10
         assert nlp_2023.iloc[0]["high_confidence_count"] == 24  # 3 × 8

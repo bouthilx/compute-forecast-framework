@@ -5,13 +5,13 @@ citation_sources:
     timeout: 30
     use_browser_automation: true
     manual_captcha_intervention: true
-  
+
   semantic_scholar:
     rate_limit: 0.1
     retry_attempts: 3
     timeout: 30
     api_key: null
-  
+
   openalex:
     rate_limit: 0.05
     retry_attempts: 3

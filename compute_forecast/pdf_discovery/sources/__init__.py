@@ -33,5 +33,5 @@ __all__ = [
     "DOIResolverCollector",
     "JMLRCollector",
     "COREPDFCollector",
-    "HALPDFCollector"
+    "HALPDFCollector",
 ]

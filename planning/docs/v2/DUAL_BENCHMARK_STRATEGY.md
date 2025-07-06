@@ -17,7 +17,7 @@
 - **Justification**: Academic survival, not industrial ambition
 - **Counter-argument defense**: "Even pure academic research now requires this level of compute"
 
-### Industry Benchmark: Innovation Opportunity  
+### Industry Benchmark: Innovation Opportunity
 - **Message**: "This is what becomes possible with adequate resources"
 - **Examples**: OpenAI, DeepMind, Meta AI breakthrough papers
 - **Justification**: Research leadership and breakthrough potential
@@ -65,7 +65,7 @@
 - **Trend analysis**: "Computational requirements in academic research are growing rapidly"
 - **Competitive reality**: "Other academic institutions are investing heavily in compute"
 
-### Against "Industry Envy" Argument  
+### Against "Industry Envy" Argument
 - **Research impact**: "Industry computational resources enable fundamental breakthroughs"
 - **Academic contribution**: "We can contribute to these advances, not just consume them"
 - **Knowledge transfer**: "Industry innovations eventually become academic standard practice"

@@ -99,7 +99,7 @@ Academic_Requirement_2027 = Academic_Benchmark_Compute × Mila_Researchers × Re
 - **Purpose**: Demonstrate minimum compute needed to remain competitive in academic research
 - **Justification**: "Without this, we fall behind peer academic institutions"
 
-#### Innovation Opportunity Projection  
+#### Innovation Opportunity Projection
 ```
 Innovation_Requirement_2027 = Industry_Benchmark_Compute × Breakthrough_Factor × Mila_Researchers
 ```

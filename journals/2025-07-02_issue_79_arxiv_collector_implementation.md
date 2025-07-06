@@ -1,6 +1,6 @@
 # Issue #79: ArXiv PDF Collector Implementation
 
-**Date**: July 2, 2025  
+**Date**: July 2, 2025
 **Objective**: Implement enhanced arXiv PDF discovery with robust version handling and multiple search strategies
 
 ## Implementation Summary
@@ -61,12 +61,12 @@ def _discover_single(self, paper: Paper) -> PDFRecord:
     arxiv_id = self.extract_arxiv_id(paper)
     if arxiv_id:
         return self.handle_versions(arxiv_id)
-    
+
     # Strategy 2: API search fallback
     arxiv_id = self.search_by_title_author(paper)
     if arxiv_id:
         return self.handle_versions(arxiv_id)
-    
+
     # Strategy 3: Graceful failure
     raise Exception(f"No arXiv version found for paper {paper.paper_id}")
 ```
@@ -76,7 +76,7 @@ def _discover_single(self, paper: Paper) -> PDFRecord:
 class RateLimiter:
     def __init__(self, requests_per_second: float):
         self.min_interval = 1.0 / requests_per_second
-    
+
     def wait(self):
         # Ensures compliance with arXiv rate limits
 ```
@@ -85,7 +85,7 @@ class RateLimiter:
 
 Successfully tested with real papers:
 - ✅ **Attention Is All You Need** (1706.03762v5) - Direct ID extraction
-- ✅ **Deep Residual Learning** (1512.03385) - URL extraction  
+- ✅ **Deep Residual Learning** (1512.03385) - URL extraction
 - ❌ **Non-arXiv Paper** - Correctly failed as expected
 
 **Success Rate**: 66.7% (2/3 papers) - exactly as expected for papers with arXiv versions

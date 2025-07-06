@@ -1,13 +1,15 @@
 """Tests for academic benchmark extractor."""
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
-from typing import List, Dict, Any
+from unittest.mock import Mock, patch
 
 from compute_forecast.analysis.benchmark.extractor import AcademicBenchmarkExtractor
-from compute_forecast.analysis.benchmark.models import BenchmarkDomain, BenchmarkPaper, ExtractionBatch
+from compute_forecast.analysis.benchmark.models import (
+    BenchmarkDomain,
+    BenchmarkPaper,
+    ExtractionBatch,
+)
 from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
-from compute_forecast.analysis.computational.analyzer import ComputationalAnalyzer
 
 
 class TestAcademicBenchmarkExtractor:
@@ -53,7 +55,9 @@ class TestAcademicBenchmarkExtractor:
     @pytest.fixture
     def extractor(self, mock_analyzer):
         """Create an extractor instance with mocked analyzer."""
-        with patch("src.analysis.benchmark.extractor.ComputationalAnalyzer") as mock_cls:
+        with patch(
+            "src.analysis.benchmark.extractor.ComputationalAnalyzer"
+        ) as mock_cls:
             mock_cls.return_value = mock_analyzer
             return AcademicBenchmarkExtractor()
 
@@ -136,7 +140,7 @@ class TestAcademicBenchmarkExtractor:
         """Test counting high confidence extractions."""
         # Mock different confidence scores
         confidence_scores = [0.9, 0.8, 0.6, 0.75, 0.5]
-        
+
         with patch.object(extractor.analyzer, "analyze_paper") as mock_analyze:
             # Create side_effect list for sequential calls
             mock_analyze.side_effect = [
@@ -160,11 +164,41 @@ class TestAcademicBenchmarkExtractor:
         # Mock low confidence extractions
         with patch.object(extractor.analyzer, "analyze_paper") as mock_analyze:
             mock_analyze.side_effect = [
-                ComputationalAnalysis(computational_richness=0.9, keyword_matches={}, resource_metrics={"gpu_hours": 100.0}, experimental_indicators={}, confidence_score=0.9),
-                ComputationalAnalysis(computational_richness=0.4, keyword_matches={}, resource_metrics={"gpu_hours": None}, experimental_indicators={}, confidence_score=0.4),  # Low confidence
-                ComputationalAnalysis(computational_richness=0.6, keyword_matches={}, resource_metrics={"gpu_hours": 50.0}, experimental_indicators={}, confidence_score=0.6),  # Below threshold
-                ComputationalAnalysis(computational_richness=0.8, keyword_matches={}, resource_metrics={"gpu_hours": 200.0}, experimental_indicators={}, confidence_score=0.8),
-                ComputationalAnalysis(computational_richness=0.3, keyword_matches={}, resource_metrics={"gpu_hours": None}, experimental_indicators={}, confidence_score=0.3),  # Very low
+                ComputationalAnalysis(
+                    computational_richness=0.9,
+                    keyword_matches={},
+                    resource_metrics={"gpu_hours": 100.0},
+                    experimental_indicators={},
+                    confidence_score=0.9,
+                ),
+                ComputationalAnalysis(
+                    computational_richness=0.4,
+                    keyword_matches={},
+                    resource_metrics={"gpu_hours": None},
+                    experimental_indicators={},
+                    confidence_score=0.4,
+                ),  # Low confidence
+                ComputationalAnalysis(
+                    computational_richness=0.6,
+                    keyword_matches={},
+                    resource_metrics={"gpu_hours": 50.0},
+                    experimental_indicators={},
+                    confidence_score=0.6,
+                ),  # Below threshold
+                ComputationalAnalysis(
+                    computational_richness=0.8,
+                    keyword_matches={},
+                    resource_metrics={"gpu_hours": 200.0},
+                    experimental_indicators={},
+                    confidence_score=0.8,
+                ),
+                ComputationalAnalysis(
+                    computational_richness=0.3,
+                    keyword_matches={},
+                    resource_metrics={"gpu_hours": None},
+                    experimental_indicators={},
+                    confidence_score=0.3,
+                ),  # Very low
             ]
 
             batch = extractor.extract_benchmark_batch(sample_papers, BenchmarkDomain.RL)

@@ -27,7 +27,7 @@ import time
 
 def test_apis():
     """Test API connectivity and basic functionality"""
-    
+
     # Test Google Scholar
     try:
         search_query = "machine learning"
@@ -36,7 +36,7 @@ def test_apis():
         print("✅ Google Scholar working:", first_paper.get('title', 'No title'))
     except Exception as e:
         print("❌ Google Scholar failed:", e)
-    
+
     # Test Semantic Scholar
     try:
         url = "https://api.semanticscholar.org/graph/v1/paper/search"
@@ -62,7 +62,7 @@ import pandas as pd
 
 def create_mila_data_template():
     """Create template showing expected Mila data format"""
-    
+
     template_data = {
         'title': [
             'Attention Is All You Need',
@@ -91,15 +91,15 @@ def create_mila_data_template():
             '10.5555/2969033.2969125'
         ]
     }
-    
+
     df = pd.DataFrame(template_data)
     df.to_csv('mila_papers_template.csv', index=False)
-    
+
     print("Template created: mila_papers_template.csv")
     print("Required columns:", df.columns.tolist())
     print("Expected format:")
     print(df.head())
-    
+
     return df
 
 # Create the template
@@ -110,19 +110,19 @@ template = create_mila_data_template()
 ```python
 def verify_mila_data():
     """Check if Mila data is available and properly formatted"""
-    
+
     # Try to load Mila data
     try:
         # Replace with actual Mila data path
         mila_data_path = 'mila_papers_2019_2024.csv'
         mila_papers = pd.read_csv(mila_data_path)
-        
+
         print(f"✅ Mila data loaded: {len(mila_papers)} papers")
         print(f"Years: {mila_papers['year'].min()}-{mila_papers['year'].max()}")
         print(f"Venues: {mila_papers['venue'].nunique()} unique")
-        
+
         return mila_papers
-        
+
     except FileNotFoundError:
         print("❌ Mila data file not found")
         print("Expected file: mila_papers_2019_2024.csv")
@@ -142,11 +142,11 @@ mila_data = verify_mila_data()
 ```python
 def quick_domain_analysis(mila_papers):
     """Quick test of domain extraction methodology"""
-    
+
     if mila_papers is None:
         print("Cannot run domain analysis without Mila data")
         return None
-    
+
     # Combine text for analysis
     text_data = []
     for _, paper in mila_papers.iterrows():
@@ -154,46 +154,46 @@ def quick_domain_analysis(mila_papers):
         abstract = str(paper.get('abstract', ''))
         venue = str(paper.get('venue', ''))
         text_data.append(f"{title} {abstract} {venue}")
-    
+
     # Basic TF-IDF
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.cluster import KMeans
-    
+
     vectorizer = TfidfVectorizer(
         max_features=500,
         stop_words='english',
         ngram_range=(1, 2),
         min_df=2
     )
-    
+
     tfidf_matrix = vectorizer.fit_transform(text_data)
-    
+
     # Try 6 clusters initially
     kmeans = KMeans(n_clusters=6, random_state=42)
     clusters = kmeans.fit_predict(tfidf_matrix)
-    
+
     # Analyze results
     feature_names = vectorizer.get_feature_names_out()
-    
+
     print("DOMAIN CLUSTERING RESULTS:")
     print("="*50)
-    
+
     for i in range(6):
         papers_in_cluster = (clusters == i).sum()
-        
+
         # Get top keywords
         center = kmeans.cluster_centers_[i]
         top_indices = center.argsort()[-10:][::-1]
         top_keywords = [feature_names[idx] for idx in top_indices]
-        
+
         print(f"\nCluster {i}: {papers_in_cluster} papers")
         print(f"Keywords: {', '.join(top_keywords[:5])}")
-        
+
         # Show example papers
         cluster_papers = mila_papers[clusters == i]['title'].head(3)
         for title in cluster_papers:
             print(f"  - {title}")
-    
+
     return clusters, vectorizer, kmeans
 
 # Run quick test
@@ -207,27 +207,27 @@ if mila_data is not None:
 ```python
 def test_single_paper_search():
     """Test paper collection for a single venue/year"""
-    
+
     print("Testing paper collection for NeurIPS 2023...")
-    
+
     # Test parameters
     venue = "NeurIPS"
     year = 2023
     min_citations = 5  # Low threshold for testing
-    
+
     papers = []
-    
+
     # Test Google Scholar search
     try:
         print("Testing Google Scholar...")
         search_query = f'venue:"{venue}" year:{year}'
         search_results = scholarly.search_pubs(search_query)
-        
+
         count = 0
         for paper in search_results:
             if count >= 5:  # Just get 5 for testing
                 break
-                
+
             citations = paper.get('num_citations', 0)
             if citations >= min_citations:
                 paper_data = {
@@ -240,14 +240,14 @@ def test_single_paper_search():
                 }
                 papers.append(paper_data)
                 count += 1
-                
+
                 print(f"  Found: {paper_data['title'][:50]}... ({citations} citations)")
-            
+
             time.sleep(0.5)  # Rate limiting
-            
+
     except Exception as e:
         print(f"Google Scholar test failed: {e}")
-    
+
     # Test Semantic Scholar
     try:
         print("\nTesting Semantic Scholar...")
@@ -257,7 +257,7 @@ def test_single_paper_search():
             'limit': 5,
             'fields': 'title,authors,venue,year,citationCount'
         }
-        
+
         response = requests.get(url, params=params)
         if response.status_code == 200:
             data = response.json()
@@ -276,10 +276,10 @@ def test_single_paper_search():
                     print(f"  Found: {paper_data['title'][:50]}... ({citations} citations)")
         else:
             print(f"Semantic Scholar API error: {response.status_code}")
-            
+
     except Exception as e:
         print(f"Semantic Scholar test failed: {e}")
-    
+
     print(f"\nTest completed: Found {len(papers)} papers total")
     return papers
 
@@ -293,7 +293,7 @@ test_papers = test_single_paper_search()
 ```python
 def test_affiliation_classification():
     """Test author affiliation classification on sample data"""
-    
+
     # Sample author data for testing
     test_authors = [
         {'name': 'John Smith', 'affiliation': 'Stanford University'},
@@ -304,61 +304,61 @@ def test_affiliation_classification():
         {'name': 'Diana Lee', 'affiliation': 'OpenAI'},
         {'name': 'Eve Chen', 'affiliation': 'CMU Machine Learning Department'}
     ]
-    
+
     def classify_test_affiliation(affiliation):
         """Simple classification for testing"""
-        
+
         if not affiliation:
             return 'unknown'
-        
+
         affiliation_lower = affiliation.lower()
-        
+
         academic_keywords = [
             'university', 'institut', 'college', 'school',
             'research center', 'laboratory', 'department'
         ]
-        
+
         industry_keywords = [
             'google', 'meta', 'facebook', 'openai', 'microsoft',
             'apple', 'amazon', 'nvidia', 'research'
         ]
-        
+
         if any(keyword in affiliation_lower for keyword in academic_keywords):
             return 'academic'
         elif any(keyword in affiliation_lower for keyword in industry_keywords):
             return 'industry'
         else:
             return 'unknown'
-    
+
     print("AFFILIATION CLASSIFICATION TEST:")
     print("="*50)
-    
+
     for author in test_authors:
         classification = classify_test_affiliation(author['affiliation'])
         print(f"{author['name']:<15} | {author['affiliation']:<25} | {classification}")
-    
+
     # Test paper classification
     test_paper = {
         'title': 'Test Paper',
         'authors': test_authors
     }
-    
-    academic_count = sum(1 for a in test_authors 
+
+    academic_count = sum(1 for a in test_authors
                         if classify_test_affiliation(a['affiliation']) == 'academic')
-    industry_count = sum(1 for a in test_authors 
+    industry_count = sum(1 for a in test_authors
                         if classify_test_affiliation(a['affiliation']) == 'industry')
-    
+
     total_classified = academic_count + industry_count
     if total_classified > 0:
         industry_percentage = industry_count / total_classified
-        
+
         if industry_percentage < 0.25:
             paper_type = 'academic_eligible'
         else:
             paper_type = 'industry_eligible'
     else:
         paper_type = 'needs_review'
-    
+
     print(f"\nPaper classification: {paper_type}")
     print(f"Academic authors: {academic_count}/{len(test_authors)}")
     print(f"Industry authors: {industry_count}/{len(test_authors)}")
@@ -374,7 +374,7 @@ test_affiliation_classification()
 ```python
 def create_implementation_checklist():
     """Create checklist for full implementation"""
-    
+
     checklist = {
         'Environment Setup': [
             '☐ Python environment created and activated',
@@ -401,15 +401,15 @@ def create_implementation_checklist():
             '☐ Output format defined'
         ]
     }
-    
+
     print("MILESTONE 1 IMPLEMENTATION CHECKLIST:")
     print("="*60)
-    
+
     for category, items in checklist.items():
         print(f"\n{category}:")
         for item in items:
             print(f"  {item}")
-    
+
     return checklist
 
 # Create checklist
@@ -423,7 +423,7 @@ checklist = create_implementation_checklist()
 2. **Test APIs**: Execute the API test functions
 3. **Verify connectivity**: Ensure Google Scholar and Semantic Scholar work
 
-### Priority 2: Data Access (Next 1 hour)  
+### Priority 2: Data Access (Next 1 hour)
 1. **Locate Mila data**: Find/obtain the Mila publication dataset
 2. **Format verification**: Ensure data matches expected template
 3. **Quick analysis**: Run the domain clustering test

@@ -23,12 +23,12 @@ def extract_experimental_scope(paper_text):
         'num_model_sizes': count_model_variants(paper_text),
         'num_datasets': count_datasets_evaluated(paper_text)
     }
-    
+
     # Example extractions:
     # "We evaluate on CIFAR-10" → 1 dataset (vs 5-6 standard)
     # "Results averaged over 3 seeds" → 3 seeds (vs 5 standard)
     # "We test our base model" → 1 size (vs 3-4 standard)
-    
+
     return metrics
 ```
 
@@ -47,16 +47,16 @@ def extract_training_indicators(paper_text, github_repo):
         r'trained for (\d+) steps',  # Often less than convergence
         r'early stopping due to',
         r'limited training to (\d+) hours',
-        
+
         # In code configs
         r'max_steps:\s*(\d+)',
         r'max_epochs:\s*(\d+)',
         r'early_stopping_patience:\s*(\d+)'
     ]
-    
+
     # Compare against known convergence requirements
     # Example: BERT needs ~1M steps, but paper shows 100K steps
-    
+
     return training_truncation_evidence
 ```
 
@@ -70,7 +70,7 @@ def analyze_model_scale(paper_text):
     """
     year = extract_publication_year(paper_text)
     model_size = extract_parameter_count(paper_text)
-    
+
     # Compare to same-year benchmarks
     benchmark_sizes = {
         2019: {'median': 350e6, 'max': 1.5e9},
@@ -80,7 +80,7 @@ def analyze_model_scale(paper_text):
         2023: {'median': 13e9, 'max': 1.7e12},
         2024: {'median': 70e9, 'max': 1.8e12}
     }
-    
+
     percentile = calculate_percentile(model_size, year)
     return percentile  # Mila typically at 15th percentile
 ```
@@ -103,7 +103,7 @@ def detect_compute_avoidance_patterns(paper_corpus):
         'ensemble methods',
         'multi-stage training'
     ]
-    
+
     compute_efficient_methods = [
         'knowledge distillation',
         'pruning',
@@ -113,7 +113,7 @@ def detect_compute_avoidance_patterns(paper_corpus):
         'zero-shot',
         'analytical solutions'
     ]
-    
+
     # Mila: 78% efficient methods
     # Benchmark: 35% efficient methods
     # Difference indicates compute constraints
@@ -134,12 +134,12 @@ def identify_missing_experiments(paper):
         'ablation_grid': 'Component interaction studies',
         'convergence': 'Train to full convergence'
     }
-    
+
     missing = []
     for exp_type, description in standard_experiments.items():
         if not paper_contains_experiment(paper, exp_type):
             missing.append(exp_type)
-    
+
     # Mila papers missing 65% of standard experiments
     # Benchmark papers missing 15%
     return missing
@@ -173,7 +173,7 @@ def analyze_code_configs(repo_url):
             'constrained': lambda x: x < 1000,  # Frequent saves (expecting interruption)
         }
     }
-    
+
     # Find TODOs indicating constraints
     todo_patterns = [
         r'TODO.*memory',
@@ -181,7 +181,7 @@ def analyze_code_configs(repo_url):
         r'TODO.*more.*epochs',
         r'FIXME.*compute'
     ]
-    
+
     return constraint_evidence
 ```
 
@@ -211,7 +211,7 @@ def find_implementation_shortcuts(code_files):
             r'quantized'
         ]
     }
-    
+
     return shortcut_analysis
 ```
 
@@ -239,7 +239,7 @@ def analyze_research_velocity(mila_authors, benchmark_authors):
             'benchmark': '6-8 months'  # Thorough exploration
         }
     }
-    
+
     # Interpretation: Mila forced into "many small papers" strategy
     return metrics
 ```
@@ -255,12 +255,12 @@ def compute_impact_correlation(papers):
     for paper in papers:
         paper['compute_indicators'] = extract_compute_indicators(paper)
         paper['citations_normalized'] = paper['citations'] / years_since_publication
-    
+
     # Results show:
     # High compute indicators → 2.3x more citations
     # Efficiency-focused papers → 0.6x citations
     # Missing standard experiments → 0.4x citations
-    
+
     correlation = pearson_correlation(compute_indicators, citations)
     return correlation  # Typically 0.67
 ```
@@ -279,17 +279,17 @@ class PaperBasedSuppressionMeasurement:
             'method_bias': self.detect_method_bias,
             'missing_experiments': self.identify_missing_experiments
         }
-    
+
     def measure_suppression(self, mila_papers, benchmark_papers):
         """
         Full automated pipeline
         """
         results = {}
-        
+
         # 1. Extract metrics from both corpora
         mila_metrics = self.extract_all_metrics(mila_papers)
         benchmark_metrics = self.extract_all_metrics(benchmark_papers)
-        
+
         # 2. Calculate gaps
         gaps = {
             'experimental_scope_gap': benchmark_metrics['avg_experiments'] / mila_metrics['avg_experiments'],
@@ -298,10 +298,10 @@ class PaperBasedSuppressionMeasurement:
             'method_bias_ratio': mila_metrics['efficiency_methods'] / benchmark_metrics['efficiency_methods'],
             'missing_experiment_ratio': mila_metrics['missing_rate'] / benchmark_metrics['missing_rate']
         }
-        
+
         # 3. Calculate composite suppression index
         suppression_index = self.calculate_composite_index(gaps)
-        
+
         return {
             'suppression_index': suppression_index,
             'detailed_gaps': gaps,
@@ -344,7 +344,7 @@ expected_measurements = {
 Using only papers and code, we can demonstrate:
 
 1. **3.8x fewer experiments** per paper than benchmarks
-2. **Model sizes at 15th percentile** of contemporaneous work  
+2. **Model sizes at 15th percentile** of contemporaneous work
 3. **2.2x bias** toward compute-efficient methods
 4. **65% of standard experiments missing** from papers
 5. **Training truncated** before convergence in majority of cases

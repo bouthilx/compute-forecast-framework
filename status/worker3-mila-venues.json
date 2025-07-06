@@ -1,6 +1,6 @@
 {
   "timestamp": "2024-12-20 18:20:00",
-  "status": "completed", 
+  "status": "completed",
   "domain_results_loaded": true,
   "venues_by_domain": {
     "total_venues_extracted": 575,

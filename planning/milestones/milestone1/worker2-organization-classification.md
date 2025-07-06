@@ -27,69 +27,69 @@ from ...core.logging import setup_logging
 
 class OrganizationDatabase:
     """Manages academic and industry organization databases"""
-    
+
     def __init__(self):
         self.logger = setup_logging()
         self._academic_orgs = None
         self._industry_orgs = None
         self._load_organizations()
-    
+
     def _load_organizations(self):
         """Load organization data from configuration"""
         try:
             with open('config/organizations.yaml', 'r') as f:
                 org_data = yaml.safe_load(f)
-            
+
             # Flatten academic organizations
             academic_data = org_data['academic_organizations']
             self._academic_orgs = []
             for tier, orgs in academic_data.items():
                 self._academic_orgs.extend(orgs)
-            
-            # Flatten industry organizations  
+
+            # Flatten industry organizations
             industry_data = org_data['industry_organizations']
             self._industry_orgs = []
             for category, orgs in industry_data.items():
                 self._industry_orgs.extend(orgs)
-            
+
             self.logger.info(f"Loaded {len(self._academic_orgs)} academic and {len(self._industry_orgs)} industry organizations")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to load organizations: {e}")
             raise
-    
+
     def get_academic_organizations(self) -> List[str]:
         """Get list of academic organizations"""
         return self._academic_orgs.copy()
-    
+
     def get_industry_organizations(self) -> List[str]:
         """Get list of industry organizations"""
         return self._industry_orgs.copy()
-    
+
     def is_academic_organization(self, affiliation: str) -> bool:
         """Check if affiliation matches academic organization"""
         affiliation_lower = affiliation.lower()
         return any(org.lower() in affiliation_lower for org in self._academic_orgs)
-    
+
     def is_industry_organization(self, affiliation: str) -> bool:
         """Check if affiliation matches industry organization"""
         affiliation_lower = affiliation.lower()
         return any(org.lower() in affiliation_lower for org in self._industry_orgs)
-    
+
     def get_organization_match(self, affiliation: str) -> Dict[str, str]:
         """Get the specific organization that matches affiliation"""
         affiliation_lower = affiliation.lower()
-        
+
         # Check academic first
         for org in self._academic_orgs:
             if org.lower() in affiliation_lower:
                 return {'type': 'academic', 'organization': org}
-        
+
         # Check industry
         for org in self._industry_orgs:
             if org.lower() in affiliation_lower:
                 return {'type': 'industry', 'organization': org}
-        
+
         return {'type': 'unknown', 'organization': None}
 ```
 
@@ -119,21 +119,21 @@ from ...core.logging import setup_logging
 class AffiliationParser:
     def __init__(self):
         self.academic_keywords = [
-            'university', 'institut', 'college', 'school', 
+            'university', 'institut', 'college', 'school',
             'research center', 'laboratory', 'department of', 'faculty of'
         ]
-        
+
         self.industry_keywords = [
-            'corporation', 'inc.', 'ltd.', 'llc', 'labs', 
+            'corporation', 'inc.', 'ltd.', 'llc', 'labs',
             'research lab', 'ai lab', 'technologies'
         ]
-    
+
     def normalize_affiliation(self, raw_affiliation):
         """Clean and standardize affiliation strings"""
         # Remove common suffixes, standardize abbreviations
         # Handle international character encoding
         # Extract primary institution name
-        
+
     def extract_all_affiliations(self, author_list):
         """Process all authors and extract clean affiliations"""
 ```
@@ -154,41 +154,41 @@ from ...core.logging import setup_logging
 class PaperClassifier(BaseAnalyzer):
     def classify_paper_authorship(self, paper, confidence_threshold=0.7):
         """Classify paper as academic/industry eligible with confidence"""
-        
+
         authors = paper.get('authors', [])
         academic_count = 0
         industry_count = 0
         unknown_count = 0
-        
+
         author_details = []
-        
+
         for author in authors:
             affiliation_classification = self.classify_affiliation(
                 author.get('affiliation', '')
             )
-            
+
             author_details.append({
                 'name': author.get('name', ''),
                 'affiliation': author.get('affiliation', ''),
                 'type': affiliation_classification['type'],
                 'confidence': affiliation_classification['confidence']
             })
-            
+
             if affiliation_classification['type'] == 'academic':
                 academic_count += 1
             elif affiliation_classification['type'] == 'industry':
                 industry_count += 1
             else:
                 unknown_count += 1
-        
+
         return self._make_final_classification(
             academic_count, industry_count, unknown_count, author_details
         )
-    
+
     def _make_final_classification(self, academic_count, industry_count, unknown_count, author_details):
         """Apply 25% threshold rule with confidence scoring"""
         total_classified = academic_count + industry_count
-        
+
         if total_classified == 0:
             return {
                 'category': 'needs_manual_review',
@@ -196,21 +196,21 @@ class PaperClassifier(BaseAnalyzer):
                 'confidence': 0.0,
                 'author_details': author_details
             }
-        
+
         industry_percentage = industry_count / total_classified
         academic_percentage = academic_count / total_classified
-        
+
         # Classification logic: <25% industry = academic eligible
         if industry_percentage < 0.25:
             category = 'academic_eligible'
             confidence = academic_percentage
         elif academic_percentage < 0.25:
-            category = 'industry_eligible'  
+            category = 'industry_eligible'
             confidence = industry_percentage
         else:
             category = 'needs_manual_review'
             confidence = 0.5
-        
+
         return {
             'category': category,
             'academic_count': academic_count,
@@ -237,10 +237,10 @@ from ...core.logging import setup_logging
 class ClassificationValidator(BaseValidator):
     def validate_known_papers(self):
         """Test classification on papers with known academic/industry status"""
-        
+
     def flag_edge_cases(self, classification_results):
         """Identify papers needing manual review"""
-        
+
     def generate_validation_report(self):
         """Summary of classification accuracy and edge cases"""
 ```

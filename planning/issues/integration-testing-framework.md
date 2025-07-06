@@ -63,12 +63,12 @@ mock_data_generators:
     format: pandas.DataFrame
     schema: [timestamp, user_id, compute_hours, domain, allocation_limit]
     variations: [normal, missing_data, outliers, edge_cases]
-  
+
   publication_data:
     format: pandas.DataFrame
     schema: [paper_id, authors, venue, year, domain]
     variations: [normal, incomplete_authors, temporal_gaps]
-  
+
   infrastructure_timeline:
     format: pandas.DataFrame
     schema: [date, capacity_change, hardware_type, total_capacity]
@@ -89,16 +89,16 @@ def test_complete_pipeline():
     constraint_scores = test_constraint_detection(mock_usage_data)
     weighted_data = test_data_weighting(mock_usage_data, mock_infrastructure)
     benchmarks = test_external_benchmarks(mock_external_data)
-    
+
     # Phase 2: Iterative components
     initial_clusters = test_pattern_granularity(weighted_data, constraint_scores)
     collaboration_graph = test_coauthorship_analysis(mock_publications, initial_clusters)
     final_clusters = test_iterative_convergence(initial_clusters, collaboration_graph)
-    
+
     # Phase 3: Integration
     growth_rates = test_growth_methodology(all_phase2_outputs)
     uncertainty_bounds = test_uncertainty_quantification(all_outputs)
-    
+
     # Validation
     validate_end_to_end_consistency(uncertainty_bounds)
 ```
@@ -139,18 +139,18 @@ def test_circular_dependency_convergence():
     initial_clusters = generate_mock_clusters()
     prev_clusters = None
     iteration = 0
-    
+
     while iteration < max_iterations:
         collaboration_graph = coauthorship_analysis(mock_data, initial_clusters)
         new_clusters = pattern_granularity(weighted_data, collaboration_graph)
-        
+
         if clusters_converged(new_clusters, prev_clusters):
             break
-            
+
         prev_clusters = initial_clusters
         initial_clusters = new_clusters
         iteration += 1
-    
+
     assert iteration < max_iterations, "Circular dependency failed to converge"
     validate_cluster_quality(new_clusters)
 ```

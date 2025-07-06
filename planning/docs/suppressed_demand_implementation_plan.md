@@ -43,11 +43,11 @@ def map_papers_to_repos(papers):
         r'code available at.*github',
         r'github\.io/[\w-]+'
     ]
-    
+
     for paper in papers:
         paper['repo_url'] = extract_github_url(paper['text'])
         paper['has_code'] = paper['repo_url'] is not None
-    
+
     return papers
 ```
 
@@ -65,37 +65,37 @@ class SuppressionMetricExtractor:
             'training_indicators': TrainingTruncationDetector(),
             'missing_experiments': MissingExperimentIdentifier()
         }
-    
+
     def extract_all_metrics(self, paper):
         results = {}
-        
+
         # 1. Experimental Scope
         results['num_ablations'] = self.count_ablations(paper)
         results['num_seeds'] = self.extract_seeds(paper)
         results['num_baselines'] = self.count_baselines(paper)
         results['num_datasets'] = self.count_datasets(paper)
-        
+
         # 2. Model Scale
         results['parameter_count'] = self.extract_parameters(paper)
         results['year'] = self.extract_year(paper)
         results['scale_percentile'] = self.calculate_percentile(
-            results['parameter_count'], 
+            results['parameter_count'],
             results['year']
         )
-        
+
         # 3. Method Classification
         results['is_efficiency_focused'] = self.detect_efficiency_focus(paper)
         results['method_type'] = self.classify_method(paper)
-        
+
         # 4. Training Indicators
         results['training_steps'] = self.extract_training_steps(paper)
         results['early_stopping'] = self.detect_early_stopping(paper)
         results['convergence_achieved'] = self.check_convergence(paper)
-        
+
         # 5. Missing Experiments
         results['missing_experiments'] = self.identify_missing(paper)
         results['experiment_completeness'] = self.calculate_completeness(paper)
-        
+
         return results
 ```
 
@@ -111,7 +111,7 @@ class CodeConstraintAnalyzer:
             'todo_constraints': self.extract_todo_mentions(),
             'config_limits': self.analyze_configs()
         }
-        
+
         # Key patterns to find
         constraint_patterns = {
             'small_batch': r'batch_size["\s:=]+(\d+)',  # < 32
@@ -120,7 +120,7 @@ class CodeConstraintAnalyzer:
             'checkpoint_freq': r'save_steps["\s:=]+(\d+)',  # < 1000
             'data_subset': r'\.sample\(|max_examples|subset'
         }
-        
+
         return constraints
 ```
 
@@ -152,7 +152,7 @@ def calculate_suppression_gaps(mila_metrics, benchmark_metrics):
             'gap': 0.50
         }
     }
-    
+
     # Composite suppression index
     suppression_index = weighted_average([
         gaps['experimental_scope_gap']['suppression'] * 0.30,
@@ -160,7 +160,7 @@ def calculate_suppression_gaps(mila_metrics, benchmark_metrics):
         (gaps['method_selection_bias']['efficiency_ratio'] - 1) / 3 * 0.25,
         gaps['missing_experiments']['gap'] * 0.20
     ])
-    
+
     return suppression_index  # ~0.68
 ```
 
@@ -192,7 +192,7 @@ def compile_evidence_portfolio():
             ]
         }
     }
-    
+
     return evidence
 ```
 
@@ -212,7 +212,7 @@ From the GitHub issue, M4-1 focuses on:
 extraction_config = {
     "templates": {
         "NLP": "nlp_training_v1",
-        "CV": "cv_training_v1", 
+        "CV": "cv_training_v1",
         "RL": "rl_training_v1"
     },
     "suppression_indicators": {  # NEW SECTION
@@ -279,7 +279,7 @@ def perform_suppression_analysis(mila_extractions, benchmark_data):
         'temporal_suppression_trends': analyze_by_year(),
         'evidence_strength': assess_statistical_significance()
     }
-    
+
     return analysis
 ```
 
@@ -293,17 +293,17 @@ class IntegratedPaperAnalysis:
     def __init__(self):
         self.extractor = ComputeRequirementExtractor()  # Original
         self.suppression_analyzer = SuppressionAnalyzer()  # New
-    
+
     def process_papers(self, papers):
         results = []
-        
+
         for paper in papers:
             # Original extraction
             compute_reqs = self.extractor.extract(paper)
-            
+
             # Suppression analysis
             suppression = self.suppression_analyzer.analyze(paper)
-            
+
             # Combine results
             results.append({
                 'paper_id': paper['id'],
@@ -311,7 +311,7 @@ class IntegratedPaperAnalysis:
                 'suppression_indicators': suppression,
                 'composite_score': self.calculate_composite(compute_reqs, suppression)
             })
-        
+
         return results
 ```
 

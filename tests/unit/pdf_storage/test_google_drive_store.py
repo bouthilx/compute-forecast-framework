@@ -1,7 +1,7 @@
 """Tests for GoogleDriveStore class."""
 
 import unittest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from pathlib import Path
 import tempfile
 import os
@@ -17,8 +17,10 @@ class TestGoogleDriveStore(unittest.TestCase):
         self.mock_credentials_path = "/fake/path/to/credentials.json"
         self.mock_folder_id = "fake_folder_id"
 
-    @patch('src.pdf_storage.google_drive_store.build')
-    @patch('src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file')
+    @patch("src.pdf_storage.google_drive_store.build")
+    @patch(
+        "src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+    )
     def test_initialization(self, mock_credentials, mock_build):
         """Test GoogleDriveStore initialization."""
         mock_credentials.return_value = Mock()
@@ -30,12 +32,13 @@ class TestGoogleDriveStore(unittest.TestCase):
         self.assertEqual(store.folder_id, self.mock_folder_id)
         self.assertEqual(store._service, mock_service)
         mock_credentials.assert_called_once_with(
-            self.mock_credentials_path,
-            scopes=['https://www.googleapis.com/auth/drive']
+            self.mock_credentials_path, scopes=["https://www.googleapis.com/auth/drive"]
         )
 
-    @patch('src.pdf_storage.google_drive_store.build')
-    @patch('src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file')
+    @patch("src.pdf_storage.google_drive_store.build")
+    @patch(
+        "src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+    )
     def test_test_connection_success(self, mock_credentials, mock_build):
         """Test successful connection test."""
         mock_credentials.return_value = Mock()
@@ -47,7 +50,7 @@ class TestGoogleDriveStore(unittest.TestCase):
         mock_service.files().get().execute.return_value = {
             "id": self.mock_folder_id,
             "name": "Test Folder",
-            "mimeType": "application/vnd.google-apps.folder"
+            "mimeType": "application/vnd.google-apps.folder",
         }
 
         store = GoogleDriveStore(self.mock_credentials_path, self.mock_folder_id)
@@ -55,8 +58,10 @@ class TestGoogleDriveStore(unittest.TestCase):
 
         self.assertTrue(result)
 
-    @patch('src.pdf_storage.google_drive_store.build')
-    @patch('src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file')
+    @patch("src.pdf_storage.google_drive_store.build")
+    @patch(
+        "src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+    )
     def test_test_connection_failure(self, mock_credentials, mock_build):
         """Test connection test failure."""
         mock_credentials.return_value = Mock()
@@ -71,9 +76,11 @@ class TestGoogleDriveStore(unittest.TestCase):
 
         self.assertFalse(result)
 
-    @patch('src.pdf_storage.google_drive_store.build')
-    @patch('src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file')
-    @patch('src.pdf_storage.google_drive_store.MediaFileUpload')
+    @patch("src.pdf_storage.google_drive_store.build")
+    @patch(
+        "src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+    )
+    @patch("src.pdf_storage.google_drive_store.MediaFileUpload")
     def test_upload_file_success(self, mock_media_upload, mock_credentials, mock_build):
         """Test successful file upload."""
         mock_credentials.return_value = Mock()
@@ -84,13 +91,13 @@ class TestGoogleDriveStore(unittest.TestCase):
         # Mock successful upload
         mock_service.files().create().execute.return_value = {
             "id": "uploaded_file_id",
-            "name": "test.pdf"
+            "name": "test.pdf",
         }
 
         store = GoogleDriveStore(self.mock_credentials_path, self.mock_folder_id)
 
         # Create temporary file for testing
-        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
             temp_file.write(b"mock pdf content")
             temp_path = Path(temp_file.name)
 
@@ -100,8 +107,10 @@ class TestGoogleDriveStore(unittest.TestCase):
         finally:
             os.unlink(temp_path)
 
-    @patch('src.pdf_storage.google_drive_store.build')
-    @patch('src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file')
+    @patch("src.pdf_storage.google_drive_store.build")
+    @patch(
+        "src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+    )
     def test_upload_file_failure(self, mock_credentials, mock_build):
         """Test file upload failure."""
         mock_credentials.return_value = Mock()
@@ -114,7 +123,7 @@ class TestGoogleDriveStore(unittest.TestCase):
         store = GoogleDriveStore(self.mock_credentials_path, self.mock_folder_id)
 
         # Create temporary file for testing
-        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
             temp_file.write(b"mock pdf content")
             temp_path = Path(temp_file.name)
 
@@ -124,8 +133,10 @@ class TestGoogleDriveStore(unittest.TestCase):
         finally:
             os.unlink(temp_path)
 
-    @patch('src.pdf_storage.google_drive_store.build')
-    @patch('src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file')
+    @patch("src.pdf_storage.google_drive_store.build")
+    @patch(
+        "src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+    )
     def test_file_exists(self, mock_credentials, mock_build):
         """Test file existence check."""
         mock_credentials.return_value = Mock()
@@ -142,8 +153,10 @@ class TestGoogleDriveStore(unittest.TestCase):
 
         self.assertTrue(result)
 
-    @patch('src.pdf_storage.google_drive_store.build')
-    @patch('src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file')
+    @patch("src.pdf_storage.google_drive_store.build")
+    @patch(
+        "src.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+    )
     def test_file_not_exists(self, mock_credentials, mock_build):
         """Test file not exists check."""
         mock_credentials.return_value = Mock()
@@ -159,5 +172,5 @@ class TestGoogleDriveStore(unittest.TestCase):
         self.assertFalse(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

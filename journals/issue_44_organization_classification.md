@@ -59,7 +59,7 @@ All 23 unit tests now pass:
 
 The enhanced classification system uses a multi-stage matching approach:
 1. Exact match (0.95 confidence)
-2. Domain match for emails (0.85 confidence)  
+2. Domain match for emails (0.85 confidence)
 3. Alias match (0.9 confidence)
 4. Fuzzy match with 80% threshold (0.7-0.85 confidence)
 5. Keyword match (up to 0.7 confidence)

@@ -86,7 +86,7 @@ Where:
 
 ### Challenge 1: Incomplete Reporting
 **Problem**: Papers don't always report computational details
-**Solution**: 
+**Solution**:
 - Focus on venues/conferences with better reporting standards
 - Use computational details when available, infer patterns for similar work
 - Weight extraction by paper impact/citations

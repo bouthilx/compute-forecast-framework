@@ -5,7 +5,7 @@ Identify and organize all papers needed for the three-way temporal analysis (Mil
 
 ## Success Criteria
 - ✅ Academic benchmark papers selected (5-10 per domain per year, 2019-2024)
-- ✅ Industry benchmark papers selected (5-10 per domain per year, 2019-2024)  
+- ✅ Industry benchmark papers selected (5-10 per domain per year, 2019-2024)
 - ✅ Mila paper corpus organized by domain and year (2019-2024)
 - ✅ Total: 360-720 benchmark papers + complete Mila corpus access
 - ✅ Citation data verified for ALL selected papers
@@ -13,10 +13,10 @@ Identify and organize all papers needed for the three-way temporal analysis (Mil
 ## Detailed Tasks
 
 ### Academic Benchmark Paper Selection
-- **Target**: 5-10 papers per domain per year (2019-2024) 
+- **Target**: 5-10 papers per domain per year (2019-2024)
 - **Domain identification**: Based on Mila's publication patterns and research focus areas
 - **Venue identification**: Conferences where Mila researchers publish (extracted from corpus analysis)
-- **Selection criteria**: 
+- **Selection criteria**:
   - Top-cited academic papers in Mila-relevant venues (majority academic authors)
   - Author affiliation filter: <25% industry authors allowed (collaborative research acceptable)
   - Citation data REQUIRED - no papers without verifiable citation counts

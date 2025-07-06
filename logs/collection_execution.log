@@ -19,7 +19,7 @@
 2025-06-26 19:40:57,799 - src.data.collectors.collection_executor - INFO - Collection environment setup complete!
 2025-06-26 19:40:57,799 - src.data.collectors.domain_collector - INFO - Starting domain collection with target 8 papers per domain/year
 2025-06-26 19:40:57,799 - src.data.collectors.domain_collector - INFO - Collecting papers for 5 domains: ['Computer Vision & Medical Imaging', 'Natural Language Processing', 'Reinforcement Learning & Robotics', 'Graph Learning & Network Analysis', 'Scientific Computing & Applications']
-2025-06-26 19:40:57,799 - src.data.collectors.domain_collector - INFO - 
+2025-06-26 19:40:57,799 - src.data.collectors.domain_collector - INFO -
 === Collecting papers for Computer Vision & Medical Imaging ===
 2025-06-26 19:40:57,799 - src.data.collectors.domain_collector - INFO - Processing Computer Vision & Medical Imaging - 2019
 2025-06-26 19:40:57,799 - src.analysis.venues.collection_strategy - INFO - Generating collection strategy for domain: Computer Vision & Medical Imaging
@@ -1561,7 +1561,7 @@
 2025-06-26 22:01:08,180 - src.data.collectors.collection_executor - INFO - Collection environment setup complete!
 2025-06-26 22:01:08,181 - src.data.collectors.domain_collector - INFO - Starting domain collection with target 8 papers per domain/year
 2025-06-26 22:01:08,181 - src.data.collectors.domain_collector - INFO - Collecting papers for 5 domains: ['Computer Vision & Medical Imaging', 'Natural Language Processing', 'Reinforcement Learning & Robotics', 'Graph Learning & Network Analysis', 'Scientific Computing & Applications']
-2025-06-26 22:01:08,181 - src.data.collectors.domain_collector - INFO - 
+2025-06-26 22:01:08,181 - src.data.collectors.domain_collector - INFO -
 === Collecting papers for Computer Vision & Medical Imaging ===
 2025-06-26 22:01:08,181 - src.data.collectors.domain_collector - INFO - Processing Computer Vision & Medical Imaging - 2019
 2025-06-26 22:01:08,181 - src.analysis.venues.collection_strategy - INFO - Generating collection strategy for domain: Computer Vision & Medical Imaging
@@ -2177,7 +2177,7 @@
 2025-06-26 22:15:51,908 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'Enhanced breast cancer diagnosis through integration of computer vision with fusion based joint transfer learning using multi modality medical images': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 22:15:51,908 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'Applications of Medical Image Processing and Computer Vision in Healthcare': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 22:15:51,908 - src.data.collectors.domain_collector - INFO -   ✓ Collected 8 papers for Computer Vision & Medical Imaging 2024
-2025-06-26 22:15:51,908 - src.data.collectors.domain_collector - INFO - 
+2025-06-26 22:15:51,908 - src.data.collectors.domain_collector - INFO -
 === Collecting papers for Natural Language Processing ===
 2025-06-26 22:15:51,908 - src.data.collectors.domain_collector - INFO - Processing Natural Language Processing - 2019
 2025-06-26 22:15:51,908 - src.analysis.venues.collection_strategy - INFO - Generating collection strategy for domain: Natural Language Processing
@@ -2775,7 +2775,7 @@
 2025-06-26 22:24:58,675 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'Practical Language Testing': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 22:24:58,675 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'Body Language Communication': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 22:24:58,675 - src.data.collectors.domain_collector - INFO -   ✓ Collected 3 papers for Natural Language Processing 2024
-2025-06-26 22:24:58,675 - src.data.collectors.domain_collector - INFO - 
+2025-06-26 22:24:58,675 - src.data.collectors.domain_collector - INFO -
 === Collecting papers for Reinforcement Learning & Robotics ===
 2025-06-26 22:24:58,676 - src.data.collectors.domain_collector - INFO - Processing Reinforcement Learning & Robotics - 2019
 2025-06-26 22:24:58,676 - src.analysis.venues.collection_strategy - INFO - Generating collection strategy for domain: Reinforcement Learning & Robotics
@@ -3410,7 +3410,7 @@
 2025-06-26 22:40:45,315 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'Autonomous navigation of mobile robots in unknown environments using off-policy reinforcement learning with curriculum learning': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 22:40:45,315 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'Path Planning of Autonomous Mobile Robot in Comprehensive Unknown Environment Using Deep Reinforcement Learning': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 22:40:45,315 - src.data.collectors.domain_collector - INFO -   ✓ Collected 8 papers for Reinforcement Learning & Robotics 2024
-2025-06-26 22:40:45,315 - src.data.collectors.domain_collector - INFO - 
+2025-06-26 22:40:45,315 - src.data.collectors.domain_collector - INFO -
 === Collecting papers for Graph Learning & Network Analysis ===
 2025-06-26 22:40:45,316 - src.data.collectors.domain_collector - INFO - Processing Graph Learning & Network Analysis - 2019
 2025-06-26 22:40:45,316 - src.analysis.venues.collection_strategy - INFO - Generating collection strategy for domain: Graph Learning & Network Analysis
@@ -4031,7 +4031,7 @@
 2025-06-26 22:56:24,491 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'Meta-DHGNN: method for CRS-related cytokines analysis in CAR-T therapy based on meta-learning directed heterogeneous graph neural network': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 22:56:24,491 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'Peer Interaction Dynamics and Second Language Learning Trajectories During Study Abroad: A Longitudinal Investigation Using Dynamic Computational Social Network Analysis': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 22:56:24,491 - src.data.collectors.domain_collector - INFO -   ✓ Collected 8 papers for Graph Learning & Network Analysis 2024
-2025-06-26 22:56:24,491 - src.data.collectors.domain_collector - INFO - 
+2025-06-26 22:56:24,491 - src.data.collectors.domain_collector - INFO -
 === Collecting papers for Scientific Computing & Applications ===
 2025-06-26 22:56:24,491 - src.data.collectors.domain_collector - INFO - Processing Scientific Computing & Applications - 2019
 2025-06-26 22:56:24,491 - src.analysis.venues.collection_strategy - INFO - Generating collection strategy for domain: Scientific Computing & Applications
@@ -4626,5 +4626,5 @@
 2025-06-26 23:09:19,074 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'Research on Application Performance Analysis Methods for Scientific Computing': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 23:09:19,074 - src.data.collectors.domain_collector - WARNING - Computational analysis failed for paper 'World Scientific Series on Future Computing Paradigms and Applications': 'ComputationalAnalyzer' object has no attribute 'analyze_paper_content'
 2025-06-26 23:09:19,074 - src.data.collectors.domain_collector - INFO -   ✓ Collected 8 papers for Scientific Computing & Applications 2024
-2025-06-26 23:09:19,075 - src.data.collectors.domain_collector - INFO - 
+2025-06-26 23:09:19,075 - src.data.collectors.domain_collector - INFO -
 Collection complete! Total papers: 187

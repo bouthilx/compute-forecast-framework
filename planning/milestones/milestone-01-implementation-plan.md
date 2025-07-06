@@ -126,16 +126,16 @@ from sklearn.cluster import KMeans
 def collect_benchmark_papers():
     # Step 1: Analyze Mila corpus
     mila_analysis = analyze_mila_publications()
-    
+
     # Step 2: Collect academic benchmarks
     academic_papers = collect_academic_benchmarks(mila_analysis)
-    
-    # Step 3: Collect industry benchmarks  
+
+    # Step 3: Collect industry benchmarks
     industry_papers = collect_industry_benchmarks(mila_analysis)
-    
+
     # Step 4: Validate and organize
     validated_papers = validate_paper_collection(academic_papers, industry_papers)
-    
+
     return validated_papers
 ```
 
@@ -144,7 +144,7 @@ def collect_benchmark_papers():
 ### Hour-by-Hour Breakdown
 - **Hours 1-3**: Mila corpus analysis → domains, venues, patterns
 - **Hours 4-7**: Academic benchmark collection → 180-360 papers
-- **Hours 7-9**: Industry benchmark collection → 180-360 papers  
+- **Hours 7-9**: Industry benchmark collection → 180-360 papers
 - **Hours 9-10**: Quality control and validation
 
 ### Deliverables

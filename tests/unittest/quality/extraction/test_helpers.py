@@ -3,12 +3,13 @@ Test helpers for extraction validation tests.
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Optional
 
 
 @dataclass
 class MockComputationalAnalysis:
     """Mock computational analysis with individual fields for testing."""
+
     gpu_hours: Optional[float] = None
     gpu_type: Optional[str] = None
     gpu_count: Optional[int] = None
@@ -23,7 +24,7 @@ class MockComputationalAnalysis:
     framework: Optional[str] = None
     cost_estimate: Optional[float] = None
     model_size_gb: Optional[float] = None
-    
+
     def __post_init__(self):
         """Make the object dict-like for compatibility."""
         self.__dict__.update(self.__dict__)

@@ -15,29 +15,29 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-    
+
     - name: Install uv
       uses: astral-sh/setup-uv@v3
       with:
         version: ${{ env.UV_VERSION }}
         enable-cache: true
-    
+
     - name: Install dependencies
       run: |
         uv sync --frozen --all-extras
-    
+
     - name: Run tests with coverage
       run: |
         uv run pytest tests/ -v --cov=compute_forecast --cov-report=xml --cov-report=term
-    
+
     - name: Upload coverage
       uses: codecov/codecov-action@v4
       with:
@@ -48,33 +48,33 @@ jobs:
   lint:
     name: Lint & Format Check
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-    
+
     - name: Install uv
       uses: astral-sh/setup-uv@v3
       with:
         version: ${{ env.UV_VERSION }}
         enable-cache: true
-    
+
     - name: Install dependencies
       run: |
         uv sync --frozen --all-extras
-    
+
     - name: Run ruff check
       run: |
         uv run ruff check . --output-format=github
-    
+
     - name: Run ruff format check
       run: |
         uv run ruff format . --check
-    
+
     - name: Run mypy
       run: |
         uv run mypy compute_forecast --install-types --non-interactive
@@ -82,14 +82,14 @@ jobs:
   pre-commit:
     name: Pre-commit
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-    
+
     - name: Run pre-commit
       uses: pre-commit/action@v3.0.1

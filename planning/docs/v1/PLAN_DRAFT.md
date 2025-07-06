@@ -123,11 +123,4 @@ Rapports
 
 Est-ce qu’on voudrait une mesure dans le genre de GPU/articles. Montrer qu’on fait beaucoup avec pas beaucoup.
 
-Métrique de productivité, c’est quoi? Nombre d’articles? Citations? 
-
-
-
-
-
-
-
+Métrique de productivité, c’est quoi? Nombre d’articles? Citations?

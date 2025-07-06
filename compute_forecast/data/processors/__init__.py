@@ -1,7 +1,12 @@
 """Data processors for venue normalization, deduplication, citation analysis, and filtering."""
 
 # Venue normalization imports
-from .venue_normalizer import VenueNormalizer, VenueNormalizationResult, BatchNormalizationResult, VenueMappingStats
+from .venue_normalizer import (
+    VenueNormalizer,
+    VenueNormalizationResult,
+    BatchNormalizationResult,
+    VenueMappingStats,
+)
 from .venue_mapping_loader import VenueMappingLoader, VenueConfig
 from .fuzzy_venue_matcher import FuzzyVenueMatcher, FuzzyMatchResult
 
@@ -17,29 +22,29 @@ from .citation_statistics import (
     CitationFilterResult,
     BreakthroughPaper,
     AdaptiveThreshold,
-    FilteringQualityReport
+    FilteringQualityReport,
 )
 
 __all__ = [
     # Venue normalization exports
-    'VenueNormalizer',
-    'VenueNormalizationResult', 
-    'BatchNormalizationResult',
-    'VenueMappingStats',
-    'VenueMappingLoader',
-    'VenueConfig',
-    'FuzzyVenueMatcher',
-    'FuzzyMatchResult',
+    "VenueNormalizer",
+    "VenueNormalizationResult",
+    "BatchNormalizationResult",
+    "VenueMappingStats",
+    "VenueMappingLoader",
+    "VenueConfig",
+    "FuzzyVenueMatcher",
+    "FuzzyMatchResult",
     # Citation analysis exports
     "CitationAnalyzer",
     "BreakthroughDetector",
     "AdaptiveThresholdCalculator",
     "CitationConfig",
     "CitationAnalysisReport",
-    "VenueCitationStats", 
+    "VenueCitationStats",
     "YearCitationStats",
     "CitationFilterResult",
     "BreakthroughPaper",
     "AdaptiveThreshold",
-    "FilteringQualityReport"
+    "FilteringQualityReport",
 ]

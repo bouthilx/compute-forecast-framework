@@ -1,26 +1,4 @@
 """
-<<<<<<< HEAD
-MetricsCollector - Collects system metrics from all components for dashboard monitoring.
-
-Gathers metrics from venue collection engine, state management, data processing,
-and system resources to provide comprehensive monitoring data.
-"""
-
-import threading
-import time
-import logging
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
-from collections import defaultdict
-
-from .dashboard_metrics import (
-    SystemMetrics, CollectionProgressMetrics, APIMetrics, ProcessingMetrics,
-    SystemResourceMetrics, StateManagementMetrics, VenueProgressMetrics,
-    MetricsSummary, MetricsBuffer
-)
-from ..data.models import APIHealthStatus
-
-=======
 MetricsCollector - Collects system metrics from all components.
 Provides real-time metrics gathering with <2 second collection time requirement.
 """
@@ -42,198 +20,113 @@ from .dashboard_metrics import (
     VenueProgressMetrics,
     MetricsBuffer
 )
->>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
 
 logger = logging.getLogger(__name__)
 
 
 class MetricsCollector:
     """
-<<<<<<< HEAD
-    Collects metrics from all system components for dashboard monitoring
-    
-    Runs in separate thread to avoid impacting collection performance,
-    gathering metrics every 5 seconds from all active components.
-=======
     Collects comprehensive system metrics from all collection components.
-    
+
     Performance requirement: Complete metrics collection within 2 seconds.
     Thread-safe design for concurrent access.
->>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
     """
-    
+
     def __init__(self, collection_interval_seconds: int = 5):
         self.collection_interval = collection_interval_seconds
-<<<<<<< HEAD
-        self.is_collecting = False
-        self.collection_thread: Optional[threading.Thread] = None
-        self.metrics_buffer = MetricsBuffer(max_size=1000)
         
-        # Component references (set during start_collection)
+        # Metrics storage
+        self.metrics_buffer = MetricsBuffer(max_size=1000)
+        self._current_metrics: Optional[SystemMetrics] = None
+        
+        # Component references
         self.venue_engine = None
         self.state_manager = None
-        self.data_processors = None
+        self.api_managers: Dict[str, Any] = {}
+        self.data_processors: Dict[str, Any] = {}
         
-        # Session tracking
-        self.session_start_time = datetime.now()
-        self.session_id = None
-        
-        # Collection statistics
-        self.collection_stats = {
-            'metrics_collected': 0,
-            'collection_errors': 0,
-            'last_collection_time': None,
-            'collection_failures': []
-        }
-        
+        # Collection control
+        self._running = False
+        self._collection_thread: Optional[threading.Thread] = None
         self._lock = threading.RLock()
         
-    def start_collection(self, venue_engine, state_manager, data_processors: Dict[str, Any]) -> None:
+        # Performance tracking
+        self._last_collection_time = 0.0
+        self._collection_count = 0
+        self._collection_errors = 0
+        
+        logger.info(f"MetricsCollector initialized with {collection_interval_seconds}s interval")
+
+    def start_collection(self, venue_engine, state_manager, 
+                        api_managers: Dict[str, Any], data_processors: Dict[str, Any]) -> None:
         """
         Start automatic metrics collection from all system components
         
-        REQUIREMENTS:
-        - Must collect metrics every 5 seconds
-        - Must not impact performance of collection process
-        - Must handle component failures gracefully
-        - Must run in separate thread
+        Args:
+            venue_engine: Venue collection engine instance
+            state_manager: State management instance
+            api_managers: Dict of API manager instances
+            data_processors: Dict of data processor instances
         """
         with self._lock:
-            if self.is_collecting:
+            if self._running:
                 logger.warning("Metrics collection already running")
                 return
             
             # Store component references
             self.venue_engine = venue_engine
             self.state_manager = state_manager
-            self.data_processors = data_processors or {}
-            
-            # Initialize session
-            self.session_start_time = datetime.now()
-            self.session_id = f"session_{int(self.session_start_time.timestamp())}"
+            self.api_managers = api_managers
+            self.data_processors = data_processors
             
             # Start collection thread
-            self.is_collecting = True
-            self.collection_thread = threading.Thread(
+            self._running = True
+            self._collection_thread = threading.Thread(
                 target=self._collection_loop,
                 name="MetricsCollector",
                 daemon=True
             )
-            self.collection_thread.start()
-            
-            logger.info(f"Started metrics collection with {self.collection_interval}s interval")
-    
-    def stop_collection(self) -> None:
-        """Stop metrics collection gracefully"""
-        with self._lock:
-            if not self.is_collecting:
-                return
-            
-            self.is_collecting = False
-            
-            # Wait for collection thread to finish
-            if self.collection_thread and self.collection_thread.is_alive():
-                self.collection_thread.join(timeout=10)
-            
-=======
-        self.metrics_buffer = MetricsBuffer(max_size=1000)
-        self._running = False
-        self._collection_thread: Optional[threading.Thread] = None
-        self._lock = threading.RLock()
-        
-        # Component references (injected)
-        self.venue_engine = None
-        self.state_manager = None
-        self.data_processors = None
-        self.api_health_monitors = {}
-        
-        # Metrics state
-        self._start_time = datetime.now()
-        self._last_network_stats = self._get_network_stats()
-    
-    def set_venue_engine(self, venue_engine) -> None:
-        """Set venue collection engine reference"""
-        with self._lock:
-            self.venue_engine = venue_engine
-    
-    def set_state_manager(self, state_manager) -> None:
-        """Set state manager reference"""
-        with self._lock:
-            self.state_manager = state_manager
-    
-    def set_data_processors(self, processors) -> None:
-        """Set data processors reference"""
-        with self._lock:
-            self.data_processors = processors
-    
-    def add_api_health_monitor(self, api_name: str, monitor) -> None:
-        """Add API health monitor"""
-        with self._lock:
-            self.api_health_monitors[api_name] = monitor
-    
-    def start_collection(self) -> None:
-        """Start metrics collection in background thread"""
-        with self._lock:
-            if self._running:
-                return
-            
-            self._running = True
-            self._collection_thread = threading.Thread(
-                target=self._collection_loop,
-                daemon=True,
-                name="MetricsCollector"
-            )
             self._collection_thread.start()
-            logger.info("Started metrics collection")
-    
+            
+            logger.info("Metrics collection started")
+
     def stop_collection(self) -> None:
         """Stop metrics collection"""
         with self._lock:
+            if not self._running:
+                return
+            
             self._running = False
             
-        if self._collection_thread:
-            self._collection_thread.join(timeout=5.0)
->>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
-            logger.info("Stopped metrics collection")
-    
-    def collect_current_metrics(self) -> SystemMetrics:
-        """
-<<<<<<< HEAD
-        Collect current system metrics from all components
-        
-        REQUIREMENTS:
-        - Must complete within 2 seconds
-        - Must handle component unavailability
-        - Must include all required metric categories
-        """
-        collection_start = time.time()
-        
-        try:
-            # Collect all metric components
-            collection_progress = self._collect_collection_progress()
-            api_metrics = self._collect_api_metrics()
-            processing_metrics = self._collect_processing_metrics()
-            system_metrics = SystemResourceMetrics.collect_current()
-            state_metrics = self._collect_state_metrics()
-            venue_progress = self._collect_venue_progress()
+        # Wait for collection thread to finish
+        if self._collection_thread and self._collection_thread.is_alive():
+            self._collection_thread.join(timeout=10)
             
-            # Create complete metrics snapshot
-=======
-        Collect current system metrics from all components.
-        Must complete within 2 seconds per requirement.
+        logger.info("Metrics collection stopped")
+
+    def get_current_metrics(self) -> Optional[SystemMetrics]:
+        """Get most recent collected metrics"""
+        with self._lock:
+            return self._current_metrics
+
+    def collect_metrics(self) -> SystemMetrics:
+        """
+        Collect metrics from all system components
+        
+        Performance requirement: Complete within 2 seconds
         """
         start_time = time.time()
         
         try:
-            # Collect metrics in parallel where possible
+            # Collect from each component
             collection_progress = self._collect_collection_progress()
             api_metrics = self._collect_api_metrics()
             processing_metrics = self._collect_processing_metrics()
-            system_metrics = self._collect_system_resources()
+            system_metrics = self._collect_system_metrics()
             state_metrics = self._collect_state_metrics()
             venue_progress = self._collect_venue_progress()
             
->>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+            # Create metrics snapshot
             metrics = SystemMetrics(
                 timestamp=datetime.now(),
                 collection_progress=collection_progress,
@@ -244,599 +137,379 @@ class MetricsCollector:
                 venue_progress=venue_progress
             )
             
-<<<<<<< HEAD
-            collection_time = time.time() - collection_start
-            
-            # Check performance requirement
-            if collection_time > 2.0:
-                logger.warning(f"Metrics collection took {collection_time:.2f}s (>2s limit)")
-            
-            # Update collection statistics
-            with self._lock:
-                self.collection_stats['metrics_collected'] += 1
-                self.collection_stats['last_collection_time'] = datetime.now()
-=======
-            # Add to buffer
-            self.metrics_buffer.add_metrics(metrics)
-            
+            # Track collection time
             collection_time = time.time() - start_time
             if collection_time > 2.0:
-                logger.warning(f"Metrics collection took {collection_time:.2f}s (requirement: <2s)")
->>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
+                logger.warning(f"Metrics collection took {collection_time:.2f}s (>2s requirement)")
+            
+            # Update current metrics
+            with self._lock:
+                self._current_metrics = metrics
+                self._collection_count += 1
+                self._last_collection_time = collection_time
+            
+            # Store in buffer
+            self.metrics_buffer.add_metrics(metrics)
             
             return metrics
             
         except Exception as e:
-<<<<<<< HEAD
-            with self._lock:
-                self.collection_stats['collection_errors'] += 1
-                self.collection_stats['collection_failures'].append({
-                    'timestamp': datetime.now(),
-                    'error': str(e)
-                })
-            
-            logger.error(f"Failed to collect metrics: {e}")
-            raise
-    
-    def get_metrics_summary(self, time_window_minutes: int = 30) -> MetricsSummary:
-        """Get aggregated metrics over time window"""
-        metrics_in_window = self.metrics_buffer.get_metrics_in_window(time_window_minutes)
-        
-        if not metrics_in_window:
-            # Return default summary if no data
-            return self._create_default_summary(time_window_minutes)
-        
-        start_time = min(m.timestamp for m in metrics_in_window)
-        end_time = max(m.timestamp for m in metrics_in_window)
-        
-        # Calculate aggregated statistics
-        collection_rates = [m.collection_progress.papers_per_minute for m in metrics_in_window]
-        memory_usages = [m.system_metrics.memory_usage_percentage for m in metrics_in_window]
-        cpu_usages = [m.system_metrics.cpu_usage_percentage for m in metrics_in_window]
-        
-        # API performance aggregation
-        api_success_rates = defaultdict(list)
-        api_response_times = defaultdict(list)
-        
-        for metrics in metrics_in_window:
-            for api_name, api_data in metrics.api_metrics.items():
-                api_success_rates[api_name].append(api_data.success_rate)
-                api_response_times[api_name].append(api_data.avg_response_time_ms)
-        
-        # Create summary
-        return MetricsSummary(
-            time_period_minutes=time_window_minutes,
-            start_time=start_time,
-            end_time=end_time,
-            avg_collection_rate=sum(collection_rates) / len(collection_rates),
-            peak_collection_rate=max(collection_rates),
-            total_papers_collected=max(m.collection_progress.papers_collected for m in metrics_in_window),
-            api_success_rates={
-                api: sum(rates) / len(rates) 
-                for api, rates in api_success_rates.items()
-            },
-            api_avg_response_times={
-                api: sum(times) / len(times)
-                for api, times in api_response_times.items()
-            },
-            avg_memory_usage=sum(memory_usages) / len(memory_usages),
-            peak_memory_usage=max(memory_usages),
-            avg_cpu_usage=sum(cpu_usages) / len(cpu_usages),
-            peak_cpu_usage=max(cpu_usages),
-            total_venues_completed=max(m.collection_progress.completed_venues for m in metrics_in_window),
-            total_processing_time_minutes=(end_time - start_time).total_seconds() / 60,
-            processing_throughput=sum(m.processing_metrics.filtering_rate_per_second for m in metrics_in_window) / len(metrics_in_window)
-        )
-    
-    def _collection_loop(self):
-        """Main collection loop running in separate thread"""
-        logger.info("Metrics collection loop started")
-        
-        while self.is_collecting:
-            try:
-                # Collect metrics and add to buffer
-                metrics = self.collect_current_metrics()
-                self.metrics_buffer.add_metrics(metrics)
-                
-            except Exception as e:
-                logger.error(f"Error in metrics collection loop: {e}")
-                with self._lock:
-                    self.collection_stats['collection_errors'] += 1
-            
-            # Wait for next collection interval
-            time.sleep(self.collection_interval)
-        
-        logger.info("Metrics collection loop stopped")
-    
-    def _collect_collection_progress(self) -> CollectionProgressMetrics:
-        """Collect overall collection progress metrics"""
-        try:
-            if not self.venue_engine:
-                return self._create_default_collection_progress()
-            
-            # Get progress from venue engine
-            progress_data = getattr(self.venue_engine, 'get_collection_progress', lambda: {})()
-            
-            total_venues = progress_data.get('total_venues', 0)
-            completed_venues = progress_data.get('completed_venues', 0)
-            in_progress_venues = progress_data.get('in_progress_venues', 0)
-            failed_venues = progress_data.get('failed_venues', 0)
-            
-            papers_collected = progress_data.get('papers_collected', 0)
-            estimated_total = progress_data.get('estimated_total_papers', 1000)
-            
-            # Calculate rates and estimates
-            session_duration = (datetime.now() - self.session_start_time).total_seconds() / 60
-            papers_per_minute = papers_collected / max(session_duration, 1.0)
-            completion_percentage = (papers_collected / max(estimated_total, 1)) * 100
-            
-            remaining_papers = max(0, estimated_total - papers_collected)
-            estimated_remaining_minutes = remaining_papers / max(papers_per_minute, 0.1)
-            estimated_completion = datetime.now() + timedelta(minutes=estimated_remaining_minutes)
-            
-            return CollectionProgressMetrics(
-                session_id=self.session_id,
-                total_venues=total_venues,
-                completed_venues=completed_venues,
-                in_progress_venues=in_progress_venues,
-                failed_venues=failed_venues,
-                papers_collected=papers_collected,
-                papers_per_minute=papers_per_minute,
-                estimated_total_papers=estimated_total,
-                completion_percentage=min(completion_percentage, 100.0),
-                session_duration_minutes=session_duration,
-                estimated_remaining_minutes=estimated_remaining_minutes,
-                estimated_completion_time=estimated_completion
-            )
-            
-        except Exception as e:
-            logger.warning(f"Failed to collect collection progress: {e}")
-            return self._create_default_collection_progress()
-    
-    def _collect_api_metrics(self) -> Dict[str, APIMetrics]:
-        """Collect API health and performance metrics"""
-        api_metrics = {}
-        
-        try:
-            if not self.venue_engine:
-                return {}
-            
-            # Get API health data from venue engine
-            api_health_data = getattr(self.venue_engine, 'get_api_health_status', lambda: {})()
-            
-            for api_name, health_status in api_health_data.items():
-                if isinstance(health_status, APIHealthStatus):
-                    # Extract metrics from health status
-                    api_metrics[api_name] = APIMetrics(
-                        api_name=api_name,
-                        health_status=health_status.status,
-                        requests_made=getattr(health_status, 'requests_made', 0),
-                        successful_requests=int(getattr(health_status, 'requests_made', 0) * health_status.success_rate),
-                        failed_requests=getattr(health_status, 'requests_made', 0) - int(getattr(health_status, 'requests_made', 0) * health_status.success_rate),
-                        success_rate=health_status.success_rate,
-                        avg_response_time_ms=health_status.avg_response_time_ms,
-                        min_response_time_ms=getattr(health_status, 'min_response_time_ms', health_status.avg_response_time_ms * 0.5),
-                        max_response_time_ms=getattr(health_status, 'max_response_time_ms', health_status.avg_response_time_ms * 2.0),
-                        rate_limit_status={},  # Would be populated from rate limiter
-                        requests_throttled=0,
-                        papers_collected=getattr(health_status, 'papers_collected', 0),
-                        papers_per_request=getattr(health_status, 'papers_per_request', 0.0)
-                    )
-                
-        except Exception as e:
-            logger.warning(f"Failed to collect API metrics: {e}")
-=======
             logger.error(f"Error collecting metrics: {e}")
-            # Return empty metrics on error
-            return self._create_empty_metrics()
-    
-    def get_latest_metrics(self) -> Optional[SystemMetrics]:
-        """Get most recent metrics"""
-        return self.metrics_buffer.get_latest_metrics()
-    
-    def get_metrics_history(self, count: int = 100) -> List[SystemMetrics]:
-        """Get recent metrics history"""
-        return self.metrics_buffer.get_metrics_history(count)
-    
+            with self._lock:
+                self._collection_errors += 1
+            raise
+
     def _collection_loop(self) -> None:
-        """Main collection loop running in background"""
+        """Background thread for periodic metrics collection"""
+        logger.info("Starting metrics collection loop")
+        
         while self._running:
             try:
-                self.collect_current_metrics()
+                # Collect metrics
+                self.collect_metrics()
+                
+                # Sleep for interval
                 time.sleep(self.collection_interval)
+                
             except Exception as e:
                 logger.error(f"Error in collection loop: {e}")
-                time.sleep(1)  # Short delay on error
-    
+                time.sleep(self.collection_interval)
+        
+        logger.info("Metrics collection loop stopped")
+
     def _collect_collection_progress(self) -> CollectionProgressMetrics:
         """Collect overall collection progress metrics"""
-        progress = CollectionProgressMetrics()
+        if not self.venue_engine:
+            return self._empty_collection_progress()
         
-        if self.venue_engine:
-            try:
-                # Get stats from venue engine if available
-                stats = getattr(self.venue_engine, 'get_collection_stats', lambda: {})()
-                progress.total_papers_collected = stats.get('total_papers', 0)
-                progress.venues_completed = stats.get('venues_completed', 0)
-                progress.venues_in_progress = stats.get('venues_in_progress', 0)
-                progress.venues_remaining = stats.get('venues_remaining', 0)
-                progress.total_venues = stats.get('total_venues', 0)
-                
-                # Calculate papers per minute
-                session_duration = (datetime.now() - self._start_time).total_seconds() / 60
-                if session_duration > 0:
-                    progress.papers_per_minute = progress.total_papers_collected / session_duration
-                    progress.session_duration_minutes = session_duration
-                
-            except Exception as e:
-                logger.debug(f"Could not collect venue engine stats: {e}")
-        
-        return progress
-    
+        try:
+            # Get progress from venue engine
+            progress = self.venue_engine.get_collection_progress()
+            
+            # Calculate derived metrics
+            total_venues = progress.get('total_venues', 0)
+            completed = progress.get('completed_venues', 0)
+            in_progress = progress.get('in_progress_venues', 0)
+            failed = progress.get('failed_venues', 0)
+            
+            completion_pct = (completed / max(total_venues, 1)) * 100
+            
+            # Calculate paper collection rate
+            papers = progress.get('papers_collected', 0)
+            duration = progress.get('session_duration_minutes', 1)
+            papers_per_minute = papers / max(duration, 1)
+            
+            # Estimate remaining time
+            venues_remaining = total_venues - completed
+            avg_time_per_venue = duration / max(completed, 1)
+            estimated_remaining = venues_remaining * avg_time_per_venue
+            
+            return CollectionProgressMetrics(
+                session_id=progress.get('session_id'),
+                total_venues=total_venues,
+                completed_venues=completed,
+                in_progress_venues=in_progress,
+                failed_venues=failed,
+                papers_collected=papers,
+                papers_per_minute=papers_per_minute,
+                estimated_total_papers=progress.get('estimated_total_papers', 0),
+                completion_percentage=completion_pct,
+                session_duration_minutes=duration,
+                estimated_remaining_minutes=estimated_remaining,
+                estimated_completion_time=datetime.now() + timedelta(minutes=estimated_remaining),
+                venues_remaining=venues_remaining,
+                current_year=progress.get('current_year')
+            )
+            
+        except Exception as e:
+            logger.error(f"Error collecting progress metrics: {e}")
+            return self._empty_collection_progress()
+
     def _collect_api_metrics(self) -> Dict[str, APIMetrics]:
-        """Collect API performance metrics"""
+        """Collect metrics from all API managers"""
         api_metrics = {}
         
-        for api_name, monitor in self.api_health_monitors.items():
+        for api_name, manager in self.api_managers.items():
             try:
-                health_status = monitor.get_health_status(api_name)
+                stats = manager.get_statistics()
                 
-                metrics = APIMetrics(
+                # Calculate derived metrics
+                total_requests = stats.get('requests_made', 0)
+                successful = stats.get('successful_requests', 0)
+                success_rate = (successful / max(total_requests, 1))
+                
+                api_metrics[api_name] = APIMetrics(
                     api_name=api_name,
-                    success_rate=health_status.success_rate,
-                    avg_response_time_ms=health_status.avg_response_time_ms,
-                    health_status=health_status.status,
-                    last_request_time=health_status.last_successful_request
+                    health_status=stats.get('health_status', 'unknown'),
+                    requests_made=total_requests,
+                    successful_requests=successful,
+                    failed_requests=stats.get('failed_requests', 0),
+                    success_rate=success_rate,
+                    avg_response_time_ms=stats.get('avg_response_time_ms', 0),
+                    min_response_time_ms=stats.get('min_response_time_ms', 0),
+                    max_response_time_ms=stats.get('max_response_time_ms', 0),
+                    rate_limit_status=stats.get('rate_limit_status', {}),
+                    requests_throttled=stats.get('requests_throttled', 0),
+                    papers_collected=stats.get('papers_collected', 0),
+                    papers_per_request=stats.get('papers_per_request', 0),
+                    requests_per_minute=stats.get('requests_per_minute', 0),
+                    rate_limit_hits=stats.get('rate_limit_hits', 0),
+                    last_request_time=stats.get('last_request_time')
                 )
-                
-                api_metrics[api_name] = metrics
                 
             except Exception as e:
-                logger.debug(f"Could not collect API metrics for {api_name}: {e}")
->>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)
-        
+                logger.error(f"Error collecting metrics for API {api_name}: {e}")
+                
         return api_metrics
-    
+
     def _collect_processing_metrics(self) -> ProcessingMetrics:
-<<<<<<< HEAD
         """Collect data processing metrics"""
         try:
-            # Default metrics if no processors available
-            if not self.data_processors:
-                return ProcessingMetrics(
-                    venues_normalized=0,
-                    normalization_accuracy=1.0,
-                    normalization_rate_per_second=0.0,
-                    papers_deduplicated=0,
-                    duplicates_removed=0,
-                    deduplication_rate=0.0,
-                    deduplication_confidence=1.0,
-                    papers_analyzed=0,
-                    papers_above_threshold=0,
-                    breakthrough_papers_found=0,
-                    filtering_rate_per_second=0.0
-                )
+            # Aggregate metrics from all processors
+            total_processed = 0
+            total_deduplicated = 0
+            duplicates_removed = 0
+            papers_above_threshold = 0
+            breakthrough_papers = 0
             
-            # Collect from venue normalizer
-            venue_normalizer = self.data_processors.get('venue_normalizer')
-            venue_stats = {}
-            if venue_normalizer and hasattr(venue_normalizer, 'get_mapping_statistics'):
-                venue_stats = venue_normalizer.get_mapping_statistics()
+            for processor_name, processor in self.data_processors.items():
+                if hasattr(processor, 'get_statistics'):
+                    stats = processor.get_statistics()
+                    total_processed += stats.get('papers_processed', 0)
+                    total_deduplicated += stats.get('papers_deduplicated', 0)
+                    duplicates_removed += stats.get('duplicates_removed', 0)
+                    papers_above_threshold += stats.get('papers_above_threshold', 0)
+                    breakthrough_papers += stats.get('breakthrough_papers_found', 0)
             
-            # Collect from deduplicator
-            deduplicator = self.data_processors.get('deduplicator')
-            dedup_stats = {}
-            if deduplicator and hasattr(deduplicator, 'get_statistics'):
-                dedup_stats = deduplicator.get_statistics()
-            
-            # Collect from computational filter
-            comp_filter = self.data_processors.get('computational_filter')
-            filter_stats = {}
-            if comp_filter and hasattr(comp_filter, 'get_statistics'):
-                filter_stats = comp_filter.get_statistics()
+            # Calculate rates
+            dedup_rate = (duplicates_removed / max(total_processed, 1))
             
             return ProcessingMetrics(
-                venues_normalized=venue_stats.get('venues_normalized', 0),
-                normalization_accuracy=venue_stats.get('accuracy', 1.0),
-                normalization_rate_per_second=venue_stats.get('rate_per_second', 0.0),
-                papers_deduplicated=dedup_stats.get('papers_processed', 0),
-                duplicates_removed=dedup_stats.get('duplicates_removed', 0),
-                deduplication_rate=dedup_stats.get('deduplication_rate', 0.0),
-                deduplication_confidence=dedup_stats.get('confidence', 1.0),
-                papers_analyzed=filter_stats.get('papers_analyzed', 0),
-                papers_above_threshold=filter_stats.get('papers_above_threshold', 0),
-                breakthrough_papers_found=filter_stats.get('breakthrough_papers', 0),
-                filtering_rate_per_second=filter_stats.get('rate_per_second', 0.0)
+                venues_normalized=0,  # TODO: Implement venue normalization tracking
+                normalization_accuracy=0.0,
+                normalization_rate_per_second=0.0,
+                papers_deduplicated=total_deduplicated,
+                duplicates_removed=duplicates_removed,
+                deduplication_rate=dedup_rate,
+                deduplication_confidence=0.95,  # TODO: Calculate actual confidence
+                papers_analyzed=total_processed,
+                papers_above_threshold=papers_above_threshold,
+                breakthrough_papers_found=breakthrough_papers,
+                filtering_rate_per_second=0.0,  # TODO: Calculate actual rate
+                papers_processed=total_processed,
+                papers_filtered=0,  # TODO: Track filtered papers
+                papers_normalized=0,  # TODO: Track normalized papers
+                processing_rate_per_minute=0.0,  # TODO: Calculate rate
+                filter_rate=0.0,  # TODO: Calculate filter rate
+                processing_queue_size=0  # TODO: Track queue size
             )
             
         except Exception as e:
-            logger.warning(f"Failed to collect processing metrics: {e}")
-            return ProcessingMetrics(
-                venues_normalized=0,
-                normalization_accuracy=1.0,
-                normalization_rate_per_second=0.0,
-                papers_deduplicated=0,
-                duplicates_removed=0,
-                deduplication_rate=0.0,
-                deduplication_confidence=1.0,
-                papers_analyzed=0,
-                papers_above_threshold=0,
-                breakthrough_papers_found=0,
-                filtering_rate_per_second=0.0
-            )
-    
-    def _collect_state_metrics(self) -> StateManagementMetrics:
-        """Collect state management and checkpointing metrics"""
+            logger.error(f"Error collecting processing metrics: {e}")
+            return self._empty_processing_metrics()
+
+    def _collect_system_metrics(self) -> SystemResourceMetrics:
+        """Collect system resource metrics using psutil"""
         try:
-            if not self.state_manager:
-                return self._create_default_state_metrics()
+            # CPU metrics
+            cpu_percent = psutil.cpu_percent(interval=0.1)
+            cpu_count = psutil.cpu_count()
             
-            # Get checkpoint statistics
-            checkpoint_stats = getattr(self.state_manager, 'get_checkpoint_statistics', lambda: {})()
+            # Memory metrics
+            memory = psutil.virtual_memory()
+            memory_percent = memory.percent
+            memory_used_mb = memory.used / (1024 * 1024)
+            memory_available_mb = memory.available / (1024 * 1024)
+            
+            # Disk metrics
+            disk = psutil.disk_usage('/')
+            disk_percent = disk.percent
+            disk_used_mb = disk.used / (1024 * 1024)
+            disk_free_mb = disk.free / (1024 * 1024)
+            
+            # Network metrics (cumulative)
+            net_io = psutil.net_io_counters()
+            network_sent_mb = net_io.bytes_sent / (1024 * 1024)
+            network_recv_mb = net_io.bytes_recv / (1024 * 1024)
+            
+            # Process metrics
+            process = psutil.Process()
+            thread_count = process.num_threads()
+            open_fds = process.num_fds() if hasattr(process, 'num_fds') else 0
+            
+            return SystemResourceMetrics(
+                cpu_usage_percent=cpu_percent,
+                cpu_cores=cpu_count,
+                memory_usage_percent=memory_percent,
+                memory_used_mb=memory_used_mb,
+                memory_available_mb=memory_available_mb,
+                disk_usage_percent=disk_percent,
+                disk_used_mb=disk_used_mb,
+                disk_free_mb=disk_free_mb,
+                network_sent_mb=network_sent_mb,
+                network_recv_mb=network_recv_mb,
+                active_threads=thread_count,
+                open_file_descriptors=open_fds
+            )
+            
+        except Exception as e:
+            logger.error(f"Error collecting system metrics: {e}")
+            return self._empty_system_metrics()
+
+    def _collect_state_metrics(self) -> StateManagementMetrics:
+        """Collect state management metrics"""
+        if not self.state_manager:
+            return self._empty_state_metrics()
+        
+        try:
+            stats = self.state_manager.get_statistics()
             
             return StateManagementMetrics(
-                checkpoints_created=checkpoint_stats.get('checkpoints_created', 0),
-                last_checkpoint_time=checkpoint_stats.get('last_checkpoint_time'),
-                checkpoint_creation_rate_per_hour=checkpoint_stats.get('rate_per_hour', 0.0),
-                recovery_possible=checkpoint_stats.get('recovery_possible', True),
-                last_recovery_time=checkpoint_stats.get('last_recovery_time'),
-                recovery_success_rate=checkpoint_stats.get('recovery_success_rate', 1.0),
-                state_size_mb=checkpoint_stats.get('state_size_mb', 0.0),
-                checkpoint_size_mb=checkpoint_stats.get('checkpoint_size_mb', 0.0),
-                checkpoint_creation_time_ms=checkpoint_stats.get('creation_time_ms', 0.0),
-                state_save_time_ms=checkpoint_stats.get('save_time_ms', 0.0)
+                checkpoints_created=stats.get('checkpoints_created', 0),
+                last_checkpoint_time=stats.get('last_checkpoint_time'),
+                checkpoint_creation_rate_per_hour=stats.get('checkpoint_rate', 0),
+                recovery_possible=stats.get('recovery_possible', False),
+                last_recovery_time=stats.get('last_recovery_time'),
+                recovery_success_rate=stats.get('recovery_success_rate', 1.0),
+                state_size_mb=stats.get('state_size_mb', 0),
+                checkpoint_size_mb=stats.get('checkpoint_size_mb', 0),
+                checkpoint_creation_time_ms=stats.get('checkpoint_time_ms', 0),
+                state_save_time_ms=stats.get('state_save_time_ms', 0),
+                recovery_time_seconds=stats.get('recovery_time_seconds', 0),
+                state_validation_errors=stats.get('validation_errors', 0),
+                backup_count=stats.get('backup_count', 0)
             )
             
         except Exception as e:
-            logger.warning(f"Failed to collect state metrics: {e}")
-            return self._create_default_state_metrics()
-    
+            logger.error(f"Error collecting state metrics: {e}")
+            return self._empty_state_metrics()
+
     def _collect_venue_progress(self) -> Dict[str, VenueProgressMetrics]:
         """Collect individual venue progress metrics"""
         venue_progress = {}
         
+        if not self.venue_engine:
+            return venue_progress
+        
         try:
-            if not self.venue_engine:
-                return {}
+            # Get venue status from engine
+            venue_statuses = self.venue_engine.get_venue_statuses()
             
-            # Get venue progress data
-            venue_data = getattr(self.venue_engine, 'get_venue_progress', lambda: {})()
-            
-            for venue_key, progress in venue_data.items():
-                # Parse venue and year from key (e.g., "NeurIPS_2024")
-                if '_' in venue_key:
-                    venue_name, year_str = venue_key.rsplit('_', 1)
-                    try:
-                        year = int(year_str)
-                    except ValueError:
-                        venue_name = venue_key
-                        year = 2024
-                else:
-                    venue_name = venue_key
-                    year = 2024
+            for venue_key, status in venue_statuses.items():
+                venue_name = status.get('venue_name', '')
+                year = status.get('year', 0)
+                
+                # Calculate progress
+                papers = status.get('papers_collected', 0)
+                target = status.get('target_papers', 100)
+                completion_pct = (papers / max(target, 1)) * 100
+                
+                # Calculate time estimates
+                duration = status.get('collection_duration_minutes', 0)
+                papers_per_minute = papers / max(duration, 1) if duration > 0 else 0
+                remaining_papers = max(target - papers, 0)
+                estimated_remaining = remaining_papers / max(papers_per_minute, 1) if papers_per_minute > 0 else 0
                 
                 venue_progress[venue_key] = VenueProgressMetrics(
                     venue_name=venue_name,
                     year=year,
-                    status=progress.get('status', 'not_started'),
-                    papers_collected=progress.get('papers_collected', 0),
-                    target_papers=progress.get('target_papers', 100),
-                    completion_percentage=progress.get('completion_percentage', 0.0),
-                    last_update_time=progress.get('last_update_time', datetime.now()),
-                    collection_duration_minutes=progress.get('duration_minutes', 0.0),
-                    estimated_remaining_minutes=progress.get('estimated_remaining_minutes', 0.0)
+                    status=status.get('status', 'not_started'),
+                    papers_collected=papers,
+                    target_papers=target,
+                    completion_percentage=completion_pct,
+                    last_update_time=status.get('last_update_time', datetime.now()),
+                    collection_duration_minutes=duration,
+                    estimated_remaining_minutes=estimated_remaining,
+                    retry_count=status.get('retry_count', 0),
+                    error_count=status.get('error_count', 0),
+                    last_activity=status.get('last_activity')
                 )
                 
         except Exception as e:
-            logger.warning(f"Failed to collect venue progress: {e}")
-        
+            logger.error(f"Error collecting venue progress: {e}")
+            
         return venue_progress
-    
-    def _create_default_collection_progress(self) -> CollectionProgressMetrics:
-        """Create default collection progress when no data available"""
+
+    def get_collection_statistics(self) -> Dict[str, Any]:
+        """Get metrics collector statistics"""
+        with self._lock:
+            return {
+                'collection_count': self._collection_count,
+                'collection_errors': self._collection_errors,
+                'last_collection_time_seconds': self._last_collection_time,
+                'buffer_size': len(self.metrics_buffer),
+                'is_collecting': self._running
+            }
+
+    # Empty metric factory methods for error cases
+    def _empty_collection_progress(self) -> CollectionProgressMetrics:
         return CollectionProgressMetrics(
-            session_id=self.session_id,
+            session_id=None,
             total_venues=0,
             completed_venues=0,
             in_progress_venues=0,
             failed_venues=0,
             papers_collected=0,
             papers_per_minute=0.0,
-            estimated_total_papers=1000,
+            estimated_total_papers=0,
             completion_percentage=0.0,
             session_duration_minutes=0.0,
             estimated_remaining_minutes=0.0,
-            estimated_completion_time=datetime.now()
+            estimated_completion_time=None,
+            venues_remaining=0,
+            current_year=None
         )
-    
-    def _create_default_state_metrics(self) -> StateManagementMetrics:
-        """Create default state metrics when no data available"""
+
+    def _empty_processing_metrics(self) -> ProcessingMetrics:
+        return ProcessingMetrics(
+            venues_normalized=0,
+            normalization_accuracy=0.0,
+            normalization_rate_per_second=0.0,
+            papers_deduplicated=0,
+            duplicates_removed=0,
+            deduplication_rate=0.0,
+            deduplication_confidence=0.0,
+            papers_analyzed=0,
+            papers_above_threshold=0,
+            breakthrough_papers_found=0,
+            filtering_rate_per_second=0.0,
+            papers_processed=0,
+            papers_filtered=0,
+            papers_normalized=0,
+            processing_rate_per_minute=0.0,
+            filter_rate=0.0,
+            processing_queue_size=0
+        )
+
+    def _empty_system_metrics(self) -> SystemResourceMetrics:
+        return SystemResourceMetrics(
+            cpu_usage_percent=0.0,
+            cpu_cores=0,
+            memory_usage_percent=0.0,
+            memory_used_mb=0.0,
+            memory_available_mb=0.0,
+            disk_usage_percent=0.0,
+            disk_used_mb=0.0,
+            disk_free_mb=0.0,
+            network_sent_mb=0.0,
+            network_recv_mb=0.0,
+            active_threads=0,
+            open_file_descriptors=0
+        )
+
+    def _empty_state_metrics(self) -> StateManagementMetrics:
         return StateManagementMetrics(
             checkpoints_created=0,
             last_checkpoint_time=None,
             checkpoint_creation_rate_per_hour=0.0,
-            recovery_possible=True,
+            recovery_possible=False,
             last_recovery_time=None,
-            recovery_success_rate=1.0,
+            recovery_success_rate=0.0,
             state_size_mb=0.0,
             checkpoint_size_mb=0.0,
             checkpoint_creation_time_ms=0.0,
-            state_save_time_ms=0.0
+            state_save_time_ms=0.0,
+            recovery_time_seconds=0.0,
+            state_validation_errors=0,
+            backup_count=0
         )
-    
-    def _create_default_summary(self, time_window_minutes: int) -> MetricsSummary:
-        """Create default summary when no metrics available"""
-        return MetricsSummary(
-            time_period_minutes=time_window_minutes,
-            start_time=datetime.now() - timedelta(minutes=time_window_minutes),
-            end_time=datetime.now(),
-            avg_collection_rate=0.0,
-            peak_collection_rate=0.0,
-            total_papers_collected=0,
-            api_success_rates={},
-            api_avg_response_times={},
-            avg_memory_usage=0.0,
-            peak_memory_usage=0.0,
-            avg_cpu_usage=0.0,
-            peak_cpu_usage=0.0,
-            total_venues_completed=0,
-            total_processing_time_minutes=0.0,
-            processing_throughput=0.0
-        )
-    
-    def get_collection_statistics(self) -> Dict[str, Any]:
-        """Get metrics collection statistics"""
-        with self._lock:
-            return {
-                'is_collecting': self.is_collecting,
-                'session_id': self.session_id,
-                'session_start_time': self.session_start_time,
-                'metrics_collected': self.collection_stats['metrics_collected'],
-                'collection_errors': self.collection_stats['collection_errors'],
-                'last_collection_time': self.collection_stats['last_collection_time'],
-                'collection_interval_seconds': self.collection_interval,
-                'metrics_buffer_size': len(self.metrics_buffer.metrics),
-                'recent_failures': self.collection_stats['collection_failures'][-5:]  # Last 5 failures
-            }
-=======
-        """Collect data processing pipeline metrics"""
-        metrics = ProcessingMetrics()
-        
-        if self.data_processors:
-            try:
-                stats = getattr(self.data_processors, 'get_processing_stats', lambda: {})()
-                metrics.papers_processed = stats.get('papers_processed', 0)
-                metrics.papers_filtered = stats.get('papers_filtered', 0)
-                metrics.papers_normalized = stats.get('papers_normalized', 0)
-                metrics.papers_deduplicated = stats.get('papers_deduplicated', 0)
-                metrics.processing_queue_size = stats.get('queue_size', 0)
-                metrics.processing_errors = stats.get('processing_errors', 0)
-                
-                # Calculate rates
-                if metrics.papers_processed > 0:
-                    session_time = (datetime.now() - self._start_time).total_seconds() / 60
-                    if session_time > 0:
-                        metrics.processing_rate_per_minute = metrics.papers_processed / session_time
-                        
-                    metrics.filter_rate = metrics.papers_filtered / metrics.papers_processed
-                    if metrics.papers_processed > 0:
-                        metrics.deduplication_rate = metrics.papers_deduplicated / metrics.papers_processed
-                        
-            except Exception as e:
-                logger.debug(f"Could not collect processing metrics: {e}")
-        
-        return metrics
-    
-    def _collect_system_resources(self) -> SystemResourceMetrics:
-        """Collect system resource usage metrics"""
-        metrics = SystemResourceMetrics()
-        
-        try:
-            # Memory usage
-            memory = psutil.virtual_memory()
-            metrics.memory_usage_mb = memory.used / (1024 * 1024)
-            metrics.memory_usage_percent = memory.percent
-            
-            # CPU usage
-            metrics.cpu_usage_percent = psutil.cpu_percent()
-            
-            # Disk usage
-            disk = psutil.disk_usage('/')
-            metrics.disk_usage_mb = disk.used / (1024 * 1024)
-            metrics.disk_free_mb = disk.free / (1024 * 1024)
-            
-            # Network stats
-            network_stats = self._get_network_stats()
-            metrics.network_bytes_sent = network_stats['bytes_sent']
-            metrics.network_bytes_received = network_stats['bytes_recv']
-            
-            # Process stats
-            process = psutil.Process()
-            metrics.active_threads = process.num_threads()
-            metrics.open_file_descriptors = process.num_fds()
-            
-        except Exception as e:
-            logger.debug(f"Could not collect system metrics: {e}")
-        
-        return metrics
-    
-    def _collect_state_metrics(self) -> StateManagementMetrics:
-        """Collect state management metrics"""
-        metrics = StateManagementMetrics()
-        
-        if self.state_manager:
-            try:
-                stats = getattr(self.state_manager, 'get_state_stats', lambda: {})()
-                metrics.total_checkpoints = stats.get('total_checkpoints', 0)
-                metrics.last_checkpoint_time = stats.get('last_checkpoint_time')
-                metrics.checkpoint_size_mb = stats.get('checkpoint_size_mb', 0.0)
-                metrics.state_validation_errors = stats.get('validation_errors', 0)
-                metrics.backup_count = stats.get('backup_count', 0)
-                
-                # Calculate checkpoint rate
-                session_time = (datetime.now() - self._start_time).total_seconds() / 3600  # hours
-                if session_time > 0:
-                    metrics.checkpoints_per_hour = metrics.total_checkpoints / session_time
-                    
-            except Exception as e:
-                logger.debug(f"Could not collect state metrics: {e}")
-        
-        return metrics
-    
-    def _collect_venue_progress(self) -> Dict[str, VenueProgressMetrics]:
-        """Collect venue-specific progress metrics"""
-        venue_progress = {}
-        
-        if self.venue_engine:
-            try:
-                venues = getattr(self.venue_engine, 'get_venue_progress', lambda: {})()
-                
-                for venue_key, venue_data in venues.items():
-                    progress = VenueProgressMetrics(
-                        venue_name=venue_data.get('venue_name', venue_key),
-                        year=venue_data.get('year', 0),
-                        status=venue_data.get('status', 'not_started'),
-                        papers_collected=venue_data.get('papers_collected', 0),
-                        target_papers=venue_data.get('target_papers', 50),
-                        start_time=venue_data.get('start_time'),
-                        estimated_completion=venue_data.get('estimated_completion'),
-                        api_source=venue_data.get('api_source', ''),
-                        error_count=venue_data.get('error_count', 0),
-                        last_activity=venue_data.get('last_activity')
-                    )
-                    
-                    # Calculate progress percentage
-                    if progress.target_papers > 0:
-                        progress.progress_percent = min(100.0, 
-                            (progress.papers_collected / progress.target_papers) * 100)
-                    
-                    venue_progress[venue_key] = progress
-                    
-            except Exception as e:
-                logger.debug(f"Could not collect venue progress: {e}")
-        
-        return venue_progress
-    
-    def _get_network_stats(self) -> Dict[str, int]:
-        """Get current network statistics"""
-        try:
-            net_io = psutil.net_io_counters()
-            return {
-                'bytes_sent': net_io.bytes_sent,
-                'bytes_recv': net_io.bytes_recv
-            }
-        except:
-            return {'bytes_sent': 0, 'bytes_recv': 0}
-    
-    def _create_empty_metrics(self) -> SystemMetrics:
-        """Create empty metrics structure on error"""
-        return SystemMetrics(
-            timestamp=datetime.now(),
-            collection_progress=CollectionProgressMetrics(),
-            api_metrics={},
-            processing_metrics=ProcessingMetrics(),
-            system_metrics=SystemResourceMetrics(),
-            state_metrics=StateManagementMetrics(),
-            venue_progress={}
-        )
->>>>>>> c6f915c (Implement Real-Time Collection Dashboard (Issue #8) - Missing Files Added)

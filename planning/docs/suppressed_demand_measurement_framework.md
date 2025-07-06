@@ -124,7 +124,7 @@ def calculate_suppression_index(researcher_data):
         "dataset_subsampling": 0.67,  # weight: 0.15
         "explicit_mentions": 0.72  # weight: 0.15
     }
-    
+
     weights = [0.3, 0.2, 0.2, 0.15, 0.15]
     suppression_index = sum(c * w for c, w in zip(components.values(), weights))
     return suppression_index  # 0.63 = 63% suppressed demand
@@ -300,7 +300,7 @@ def project_unconstrained_demand(current_suppression, growth_rate):
     """
     latent_demand = current_demand / (1 - suppression_index)
     catch_up_factor = 1.5  # Pent-up demand release
-    
+
     projection = {
         "immediate_demand": latent_demand * catch_up_factor,
         "steady_state": latent_demand * (1 + growth_rate),

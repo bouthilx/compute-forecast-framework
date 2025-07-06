@@ -3,7 +3,10 @@
 import pytest
 from dataclasses import FrozenInstanceError
 
-from compute_forecast.extraction.template_engine import ExtractionTemplate, ExtractionField
+from compute_forecast.extraction.template_engine import (
+    ExtractionTemplate,
+    ExtractionField,
+)
 
 
 class TestExtractionField:
@@ -53,14 +56,17 @@ class TestExtractionTemplate:
             template_id="test_template",
             template_name="Test Template",
             version="1.0",
-            required_fields=[ExtractionField.GPU_TYPE, ExtractionField.TRAINING_TIME_HOURS],
+            required_fields=[
+                ExtractionField.GPU_TYPE,
+                ExtractionField.TRAINING_TIME_HOURS,
+            ],
             optional_fields=[ExtractionField.BATCH_SIZE],
             validation_rules={
                 ExtractionField.TRAINING_TIME_HOURS: {"min": 0.1, "max": 10000}
             },
             normalization_rules={
                 ExtractionField.TRAINING_TIME_HOURS: "convert_to_hours"
-            }
+            },
         )
 
         assert template.template_id == "test_template"
@@ -79,7 +85,7 @@ class TestExtractionTemplate:
             required_fields=[],
             optional_fields=[],
             validation_rules={},
-            normalization_rules={}
+            normalization_rules={},
         )
 
         # Should not be able to modify fields
@@ -97,7 +103,7 @@ class TestExtractionTemplate:
                 required_fields=["not_an_enum"],  # Invalid type
                 optional_fields=[],
                 validation_rules={},
-                normalization_rules={}
+                normalization_rules={},
             )
 
     def test_template_completeness_calculation(self):
@@ -109,34 +115,37 @@ class TestExtractionTemplate:
             required_fields=[
                 ExtractionField.GPU_TYPE,
                 ExtractionField.TRAINING_TIME_HOURS,
-                ExtractionField.PARAMETERS_COUNT
+                ExtractionField.PARAMETERS_COUNT,
             ],
-            optional_fields=[ExtractionField.BATCH_SIZE, ExtractionField.SEQUENCE_LENGTH],
+            optional_fields=[
+                ExtractionField.BATCH_SIZE,
+                ExtractionField.SEQUENCE_LENGTH,
+            ],
             validation_rules={},
-            normalization_rules={}
+            normalization_rules={},
         )
 
         # Test with all required fields
         extracted_fields = {
             ExtractionField.GPU_TYPE: "A100",
             ExtractionField.TRAINING_TIME_HOURS: 100.0,
-            ExtractionField.PARAMETERS_COUNT: 1e9
+            ExtractionField.PARAMETERS_COUNT: 1e9,
         }
         assert template.calculate_completeness(extracted_fields) == 1.0
 
         # Test with missing required field
         extracted_fields = {
             ExtractionField.GPU_TYPE: "A100",
-            ExtractionField.TRAINING_TIME_HOURS: 100.0
+            ExtractionField.TRAINING_TIME_HOURS: 100.0,
         }
-        assert template.calculate_completeness(extracted_fields) == 2/3
+        assert template.calculate_completeness(extracted_fields) == 2 / 3
 
         # Test with optional fields included
         extracted_fields = {
             ExtractionField.GPU_TYPE: "A100",
             ExtractionField.TRAINING_TIME_HOURS: 100.0,
             ExtractionField.PARAMETERS_COUNT: 1e9,
-            ExtractionField.BATCH_SIZE: 32
+            ExtractionField.BATCH_SIZE: 32,
         }
         # Should still be 1.0 as all required fields are present
         assert template.calculate_completeness(extracted_fields) == 1.0

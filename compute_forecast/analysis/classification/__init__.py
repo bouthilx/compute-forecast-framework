@@ -6,8 +6,8 @@ from .paper_classifier import PaperClassifier
 from .validator import ClassificationValidator
 
 __all__ = [
-    'OrganizationDatabase',
-    'AffiliationParser', 
-    'PaperClassifier',
-    'ClassificationValidator'
+    "OrganizationDatabase",
+    "AffiliationParser",
+    "PaperClassifier",
+    "ClassificationValidator",
 ]

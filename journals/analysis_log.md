@@ -279,7 +279,7 @@ Designed and implemented Google Drive storage solution with three core component
 
 **Storage Architecture**:
 - PDFs stored in Google Drive shared folder
-- Local JSON metadata tracks Drive IDs and paper info  
+- Local JSON metadata tracks Drive IDs and paper info
 - Temporary local cache for active processing
 - All PDFs excluded from git repository
 
@@ -299,7 +299,7 @@ Designed and implemented Google Drive storage solution with three core component
 
 2. **Setup & Migration**:
    - Interactive setup wizard
-   - Migration script for existing PDFs  
+   - Migration script for existing PDFs
    - Environment configuration
 
 3. **Documentation**:

@@ -216,7 +216,7 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
 
 ## Development Workflow
 1. **Before making changes**: Run `uv run tox -e lint` to check code quality
-2. **After making changes**: 
+2. **After making changes**:
    - Run `uv run pytest` to ensure tests pass with coverage
    - Run `uv run tox -e lint` to verify code quality
 3. **For new features**: Add appropriate unit and/or functional tests

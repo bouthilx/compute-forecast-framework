@@ -24,13 +24,13 @@ field_importance:
   gpu_count: 0.9
   training_time: 0.9
   parameters: 0.85
-  
+
   # Important fields (0.6-0.8)
   gpu_memory: 0.7
   dataset_size: 0.7
   batch_size: 0.6
   epochs: 0.6
-  
+
   # Optional fields (0.3-0.5)
   framework: 0.5
   cost_estimate: 0.5
@@ -43,19 +43,19 @@ consistency_rules:
   gpu_hours_calculation:
     formula: "gpu_count * training_time"
     tolerance: 0.1  # 10% tolerance
-    
+
   # Parameter-GPU hours scaling
   gpu_hours_vs_parameters:
     relationship: "power"
     exponent: 0.7  # GPU hours ~ parameters^0.7
     tolerance: 0.3  # 30% tolerance
-    
+
   # Temporal scaling
   parameters_vs_year:
     relationship: "exponential"
     growth_rate: 1.5  # 50% annual growth
     tolerance: 0.5  # 50% tolerance
-    
+
   # Model size consistency
   parameters_vs_model_size:
     relationship: "linear"
@@ -69,19 +69,19 @@ domain_ranges:
     gpu_hours: [10, 1e6]
     batch_size: [8, 512]
     sequence_length: [128, 4096]
-    
+
   cv:
     parameters: [1e6, 1e10]
     gpu_hours: [10, 1e5]
     batch_size: [16, 1024]
     image_size: [224, 1024]
-    
+
   rl:
     parameters: [1e5, 1e9]
     gpu_hours: [100, 1e6]
     episodes: [1000, 1e8]
     steps_per_episode: [10, 10000]
-    
+
   general:
     parameters: [1e3, 1e13]
     gpu_hours: [0.1, 1e7]
@@ -93,17 +93,17 @@ plausibility_ranges:
     min: 1
     max: 10000
     typical: [1, 8, 16, 32, 64, 128, 256, 512]
-    
+
   gpu_memory:
     min: 4
     max: 100
     typical: [8, 11, 16, 24, 32, 40, 48, 80]
-    
+
   training_time:
     min: 0.1  # hours
     max: 8760  # 1 year
     typical_range: [1, 720]  # 1 hour to 1 month
-    
+
   parameters:
     min: 1e3
     max: 1e13
@@ -112,17 +112,17 @@ plausibility_ranges:
       medium: 1e8
       large: 1e9
       xlarge: 1e11
-      
+
   batch_size:
     min: 1
     max: 100000
     typical: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
-    
+
   learning_rate:
     min: 1e-8
     max: 1.0
     typical_range: [1e-5, 1e-2]
-    
+
   epochs:
     min: 1
     max: 10000
@@ -132,17 +132,17 @@ plausibility_ranges:
 cross_validation_tolerances:
   # Numeric fields with relative tolerance
   gpu_hours: 0.15      # 15% tolerance
-  parameters: 0.10     # 10% tolerance  
+  parameters: 0.10     # 10% tolerance
   training_time: 0.20  # 20% tolerance
   batch_size: 0.05     # 5% tolerance
   dataset_size: 0.10   # 10% tolerance
   gpu_memory: 0.05     # 5% tolerance
-  
+
   # Exact match required
   gpu_count: 0.0
   gpu_type: 0.0
   epochs: 0.0
-  
+
   # String fields (case-insensitive match)
   framework: "string"
   optimizer: "string"
@@ -155,7 +155,7 @@ outlier_thresholds:
     gpu_hours: 3.5      # More tolerant
     parameters: 4.0     # Even more tolerant
     batch_size: 2.5     # Stricter
-    
+
   # Field-specific IQR multipliers
   iqr_multiplier:
     default: 1.5
@@ -171,12 +171,12 @@ known_extremes:
     gpt4: 1.76e12  # Estimated
     bloom: 176e9
     opt175b: 175e9
-    
+
   gpu_hours:
     gpt3: 3.64e6
     palm: 6e6
     bloom: 1.08e6
-    
+
   training_time:
     gpt3: 3550  # hours
     bert: 96    # hours
@@ -187,17 +187,17 @@ quality_thresholds:
     confidence: 0.9
     completeness: 0.85
     agreement: 0.9
-    
+
   medium:
     confidence: 0.7
     completeness: 0.7
     agreement: 0.8
-    
+
   low:
     confidence: 0.5
     completeness: 0.5
     agreement: 0.7
-    
+
   unreliable:
     confidence: 0.0
     completeness: 0.0

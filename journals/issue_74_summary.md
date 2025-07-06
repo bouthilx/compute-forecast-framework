@@ -101,7 +101,7 @@
 ## Immediate Actions
 
 1. **Fix ArXiv parser bug** (1 hour)
-2. **Implement NeurIPS PDF source** (3 hours)  
+2. **Implement NeurIPS PDF source** (3 hours)
 3. **Test on 50 papers** (1 hour)
 4. **Decide on continued investment**
 

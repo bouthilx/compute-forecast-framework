@@ -6,7 +6,7 @@ academic_organizations:
     - "UC Berkeley"
     - "Harvard University"
     - "Princeton University"
-  
+
   tier2:
     - "University of Washington"
     - "NYU"
@@ -14,7 +14,7 @@ academic_organizations:
     - "University of Chicago"
     - "Yale University"
     - "Caltech"
-  
+
   international:
     - "University of Oxford"
     - "University of Cambridge"
@@ -24,7 +24,7 @@ academic_organizations:
     - "EPFL"
     - "Technical University of Munich"
     - "University College London"
-  
+
   research_institutes:
     - "Max Planck Institute"
     - "Allen Institute"
@@ -48,7 +48,7 @@ industry_organizations:
     - "Amazon"
     - "NVIDIA"
     - "Intel Labs"
-  
+
   ai_companies:
     - "Anthropic"
     - "Cohere"
@@ -57,7 +57,7 @@ industry_organizations:
     - "Character.AI"
     - "Adept"
     - "Inflection AI"
-  
+
   traditional_research:
     - "IBM Research"
     - "Adobe Research"

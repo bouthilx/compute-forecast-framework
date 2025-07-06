@@ -3,19 +3,19 @@
 ## Project
 
 Mila researchers require more compute resources in order to conduct their research. In order to request funding for more resources, we need to estimate the amount of RGU-years needed for our population of researchers up to 5 years from now.
- 
+
 Making an accurate forecast is difficult, we will thus rely on different sources of information to validate our estimations. Surveys will be sent to professors for predictions of future projects and to students for documentation of past projects. These results will then be cross-validated using statistics from an automated literature review and cluster usage data.
 
-In parallel to these efforts, we will gather statistics about compute resources from other research institutions to provide comparisons. 
+In parallel to these efforts, we will gather statistics about compute resources from other research institutions to provide comparisons.
 
 ## Goals
 1. Collect predictions of future projects from every core professors
-    a. The predictions should involve all students supervised by these professors. 
+    a. The predictions should involve all students supervised by these professors.
     b. Any significant deviations (~20%) from past compute usage should be well supported by the project description.
 2. Collect compute usage documentation from at least 10 papers per core professor. (if possible)
     a. The documented usage should be less than 20% off from the cluster usage analysis.
 3. Document compute resources from other research institutions
-    a. Metric TBD. 
+    a. Metric TBD.
 
 ## Surveys
 

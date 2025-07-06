@@ -37,7 +37,7 @@ def measure_experimental_scope_gap(mila_papers, benchmark_papers):
             'gap_factor': 12.3
         }
     }
-    
+
     # The gap reveals what researchers didn't attempt
     suppressed_experiments = sum(m['gap_factor'] for m in scope_metrics.values()) / len(scope_metrics)
     return suppressed_experiments  # Average 5.65x fewer experiments
@@ -64,11 +64,11 @@ def analyze_research_trajectory(researcher_history):
             'method_pivot': 0.73       # 73% change approach entirely
         }
     }
-    
+
     # Example: Same researcher's papers
     # At Mila: "Efficient Visual Transformer with 86M parameters"
     # At DeepMind: "Scaling Vision Transformers to 22B parameters"
-    
+
     return trajectory_patterns
 ```
 
@@ -119,7 +119,7 @@ def analyze_proposal_execution_gap(proposals, publications):
             'large_scale_pretraining': {'proposed': 0.82, 'executed': 0.09}
         }
     }
-    
+
     # Key insight: 70-90% of proposed experiments don't happen
     return execution_gaps
 ```
@@ -148,7 +148,7 @@ def detect_method_selection_bias(mila_papers, benchmark_papers):
             'small_scale_experiments': {'mila': 0.52, 'benchmark': 0.18}
         }
     }
-    
+
     # Clear bias toward compute-efficient methods
     return method_choices
 ```
@@ -172,11 +172,11 @@ def analyze_collaboration_patterns():
             'percentage': 0.38
         }
     }
-    
+
     # Example from interviews:
     # "We collaborated with [Industry Lab] primarily for GPU access"
     # "Three labs pooled allocations to run one large experiment"
-    
+
     return patterns
 ```
 
@@ -194,28 +194,28 @@ class RevisedSuppressionIndex:
             'proposal_execution_gap': 0.20,     # grants vs papers
             'trajectory_changes': 0.15          # same researcher analysis
         }
-    
+
     def calculate(self, researcher_data):
         scores = {}
-        
+
         # Experimental scope (papers have 5.65x fewer experiments)
         scope_ratio = researcher_data['avg_experiments'] / benchmark_avg
         scores['experimental_scope_gap'] = 1 - min(1, scope_ratio)
-        
+
         # Method bias (overuse of efficient methods)
         efficient_rate = researcher_data['efficient_method_papers'] / total
         expected_rate = 0.20  # Benchmark
         scores['method_selection_bias'] = max(0, (efficient_rate - expected_rate) / (1 - expected_rate))
-        
+
         # Survey responses (ideal vs actual)
         scores['stated_ideal_gap'] = researcher_data['survey_ideal_compute_ratio'] - 1) / 10
-        
+
         # Proposal execution
         scores['proposal_execution_gap'] = 1 - researcher_data['proposal_execution_rate']
-        
+
         # Trajectory (researchers who left/joined)
         scores['trajectory_changes'] = researcher_data['avg_compute_change_ratio'] / 50
-        
+
         return sum(scores[k] * self.components[k] for k in scores)
 ```
 
@@ -291,7 +291,7 @@ calculator = RevisedSuppressionIndex()
 suppression = calculator.calculate(researcher_data)
 
 # Result: 0.71 (71% suppression)
-# Interpretation: "Researchers are attempting only 29% of what they would 
+# Interpretation: "Researchers are attempting only 29% of what they would
 # do with adequate compute, based on multiple independent indicators"
 ```
 

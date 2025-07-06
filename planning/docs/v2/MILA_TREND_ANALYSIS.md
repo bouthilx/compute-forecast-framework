@@ -44,7 +44,7 @@ Academic Benchmarks vs. Mila Trends vs. Industry Benchmarks
 - **Trend alignment**: Is Mila's growth rate matching academic evolution?
 - **Research competitiveness**: Can Mila replicate current academic standards?
 
-#### Industry Benchmark Comparison  
+#### Industry Benchmark Comparison
 - **Innovation distance**: How far is Mila from industry breakthrough capabilities?
 - **Computational frontier**: What industry innovations are currently impossible at Mila?
 - **Opportunity assessment**: What becomes possible with industry-level resources?
@@ -126,7 +126,7 @@ Academic Benchmarks vs. Mila Trends vs. Industry Benchmarks
 - **Trend validation**: Statistical significance of identified growth patterns
 - **Projection reliability**: Confidence intervals for future computational needs
 
-### Strategic Value  
+### Strategic Value
 - **Competitive assessment**: Clear picture of Mila's position vs. academic peers
 - **Opportunity identification**: Specific research directions enabled by adequate compute
 - **Resource justification**: Evidence-based case for computational investment

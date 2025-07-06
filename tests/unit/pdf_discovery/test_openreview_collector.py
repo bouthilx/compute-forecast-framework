@@ -4,7 +4,9 @@ import pytest
 from unittest.mock import Mock, patch
 
 from compute_forecast.data.models import Paper, Author
-from compute_forecast.pdf_discovery.sources.openreview_collector import OpenReviewPDFCollector
+from compute_forecast.pdf_discovery.sources.openreview_collector import (
+    OpenReviewPDFCollector,
+)
 
 
 class TestOpenReviewPDFCollector:

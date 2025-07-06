@@ -1,7 +1,7 @@
 # Issue Modification Plan: Pipeline → Compute Forecast
 
-**Date**: 2025-07-06  
-**Title**: Plan for modifying all issues in milestone #20 to use compute_forecast package name  
+**Date**: 2025-07-06
+**Title**: Plan for modifying all issues in milestone #20 to use compute_forecast package name
 **Purpose**: Ensure consistency across all refactoring issues with correct package naming and command execution
 
 ## Overview

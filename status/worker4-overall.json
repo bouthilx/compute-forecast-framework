@@ -18,7 +18,7 @@
   },
   "outputs_available": [
     "src/analysis/computational/keywords.py",
-    "src/analysis/computational/analyzer.py", 
+    "src/analysis/computational/analyzer.py",
     "src/analysis/computational/experimental_detector.py",
     "src/analysis/computational/filter.py",
     "src/analysis/computational/pattern_tests.py",
@@ -42,7 +42,7 @@
   },
   "post_review_fixes": {
     "regex_patterns_fixed": "✓ Group count mismatches resolved",
-    "error_handling_added": "✓ Robust error handling implemented", 
+    "error_handling_added": "✓ Robust error handling implemented",
     "comprehensive_testing": "✓ 48 total test cases with 100% pass rate",
     "edge_case_coverage": "✓ Handles malformed input gracefully",
     "real_world_validation": "✓ Tested with realistic paper examples",

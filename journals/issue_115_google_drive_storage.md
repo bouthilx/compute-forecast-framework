@@ -39,7 +39,7 @@ Created user-friendly scripts:
 
 **Dependencies added:**
 - `google-api-python-client>=2.100.0`
-- `google-auth>=2.20.0`  
+- `google-auth>=2.20.0`
 - `python-dotenv>=1.0.0`
 
 **Storage workflow:**

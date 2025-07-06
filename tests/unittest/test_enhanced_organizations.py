@@ -1,12 +1,10 @@
 """Test suite for enhanced organization classification system."""
 
 import pytest
-from typing import Dict, List
 from compute_forecast.analysis.classification.enhanced_organizations import (
     EnhancedOrganizationClassifier,
     OrganizationType,
     OrganizationRecord,
-    ClassificationResult,
 )
 
 
@@ -47,7 +45,9 @@ class TestEnhancedOrganizationClassifier:
 
     def test_exact_match_classification(self, classifier):
         """Test classification with exact organization name match."""
-        result = classifier.classify_with_confidence("Massachusetts Institute of Technology")
+        result = classifier.classify_with_confidence(
+            "Massachusetts Institute of Technology"
+        )
         assert result.organization == "Massachusetts Institute of Technology"
         assert result.type == OrganizationType.ACADEMIC
         assert result.confidence >= 0.95
@@ -77,7 +77,7 @@ class TestEnhancedOrganizationClassifier:
             ("Massachusetts Inst. of Tech.", "alias"),  # This is an alias match
             ("Mass Inst Tech", "fuzzy"),  # Abbreviated, should be fuzzy
         ]
-        
+
         for variation, expected_method in fuzzy_variations:
             result = classifier.classify_with_confidence(variation)
             assert result.organization == "Massachusetts Institute of Technology"
@@ -88,14 +88,18 @@ class TestEnhancedOrganizationClassifier:
 
     def test_keyword_match_classification(self, classifier):
         """Test keyword-based classification."""
-        result = classifier.classify_with_confidence("Unknown University Research Laboratory")
+        result = classifier.classify_with_confidence(
+            "Unknown University Research Laboratory"
+        )
         assert result.type == OrganizationType.ACADEMIC  # Keywords suggest academic
         assert result.confidence < 0.8  # Lower confidence for keyword-only match
         assert result.match_method == "keyword"
 
     def test_government_organization_classification(self, classifier):
         """Test government organization classification."""
-        result = classifier.classify_with_confidence("National Science Foundation Grant Office")
+        result = classifier.classify_with_confidence(
+            "National Science Foundation Grant Office"
+        )
         assert result.organization == "National Science Foundation"
         assert result.type == OrganizationType.GOVERNMENT
         assert result.confidence >= 0.85
@@ -109,11 +113,17 @@ class TestEnhancedOrganizationClassifier:
 
     def test_confidence_score_ordering(self, classifier):
         """Test that confidence scores follow expected ordering."""
-        exact_result = classifier.classify_with_confidence("Massachusetts Institute of Technology")
+        exact_result = classifier.classify_with_confidence(
+            "Massachusetts Institute of Technology"
+        )
         alias_result = classifier.classify_with_confidence("MIT")
-        fuzzy_result = classifier.classify_with_confidence("Massachusets Inst of Tech")  # Typo
-        keyword_result = classifier.classify_with_confidence("Some University Laboratory")
-        
+        fuzzy_result = classifier.classify_with_confidence(
+            "Massachusets Inst of Tech"
+        )  # Typo
+        keyword_result = classifier.classify_with_confidence(
+            "Some University Laboratory"
+        )
+
         # Exact match should have highest confidence
         assert exact_result.confidence > alias_result.confidence
         assert alias_result.confidence > fuzzy_result.confidence
@@ -123,9 +133,11 @@ class TestEnhancedOrganizationClassifier:
         """Test case-insensitive organization matching."""
         variations = ["MIT", "mit", "Mit", "mIt"]
         results = [classifier.classify_with_confidence(var) for var in variations]
-        
+
         # All should match to the same organization
-        assert all(r.organization == "Massachusetts Institute of Technology" for r in results)
+        assert all(
+            r.organization == "Massachusetts Institute of Technology" for r in results
+        )
         assert all(r.type == OrganizationType.ACADEMIC for r in results)
 
     def test_multiple_affiliation_handling(self, classifier):
@@ -134,7 +146,9 @@ class TestEnhancedOrganizationClassifier:
         # This should be handled by the parser, but classifier should handle gracefully
         result = classifier.classify_with_confidence(affiliation)
         assert result is not None
-        assert result.confidence < 1.0  # Should have lower confidence for complex strings
+        assert (
+            result.confidence < 1.0
+        )  # Should have lower confidence for complex strings
 
 
 class TestEnhancedAffiliationParser:
@@ -146,13 +160,14 @@ class TestEnhancedAffiliationParser:
         from compute_forecast.analysis.classification.enhanced_affiliation_parser import (
             EnhancedAffiliationParser,
         )
+
         return EnhancedAffiliationParser()
 
     def test_parse_complex_affiliation(self, parser):
         """Test parsing of complex multi-part affiliations."""
         affiliation = "Dept. of Computer Science, MIT, Cambridge, MA, USA"
         result = parser.parse_complex_affiliation(affiliation)
-        
+
         assert result["organization"] == "MIT"
         assert result["department"] == "Computer Science"
         assert result["city"] == "Cambridge"
@@ -184,7 +199,7 @@ class TestEnhancedAffiliationParser:
             "École Polytechnique Fédérale de Lausanne",
             "中国科学院",  # Chinese Academy of Sciences
         ]
-        
+
         for affiliation in affiliations:
             result = parser.handle_edge_cases(affiliation)
             assert result is not None
@@ -196,7 +211,7 @@ class TestEnhancedAffiliationParser:
             "Univ. of Toronto": "University of Toronto",
             "Inst. of Tech.": "Institute of Technology",
         }
-        
+
         for abbreviated, expected_substring in test_cases.items():
             normalized = parser.normalize_affiliation(abbreviated)
             # Check that abbreviations are expanded
@@ -211,13 +226,16 @@ class TestClassificationValidator:
     @pytest.fixture
     def validator(self):
         """Create validator instance for testing."""
-        from compute_forecast.analysis.classification.enhanced_validator import EnhancedClassificationValidator
+        from compute_forecast.analysis.classification.enhanced_validator import (
+            EnhancedClassificationValidator,
+        )
+
         return EnhancedClassificationValidator()
 
     def test_validation_accuracy_calculation(self, validator):
         """Test accuracy calculation on known test cases."""
         from compute_forecast.data.models import Paper, Author
-        
+
         # Create test papers with known classifications
         test_papers = [
             Paper(
@@ -235,7 +253,7 @@ class TestClassificationValidator:
                 citations=5,
             ),
         ]
-        
+
         results = validator.validate(test_papers)
         assert "overall_accuracy" in results
         assert 0 <= results["overall_accuracy"] <= 1
@@ -245,7 +263,7 @@ class TestClassificationValidator:
     def test_edge_case_identification(self, validator):
         """Test identification of classification edge cases."""
         from compute_forecast.data.models import Paper, Author
-        
+
         # Create paper with mixed affiliations (edge case)
         edge_case_paper = Paper(
             title="Edge Case Paper",
@@ -258,7 +276,7 @@ class TestClassificationValidator:
             year=2023,
             citations=0,
         )
-        
+
         failures = validator.identify_failures()
         # Should identify papers near the 25% threshold as potential failures
         assert isinstance(failures, list)
@@ -266,7 +284,7 @@ class TestClassificationValidator:
     def test_confidence_distribution_analysis(self, validator):
         """Test analysis of confidence score distribution."""
         from compute_forecast.data.models import Paper, Author
-        
+
         papers = [
             Paper(
                 title=f"Paper {i}",
@@ -275,19 +293,21 @@ class TestClassificationValidator:
                 year=2023,
                 citations=i,
             )
-            for i, aff in enumerate(["MIT", "Google", "Unknown University", "Random Corp"])
+            for i, aff in enumerate(
+                ["MIT", "Google", "Unknown University", "Random Corp"]
+            )
         ]
-        
+
         results = validator.validate(papers)
         confidence_dist = results.get("confidence_distribution", {})
-        
+
         # Check distribution structure
         assert "distribution" in confidence_dist
         distribution = confidence_dist["distribution"]
         assert "high_confidence" in distribution
         assert "medium_confidence" in distribution
         assert "low_confidence" in distribution
-        
+
         # Verify some papers have high confidence
         assert distribution["high_confidence"] > 0
 
@@ -300,13 +320,13 @@ class TestOrganizationDatabaseExpansion:
         from compute_forecast.analysis.classification.enhanced_organizations import (
             EnhancedOrganizationClassifier,
         )
-        
+
         classifier = EnhancedOrganizationClassifier()
         classifier.load_enhanced_database("config/organizations_enhanced.yaml")
-        
+
         # Should have loaded 225+ organizations
         assert classifier.get_organization_count() >= 225
-        
+
         # Should have all organization types
         assert classifier.get_organizations_by_type(OrganizationType.ACADEMIC)
         assert classifier.get_organizations_by_type(OrganizationType.INDUSTRY)
@@ -318,26 +338,42 @@ class TestOrganizationDatabaseExpansion:
         from compute_forecast.analysis.classification.enhanced_organizations import (
             EnhancedOrganizationClassifier,
         )
-        
+
         classifier = EnhancedOrganizationClassifier()
         classifier.load_enhanced_database("config/organizations_enhanced.yaml")
-        
+
         # Test coverage of major institutions
         major_universities = [
-            "MIT", "Stanford", "Harvard", "Berkeley", "CMU",
-            "Oxford", "Cambridge", "ETH Zurich", "Toronto", "McGill",
+            "MIT",
+            "Stanford",
+            "Harvard",
+            "Berkeley",
+            "CMU",
+            "Oxford",
+            "Cambridge",
+            "ETH Zurich",
+            "Toronto",
+            "McGill",
         ]
-        
+
         major_companies = [
-            "Google", "Microsoft", "Meta", "OpenAI", "DeepMind",
-            "Amazon", "Apple", "NVIDIA", "IBM", "Intel",
+            "Google",
+            "Microsoft",
+            "Meta",
+            "OpenAI",
+            "DeepMind",
+            "Amazon",
+            "Apple",
+            "NVIDIA",
+            "IBM",
+            "Intel",
         ]
-        
+
         for uni in major_universities:
             result = classifier.classify_with_confidence(uni)
             assert result.type == OrganizationType.ACADEMIC
             assert result.confidence > 0.8
-        
+
         for company in major_companies:
             result = classifier.classify_with_confidence(company)
             assert result.type == OrganizationType.INDUSTRY
@@ -353,6 +389,7 @@ class TestPaperAuthorClassification:
         from compute_forecast.analysis.classification.enhanced_organizations import (
             EnhancedOrganizationClassifier,
         )
+
         classifier = EnhancedOrganizationClassifier()
         classifier.load_enhanced_database("config/organizations_enhanced.yaml")
         return classifier
@@ -360,7 +397,7 @@ class TestPaperAuthorClassification:
     def test_academic_paper_classification(self, classifier):
         """Test classification of purely academic papers."""
         from compute_forecast.data.models import Paper, Author
-        
+
         paper = Paper(
             title="Academic Paper",
             authors=[
@@ -372,7 +409,7 @@ class TestPaperAuthorClassification:
             year=2023,
             citations=50,
         )
-        
+
         result = classifier.classify_paper_authors(paper.authors)
         assert result["classification"] == "academic"
         assert result["confidence"] >= 0.9
@@ -382,7 +419,7 @@ class TestPaperAuthorClassification:
     def test_industry_paper_classification(self, classifier):
         """Test classification of industry-dominated papers."""
         from compute_forecast.data.models import Paper, Author
-        
+
         paper = Paper(
             title="Industry Paper",
             authors=[
@@ -395,7 +432,7 @@ class TestPaperAuthorClassification:
             year=2023,
             citations=100,
         )
-        
+
         result = classifier.classify_paper_authors(paper.authors)
         assert result["classification"] == "industry"
         assert result["confidence"] >= 0.8
@@ -405,7 +442,7 @@ class TestPaperAuthorClassification:
     def test_borderline_paper_classification(self, classifier):
         """Test classification of papers near 25% threshold."""
         from compute_forecast.data.models import Paper, Author
-        
+
         # Exactly 25% industry (should be academic)
         paper = Paper(
             title="Borderline Paper",
@@ -419,7 +456,7 @@ class TestPaperAuthorClassification:
             year=2023,
             citations=20,
         )
-        
+
         result = classifier.classify_paper_authors(paper.authors)
         # At exactly 25%, should be classified as needing review or academic
         assert result["classification"] in ["academic", "needs_manual_review"]

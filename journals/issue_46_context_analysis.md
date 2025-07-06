@@ -28,7 +28,7 @@
 ```
 Paper-Based Computational Requirements Extraction (5-7 days)
 ├── Day 1-2: Automated extraction pipeline
-├── Day 3-4: Extract computational requirements 
+├── Day 3-4: Extract computational requirements
 ├── Day 5: Project and validate
 └── Day 6-7: Generate 3-4 page report
 ```
@@ -37,7 +37,7 @@ Paper-Based Computational Requirements Extraction (5-7 days)
 ```
 M2-3: Data Validation Methodology (2-3 hours)
 ├── Hour 1: Basic extraction validator + completeness scoring
-├── Hour 2: Simple consistency checks + outlier detection  
+├── Hour 2: Simple consistency checks + outlier detection
 └── Hour 3: Cross-validation framework + integration
 ```
 
@@ -70,12 +70,12 @@ Enterprise Extraction Validation Architecture (4 weeks)
 ```python
 class ExtractionQualityValidator(QualityAnalyzer):
     """Simple extension of existing QualityAnalyzer"""
-    
+
     def validate_extraction(self, paper: Paper, extraction: ComputationalAnalysis) -> ExtractionValidation:
         """Basic validation with confidence scoring"""
         confidence = self._calculate_basic_confidence(extraction)
         quality = self._map_confidence_to_quality(confidence)
-        
+
         return ExtractionValidation(
             paper_id=paper.paper_id,
             extraction_type="computational_requirements",
@@ -84,7 +84,7 @@ class ExtractionQualityValidator(QualityAnalyzer):
             quality=quality,
             validation_method="basic_completeness"
         )
-    
+
     def _calculate_basic_confidence(self, extraction: ComputationalAnalysis) -> float:
         """Simple confidence based on field completeness"""
         required_fields = ["gpu_hours", "parameters"]
@@ -96,24 +96,24 @@ class ExtractionQualityValidator(QualityAnalyzer):
 ```python
 class ExtractionConsistencyChecker:
     """Simple consistency checks for extracted values"""
-    
+
     def check_temporal_consistency(self, papers: List[Paper], metric: str) -> ConsistencyCheck:
         """Basic temporal trend checking"""
         values_by_year = self._group_by_year(papers, metric)
         trend_violation = self._detect_trend_violations(values_by_year)
-        
+
         return ConsistencyCheck(
             check_type="temporal",
             passed=not trend_violation,
             confidence=0.8,
             details={"trend_analysis": values_by_year}
         )
-    
+
     def identify_outliers(self, values: List[float], context: Dict[str, Any]) -> List[int]:
         """Simple z-score outlier detection"""
         if len(values) < 3:
             return []
-        
+
         z_scores = np.abs(stats.zscore(values))
         return [i for i, z in enumerate(z_scores) if z > 3.0]
 ```
@@ -122,18 +122,18 @@ class ExtractionConsistencyChecker:
 ```python
 class CrossValidationFramework:
     """Simple manual vs automated comparison"""
-    
+
     def compare_extractions(self, manual: Dict[str, Any], automated: Dict[str, Any]) -> Dict[str, float]:
         """Simple field-by-field accuracy calculation"""
         accuracies = {}
-        
+
         for field in ["gpu_hours", "parameters", "training_time"]:
             if field in manual and field in automated:
                 manual_val = manual[field]
                 auto_val = automated[field]
                 accuracy = 1.0 - abs(manual_val - auto_val) / max(manual_val, auto_val)
                 accuracies[field] = max(0.0, accuracy)
-        
+
         return accuracies
 ```
 
@@ -141,23 +141,23 @@ class CrossValidationFramework:
 ```python
 class IntegratedExtractionValidator:
     """Basic integration with existing quality framework"""
-    
+
     def __init__(self):
         self.quality_analyzer = QualityAnalyzer()
         self.extraction_validator = ExtractionQualityValidator()
         self.consistency_checker = ExtractionConsistencyChecker()
-    
+
     def validate_extraction_batch(self, extractions: List[ComputationalAnalysis]) -> Dict[str, Any]:
         """Simple batch validation"""
         results = []
         for extraction in extractions:
             validation = self.extraction_validator.validate_extraction(paper, extraction)
             results.append(validation)
-        
+
         # Basic aggregate metrics
         avg_confidence = np.mean([r.confidence for r in results])
         high_quality_count = len([r for r in results if r.quality == ExtractionQuality.HIGH])
-        
+
         return {
             "total_validations": len(results),
             "average_confidence": avg_confidence,
@@ -174,14 +174,14 @@ class IntegratedExtractionValidator:
 - Implement completeness-based validation
 - Simple enum-based quality categories
 
-### Hour 2: Consistency & Outlier Detection (60 minutes)  
+### Hour 2: Consistency & Outlier Detection (60 minutes)
 - Basic temporal consistency checking
 - Simple z-score outlier detection
 - Consistency check data structures
 
 ### Hour 3: Cross-Validation & Integration (60 minutes)
 - Manual vs automated comparison framework
-- Integration with existing quality framework  
+- Integration with existing quality framework
 - Basic validation rules configuration
 
 ### Total: 3 hours, appropriate for S(2-3h) effort

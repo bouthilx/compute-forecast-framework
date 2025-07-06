@@ -30,7 +30,7 @@ All files are JSON format with the following structures:
 ### session_config.json
 Contains the initial session configuration including CollectionConfig parameters.
 
-### session_status.json  
+### session_status.json
 Contains the current session state as a CollectionSession object.
 
 ### checkpoints/*.json

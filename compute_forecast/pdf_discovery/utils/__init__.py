@@ -6,14 +6,14 @@ from .exceptions import (
     APIError,
     NoResultsError,
     NoPDFFoundError,
-    RateLimitError
+    RateLimitError,
 )
 
 __all__ = [
     "RateLimiter",
     "PDFDiscoveryError",
-    "APIError", 
+    "APIError",
     "NoResultsError",
     "NoPDFFoundError",
-    "RateLimitError"
+    "RateLimitError",
 ]

@@ -14,13 +14,13 @@ class StreamingLogCapture:
     def __init__(self, max_lines=50):
         self.lines = collections.deque(maxlen=max_lines)  # Thread-safe circular buffer
         self.lock = threading.Lock()  # Thread safety for concurrent access
-        
+
     def write(self, text):
         with self.lock:
             if text.strip():
                 timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]  # Millisecond precision
                 self.lines.append(f"[{timestamp}] {text.strip()}")
-    
+
     def get_recent_lines(self):
         with self.lock:
             return list(self.lines)  # Return copy for thread safety
@@ -46,7 +46,7 @@ class StreamingLogCapture:
 ### 6. **Layout Structure**
 ```
 ┌─ Progress Bars Panel (top, fixed height) ─┐
-├─ Domain Statistics Panels (middle, grid) ─┤  
+├─ Domain Statistics Panels (middle, grid) ─┤
 └─ Real-time Activity Log (bottom, expand) ─┘
 ```
 

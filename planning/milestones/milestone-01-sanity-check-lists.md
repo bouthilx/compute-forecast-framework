@@ -8,13 +8,13 @@ us_universities = [
     # Ivy League + Stanford/MIT
     'MIT', 'Massachusetts Institute of Technology',
     'Stanford University', 'Stanford',
-    'Harvard University', 'Harvard', 
+    'Harvard University', 'Harvard',
     'Princeton University', 'Princeton',
     'Yale University', 'Yale',
     'Columbia University', 'Columbia',
     'University of Pennsylvania', 'UPenn',
     'Cornell University', 'Cornell',
-    
+
     # Top Public Universities
     'UC Berkeley', 'University of California Berkeley', 'Berkeley',
     'UCLA', 'University of California Los Angeles',
@@ -22,7 +22,7 @@ us_universities = [
     'University of Michigan', 'Michigan',
     'Georgia Tech', 'Georgia Institute of Technology',
     'UT Austin', 'University of Texas Austin',
-    
+
     # Top Private Universities
     'Carnegie Mellon University', 'CMU',
     'NYU', 'New York University',
@@ -39,13 +39,13 @@ international_universities = [
     'Imperial College London', 'Imperial College',
     'University College London', 'UCL',
     'University of Edinburgh', 'Edinburgh',
-    
+
     # Canadian Universities
     'University of Toronto', 'UofT',
     'McGill University', 'McGill',
     'University of British Columbia', 'UBC',
     'University of Montreal', 'Montreal',
-    
+
     # European Universities
     'ETH Zurich', 'Swiss Federal Institute',
     'EPFL', 'École Polytechnique Fédérale',
@@ -53,7 +53,7 @@ international_universities = [
     'Max Planck Institute', 'MPI',
     'University of Amsterdam', 'Amsterdam',
     'KTH Royal Institute', 'KTH',
-    
+
     # Asian Universities
     'University of Tokyo', 'Tokyo',
     'Tsinghua University', 'Tsinghua',
@@ -69,14 +69,14 @@ research_institutes = [
     'Allen Institute for AI', 'AI2',
     'Toyota Research Institute', 'TRI',
     'Honda Research Institute',
-    
+
     # Government/Non-profit Research
     'NASA', 'National Aeronautics',
     'NIST', 'National Institute of Standards',
     'Lawrence Berkeley National Laboratory',
     'Argonne National Laboratory',
     'Los Alamos National Laboratory',
-    
+
     # International Research Institutes
     'INRIA', 'French National Institute',
     'CNRS', 'Centre National de la Recherche',
@@ -95,25 +95,25 @@ big_tech_ai = [
     # Google/Alphabet
     'Google', 'Google Research', 'Google AI', 'Google Brain',
     'DeepMind', 'Google DeepMind', 'Alphabet',
-    
+
     # Microsoft
     'Microsoft', 'Microsoft Research', 'MSR',
     'Microsoft AI', 'Azure AI',
-    
+
     # Meta/Facebook
     'Meta', 'Meta AI', 'Facebook', 'Facebook AI',
     'FAIR', 'Facebook AI Research',
-    
+
     # OpenAI
     'OpenAI', 'Open AI',
-    
+
     # Apple
     'Apple', 'Apple Inc', 'Apple Machine Learning',
-    
+
     # Amazon
     'Amazon', 'Amazon Web Services', 'AWS',
     'Amazon AI', 'Alexa AI',
-    
+
     # Other Big Tech
     'NVIDIA', 'NVIDIA Research', 'NVIDIA AI',
     'Intel', 'Intel Labs', 'Intel AI',
@@ -133,14 +133,14 @@ ai_focused_companies = [
     'Inflection AI', 'Inflection',
     'Midjourney',
     'Runway', 'Runway AI',
-    
+
     # Autonomous Vehicles
     'Tesla', 'Tesla AI',
     'Waymo',
     'Cruise', 'GM Cruise',
     'Aurora', 'Aurora AI',
     'Argo AI',
-    
+
     # Robotics
     'Boston Dynamics',
     'Agility Robotics',
@@ -156,14 +156,14 @@ international_industry = [
     'ByteDance', 'TikTok AI',
     'SenseTime',
     'Megvii', 'Face++',
-    
+
     # European Tech
     'SAP', 'SAP Research',
     'Siemens', 'Siemens Research',
     'Bosch', 'Robert Bosch',
     'DeepL',
     'Mistral AI',
-    
+
     # Other International
     'Samsung', 'Samsung Research',
     'Sony', 'Sony AI',
@@ -180,23 +180,23 @@ expected_industry_orgs = big_tech_ai + ai_focused_companies + international_indu
 ```python
 def validate_organization_coverage(papers, expected_orgs, org_type='academic'):
     """Validate that expected organizations are represented in collected papers"""
-    
+
     found_orgs = set()
     org_paper_counts = defaultdict(int)
-    
+
     for paper in papers:
         for author in paper.get('authors', []):
             affiliation = author.get('affiliation', '').lower()
-            
+
             for org in expected_orgs:
                 if org.lower() in affiliation:
                     found_orgs.add(org)
                     org_paper_counts[org] += 1
                     break  # Don't double-count same org for same paper
-    
+
     missing_orgs = set(expected_orgs) - found_orgs
     coverage_percentage = len(found_orgs) / len(expected_orgs)
-    
+
     validation_result = {
         'org_type': org_type,
         'total_expected': len(expected_orgs),
@@ -208,46 +208,46 @@ def validate_organization_coverage(papers, expected_orgs, org_type='academic'):
         'org_paper_counts': dict(org_paper_counts),
         'status': 'PASS' if coverage_percentage >= 0.3 else 'FAIL'
     }
-    
+
     return validation_result
 
 def print_coverage_report(academic_validation, industry_validation):
     """Print formatted coverage report"""
-    
+
     print("="*80)
     print("ORGANIZATION COVERAGE REPORT")
     print("="*80)
-    
+
     # Academic Coverage
     print(f"\nACADEMIC ORGANIZATIONS:")
     print(f"Coverage: {academic_validation['found_count']}/{academic_validation['total_expected']} "
           f"({academic_validation['coverage_percentage']:.1%}) - {academic_validation['status']}")
-    
+
     print(f"\nTop Academic Organizations Found:")
-    for org, count in sorted(academic_validation['org_paper_counts'].items(), 
+    for org, count in sorted(academic_validation['org_paper_counts'].items(),
                            key=lambda x: x[1], reverse=True)[:10]:
         print(f"  {org}: {count} papers")
-    
+
     if academic_validation['missing_orgs']:
         print(f"\nNotable Missing Academic Organizations:")
         for org in academic_validation['missing_orgs'][:10]:
             print(f"  - {org}")
-    
+
     # Industry Coverage
     print(f"\nINDUSTRY ORGANIZATIONS:")
     print(f"Coverage: {industry_validation['found_count']}/{industry_validation['total_expected']} "
           f"({industry_validation['coverage_percentage']:.1%}) - {industry_validation['status']}")
-    
+
     print(f"\nTop Industry Organizations Found:")
-    for org, count in sorted(industry_validation['org_paper_counts'].items(), 
+    for org, count in sorted(industry_validation['org_paper_counts'].items(),
                            key=lambda x: x[1], reverse=True)[:10]:
         print(f"  {org}: {count} papers")
-    
+
     if industry_validation['missing_orgs']:
         print(f"\nNotable Missing Industry Organizations:")
         for org in industry_validation['missing_orgs'][:10]:
             print(f"  - {org}")
-    
+
     print("="*80)
 ```
 
@@ -255,9 +255,9 @@ def print_coverage_report(academic_validation, industry_validation):
 ```python
 def detect_collection_issues(academic_validation, industry_validation):
     """Detect potential issues with paper collection"""
-    
+
     issues = []
-    
+
     # Academic coverage issues
     if academic_validation['coverage_percentage'] < 0.2:
         issues.append({
@@ -273,7 +273,7 @@ def detect_collection_issues(academic_validation, industry_validation):
             'message': f"Low academic coverage ({academic_validation['coverage_percentage']:.1%})",
             'recommendation': 'Consider manual addition of papers from missing institutions'
         })
-    
+
     # Industry coverage issues
     if industry_validation['coverage_percentage'] < 0.15:
         issues.append({
@@ -289,15 +289,15 @@ def detect_collection_issues(academic_validation, industry_validation):
             'message': f"Low industry coverage ({industry_validation['coverage_percentage']:.1%})",
             'recommendation': 'Consider targeted search for missing industry organizations'
         })
-    
+
     # Missing critical organizations
     critical_academic_missing = [
         'MIT', 'Stanford', 'CMU', 'Berkeley', 'Oxford', 'Cambridge'
     ]
-    
-    missing_critical_academic = [org for org in critical_academic_missing 
+
+    missing_critical_academic = [org for org in critical_academic_missing
                                if org in academic_validation['missing_orgs']]
-    
+
     if missing_critical_academic:
         issues.append({
             'type': 'WARNING',
@@ -305,14 +305,14 @@ def detect_collection_issues(academic_validation, industry_validation):
             'message': f"Missing critical academic institutions: {missing_critical_academic}",
             'recommendation': 'Manual search for papers from these top institutions'
         })
-    
+
     critical_industry_missing = [
         'Google', 'OpenAI', 'DeepMind', 'Meta', 'Microsoft'
     ]
-    
-    missing_critical_industry = [org for org in critical_industry_missing 
+
+    missing_critical_industry = [org for org in critical_industry_missing
                                if org in industry_validation['missing_orgs']]
-    
+
     if missing_critical_industry:
         issues.append({
             'type': 'WARNING',
@@ -320,35 +320,35 @@ def detect_collection_issues(academic_validation, industry_validation):
             'message': f"Missing critical industry organizations: {missing_critical_industry}",
             'recommendation': 'Manual search for breakthrough papers from these organizations'
         })
-    
+
     return issues
 
 def print_issues_report(issues):
     """Print formatted issues report"""
-    
+
     if not issues:
         print("\n✅ No major collection issues detected!")
         return
-    
+
     print("\n" + "="*80)
     print("COLLECTION ISSUES DETECTED")
     print("="*80)
-    
+
     critical_issues = [i for i in issues if i['type'] == 'CRITICAL']
     warning_issues = [i for i in issues if i['type'] == 'WARNING']
-    
+
     if critical_issues:
         print(f"\n🚨 CRITICAL ISSUES ({len(critical_issues)}):")
         for issue in critical_issues:
             print(f"  ❌ {issue['message']}")
             print(f"     → {issue['recommendation']}\n")
-    
+
     if warning_issues:
         print(f"\n⚠️  WARNINGS ({len(warning_issues)}):")
         for issue in warning_issues:
             print(f"  ⚠️  {issue['message']}")
             print(f"     → {issue['recommendation']}\n")
-    
+
     print("="*80)
 ```
 
@@ -356,7 +356,7 @@ def print_issues_report(issues):
 
 ### Academic Organizations
 - **Minimum acceptable**: 30% coverage
-- **Good coverage**: 50% coverage  
+- **Good coverage**: 50% coverage
 - **Excellent coverage**: 70% coverage
 
 **Critical institutions that MUST be present:**
@@ -365,7 +365,7 @@ def print_issues_report(issues):
 - At least 2-3 other top US universities
 - At least 1-2 top international universities
 
-### Industry Organizations  
+### Industry Organizations
 - **Minimum acceptable**: 20% coverage
 - **Good coverage**: 40% coverage
 - **Excellent coverage**: 60% coverage

@@ -1,6 +1,6 @@
 # Lines Wrongly Removed from Pipeline Refactoring Issues
 
-**Date**: 2025-01-06  
+**Date**: 2025-01-06
 **Title**: Correction - Lines that should NOT have been removed
 
 ## Analysis of Mistakes

@@ -5,7 +5,7 @@ from .data_corruption import DataCorruptionScenarios
 from .resource_exhaustion import ResourceExhaustionScenarios
 
 __all__ = [
-    'APIFailureScenarios',
-    'DataCorruptionScenarios',
-    'ResourceExhaustionScenarios'
+    "APIFailureScenarios",
+    "DataCorruptionScenarios",
+    "ResourceExhaustionScenarios",
 ]

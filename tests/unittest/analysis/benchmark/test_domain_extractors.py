@@ -1,8 +1,6 @@
 """Tests for domain-specific benchmark extractors."""
 
 import pytest
-from unittest.mock import Mock, patch
-from typing import Dict, Any
 
 from compute_forecast.analysis.benchmark.domain_extractors import (
     NLPBenchmarkExtractor,
@@ -74,7 +72,9 @@ class TestNLPBenchmarkExtractor:
         normalized = nlp_extractor.normalize_nlp_metrics(metrics)
 
         assert "word_count_estimate" in normalized
-        assert normalized["word_count_estimate"] == pytest.approx(750_000_000, rel=0.1)  # ~0.75 words per token
+        assert normalized["word_count_estimate"] == pytest.approx(
+            750_000_000, rel=0.1
+        )  # ~0.75 words per token
 
     def test_extract_nlp_benchmarks_from_text(self, nlp_extractor, nlp_paper):
         """Test identifying NLP benchmark datasets in paper."""
@@ -230,7 +230,9 @@ class TestRLBenchmarkExtractor:
         compute_estimate = rl_extractor.estimate_compute_hours(metrics)
 
         assert compute_estimate > 0
-        assert compute_estimate == pytest.approx(14 * 24 * 32, rel=0.1)  # ~10752 GPU hours (14 days × 24 hours × 32 envs)
+        assert compute_estimate == pytest.approx(
+            14 * 24 * 32, rel=0.1
+        )  # ~10752 GPU hours (14 days × 24 hours × 32 envs)
 
     def test_extract_multiple_rl_environments(self, rl_extractor):
         """Test extracting metrics when multiple RL environments are used."""

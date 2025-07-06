@@ -59,7 +59,7 @@
 ## 5. Domain-Specific Constraint Variation
 ### **Limitation**: Constraint levels vary dramatically across research domains
 - **Impact**: Single methodology may not capture domain-specific realities
-- **Examples**: 
+- **Examples**:
   - NLP/LLM: Always severely constrained
   - Theory: Possibly less constrained
   - Computer Vision: Highly variable

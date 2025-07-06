@@ -25,7 +25,7 @@ echo "$(date),${SLURM_JOB_USER},${SLURM_JOB_ID},${SLURM_GPUS_REQUESTED},${SLURM_
 def extract_denied_requests(log_file):
     denied_pattern = re.compile(r"Job (\d+) denied: (insufficient resources|quota exceeded)")
     denied_jobs = []
-    
+
     with open(log_file) as f:
         for line in f:
             match = denied_pattern.search(line)
@@ -53,11 +53,11 @@ def track_downsized_requests(submission_history):
         for i in range(1, len(jobs)):
             current = jobs[i]
             previous = jobs[i-1]
-            
+
             # Check if resubmitted within 30 minutes with fewer resources
             time_diff = current['timestamp'] - previous['timestamp']
             if time_diff < timedelta(minutes=30):
-                if (current['gpus'] < previous['gpus'] or 
+                if (current['gpus'] < previous['gpus'] or
                     current['hours'] < previous['hours']):
                     downsized.append({
                         'original': previous,
@@ -78,7 +78,7 @@ def calculate_suppression_metrics(requested, allocated, denied):
         'denial_rate': denied_hours / requested_hours,
         'suppression_ratio': requested_hours / allocated_hours
     }
-    
+
     # Example output:
     # {
     #     'total_requested_gpu_hours': 125000,
@@ -150,7 +150,7 @@ def track_execution_modifications(planned, executed):
             'search_reduction': 1 - (executed / planned)
         }
     }
-    
+
     # Example output:
     # {
     #     'model_size_reduction': {
@@ -214,7 +214,7 @@ def analyze_research_modifications(repo_path):
         (r'early_stopping.*budget', 'training_truncated'),
         (r'skip.*expensive', 'experiments_skipped')
     ]
-    
+
     modifications = []
     for commit in git.log(repo_path):
         for pattern, category in modification_patterns:
@@ -225,7 +225,7 @@ def analyze_research_modifications(repo_path):
                     'category': category,
                     'message': commit.message
                 })
-    
+
     return modifications
 ```
 
@@ -255,17 +255,17 @@ def calculate_search_density(paper_data):
         'manual_tuning': r'manually.*?tuned|hand.*?tuned',
         'fixed_hyperparams': r'fixed.*?hyperparameters|default.*?settings'
     }
-    
+
     # Example extraction from paper:
-    # "We performed a grid search over learning rates {1e-4, 5e-4, 1e-3} 
+    # "We performed a grid search over learning rates {1e-4, 5e-4, 1e-3}
     #  and batch sizes {32, 64, 128}, resulting in 9 combinations"
-    
+
     search_density = {
         'combinations_tested': 0,
         'search_method': '',
         'parameter_space': {}
     }
-    
+
     # Parse paper text
     for method, pattern in search_patterns.items():
         match = re.search(pattern, paper_text)
@@ -275,7 +275,7 @@ def calculate_search_density(paper_data):
             else:
                 search_density['combinations_tested'] = 1  # Manual = very limited
             search_density['search_method'] = method
-            
+
     return search_density
 ```
 
@@ -290,17 +290,17 @@ def calculate_suppression_factor():
         'using_manual_only': 0.65,  # 65% use manual tuning only
         'full_grid_search': 0.05     # 5% do comprehensive search
     }
-    
+
     benchmark_papers = {
         'avg_combinations': 148,
         'median_combinations': 96,
         'using_manual_only': 0.15,   # 15% use manual tuning
         'full_grid_search': 0.45     # 45% do comprehensive search
     }
-    
+
     suppression_factor = benchmark_papers['avg_combinations'] / mila_papers['avg_combinations']
     # 148 / 12 = 12.3x
-    
+
     return {
         'suppression_factor': suppression_factor,
         'interpretation': 'Mila researchers explore 12x fewer configurations',
@@ -336,7 +336,7 @@ How often papers emphasize computational efficiency as a primary contribution ra
 def detect_efficiency_focus(paper_text, paper_code):
     efficiency_indicators = {
         'title_keywords': [
-            'efficient', 'lightweight', 'compressed', 'pruned', 
+            'efficient', 'lightweight', 'compressed', 'pruned',
             'distilled', 'quantized', 'low-rank', 'sparse'
         ],
         'abstract_phrases': [
@@ -356,23 +356,23 @@ def detect_efficiency_focus(paper_text, paper_code):
             'gradient checkpointing'
         ]
     }
-    
+
     efficiency_score = 0
-    
+
     # Check title
     if any(keyword in paper_title.lower() for keyword in efficiency_indicators['title_keywords']):
         efficiency_score += 0.3
-        
+
     # Check abstract
-    abstract_matches = sum(1 for phrase in efficiency_indicators['abstract_phrases'] 
+    abstract_matches = sum(1 for phrase in efficiency_indicators['abstract_phrases']
                           if phrase in abstract.lower())
     efficiency_score += min(0.3, abstract_matches * 0.1)
-    
+
     # Check methods
     method_matches = sum(1 for method in efficiency_indicators['method_choices']
                         if method in paper_text.lower())
     efficiency_score += min(0.4, method_matches * 0.1)
-    
+
     return {
         'efficiency_focused': efficiency_score > 0.5,
         'efficiency_score': efficiency_score,
@@ -433,7 +433,7 @@ def detect_dataset_subsampling(paper_text, code_files):
             'use_full_dataset': True
         }
     }
-    
+
     # Check paper text
     for pattern in subsampling_evidence['explicit_mentions']:
         match = re.search(pattern, paper_text, re.I)
@@ -443,7 +443,7 @@ def detect_dataset_subsampling(paper_text, code_files):
                 'reason': 'computational_constraints',
                 'evidence': match.group(0)
             }
-    
+
     # Check code
     for code_file in code_files:
         for pattern in subsampling_evidence['code_patterns']:
@@ -453,7 +453,7 @@ def detect_dataset_subsampling(paper_text, code_files):
                     'reason': 'implementation_choice',
                     'evidence': pattern
                 }
-    
+
     return {'subsampled': False}
 ```
 
@@ -488,48 +488,48 @@ class SuppressionIndexCalculator:
             'dataset_subsampling': 0.15,       # Data limitations
             'explicit_mentions': 0.15          # Self-reported constraints
         }
-    
+
     def calculate_component_scores(self, researcher_data):
         scores = {}
-        
+
         # Request fulfillment (0-1, where 0 = all fulfilled, 1 = none fulfilled)
         total_requested = researcher_data['gpu_hours_requested']
         total_received = researcher_data['gpu_hours_allocated']
         scores['request_fulfillment'] = 1 - (total_received / total_requested)
-        
+
         # Architecture constraints (0-1, where 1 = heavily constrained)
         efficiency_papers = researcher_data['efficiency_focused_papers']
         total_papers = researcher_data['total_papers']
         baseline_efficiency_rate = 0.35  # Industry baseline
-        scores['architecture_constraints'] = max(0, 
+        scores['architecture_constraints'] = max(0,
             (efficiency_papers/total_papers - baseline_efficiency_rate) / (1 - baseline_efficiency_rate))
-        
+
         # Search limitations (0-1, where 1 = minimal search)
         avg_combinations = researcher_data['avg_hyperparameter_combinations']
         baseline_combinations = 148  # Industry average
         scores['search_limitations'] = 1 - min(1, avg_combinations / baseline_combinations)
-        
+
         # Dataset subsampling (0-1, where 1 = heavy subsampling)
         subsampling_rate = researcher_data['dataset_subsampling_rate']
         scores['dataset_subsampling'] = subsampling_rate
-        
+
         # Explicit mentions (0-1, based on frequency)
         constraint_mentions = researcher_data['papers_mentioning_constraints']
         scores['explicit_mentions'] = constraint_mentions / total_papers
-        
+
         return scores
-    
+
     def calculate_index(self, researcher_data):
         scores = self.calculate_component_scores(researcher_data)
-        
+
         # Weighted sum
-        index = sum(scores[component] * self.weights[component] 
+        index = sum(scores[component] * self.weights[component]
                    for component in self.weights)
-        
+
         # Add confidence interval based on data quality
         n_samples = researcher_data.get('total_papers', 0)
         confidence = min(0.95, n_samples / 100)  # More data = higher confidence
-        
+
         return {
             'suppression_index': round(index, 2),
             'component_scores': scores,
@@ -537,7 +537,7 @@ class SuppressionIndexCalculator:
             'interpretation': self.interpret_index(index),
             'sample_size': n_samples
         }
-    
+
     def interpret_index(self, index):
         if index < 0.3:
             return "Low suppression - adequate resources"

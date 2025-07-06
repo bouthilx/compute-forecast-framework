@@ -146,37 +146,37 @@ IMPORT_MAPPINGS = {
     r'from src\.data\.collectors': 'from pipeline.metadata_collection.collectors',
     r'from src\.data\.processors': 'from pipeline.metadata_collection.processors',
     r'from src\.data\.models': 'from pipeline.metadata_collection.models',
-    
+
     # Paper filtering
     r'from src\.filtering': 'from pipeline.paper_filtering',
     r'from src\.selection': 'from pipeline.paper_filtering.selectors',
-    
+
     # PDF acquisition
     r'from src\.pdf_discovery': 'from pipeline.pdf_acquisition.discovery',
     r'from src\.pdf_download': 'from pipeline.pdf_acquisition.download',
     r'from src\.pdf_storage': 'from pipeline.pdf_acquisition.storage',
-    
+
     # Content extraction
     r'from src\.pdf_parser': 'from pipeline.content_extraction.parser',
     r'from src\.extraction': 'from pipeline.content_extraction.templates',
     r'from src\.quality\.extraction': 'from pipeline.content_extraction.validators',
-    
+
     # Analysis
     r'from src\.analysis': 'from pipeline.analysis',
-    
+
     # Core
     r'from src\.core': 'from core',
     r'from src\.quality\.contracts': 'from core.contracts',
-    
+
     # Monitoring
     r'from src\.monitoring': 'from monitoring',
-    
+
     # Orchestration
     r'from src\.orchestration': 'from orchestration',
-    
+
     # Quality
     r'from src\.quality\.validators': 'from quality.validators',
-    
+
     # Testing
     r'from src\.testing': 'from tests.infrastructure',
 }
@@ -184,10 +184,10 @@ IMPORT_MAPPINGS = {
 def update_imports(file_path):
     """Update imports in a single file"""
     content = file_path.read_text()
-    
+
     for old_import, new_import in IMPORT_MAPPINGS.items():
         content = re.sub(old_import, new_import, content)
-    
+
     file_path.write_text(content)
 
 def main():
@@ -195,7 +195,7 @@ def main():
     for py_file in Path('package').rglob('*.py'):
         print(f"Updating imports in {py_file}")
         update_imports(py_file)
-    
+
     # Update test files
     for py_file in Path('tests').rglob('*.py'):
         print(f"Updating imports in {py_file}")
@@ -234,31 +234,31 @@ from pipeline.analysis.orchestrator import AnalysisOrchestrator
 
 class ResearchPipelineOrchestrator:
     """Main orchestrator for the complete research pipeline"""
-    
+
     def __init__(self):
         self.metadata_orchestrator = MetadataCollectionOrchestrator()
         self.filtering_orchestrator = PaperFilteringOrchestrator()
         self.pdf_orchestrator = PDFAcquisitionOrchestrator()
         self.extraction_orchestrator = ContentExtractionOrchestrator()
         self.analysis_orchestrator = AnalysisOrchestrator()
-    
+
     def run_full_pipeline(self, config):
         """Execute the complete pipeline"""
         # Stage 1: Collect paper metadata
         papers = self.metadata_orchestrator.collect_papers(config)
-        
+
         # Stage 2: Filter papers
         filtered_papers = self.filtering_orchestrator.filter_papers(papers)
-        
+
         # Stage 3: Acquire PDFs for filtered papers
         pdf_records = self.pdf_orchestrator.acquire_pdfs(filtered_papers)
-        
+
         # Stage 4: Extract data from PDFs
         extracted_data = self.extraction_orchestrator.extract_data(pdf_records)
-        
+
         # Stage 5: Analyze extracted data
         analysis_results = self.analysis_orchestrator.analyze(extracted_data)
-        
+
         return analysis_results
 ```
 
@@ -284,7 +284,7 @@ Create minimal orchestrator interfaces for each stage that wrap existing functio
 class PaperRecord:
     """Unified model linking all pipeline stages"""
     metadata: PaperMetadata      # From Stage 1
-    filter_results: FilterResults # From Stage 2  
+    filter_results: FilterResults # From Stage 2
     pdf_record: Optional[PDFRecord] = None  # From Stage 3
     extracted_data: Optional[ExtractedData] = None  # From Stage 4
     analysis_results: Optional[AnalysisResults] = None  # From Stage 5

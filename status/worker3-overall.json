@@ -16,7 +16,7 @@
   },
   "outputs_available": [
     "src/analysis/venues/venue_analyzer.py",
-    "src/analysis/venues/venue_database.py", 
+    "src/analysis/venues/venue_database.py",
     "src/analysis/venues/venue_scoring.py",
     "src/analysis/venues/collection_strategy.py"
   ],

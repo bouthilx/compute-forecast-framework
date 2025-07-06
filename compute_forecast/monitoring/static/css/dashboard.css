@@ -443,39 +443,39 @@ canvas {
         text-align: center;
         gap: 15px;
     }
-    
+
     .dashboard-header h1 {
         font-size: 2rem;
     }
-    
+
     .progress-details {
         flex-direction: column;
         gap: 5px;
     }
-    
+
     .venue-grid {
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     }
-    
+
     .api-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
-    
+
     .api-metrics {
         flex-wrap: wrap;
     }
-    
+
     .venue-grid-cell {
         min-height: 30px;
         padding: 4px 2px;
     }
-    
+
     .venue-papers-count {
         font-size: 0.6rem;
     }
-    
+
     .venue-progress-bar {
         font-size: 0.5rem;
     }
@@ -486,7 +486,7 @@ canvas {
         grid-template-columns: 60px repeat(6, 1fr);
         font-size: 0.6rem;
     }
-    
+
     .venue-grid-cell {
         min-height: 25px;
         padding: 2px 1px;

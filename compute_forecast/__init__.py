@@ -21,7 +21,7 @@ from . import core
 __all__ = [
     "__version__",
     "data",
-    "pdf_parser", 
+    "pdf_parser",
     "pdf_discovery",
     "analysis",
     "core",

@@ -12,7 +12,7 @@ Add a new `suppression_indicators` section to the existing extraction templates:
 extraction_config = {
     "templates": {
         "NLP": "nlp_training_v1",
-        "CV": "cv_training_v1", 
+        "CV": "cv_training_v1",
         "RL": "rl_training_v1"
     },
     "suppression_indicators": {  # NEW SECTION

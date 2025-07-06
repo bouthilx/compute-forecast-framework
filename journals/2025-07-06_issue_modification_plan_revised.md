@@ -1,7 +1,7 @@
 # Issue Modification Plan: All Under compute_forecast Package (Revised)
 
-**Date**: 2025-07-06  
-**Title**: Revised plan for modifying all issues to place everything under compute_forecast package  
+**Date**: 2025-07-06
+**Title**: Revised plan for modifying all issues to place everything under compute_forecast package
 **Purpose**: Ensure all modules are within the compute_forecast Python package, with pipeline as a submodule
 
 ## Overview
@@ -107,17 +107,17 @@ IMPORT_MAPPINGS = {
     r'from src\.data\.sources': 'from compute_forecast.pipeline.metadata_collection.sources',
     r'from src\.data\.collectors': 'from compute_forecast.pipeline.metadata_collection.collectors',
     # ... all pipeline imports prefix with compute_forecast.pipeline.
-    
+
     # Core
     r'from src\.core': 'from compute_forecast.core',
     r'from src\.quality\.contracts': 'from compute_forecast.core.contracts',
-    
+
     # Monitoring
     r'from src\.monitoring': 'from compute_forecast.monitoring',
-    
+
     # Orchestration
     r'from src\.orchestration': 'from compute_forecast.orchestration',
-    
+
     # Quality
     r'from src\.quality\.validators': 'from compute_forecast.quality.validators',
     r'from src\.quality': 'from compute_forecast.pipeline.content_extraction.quality',
@@ -141,7 +141,7 @@ compute-forecast = "compute_forecast.orchestration.orchestrators.main_orchestrat
 
 **pytest.ini Update:**
 ```ini
-addopts = 
+addopts =
     --cov=compute_forecast
     --cov-report=html
     --cov-report=term-missing

@@ -1,0 +1,15 @@
+# Google Drive PDF Storage Dependencies
+google-api-python-client>=2.100.0
+google-auth>=2.20.0
+google-auth-httplib2>=0.1.0
+google-auth-oauthlib>=1.0.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# PDF downloading
+requests>=2.31.0
+
+# Optional: For advanced PDF processing (if needed later)
+# PyMuPDF>=1.23.0
+# python-magic>=0.4.27

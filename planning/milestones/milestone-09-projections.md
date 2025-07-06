@@ -38,7 +38,7 @@ Generate defensible 2-year computational requirement projections using multiple 
   - Leadership in emerging computational research paradigms
 
 ### Scenario Development
-- **Conservative scenario**: 
+- **Conservative scenario**:
   - Minimum resources for academic survival
   - Based on lowest acceptable academic benchmark requirements
   - Risk mitigation for falling behind academic peers
