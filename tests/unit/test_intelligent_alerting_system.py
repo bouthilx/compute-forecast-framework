@@ -12,25 +12,25 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from monitoring.intelligent_alerting_system import (
+from compute_forecast.monitoring.intelligent_alerting_system import (
     IntelligentAlertingSystem,
     create_intelligent_alerting_system,
 )
-from monitoring.alerting_engine import (
+from compute_forecast.monitoring.alerting_engine import (
     AlertingEngine,
     Alert,
     AlertRule,
     AlertSeverity,
     AlertStatus,
 )
-from monitoring.notification_channels import (
+from compute_forecast.monitoring.notification_channels import (
     ConsoleNotificationChannel,
     DashboardNotificationChannel,
     create_notification_channel,
 )
-from monitoring.alert_rules import AlertRuleFactory, CustomAlertRule
-from monitoring.metrics_collector import MetricsCollector
-from monitoring.dashboard_metrics import APIMetrics, SystemResourceMetrics
+from compute_forecast.monitoring.alert_rules import AlertRuleFactory, CustomAlertRule
+from compute_forecast.monitoring.metrics_collector import MetricsCollector
+from compute_forecast.monitoring.dashboard_metrics import APIMetrics, SystemResourceMetrics
 
 
 class TestAlertingEngine(unittest.TestCase):
