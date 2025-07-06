@@ -12,9 +12,9 @@ from compute_forecast.orchestration.recovery_system import (
     RecoveryPlan,
 )
 from compute_forecast.orchestration.venue_collection_orchestrator import (
-    CollectionSession,
-    SessionState,
+    SessionMetadata,
 )
+from compute_forecast.orchestration.recovery_system import SessionState
 
 
 class TestInterruptionRecoverySystem:
@@ -72,19 +72,15 @@ class TestInterruptionRecoverySystem:
     @pytest.fixture
     def test_session(self):
         """Create test collection session."""
-        session = CollectionSession(
+        from compute_forecast.data.models import CollectionConfig
+        session = SessionMetadata(
             session_id="test-session-123",
-            start_time=datetime.now(),
-            state=SessionState.ERROR,
+            created_at=datetime.now(),
+            status=SessionState.ERROR.value,
+            venues=["NeurIPS_2023", "ICML_2023", "ICLR_2023", "CVPR_2023", "ECCV_2023", "ICCV_2023"],
+            years=[2023],
+            config=CollectionConfig(),
         )
-        session.target_venues = [
-            "NeurIPS_2023",
-            "ICML_2023",
-            "ICLR_2023",
-            "CVPR_2023",
-            "ECCV_2023",
-            "ICCV_2023",
-        ]
         return session
 
     def test_detect_interruption_type_network_failure(
