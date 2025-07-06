@@ -5,7 +5,9 @@ Unit tests for Google Scholar source implementation
 import pytest
 from unittest.mock import Mock, patch
 
-from compute_forecast.data.sources.google_scholar import GoogleScholarSource as GoogleScholarClient
+from compute_forecast.data.sources.google_scholar import (
+    GoogleScholarSource as GoogleScholarClient,
+)
 
 
 class TestGoogleScholarClient:

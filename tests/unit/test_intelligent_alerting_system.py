@@ -30,7 +30,10 @@ from compute_forecast.monitoring.notification_channels import (
 )
 from compute_forecast.monitoring.alert_rules import AlertRuleFactory, CustomAlertRule
 from compute_forecast.monitoring.metrics_collector import MetricsCollector
-from compute_forecast.monitoring.dashboard_metrics import APIMetrics, SystemResourceMetrics
+from compute_forecast.monitoring.dashboard_metrics import (
+    APIMetrics,
+    SystemResourceMetrics,
+)
 
 
 class TestAlertingEngine(unittest.TestCase):

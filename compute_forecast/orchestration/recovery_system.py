@@ -9,12 +9,15 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional, Set, Tuple, Any
+from typing import Dict, List, Optional, Set, Tuple, Any, TYPE_CHECKING
 import threading
 
 from ..data.models import Paper
 from .checkpoint_manager import CheckpointManager
 from .state_persistence import StatePersistenceManager
+
+if TYPE_CHECKING:
+    from .venue_collection_orchestrator import SessionMetadata
 
 
 logger = logging.getLogger(__name__)
@@ -22,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class SessionState(Enum):
     """Session states for recovery logic."""
+
     ERROR = "error"
     ACTIVE = "active"
     COMPLETED = "completed"
@@ -118,7 +122,7 @@ class InterruptionRecoverySystem:
         }
 
     def detect_interruption_type(
-        self, session: SessionMetadata, error: Optional[Exception] = None
+        self, session: "SessionMetadata", error: Optional[Exception] = None
     ) -> InterruptionType:
         """Detect the type of interruption that occurred.
 
@@ -149,7 +153,7 @@ class InterruptionRecoverySystem:
 
     def create_recovery_plan(
         self,
-        session: SessionMetadata,
+        session: "SessionMetadata",
         interruption_type: InterruptionType,
         checkpoint_id: Optional[str] = None,
     ) -> RecoveryPlan:
@@ -208,7 +212,7 @@ class InterruptionRecoverySystem:
         )
 
     def execute_recovery(
-        self, session: SessionMetadata, recovery_plan: RecoveryPlan
+        self, session: "SessionMetadata", recovery_plan: RecoveryPlan
     ) -> RecoveryResult:
         """Execute a recovery plan to restore the collection session.
 
@@ -278,7 +282,7 @@ class InterruptionRecoverySystem:
     def _determine_recovery_strategy(
         self,
         interruption_type: InterruptionType,
-        session: SessionMetadata,
+        session: "SessionMetadata",
         checkpoint_data: Optional[Dict[str, Any]],
     ) -> RecoveryStrategy:
         """Determine the best recovery strategy based on context."""
@@ -328,7 +332,7 @@ class InterruptionRecoverySystem:
         return age.total_seconds() < (max_age_hours * 3600)
 
     def _identify_recovery_targets(
-        self, session: SessionMetadata, checkpoint_data: Optional[Dict[str, Any]]
+        self, session: "SessionMetadata", checkpoint_data: Optional[Dict[str, Any]]
     ) -> Tuple[List[Tuple[str, int]], List[Tuple[str, int]]]:
         """Identify which venues need recovery and which to skip."""
         venues_to_recover = []
@@ -483,7 +487,7 @@ class InterruptionRecoverySystem:
 
     def _resume_from_checkpoint(
         self,
-        session: SessionMetadata,
+        session: "SessionMetadata",
         recovery_plan: RecoveryPlan,
         recovery_state: RecoveryState,
     ) -> RecoveryResult:
@@ -532,7 +536,7 @@ class InterruptionRecoverySystem:
 
     def _retry_failed_venues(
         self,
-        session: SessionMetadata,
+        session: "SessionMetadata",
         recovery_plan: RecoveryPlan,
         recovery_state: RecoveryState,
     ) -> RecoveryResult:
@@ -565,7 +569,7 @@ class InterruptionRecoverySystem:
 
     def _partial_recovery(
         self,
-        session: SessionMetadata,
+        session: "SessionMetadata",
         recovery_plan: RecoveryPlan,
         recovery_state: RecoveryState,
     ) -> RecoveryResult:
@@ -593,7 +597,7 @@ class InterruptionRecoverySystem:
 
     def _skip_and_continue(
         self,
-        session: SessionMetadata,
+        session: "SessionMetadata",
         recovery_plan: RecoveryPlan,
         recovery_state: RecoveryState,
     ) -> RecoveryResult:
@@ -622,7 +626,7 @@ class InterruptionRecoverySystem:
 
     def _full_restart(
         self,
-        session: SessionMetadata,
+        session: "SessionMetadata",
         recovery_plan: RecoveryPlan,
         recovery_state: RecoveryState,
     ) -> RecoveryResult:
@@ -668,7 +672,7 @@ class InterruptionRecoverySystem:
             return self.recovery_metrics.copy()
 
     def validate_recovery_capability(
-        self, session: SessionMetadata
+        self, session: "SessionMetadata"
     ) -> Tuple[bool, Optional[str]]:
         """Validate if recovery is possible for a session.
 
