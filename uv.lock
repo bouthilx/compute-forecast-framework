@@ -303,6 +303,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "ruff" },
     { name = "twine" },
+    { name = "types-python-dateutil" },
 ]
 
 [package.metadata]
@@ -341,6 +342,7 @@ dev = [
     { name = "pytest-cov", specifier = ">=6.2.1" },
     { name = "ruff", specifier = ">=0.12.1" },
     { name = "twine", specifier = ">=4.0.0" },
+    { name = "types-python-dateutil", specifier = ">=2.9.0" },
 ]
 
 [[package]]
