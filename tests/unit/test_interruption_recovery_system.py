@@ -73,11 +73,19 @@ class TestInterruptionRecoverySystem:
     def test_session(self):
         """Create test collection session."""
         from compute_forecast.data.models import CollectionConfig
+
         session = SessionMetadata(
             session_id="test-session-123",
             created_at=datetime.now(),
             status=SessionState.ERROR.value,
-            venues=["NeurIPS_2023", "ICML_2023", "ICLR_2023", "CVPR_2023", "ECCV_2023", "ICCV_2023"],
+            venues=[
+                "NeurIPS_2023",
+                "ICML_2023",
+                "ICLR_2023",
+                "CVPR_2023",
+                "ECCV_2023",
+                "ICCV_2023",
+            ],
             years=[2023],
             config=CollectionConfig(),
         )

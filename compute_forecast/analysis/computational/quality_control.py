@@ -761,3 +761,212 @@ class QualityController:
                 lines.append(f"  • {rec}")
 
         return "\n".join(lines)
+
+
+class QualityDashboard:
+    """Quality dashboard for tracking reports and metrics over time."""
+
+    def __init__(self):
+        """Initialize empty dashboard."""
+        self.reports: List[QualityReport] = []
+        self.metrics_history: List[Dict[str, float]] = []
+
+    def add_report(self, report: QualityReport) -> None:
+        """Add a quality report to the dashboard."""
+        self.reports.append(report)
+        # Extract metrics for history tracking
+        metrics = {
+            "overall_score": report.overall_score,
+            "completeness_score": report.completeness_score,
+            "accuracy_score": report.accuracy_score,
+            "consistency_score": report.consistency_score,
+            "plausibility_score": report.plausibility_score,
+        }
+        self.metrics_history.append(metrics)
+
+    def get_quality_trends(self) -> Dict[str, List[float]]:
+        """Get quality trends over time."""
+        if not self.metrics_history:
+            return {}
+
+        trends = {}
+        for key in self.metrics_history[0].keys():
+            trends[key] = [metrics[key] for metrics in self.metrics_history]
+        return trends
+
+    def get_summary_statistics(self) -> Dict[str, float]:
+        """Get summary statistics for all reports."""
+        if not self.metrics_history:
+            return {}
+
+        # Calculate statistics for overall scores
+        overall_scores = [metrics["overall_score"] for metrics in self.metrics_history]
+
+        return {
+            "mean_score": sum(overall_scores) / len(overall_scores),
+            "min_score": min(overall_scores),
+            "max_score": max(overall_scores),
+            "latest_score": overall_scores[-1] if overall_scores else 0.0,
+            "total_reports": len(self.reports),
+        }
+
+
+class ConfidenceAssessor:
+    """Assesses confidence levels for extracted data."""
+
+    def __init__(self):
+        """Initialize confidence assessor with default weights."""
+        self.weights = {
+            "completeness": 0.3,
+            "consistency": 0.3,
+            "source_quality": 0.2,
+            "extraction_method": 0.2,
+        }
+
+    def assess_field_confidence(self, field_data: Any, field_name: str) -> float:
+        """Assess confidence for a single field."""
+        if field_data is None:
+            return 0.0
+
+        # Basic confidence based on data presence and type
+        confidence = 0.5
+
+        # Boost confidence for numeric fields with reasonable values
+        if isinstance(field_data, (int, float)) and field_data > 0:
+            confidence = 0.8
+        elif isinstance(field_data, str) and len(field_data) > 0:
+            confidence = 0.7
+
+        return confidence
+
+    def assess_overall_confidence(self, extraction_data: Dict[str, Any]) -> float:
+        """Assess overall confidence for extraction."""
+        if not extraction_data:
+            return 0.0
+
+        # Calculate completeness factor
+        completeness = self._calculate_completeness(extraction_data)
+
+        # Calculate consistency factor
+        consistency = self._calculate_consistency(extraction_data)
+
+        # Simple overall confidence calculation
+        overall_confidence = (completeness + consistency) / 2
+        return min(1.0, max(0.0, overall_confidence))
+
+    def _calculate_completeness(self, data: Dict[str, Any]) -> float:
+        """Calculate completeness factor."""
+        required_sections = ["hardware", "training", "model", "computation"]
+        present_sections = sum(1 for section in required_sections if section in data)
+        return present_sections / len(required_sections)
+
+    def _calculate_consistency(self, data: Dict[str, Any]) -> float:
+        """Calculate consistency factor."""
+        # Simple consistency check
+        if "computation" in data and "hardware" in data:
+            return 0.8  # Assume consistent if both present
+        return 0.5
+
+
+class CrossFieldValidator:
+    """Validates consistency across related fields."""
+
+    def __init__(self):
+        """Initialize cross-field validator."""
+        self.validation_rules = [
+            "gpu_memory_consistency",
+            "architecture_parameters",
+            "batch_size_memory",
+        ]
+
+    def validate_gpu_memory_consistency(self, data: Dict[str, Any]) -> bool:
+        """Validate GPU memory consistency."""
+        try:
+            hardware = data.get("hardware", {})
+            gpu_count = hardware.get("gpu_count", 1)
+            gpu_memory = hardware.get("gpu_memory_gb", 0)
+
+            # Basic validation - reasonable memory per GPU
+            if gpu_memory > 0 and gpu_count > 0:
+                memory_per_gpu = gpu_memory / gpu_count
+                return 4 <= memory_per_gpu <= 80  # Reasonable GPU memory range
+            return False
+        except (TypeError, ZeroDivisionError):
+            return False
+
+    def validate_architecture_parameters(self, data: Dict[str, Any]) -> bool:
+        """Validate architecture-parameter consistency."""
+        try:
+            model = data.get("model", {})
+            architecture = model.get("architecture", "")
+            parameters = model.get("parameters_count", 0)
+
+            # Basic validation based on architecture type
+            if "transformer" in architecture.lower() and parameters > 0:
+                return parameters >= 10  # Minimum reasonable parameter count
+            return parameters > 0
+        except (TypeError, KeyError):
+            return False
+
+    def validate_batch_size_memory(self, data: Dict[str, Any]) -> bool:
+        """Validate batch size vs memory consistency."""
+        try:
+            training = data.get("training", {})
+            hardware = data.get("hardware", {})
+
+            batch_size = training.get("batch_size", 1)
+            gpu_memory = hardware.get("gpu_memory_gb", 0)
+
+            # Simple heuristic: batch size should be reasonable for memory
+            if batch_size > 0 and gpu_memory > 0:
+                return batch_size <= gpu_memory * 10  # Rough estimate
+            return batch_size > 0
+        except (TypeError, KeyError):
+            return False
+
+
+class StatisticalValidator:
+    """Validates extracted data against statistical norms."""
+
+    def __init__(self):
+        """Initialize statistical validator."""
+        self.reference_data = {
+            "gpu_hours": {"mean": 500, "std": 300},
+            "parameters": {"mean": 100, "std": 200},
+            "batch_size": {"mean": 32, "std": 16},
+        }
+
+    def validate_against_norms(self, data: Dict[str, Any]) -> Dict[str, bool]:
+        """Validate data against statistical norms."""
+        results = {}
+
+        # Check GPU hours
+        computation = data.get("computation", {})
+        gpu_hours = computation.get("total_gpu_hours", 0)
+        if gpu_hours > 0:
+            z_score = (
+                abs(gpu_hours - self.reference_data["gpu_hours"]["mean"])
+                / self.reference_data["gpu_hours"]["std"]
+            )
+            results["gpu_hours"] = z_score < 3.0  # Within 3 standard deviations
+
+        # Check parameters
+        model = data.get("model", {})
+        parameters = model.get("parameters_count", 0)
+        if parameters > 0:
+            z_score = (
+                abs(parameters - self.reference_data["parameters"]["mean"])
+                / self.reference_data["parameters"]["std"]
+            )
+            results["parameters"] = z_score < 3.0
+
+        return results
+
+    def calculate_z_scores(
+        self, values: List[float], reference_mean: float, reference_std: float
+    ) -> List[float]:
+        """Calculate Z-scores for a list of values."""
+        if reference_std == 0:
+            return [0.0] * len(values)
+
+        return [(value - reference_mean) / reference_std for value in values]
