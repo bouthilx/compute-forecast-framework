@@ -5,14 +5,9 @@ Following TDD approach - tests written before implementation.
 
 import pytest
 import json
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-
-import sys
-
-# Add package root to Python path
-package_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(package_root))
 
 from compute_forecast.data.collectors.state_structures import (
     CheckpointData,
@@ -24,6 +19,10 @@ from compute_forecast.data.collectors.state_structures import (
     VenueConfig,
     IntegrityCheckResult,
 )
+
+# Add package root to Python path
+package_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(package_root))
 
 
 class TestCheckpointData:

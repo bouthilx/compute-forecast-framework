@@ -486,8 +486,8 @@ class InterfaceContractValidator:
         if not isinstance(output_data, dict):
             return False
 
-        for field in required_fields:
-            if field not in output_data:
+        for field_name in required_fields:
+            if field_name not in output_data:
                 return False
 
         return True

@@ -7,15 +7,10 @@ import pytest
 import tempfile
 import shutil
 import time
+import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
-
-import sys
-
-# Add package root to Python path
-package_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(package_root))
 
 from compute_forecast.data.collectors.interruption_recovery import (
     InterruptionRecoveryEngine,
@@ -31,6 +26,10 @@ from compute_forecast.data.collectors.state_structures import (
     InterruptionCause,
     ErrorContext,
 )
+
+# Add package root to Python path
+package_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(package_root))
 
 
 class TestInterruptionRecoveryEngine:

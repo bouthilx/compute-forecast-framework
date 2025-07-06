@@ -328,7 +328,7 @@ class TestDataConsistencyIntegration:
         result2 = protocol2.run_full_protocol(mock_analyzer)
 
         # Results should be structurally consistent
-        assert type(result1) == type(result2)
+        assert type(result1) is type(result2)
         assert hasattr(result1, "metadata")
         assert hasattr(result2, "metadata")
         assert hasattr(result1, "hardware")

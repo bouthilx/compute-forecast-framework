@@ -6,10 +6,11 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any
 from collections import defaultdict
 
+from .injection_framework import ErrorType, ErrorScenario
+
 # Avoiding circular imports - these would be injected in production
 InterruptionRecoveryEngine = None
 StatePersistenceManager = None
-from .injection_framework import ErrorType, ErrorScenario
 
 logger = logging.getLogger(__name__)
 

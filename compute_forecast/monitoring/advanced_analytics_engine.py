@@ -16,9 +16,9 @@ from scipy import stats
 from sklearn.linear_model import LinearRegression
 import warnings
 
-warnings.filterwarnings("ignore")
-
 from .dashboard_metrics import SystemMetrics
+
+warnings.filterwarnings("ignore")
 
 logger = logging.getLogger(__name__)
 

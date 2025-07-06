@@ -9,15 +9,10 @@ import tempfile
 import shutil
 import threading
 import time
+import sys
 from pathlib import Path
 from datetime import datetime
 from unittest.mock import patch
-
-import sys
-
-# Add package root to Python path
-package_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(package_root))
 
 from compute_forecast.data.collectors.state_persistence import StatePersistence
 from compute_forecast.data.collectors.state_structures import (
@@ -25,6 +20,10 @@ from compute_forecast.data.collectors.state_structures import (
     CollectionSession,
     VenueConfig,
 )
+
+# Add package root to Python path
+package_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(package_root))
 
 
 class TestStatePersistence:

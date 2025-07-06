@@ -3,12 +3,12 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
-
 import logging
 
-logger = logging.getLogger(__name__)
 from compute_forecast.data.models import Paper
 from .models import PDFRecord
+
+logger = logging.getLogger(__name__)
 
 
 class BasePDFCollector(ABC):

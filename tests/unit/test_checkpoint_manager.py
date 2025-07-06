@@ -6,14 +6,9 @@ Tests checkpoint creation, validation, and lifecycle management.
 import pytest
 import tempfile
 import shutil
+import sys
 from pathlib import Path
 from datetime import datetime
-
-import sys
-
-# Add package root to Python path
-package_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(package_root))
 
 from compute_forecast.data.collectors.checkpoint_manager import CheckpointManager
 from compute_forecast.data.collectors.state_persistence import StatePersistence
@@ -23,6 +18,10 @@ from compute_forecast.data.collectors.state_structures import (
     CheckpointValidationResult,
 )
 from compute_forecast.data.models import APIHealthStatus, RateLimitStatus
+
+# Add package root to Python path
+package_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(package_root))
 
 
 class TestCheckpointManager:

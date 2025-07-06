@@ -15,6 +15,15 @@ import requests
 from datetime import datetime
 import os
 
+from compute_forecast.pdf_parser.core.processor import OptimizedPDFProcessor
+from compute_forecast.pdf_parser.extractors.pymupdf_extractor import PyMuPDFExtractor
+from compute_forecast.pdf_download.downloader import SimplePDFDownloader
+from compute_forecast.pdf_discovery.sources.openreview_collector import (
+    OpenReviewPDFCollector,
+)
+from compute_forecast.data.models import CollectionQuery
+from compute_forecast.data.collectors.citation_collector import CitationCollector
+
 # Set up detailed logging
 logging.basicConfig(
     level=logging.DEBUG,  # Set to DEBUG for detailed logs
@@ -25,16 +34,6 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
-
-# Import our PDF parsing components
-from compute_forecast.pdf_parser.core.processor import OptimizedPDFProcessor
-from compute_forecast.pdf_parser.extractors.pymupdf_extractor import PyMuPDFExtractor
-from compute_forecast.pdf_download.downloader import SimplePDFDownloader
-from compute_forecast.pdf_discovery.sources.openreview_collector import (
-    OpenReviewPDFCollector,
-)
-from compute_forecast.data.models import CollectionQuery
-from compute_forecast.data.collectors.citation_collector import CitationCollector
 
 # Import Google Drive components
 try:
