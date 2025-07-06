@@ -172,11 +172,11 @@ class StatePersistence:
                     raw_data = json.load(f)
 
                 # Convert to expected type if possible
-                if expected_type == dict:
+                if expected_type is dict:
                     return raw_data
                 elif hasattr(expected_type, "from_dict"):
                     return expected_type.from_dict(raw_data)
-                elif expected_type == CheckpointData:
+                elif expected_type is CheckpointData:
                     # Special handling for CheckpointData
                     return CheckpointData.from_dict(raw_data)
                 else:

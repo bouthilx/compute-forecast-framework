@@ -299,7 +299,7 @@ class EnhancedOrganizationClassifier(OrganizationDatabase):
 
         return None
 
-    def classify_paper_authors(self, authors: List["Author"]) -> Dict[str, Any]:
+    def classify_paper_authors(self, authors: List[Any]) -> Dict[str, Any]:
         """Classify paper based on author affiliations."""
         academic_count = 0
         industry_count = 0
