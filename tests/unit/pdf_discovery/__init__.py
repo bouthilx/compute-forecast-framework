@@ -1,1 +1,0 @@
-"""PDF discovery tests."""
