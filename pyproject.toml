@@ -76,8 +76,6 @@ dev = [
     "types-requests>=2.32.0",
 ]
 test = [
-    "pytest-benchmark>=5.1.0",
-    "pytest-profiling>=1.8.1",
     "pytest-timeout>=2.4.0",
 ]
 types = [
