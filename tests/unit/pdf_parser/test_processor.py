@@ -75,7 +75,7 @@ class TestOptimizedPDFProcessor:
         pdf_path = Path("/fake/path.pdf")
         paper_metadata = {"title": "Test Paper", "authors": ["Test Author"]}
 
-        with patch("src.pdf_parser.core.processor.datetime") as mock_datetime:
+        with patch("compute_forecast.pdf_parser.core.processor.datetime") as mock_datetime:
             mock_datetime.now.return_value = datetime(2023, 1, 1, 12, 0, 0)
 
             result = processor.process_pdf(pdf_path, paper_metadata)

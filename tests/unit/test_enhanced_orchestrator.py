@@ -27,11 +27,11 @@ class TestEnhancedCollectionOrchestrator:
         """Create orchestrator with mocked API clients"""
         with (
             patch(
-                "src.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
+                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
             ),
-            patch("src.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"),
-            patch("src.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"),
-            patch("src.data.collectors.enhanced_orchestrator.GoogleScholarClient"),
+            patch("compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"),
+            patch("compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"),
+            patch("compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"),
         ):
             return EnhancedCollectionOrchestrator()
 
@@ -73,16 +73,16 @@ class TestEnhancedCollectionOrchestrator:
         """Test orchestrator initialization without API keys"""
         with (
             patch(
-                "src.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
+                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
             ) as mock_ss,
             patch(
-                "src.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
+                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
             ) as mock_oa,
             patch(
-                "src.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
+                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
             ) as mock_cr,
             patch(
-                "src.data.collectors.enhanced_orchestrator.GoogleScholarClient"
+                "compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"
             ) as mock_gs,
         ):
             orchestrator = EnhancedCollectionOrchestrator()
@@ -111,16 +111,16 @@ class TestEnhancedCollectionOrchestrator:
 
         with (
             patch(
-                "src.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
+                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
             ) as mock_ss,
             patch(
-                "src.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
+                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
             ) as mock_oa,
             patch(
-                "src.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
+                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
             ) as mock_cr,
             patch(
-                "src.data.collectors.enhanced_orchestrator.GoogleScholarClient"
+                "compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"
             ) as mock_gs,
         ):
             EnhancedCollectionOrchestrator(api_keys)

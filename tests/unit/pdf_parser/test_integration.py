@@ -169,7 +169,7 @@ class TestPDFParserIntegration:
         )
         assert is_valid is False
 
-    @patch("src.pdf_parser.core.processor.logger")
+    @patch("compute_forecast.pdf_parser.core.processor.logger")
     def test_error_handling_and_logging(self, mock_logger):
         """Test error handling and logging integration."""
         processor = OptimizedPDFProcessor({})

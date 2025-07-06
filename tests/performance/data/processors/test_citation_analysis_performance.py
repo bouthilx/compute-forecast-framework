@@ -90,7 +90,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(50000)
 
         with patch(
-            "src.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -124,7 +124,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(100000)
 
         with patch(
-            "src.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -153,7 +153,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(1000)
 
         with patch(
-            "src.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
         ):
             detector = BreakthroughDetector()
 
@@ -182,7 +182,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(50000)
 
         with patch(
-            "src.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -211,7 +211,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(10000)
 
         with patch(
-            "src.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -251,7 +251,7 @@ class TestCitationAnalysisPerformance:
         memory_usage = []
 
         with patch(
-            "src.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -293,7 +293,7 @@ class TestCitationAnalysisPerformance:
         ]
 
         with patch(
-            "src.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
         ):
             analyzer = CitationAnalyzer([])
 
@@ -315,7 +315,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(30000)
 
         with patch(
-            "src.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 

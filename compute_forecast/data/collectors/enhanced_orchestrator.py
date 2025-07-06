@@ -64,9 +64,7 @@ class EnhancedCollectionOrchestrator:
             ),
             "openalex": EnhancedOpenAlexClient(email=merged_keys.get("openalex_email")),
             "crossref": EnhancedCrossrefClient(email=merged_keys.get("crossref_email")),
-            "google_scholar": GoogleScholarClient(
-                use_proxy=merged_keys.get("google_scholar_proxy", False)
-            ),
+            "google_scholar": GoogleScholarClient(),
         }
 
         # Initialize rate limiter with API configurations

@@ -72,7 +72,7 @@ class TestAdaptiveThresholdCalculator:
     def test_calculate_venue_threshold_tier1_recent(self, calculator, sample_papers):
         """Test threshold calculation for tier1 venue with recent papers."""
         with patch(
-            "src.data.processors.adaptive_threshold_calculator.datetime"
+            "compute_forecast.data.processors.adaptive_threshold_calculator.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             calculator.current_year = 2024
@@ -90,7 +90,7 @@ class TestAdaptiveThresholdCalculator:
     def test_calculate_venue_threshold_tier2_older(self, calculator, sample_papers):
         """Test threshold calculation for tier2 venue with older papers."""
         with patch(
-            "src.data.processors.adaptive_threshold_calculator.datetime"
+            "compute_forecast.data.processors.adaptive_threshold_calculator.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             calculator.current_year = 2024
@@ -159,7 +159,7 @@ class TestAdaptiveThresholdCalculator:
     ):
         """Test comprehensive adaptive threshold calculation."""
         with patch(
-            "src.data.processors.adaptive_threshold_calculator.datetime"
+            "compute_forecast.data.processors.adaptive_threshold_calculator.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             calculator.current_year = 2024
@@ -263,7 +263,7 @@ class TestAdaptiveThresholdCalculator:
     def test_years_capping(self, calculator):
         """Test that years since publication is capped at 4 for base threshold."""
         with patch(
-            "src.data.processors.adaptive_threshold_calculator.datetime"
+            "compute_forecast.data.processors.adaptive_threshold_calculator.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             calculator.current_year = 2024

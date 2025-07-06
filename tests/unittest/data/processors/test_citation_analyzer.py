@@ -47,7 +47,7 @@ class TestCitationAnalyzer:
     def analyzer(self, venue_configs):
         """Create analyzer instance."""
         with patch(
-            "src.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
         ):
             return CitationAnalyzer(venue_configs)
 
@@ -116,7 +116,7 @@ class TestCitationAnalyzer:
 
     def test_analyze_citation_distributions(self, analyzer, sample_papers):
         """Test comprehensive citation distribution analysis."""
-        with patch("src.data.processors.citation_analyzer.datetime") as mock_datetime:
+        with patch("compute_forecast.data.processors.citation_analyzer.datetime") as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             analyzer.current_year = 2024
 
@@ -206,7 +206,7 @@ class TestCitationAnalyzer:
         papers = sample_papers + [breakthrough_paper]
 
         with patch(
-            "src.data.processors.breakthrough_detector.datetime"
+            "compute_forecast.data.processors.breakthrough_detector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             analyzer.breakthrough_detector.current_year = 2024

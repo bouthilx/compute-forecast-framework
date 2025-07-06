@@ -76,7 +76,7 @@ class TestIEEEXploreIntegration:
         """Test IEEE collector integration with the PDF discovery framework."""
         # Mock the collector to avoid real API calls
         with patch(
-            "src.pdf_discovery.sources.ieee_xplore_collector.IEEEXplorePDFCollector"
+            "compute_forecast.pdf_discovery.sources.ieee_xplore_collector.IEEEXplorePDFCollector"
         ) as MockCollector:
             mock_instance = Mock()
             MockCollector.return_value = mock_instance
@@ -113,7 +113,7 @@ class TestIEEEXploreIntegration:
     def test_collector_error_handling_in_framework(self, ieee_papers):
         """Test how framework handles IEEE collector errors."""
         with patch(
-            "src.pdf_discovery.sources.ieee_xplore_collector.IEEEXplorePDFCollector"
+            "compute_forecast.pdf_discovery.sources.ieee_xplore_collector.IEEEXplorePDFCollector"
         ) as MockCollector:
             mock_instance = Mock()
             MockCollector.return_value = mock_instance

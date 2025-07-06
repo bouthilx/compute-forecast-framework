@@ -122,12 +122,12 @@ class TestAllSourcesIntegration:
 
         with (
             patch(
-                "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+                "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
-            patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-            patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+            patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
             patch(
-                "src.data.sources.google_scholar.GoogleScholarSource.search"
+                "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,
         ):
             # Configure all mocks
@@ -170,12 +170,12 @@ class TestAllSourcesIntegration:
 
         with (
             patch(
-                "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+                "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
-            patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-            patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+            patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
             patch(
-                "src.data.sources.google_scholar.GoogleScholarSource.search"
+                "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,
         ):
             mock_ss.return_value = comprehensive_mock_data["semantic_scholar"]
@@ -240,19 +240,19 @@ class TestAllSourcesIntegration:
 
         with (
             patch(
-                "src.data.sources.semantic_scholar.SemanticScholarSource.search",
+                "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search",
                 side_effect=track_ss_calls,
             ),
             patch(
-                "src.data.sources.openalex.OpenAlexSource.search",
+                "compute_forecast.data.sources.openalex.OpenAlexSource.search",
                 side_effect=track_oa_calls,
             ),
             patch(
-                "src.data.sources.crossref.CrossRefSource.search",
+                "compute_forecast.data.sources.crossref.CrossRefSource.search",
                 side_effect=track_cr_calls,
             ),
             patch(
-                "src.data.sources.google_scholar.GoogleScholarSource.search",
+                "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search",
                 side_effect=track_gs_calls,
             ),
         ):
@@ -289,12 +289,12 @@ class TestAllSourcesIntegration:
         for scenario in scenarios:
             with (
                 patch(
-                    "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+                    "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
                 ) as mock_ss,
-                patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-                patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+                patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+                patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
                 patch(
-                    "src.data.sources.google_scholar.GoogleScholarSource.search"
+                    "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
                 ) as mock_gs,
             ):
                 # Configure mocks based on scenario
@@ -337,12 +337,12 @@ class TestAllSourcesIntegration:
 
         with (
             patch(
-                "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+                "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
-            patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-            patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+            patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
             patch(
-                "src.data.sources.google_scholar.GoogleScholarSource.search"
+                "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,
         ):
             mock_ss.return_value = comprehensive_mock_data["semantic_scholar"]

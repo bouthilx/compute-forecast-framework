@@ -41,8 +41,8 @@ class TestGoogleScholarClient:
         assert client.max_results_per_query == 100
         assert client.last_request_time == 0
 
-    @patch("src.data.sources.google_scholar.scholarly")
-    @patch("src.data.sources.google_scholar.ProxyGenerator")
+    @patch("compute_forecast.data.sources.google_scholar.scholarly")
+    @patch("compute_forecast.data.sources.google_scholar.ProxyGenerator")
     def test_init_with_proxy(self, mock_proxy_gen, mock_scholarly):
         """Test client initialization with proxy"""
         mock_pg = Mock()
@@ -55,7 +55,7 @@ class TestGoogleScholarClient:
         mock_proxy_gen.assert_called_once()
         mock_pg.FreeProxies.assert_called_once()
 
-    @patch("src.data.sources.google_scholar.scholarly")
+    @patch("compute_forecast.data.sources.google_scholar.scholarly")
     @patch("time.time")
     def test_search_papers_success(
         self, mock_time, mock_scholarly, client, mock_scholarly_result
@@ -87,7 +87,7 @@ class TestGoogleScholarClient:
         assert paper.paper_id == "gs_12345"
         assert paper.collection_source == "google_scholar"
 
-    @patch("src.data.sources.google_scholar.scholarly")
+    @patch("compute_forecast.data.sources.google_scholar.scholarly")
     @patch("time.time")
     @patch("time.sleep")
     def test_rate_limiting(self, mock_sleep, mock_time, mock_scholarly, client):
@@ -105,7 +105,7 @@ class TestGoogleScholarClient:
         # Verify rate limiting was applied
         mock_sleep.assert_called_once_with(5.0)  # Should sleep for 5 seconds
 
-    @patch("src.data.sources.google_scholar.scholarly")
+    @patch("compute_forecast.data.sources.google_scholar.scholarly")
     def test_search_papers_error(self, mock_scholarly, client):
         """Test error handling in search"""
         # Mock scholarly to raise exception
@@ -164,7 +164,7 @@ class TestGoogleScholarClient:
         paper3 = client._parse_scholarly_result(result3)
         assert paper3.venue == "Conference C"
 
-    @patch("src.data.sources.google_scholar.scholarly")
+    @patch("compute_forecast.data.sources.google_scholar.scholarly")
     def test_search_venue_batch(self, mock_scholarly, client):
         """Test batch venue search"""
         # Mock scholarly search
@@ -178,7 +178,7 @@ class TestGoogleScholarClient:
         expected_query = 'source:"NeurIPS" OR source:"ICML" OR source:"ICLR" 2023'
         mock_scholarly.search_pubs.assert_called_once_with(expected_query)
 
-    @patch("src.data.sources.google_scholar.scholarly")
+    @patch("compute_forecast.data.sources.google_scholar.scholarly")
     @patch("time.sleep")
     def test_periodic_delay_during_collection(self, mock_sleep, mock_scholarly, client):
         """Test periodic delays during result collection"""

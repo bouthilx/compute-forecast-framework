@@ -56,7 +56,7 @@ class TestAcademicBenchmarkExtractor:
     def extractor(self, mock_analyzer):
         """Create an extractor instance with mocked analyzer."""
         with patch(
-            "src.analysis.benchmark.extractor.ComputationalAnalyzer"
+            "compute_forecast.analysis.benchmark.extractor.ComputationalAnalyzer"
         ) as mock_cls:
             mock_cls.return_value = mock_analyzer
             return AcademicBenchmarkExtractor()

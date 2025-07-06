@@ -208,7 +208,7 @@ class TestPyMuPDFExtractor:
         assert confidence >= 0.0
         assert confidence <= 1.0
 
-    @patch("src.pdf_parser.extractors.pymupdf_extractor.fitz")
+    @patch("compute_forecast.pdf_parser.extractors.pymupdf_extractor.fitz")
     def test_integration_with_base_extractor_interface(self, mock_fitz):
         """Test that PyMuPDFExtractor properly implements BaseExtractor interface."""
         from compute_forecast.pdf_parser.core.base_extractor import BaseExtractor

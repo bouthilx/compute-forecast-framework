@@ -289,7 +289,7 @@ class TestSimplePDFDownloader:
         assert "fail-1" in result["failed"]
         assert result["success_rate"] == pytest.approx(2 / 3)
 
-    @patch("src.pdf_download.downloader.Progress")
+    @patch("compute_forecast.pdf_download.downloader.Progress")
     @patch("requests.Session.get")
     def test_download_batch_progress_tracking(
         self, mock_get, mock_progress_class, downloader

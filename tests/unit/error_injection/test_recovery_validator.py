@@ -16,8 +16,8 @@ from compute_forecast.testing.error_injection.injection_framework import (
 class TestRecoveryValidator:
     """Test suite for RecoveryValidator."""
 
-    @patch("src.testing.error_injection.recovery_validator.InterruptionRecoveryEngine")
-    @patch("src.testing.error_injection.recovery_validator.StatePersistenceManager")
+    @patch("compute_forecast.testing.error_injection.recovery_validator.InterruptionRecoveryEngine")
+    @patch("compute_forecast.testing.error_injection.recovery_validator.StatePersistenceManager")
     def test_initialization(self, mock_state_manager, mock_recovery_engine):
         """Test validator initialization."""
         validator = RecoveryValidator()

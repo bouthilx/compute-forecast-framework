@@ -30,7 +30,7 @@ class TestSemanticScholarImprovements:
         assert collector.max_retries == DEFAULT_MAX_RETRIES
 
     @patch(
-        "src.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_simplified_paper_matching(self, mock_ss_class):
         """Test simplified paper matching logic in batch processing."""
@@ -97,7 +97,7 @@ class TestSemanticScholarImprovements:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "src.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_error_handling_with_severity(self, mock_ss_class, mock_sleep):
         """Test that errors are handled with appropriate severity levels."""

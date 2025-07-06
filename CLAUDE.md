@@ -178,7 +178,7 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
 ## Package Management
 - **Use `uv` for dependency management** (not pip or conda)
 - Dependencies are defined in `pyproject.toml` under `[dependency-groups]`
-- Install dependencies: `uv sync --group test --group dev --group docs`
+- Install dependencies: `uv sync --extra test --extra dev --extra docs`
 - Add new dependencies: `uv add <package>` or `uv add --group <group> <package>`
 
 ## Code Quality & Linting
