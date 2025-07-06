@@ -85,9 +85,9 @@ class TestDeduplicationPerformance:
         execution_time = end_time - start_time
 
         # Performance assertions (relaxed for CI environments)
-        assert execution_time < 60.0, (
-            f"Deduplication took {execution_time:.2f}s, should be < 60s"
-        )
+        assert (
+            execution_time < 60.0
+        ), f"Deduplication took {execution_time:.2f}s, should be < 60s"
 
         # Correctness assertions
         assert len(result) <= 500, f"Expected <= 500 unique papers, got {len(result)}"
@@ -164,9 +164,9 @@ class TestDeduplicationPerformance:
         execution_time = end_time - start_time
 
         # Performance requirements for 10k papers
-        assert execution_time < 120.0, (
-            f"Deduplication took {execution_time:.2f}s, should be < 120s"
-        )
+        assert (
+            execution_time < 120.0
+        ), f"Deduplication took {execution_time:.2f}s, should be < 120s"
         assert len(result) == 10000, f"Expected 10000 unique papers, got {len(result)}"
 
         # Memory efficiency check (basic)
@@ -242,9 +242,9 @@ class TestDeduplicationPerformance:
         execution_time = end_time - start_time
 
         # Should complete fuzzy matching in reasonable time
-        assert execution_time < 10.0, (
-            f"Fuzzy matching took {execution_time:.2f}s, should be < 10s"
-        )
+        assert (
+            execution_time < 10.0
+        ), f"Fuzzy matching took {execution_time:.2f}s, should be < 10s"
 
         # Should find some duplicates (papers with very similar titles)
         assert len(result) < len(records), "Should have found some fuzzy duplicates"

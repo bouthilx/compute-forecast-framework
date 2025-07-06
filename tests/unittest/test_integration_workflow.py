@@ -185,15 +185,15 @@ class TestIntegrationWorkflow:
 
             assert usage is not None, f"Usage tracking failed for {api_name}"
             assert health is not None, f"Health monitoring failed for {api_name}"
-            assert len(results[api_name]) == 15, (
-                f"Worker didn't complete for {api_name}"
-            )
+            assert (
+                len(results[api_name]) == 15
+            ), f"Worker didn't complete for {api_name}"
 
             # Should have successfully made most requests
             success_rate = sum(results[api_name]) / len(results[api_name])
-            assert success_rate > 0.8, (
-                f"Success rate too low for {api_name}: {success_rate}"
-            )
+            assert (
+                success_rate > 0.8
+            ), f"Success rate too low for {api_name}: {success_rate}"
 
     def test_recovery_from_api_outage(self):
         """Test system recovery when API comes back online after outage"""
@@ -281,9 +281,9 @@ class TestIntegrationWorkflow:
 
         # Rate limiting should be effective
         limitation_rate = (total_attempts - total_successful) / total_attempts
-        assert limitation_rate > 0.5, (
-            f"Rate limiting too permissive: {limitation_rate:.2%}"
-        )
+        assert (
+            limitation_rate > 0.5
+        ), f"Rate limiting too permissive: {limitation_rate:.2%}"
 
     def test_performance_requirements_under_integration(self):
         """Test that performance requirements are met during integrated operation"""
@@ -319,9 +319,9 @@ class TestIntegrationWorkflow:
         avg_time_per_operation = total_time_ms / iterations
 
         # Should maintain fast operation even with full integration
-        assert avg_time_per_operation < 15.0, (
-            f"Integrated operation too slow: {avg_time_per_operation:.2f}ms"
-        )
+        assert (
+            avg_time_per_operation < 15.0
+        ), f"Integrated operation too slow: {avg_time_per_operation:.2f}ms"
 
 
 if __name__ == "__main__":

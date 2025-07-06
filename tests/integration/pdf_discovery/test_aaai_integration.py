@@ -115,8 +115,8 @@ class TestAAIIntegration:
 
         # Should take at least (n-1) * delay seconds due to rate limiting
         expected_min_time = (len(papers) - 1) * collector.request_delay
-        assert elapsed >= expected_min_time, (
-            f"Rate limiting not working: {elapsed}s < {expected_min_time}s"
-        )
+        assert (
+            elapsed >= expected_min_time
+        ), f"Rate limiting not working: {elapsed}s < {expected_min_time}s"
 
         print(f"Rate limiting test passed: {elapsed:.2f}s for {len(papers)} requests")

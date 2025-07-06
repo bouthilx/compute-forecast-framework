@@ -92,9 +92,9 @@ class InterruptionRecoveryTest:
                 )
 
                 # Even with API failures, system should handle gracefully
-                assert collection_result is not None, (
-                    "Collection should return result even with failures"
-                )
+                assert (
+                    collection_result is not None
+                ), "Collection should return result even with failures"
                 test_result.assertions_passed += 1
 
                 # Test recovery
@@ -107,20 +107,18 @@ class InterruptionRecoveryTest:
                 # Validate recovery
                 assert (
                     recovery_result.success or len(recovery_result.resume_errors) == 0
-                ), (
-                    f"Recovery should succeed or have no errors: {recovery_result.resume_errors}"
-                )
+                ), f"Recovery should succeed or have no errors: {recovery_result.resume_errors}"
                 test_result.assertions_passed += 1
 
-                assert recovery_time < 300, (
-                    f"Recovery took too long: {recovery_time} seconds"
-                )  # 5 minutes
+                assert (
+                    recovery_time < 300
+                ), f"Recovery took too long: {recovery_time} seconds"  # 5 minutes
                 test_result.assertions_passed += 1
 
                 # Check state consistency
-                assert recovery_result.state_consistency_validated, (
-                    "State consistency should be validated"
-                )
+                assert (
+                    recovery_result.state_consistency_validated
+                ), "State consistency should be validated"
                 test_result.assertions_passed += 1
 
                 test_result.performance_metrics["recovery_time_seconds"] = recovery_time
@@ -188,9 +186,9 @@ class InterruptionRecoveryTest:
                 initial_session_data = orchestrator.state_manager.get_session_status(
                     session_id
                 )
-                assert initial_session_data is not None, (
-                    "Initial session data should be available"
-                )
+                assert (
+                    initial_session_data is not None
+                ), "Initial session data should be available"
                 test_result.assertions_passed += 1
 
             # Simulate process termination by clearing orchestrator state
@@ -206,9 +204,9 @@ class InterruptionRecoveryTest:
             recovery_orchestrator = VenueCollectionOrchestrator(config)
             recovery_init_result = recovery_orchestrator.initialize_system()
 
-            assert recovery_init_result.success, (
-                "Recovery orchestrator should initialize"
-            )
+            assert (
+                recovery_init_result.success
+            ), "Recovery orchestrator should initialize"
             test_result.assertions_passed += 1
 
             # Attempt to recover the session
@@ -218,22 +216,22 @@ class InterruptionRecoveryTest:
             recovery_time = time.time() - recovery_start
 
             # Validate recovery
-            assert recovery_time < 300, (
-                f"Recovery took too long: {recovery_time} seconds"
-            )
+            assert (
+                recovery_time < 300
+            ), f"Recovery took too long: {recovery_time} seconds"
             test_result.assertions_passed += 1
 
             # Session should be recoverable (even if it doesn't have much data)
             if recovery_result.success:
-                assert recovery_result.state_consistency_validated, (
-                    "State consistency should be validated"
-                )
+                assert (
+                    recovery_result.state_consistency_validated
+                ), "State consistency should be validated"
                 test_result.assertions_passed += 1
             else:
                 # Even if recovery fails, it should fail gracefully
-                assert len(recovery_result.resume_errors) > 0, (
-                    "Recovery failure should have error messages"
-                )
+                assert (
+                    len(recovery_result.resume_errors) > 0
+                ), "Recovery failure should have error messages"
                 test_result.assertions_passed += 1
 
             test_result.performance_metrics["recovery_time_seconds"] = recovery_time
@@ -341,9 +339,9 @@ class InterruptionRecoveryTest:
                 recovery_time = time.time() - recovery_start
 
                 # Recovery should be fast once network is restored
-                assert recovery_time < 60, (
-                    f"Network recovery should be quick: {recovery_time} seconds"
-                )
+                assert (
+                    recovery_time < 60
+                ), f"Network recovery should be quick: {recovery_time} seconds"
                 test_result.assertions_passed += 1
 
                 test_result.performance_metrics["recovery_time_seconds"] = recovery_time
@@ -431,16 +429,16 @@ class InterruptionRecoveryTest:
             recovery_time = time.time() - recovery_start
 
             # System should recover
-            assert recovery_time < 60, (
-                f"Component recovery should be quick: {recovery_time} seconds"
-            )
+            assert (
+                recovery_time < 60
+            ), f"Component recovery should be quick: {recovery_time} seconds"
             test_result.assertions_passed += 1
 
             # Check that system can continue operating
             post_recovery_status = orchestrator.get_system_status()
-            assert post_recovery_status.overall_health in ["healthy", "degraded"], (
-                f"System should recover after component restoration: {post_recovery_status.overall_health}"
-            )
+            assert (
+                post_recovery_status.overall_health in ["healthy", "degraded"]
+            ), f"System should recover after component restoration: {post_recovery_status.overall_health}"
             test_result.assertions_passed += 1
 
             test_result.performance_metrics["recovery_time_seconds"] = recovery_time
@@ -570,9 +568,9 @@ class InterruptionRecoveryTest:
                     checkpoint_id = orchestrator.state_manager.save_checkpoint(
                         session_id, recovery_checkpoint
                     )
-                    assert checkpoint_id, (
-                        "Checkpoint should save after disk space recovery"
-                    )
+                    assert (
+                        checkpoint_id
+                    ), "Checkpoint should save after disk space recovery"
                     test_result.assertions_passed += 1
 
                 except Exception as e:
@@ -582,9 +580,9 @@ class InterruptionRecoveryTest:
             test_result.performance_metrics["recovery_time_seconds"] = recovery_time
 
             # Recovery should be quick
-            assert recovery_time < 30, (
-                f"Disk space recovery should be quick: {recovery_time} seconds"
-            )
+            assert (
+                recovery_time < 30
+            ), f"Disk space recovery should be quick: {recovery_time} seconds"
             test_result.assertions_passed += 1
 
             test_result.success = True

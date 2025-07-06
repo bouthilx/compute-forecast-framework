@@ -241,9 +241,9 @@ class TestCitationAnalysisPerformance:
 
         # Requirement: <1 second per venue/year
         avg_time_per_group = duration / len(venue_year_groups)
-        assert avg_time_per_group < 1.0, (
-            f"Average {avg_time_per_group:.2f}s per group, should be < 1s"
-        )
+        assert (
+            avg_time_per_group < 1.0
+        ), f"Average {avg_time_per_group:.2f}s per group, should be < 1s"
 
         print("\nThreshold calculation performance:")
         print(f"  Total groups: {len(venue_year_groups)}")
@@ -284,9 +284,9 @@ class TestCitationAnalysisPerformance:
         for i in range(1, len(memory_usage)):
             ratio = memory_usage[i] / memory_usage[i - 1]
             size_ratio = sizes[i] / sizes[i - 1]
-            assert ratio < size_ratio * 1.5, (
-                f"Memory scaling non-linear: {ratio:.2f}x for {size_ratio}x data"
-            )
+            assert (
+                ratio < size_ratio * 1.5
+            ), f"Memory scaling non-linear: {ratio:.2f}x for {size_ratio}x data"
 
     def test_percentile_calculation_performance(self):
         """Test performance of percentile calculations."""

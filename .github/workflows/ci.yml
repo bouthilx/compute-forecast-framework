@@ -9,7 +9,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  UV_VERSION: "0.4.18"
+  UV_VERSION: "0.5.0"
 
 jobs:
   test:
@@ -32,7 +32,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --extra test --extra dev
+        uv sync --group dev
 
     - name: Run tests with coverage
       run: |
@@ -65,7 +65,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --extra test --extra dev
+        uv sync --group dev
 
     - name: Run ruff check
       run: |
