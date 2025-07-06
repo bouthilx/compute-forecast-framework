@@ -77,9 +77,6 @@ jobs:
 
     - name: Run mypy
       run: |
-        # First run to discover and install needed type stubs
-        uv run mypy compute_forecast --install-types --non-interactive || true
-        # Second run to actually check types
         uv run mypy compute_forecast
 
   pre-commit:
