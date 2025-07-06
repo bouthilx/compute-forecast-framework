@@ -3,4 +3,4 @@
 # Placeholder for venue analysis components
 # Will be implemented by other workers
 
-__all__ = []
+__all__: list[str] = []

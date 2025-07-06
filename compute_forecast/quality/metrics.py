@@ -51,7 +51,7 @@ class QualityAssessment:
                 },
             }
 
-        assessment = {
+        assessment: Dict[str, Any] = {
             "overall_score": 0,
             "component_scores": {},
             "quality_flags": [],

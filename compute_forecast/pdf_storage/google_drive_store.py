@@ -2,7 +2,7 @@
 
 import logging
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, cast
 import json
 from datetime import datetime
 
@@ -87,6 +87,7 @@ class GoogleDriveStore:
         )
 
         try:
+            assert self._service is not None
             file = (
                 self._service.files()
                 .create(body=file_metadata, media_body=media, fields="id")
@@ -95,7 +96,7 @@ class GoogleDriveStore:
 
             file_id = file.get("id")
             logger.info(f"Successfully uploaded {paper_id} to Google Drive: {file_id}")
-            return file_id
+            return cast(str, file_id)
 
         except HttpError as e:
             logger.error(f"Failed to upload {paper_id}: {e}")
@@ -115,6 +116,7 @@ class GoogleDriveStore:
             HttpError: If download fails
         """
         try:
+            assert self._service is not None
             request = self._service.files().get_media(fileId=file_id)
 
             # Ensure destination directory exists
@@ -148,10 +150,11 @@ class GoogleDriveStore:
             List of file metadata dictionaries
         """
         try:
-            results = []
+            results: List[Dict[str, Any]] = []
             page_token = None
 
             while True:
+                assert self._service is not None
                 response = (
                     self._service.files()
                     .list(
@@ -186,6 +189,7 @@ class GoogleDriveStore:
             True if successful
         """
         try:
+            assert self._service is not None
             self._service.files().delete(fileId=file_id).execute()
             logger.info(f"Successfully deleted file {file_id}")
             return True
@@ -204,6 +208,7 @@ class GoogleDriveStore:
             File metadata or None if not found
         """
         try:
+            assert self._service is not None
             file = (
                 self._service.files()
                 .get(
@@ -261,10 +266,12 @@ class GoogleDriveStore:
         """
         try:
             # First test basic API access by listing files (doesn't require folder access)
+            assert self._service is not None
             (self._service.files().list(pageSize=1, fields="files(id)").execute())
 
             # Now try to access the specific folder
             try:
+                assert self._service is not None
                 folder = (
                     self._service.files()
                     .get(fileId=self.folder_id, fields="id, name, mimeType")

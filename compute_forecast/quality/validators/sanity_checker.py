@@ -62,7 +62,7 @@ class SanityChecker:
         )
 
         found_institutions = set()
-        institution_paper_counts = {}
+        institution_paper_counts: Dict[str, int] = {}
 
         for paper in papers:
             for author in paper.get("authors", []):
@@ -91,7 +91,7 @@ class SanityChecker:
     def check_domain_balance(self, papers: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Verify reasonable distribution across research domains."""
 
-        domain_counts = {}
+        domain_counts: Dict[str, int] = {}
         for paper in papers:
             domain = paper.get("mila_domain", "Unknown")
             domain_counts[domain] = domain_counts.get(domain, 0) + 1
@@ -119,7 +119,7 @@ class SanityChecker:
     def check_temporal_balance(self, papers: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Verify reasonable distribution across years 2019-2024."""
 
-        year_counts = {}
+        year_counts: Dict[Any, int] = {}
         for paper in papers:
             year = paper.get("year", paper.get("collection_year", "Unknown"))
             year_counts[year] = year_counts.get(year, 0) + 1

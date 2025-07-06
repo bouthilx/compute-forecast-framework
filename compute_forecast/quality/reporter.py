@@ -107,7 +107,11 @@ class QualityReporter:
     ) -> Dict[str, Any]:
         """Generate detailed issue report for remediation."""
 
-        issues = {"high_priority": [], "medium_priority": [], "low_priority": []}
+        issues: Dict[str, List[Dict[str, Any]]] = {
+            "high_priority": [],
+            "medium_priority": [],
+            "low_priority": [],
+        }
 
         for recommendation in quality_assessment["recommendations"]:
             priority = recommendation["priority"]
@@ -126,7 +130,7 @@ class QualityReporter:
 
     def _estimate_remediation_time(
         self, issues: Dict[str, List[Dict[str, Any]]]
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Estimate time required for issue remediation."""
 
         high_count = len(issues["high_priority"])

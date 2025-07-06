@@ -3,7 +3,7 @@ Computational keyword database and pattern matching for resource analysis.
 """
 
 import re
-from typing import Dict
+from typing import Dict, Any
 
 COMPUTATIONAL_INDICATORS = {
     "gpu_hardware": [
@@ -177,7 +177,7 @@ def get_category_counts() -> Dict[str, int]:
     }
 
 
-def validate_patterns() -> Dict[str, bool]:
+def validate_patterns() -> Dict[str, Any]:
     """Validate regex patterns by testing with sample text"""
     test_cases = {
         "gpu_count": "We used 8 GPUs for training",

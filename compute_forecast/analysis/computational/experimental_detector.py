@@ -166,7 +166,7 @@ class ExperimentalDetector:
         matches = sum(1 for indicator in indicators if indicator.lower() in text)
         return matches / len(indicators)
 
-    def _detect_sections(self, text: str) -> Dict[str, bool]:
+    def _detect_sections(self, text: str) -> Dict[str, Any]:
         """Detect presence of experimental sections in paper"""
         section_presence = {}
 

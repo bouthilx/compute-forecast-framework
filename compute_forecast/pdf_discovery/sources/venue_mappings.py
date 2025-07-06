@@ -1,6 +1,6 @@
 """OpenReview venue mappings for different conferences and years."""
 
-from typing import Dict, Any
+from typing import Dict, Any, cast
 
 
 OPENREVIEW_VENUES: Dict[str, Dict[str, Any]] = {
@@ -80,11 +80,11 @@ def get_venue_invitation(venue: str, year: int) -> str:
 
     # Check for specific year configuration
     if "years" in venue_config and year in venue_config["years"]:
-        return venue_config["years"][year]["invitation"]
+        return cast(str, venue_config["years"][year]["invitation"])
 
     # Use default template if available
     if "default_invitation" in venue_config:
-        return venue_config["default_invitation"].format(year=year)
+        return cast(str, venue_config["default_invitation"]).format(year=year)
 
     raise ValueError(f"No invitation template for {venue} {year}")
 

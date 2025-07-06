@@ -20,7 +20,7 @@ class CitationValidator:
     def validate_citation_counts(self, papers: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Cross-validate citation counts and detect outliers."""
 
-        validation_results = {
+        validation_results: Dict[str, Any] = {
             "total_papers": len(papers),
             "citation_issues": [],
             "outliers": [],
@@ -86,7 +86,7 @@ class CitationValidator:
         suspicious = []
 
         # Check for identical citation counts (suspicious)
-        citation_counts = {}
+        citation_counts: Dict[int, List[str]] = {}
         for paper in papers:
             citations = paper.get("citations", 0)
             if citations not in citation_counts:
