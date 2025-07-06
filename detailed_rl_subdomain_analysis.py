@@ -244,7 +244,7 @@ def analyze_rl_subdomains(rl_with_data, rl_without_data):
 
     for i, sub in enumerate(significant_subdomains[:10]):
         print(
-            f"  {i+1}. {sub['subdomain']}: {sub['pct_with_data']:.1f}% ({sub['with_data']}/{sub['total']} papers)"
+            f"  {i + 1}. {sub['subdomain']}: {sub['pct_with_data']:.1f}% ({sub['with_data']}/{sub['total']} papers)"
         )
 
     print("\nPATTERNS - RL Subdomains Least Likely to Use Datasets/Environments:")
@@ -252,7 +252,7 @@ def analyze_rl_subdomains(rl_with_data, rl_without_data):
 
     for i, sub in enumerate(significant_subdomains[-10:]):
         print(
-            f"  {i+1}. {sub['subdomain']}: {sub['pct_with_data']:.1f}% ({sub['with_data']}/{sub['total']} papers)"
+            f"  {i + 1}. {sub['subdomain']}: {sub['pct_with_data']:.1f}% ({sub['with_data']}/{sub['total']} papers)"
         )
 
     return subdomain_analysis
@@ -503,7 +503,7 @@ def sample_papers_by_subdomain(rl_with_data, rl_without_data, subdomain_analysis
                     break
 
         for i, paper in enumerate(sample_papers):
-            print(f"  {i+1}. {paper['title'][:70]}... ({paper['year']})")
+            print(f"  {i + 1}. {paper['title'][:70]}... ({paper['year']})")
 
     print("\n\nSample papers from THEORETICAL-HEAVY subdomains:")
     print("-" * 60)
@@ -520,7 +520,7 @@ def sample_papers_by_subdomain(rl_with_data, rl_without_data, subdomain_analysis
                     break
 
         for i, paper in enumerate(sample_papers):
-            print(f"  {i+1}. {paper['title'][:70]}... ({paper['year']})")
+            print(f"  {i + 1}. {paper['title'][:70]}... ({paper['year']})")
 
 
 def main():

@@ -102,7 +102,9 @@ def calculate_correction_factors():
         if correction_factor > 1.2:
             print(f"  → UNDERESTIMATED by research domains ({correction_factor:.1f}x)")
         elif correction_factor < 0.8:
-            print(f"  → OVERESTIMATED by research domains ({1/correction_factor:.1f}x)")
+            print(
+                f"  → OVERESTIMATED by research domains ({1 / correction_factor:.1f}x)"
+            )
         else:
             print("  → Reasonable agreement")
         print()

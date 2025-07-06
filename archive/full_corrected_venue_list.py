@@ -77,9 +77,9 @@ def print_full_corrected_venue_list(corrected_data):
         rank += 1
 
     # Print summary statistics
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("SUMMARY STATISTICS")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
     total_venues = len(sorted_venues)
     total_papers = sum(info["total_papers"] for _, info in sorted_venues)
@@ -95,13 +95,13 @@ def print_full_corrected_venue_list(corrected_data):
     top_50_papers = sum(info["total_papers"] for _, info in sorted_venues[:50])
 
     print(
-        f"\nTop 10 venues represent: {top_10_papers} papers ({top_10_papers/total_papers:.1%})"
+        f"\nTop 10 venues represent: {top_10_papers} papers ({top_10_papers / total_papers:.1%})"
     )
     print(
-        f"Top 20 venues represent: {top_20_papers} papers ({top_20_papers/total_papers:.1%})"
+        f"Top 20 venues represent: {top_20_papers} papers ({top_20_papers / total_papers:.1%})"
     )
     print(
-        f"Top 50 venues represent: {top_50_papers} papers ({top_50_papers/total_papers:.1%})"
+        f"Top 50 venues represent: {top_50_papers} papers ({top_50_papers / total_papers:.1%})"
     )
 
     # Merged venue impact
@@ -116,9 +116,9 @@ def print_full_corrected_venue_list(corrected_data):
     print(f"Venues eliminated: {venues_eliminated}")
 
     # Top merged venues
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("TOP MERGED VENUES")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
     merged_venues_only = [
         (venue, info) for venue, info in sorted_venues if info["is_merged"]
@@ -133,9 +133,9 @@ def print_full_corrected_venue_list(corrected_data):
         )
 
     # High-impact standalone venues
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("TOP STANDALONE VENUES (NOT MERGED)")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
     standalone_venues_only = [
         (venue, info) for venue, info in sorted_venues if not info["is_merged"]

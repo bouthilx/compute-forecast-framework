@@ -117,7 +117,7 @@ class TestCitationAnalysisPerformance:
         print("\nPerformance metrics for 50K papers:")
         print(f"  Time: {duration:.2f} seconds")
         print(f"  Memory: {memory_used:.2f} MB")
-        print(f"  Papers/second: {50000/duration:.0f}")
+        print(f"  Papers/second: {50000 / duration:.0f}")
 
     def test_analyze_100k_papers_performance(self, large_venue_configs):
         """Test analysis performance with 100,000 papers."""
@@ -146,7 +146,7 @@ class TestCitationAnalysisPerformance:
         print("\nPerformance metrics for 100K papers:")
         print(f"  Time: {duration:.2f} seconds")
         print(f"  Memory: {memory_used:.2f} MB")
-        print(f"  Papers/second: {100000/duration:.0f}")
+        print(f"  Papers/second: {100000 / duration:.0f}")
 
     def test_breakthrough_detection_performance(self):
         """Test breakthrough detection performance per paper."""
@@ -200,10 +200,10 @@ class TestCitationAnalysisPerformance:
 
         print("\nFiltering performance for 50K papers:")
         print(f"  Time: {duration:.2f} seconds")
-        print(f"  Papers/second: {50000/duration:.0f}")
+        print(f"  Papers/second: {50000 / duration:.0f}")
         print(f"  Filtered count: {result.filtered_count}")
         print(
-            f"  Reduction: {(1 - result.filtered_count/result.original_count)*100:.1f}%"
+            f"  Reduction: {(1 - result.filtered_count / result.original_count) * 100:.1f}%"
         )
 
     def test_threshold_calculation_performance(self, large_venue_configs):

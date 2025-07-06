@@ -32,7 +32,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --frozen --all-extras
+        uv sync --group test --group dev
 
     - name: Run tests with coverage
       run: |
@@ -65,7 +65,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --frozen --all-extras
+        uv sync --group test --group dev
 
     - name: Run ruff check
       run: |

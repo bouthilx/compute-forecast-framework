@@ -202,7 +202,7 @@ class PaperCollector:
                     "..." if len(paper.get("venue", "")) > 30 else ""
                 )
 
-                print(f'📄 Paper {i+1}: "{title}" ({citations} citations) - {venue}')
+                print(f'📄 Paper {i + 1}: "{title}" ({citations} citations) - {venue}')
 
                 papers.append(
                     {
@@ -277,7 +277,7 @@ class PaperCollector:
                             else ""
                         )
 
-                print(f'📄 Paper {i+1}: "{title}" ({citations} citations) - {venue}')
+                print(f'📄 Paper {i + 1}: "{title}" ({citations} citations) - {venue}')
 
                 papers.append(
                     {
@@ -342,7 +342,9 @@ def create_layout(tracker):
 
     summary_table.add_row("Total Papers", str(tracker.stats["total_papers"]))
     summary_table.add_row("Target", "800")
-    summary_table.add_row("Progress", f"{(tracker.stats['total_papers']/800)*100:.1f}%")
+    summary_table.add_row(
+        "Progress", f"{(tracker.stats['total_papers'] / 800) * 100:.1f}%"
+    )
     summary_table.add_row("New Papers", str(tracker.stats["new_papers"]))
     summary_table.add_row("API Calls", str(tracker.stats["api_calls"]))
     summary_table.add_row("Rate Limits", str(tracker.stats["rate_limits"]))
@@ -540,7 +542,7 @@ def main():
                                 break
 
                             print(
-                                f"🔍 Keyword {i+1}/6: Searching for '{keyword}' in {domain_name} {year}"
+                                f"🔍 Keyword {i + 1}/6: Searching for '{keyword}' in {domain_name} {year}"
                             )
 
                             # Semantic Scholar
@@ -566,11 +568,11 @@ def main():
                                     year_papers.append(paper)
                                     new_papers_from_ss += 1
                                     print(
-                                        f"➕ Added paper: \"{paper.get('title', 'No title')[:40]}...\" ({paper.get('citations', 0)} citations)"
+                                        f'➕ Added paper: "{paper.get("title", "No title")[:40]}..." ({paper.get("citations", 0)} citations)'
                                     )
                                 elif title in existing_titles:
                                     print(
-                                        f"🔄 Duplicate skipped: \"{paper.get('title', 'No title')[:40]}...\""
+                                        f'🔄 Duplicate skipped: "{paper.get("title", "No title")[:40]}..."'
                                     )
 
                             print(
@@ -608,11 +610,11 @@ def main():
                                     year_papers.append(paper)
                                     new_papers_from_oa += 1
                                     print(
-                                        f"➕ Added paper: \"{paper.get('title', 'No title')[:40]}...\" ({paper.get('citations', 0)} citations)"
+                                        f'➕ Added paper: "{paper.get("title", "No title")[:40]}..." ({paper.get("citations", 0)} citations)'
                                     )
                                 elif title in existing_titles:
                                     print(
-                                        f"🔄 Duplicate skipped: \"{paper.get('title', 'No title')[:40]}...\""
+                                        f'🔄 Duplicate skipped: "{paper.get("title", "No title")[:40]}..."'
                                     )
 
                             print(
@@ -647,7 +649,7 @@ def main():
 
                         progress.update(main_task, completed=current_total)
                         print(
-                            f"🎯 Session total: {len(year_papers)} new papers | Overall total: {current_total}/800 ({(current_total/800)*100:.1f}%)"
+                            f"🎯 Session total: {len(year_papers)} new papers | Overall total: {current_total}/800 ({(current_total / 800) * 100:.1f}%)"
                         )
 
                         # Save progress periodically
@@ -688,7 +690,7 @@ def main():
             print(f"📊 Final count: {final_count} papers")
             print(f"📈 New papers this session: {new_papers_collected}")
             print(
-                f"🎯 Target achievement: {(final_count/TARGET_TOTAL)*100:.1f}% ({final_count}/{TARGET_TOTAL})"
+                f"🎯 Target achievement: {(final_count / TARGET_TOTAL) * 100:.1f}% ({final_count}/{TARGET_TOTAL})"
             )
 
             # Save final results

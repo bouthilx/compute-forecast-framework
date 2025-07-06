@@ -538,7 +538,7 @@ def compare_classifications():
 
         print(f"{domain} (showing top 3):")
         for i, (paper_id, info) in enumerate(domain_papers[:3]):
-            print(f"  {i+1}. {info['title'][:60]}...")
+            print(f"  {i + 1}. {info['title'][:60]}...")
             print(f"     Datasets: {', '.join(info['datasets'][:3])}...")
             print(
                 f"     Keywords matched: {', '.join(info['matched_keywords'][:5])}..."

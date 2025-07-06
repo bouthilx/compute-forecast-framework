@@ -56,11 +56,12 @@ class TestDOIResolverIntegration:
         framework.add_collector(collector)
 
         # Mock the API responses
-        with patch.object(
-            collector.crossref_client, "lookup_doi"
-        ) as mock_crossref, patch.object(
-            collector.unpaywall_client, "find_open_access"
-        ) as mock_unpaywall:
+        with (
+            patch.object(collector.crossref_client, "lookup_doi") as mock_crossref,
+            patch.object(
+                collector.unpaywall_client, "find_open_access"
+            ) as mock_unpaywall,
+        ):
             # Setup mock responses for successful lookups
             def crossref_side_effect(doi):
                 from compute_forecast.data.models import APIResponse, ResponseMetadata

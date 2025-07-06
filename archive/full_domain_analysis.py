@@ -427,7 +427,7 @@ def main():
         if len(category_domains) > 5:
             remaining = sum(info["paper_count"] for _, info in category_domains[5:])
             print(
-                f"  - ... and {len(category_domains)-5} more domains ({remaining} papers)"
+                f"  - ... and {len(category_domains) - 5} more domains ({remaining} papers)"
             )
         print()
 

@@ -632,7 +632,7 @@ def compare_original_vs_enhanced():
     print(f"Original RL papers (datasets only): {rl_original}")
     print(f"Enhanced RL papers (datasets + environments): {rl_enhanced}")
     print(
-        f"Improvement: +{rl_improvement} papers ({(rl_improvement/rl_original)*100:+.1f}%)"
+        f"Improvement: +{rl_improvement} papers ({(rl_improvement / rl_original) * 100:+.1f}%)"
     )
 
     # Show sample RL papers with environments
@@ -644,7 +644,7 @@ def compare_original_vs_enhanced():
 
     print("\\nSample RL papers found with enhanced method:")
     for i, paper in enumerate(rl_papers[:5]):
-        print(f"  {i+1}. {paper['title'][:60]}...")
+        print(f"  {i + 1}. {paper['title'][:60]}...")
         print(f"      Data: {', '.join(paper['data_entries'][:3])}...")
         print(f"      Types: {', '.join(set(paper['data_types']))}")
         print(f"      Keywords: {', '.join(paper['matched_keywords'][:5])}...")
@@ -706,10 +706,10 @@ def analyze_environment_vs_dataset_split():
     print("\\nRL domain analysis:")
     print(f"  Total RL papers: {len(rl_papers)}")
     print(
-        f"  RL papers with environments: {rl_with_envs} ({rl_with_envs/len(rl_papers)*100:.1f}%)"
+        f"  RL papers with environments: {rl_with_envs} ({rl_with_envs / len(rl_papers) * 100:.1f}%)"
     )
     print(
-        f"  RL papers with datasets: {rl_with_datasets} ({rl_with_datasets/len(rl_papers)*100:.1f}%)"
+        f"  RL papers with datasets: {rl_with_datasets} ({rl_with_datasets / len(rl_papers) * 100:.1f}%)"
     )
 
 

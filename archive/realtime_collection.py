@@ -314,7 +314,7 @@ def main():
                                 year_papers.append(paper)
 
                                 tracker.log(
-                                    f"➕ Added: \"{paper.get('title', '')[:50]}...\" ({paper.get('citations', 0)} cites)"
+                                    f'➕ Added: "{paper.get("title", "")[:50]}..." ({paper.get("citations", 0)} cites)'
                                 )
 
                         # Rate limiting
@@ -341,7 +341,7 @@ def main():
                                 year_papers.append(paper)
 
                                 tracker.log(
-                                    f"➕ Added: \"{paper.get('title', '')[:50]}...\" ({paper.get('citations', 0)} cites)"
+                                    f'➕ Added: "{paper.get("title", "")[:50]}..." ({paper.get("citations", 0)} cites)'
                                 )
 
                         # Rate limiting

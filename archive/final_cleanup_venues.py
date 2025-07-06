@@ -192,7 +192,7 @@ class FinalVenueCleanup:
         lines = data_str.split("\n")
         for i, line in enumerate(lines):
             if "2025" in line:
-                future_refs.append(f"Line {i+1}: {line.strip()}")
+                future_refs.append(f"Line {i + 1}: {line.strip()}")
 
         if future_refs:
             logger.warning(f"Found {len(future_refs)} remaining 2025 references:")
@@ -301,15 +301,15 @@ def main():
 
     # Print summary
     summary = clean_data["analysis_summary"]
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("FINAL VENUE STATISTICS CLEANUP COMPLETE")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Total venues: {summary['total_venues']}")
     print(f"Total papers: {summary['total_papers']}")
     print(f"Temporal range: {summary.get('temporal_range_validated', 'unknown')}")
     print(f"Active venues: {summary['active_venues']}")
     print(f"Final cleanup applied: {summary.get('final_cleanup_applied', False)}")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     return clean_data
 

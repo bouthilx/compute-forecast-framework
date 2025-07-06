@@ -171,7 +171,9 @@ def create_layout(tracker):
 
     summary_table.add_row("Total Papers", str(tracker.stats["total_papers"]))
     summary_table.add_row("Target", "800")
-    summary_table.add_row("Progress", f"{(tracker.stats['total_papers']/800)*100:.1f}%")
+    summary_table.add_row(
+        "Progress", f"{(tracker.stats['total_papers'] / 800) * 100:.1f}%"
+    )
     summary_table.add_row("New Papers", str(tracker.stats["new_papers"]))
     summary_table.add_row("API Calls", str(tracker.stats["api_calls"]))
     summary_table.add_row("Rate Limits", str(tracker.stats["rate_limits"]))
@@ -348,7 +350,7 @@ def main():
                             paper["collection_timestamp"] = datetime.now().isoformat()
                             year_papers.append(paper)
                             print(
-                                f"➕ Added paper: \"{paper.get('title', 'No title')[:40]}...\""
+                                f'➕ Added paper: "{paper.get("title", "No title")[:40]}..."'
                             )
 
                     # Add collected papers
@@ -370,7 +372,7 @@ def main():
 
                     progress.update(main_task, completed=current_total)
                     print(
-                        f"🎯 Overall total: {current_total}/800 ({(current_total/800)*100:.1f}%)"
+                        f"🎯 Overall total: {current_total}/800 ({(current_total / 800) * 100:.1f}%)"
                     )
 
                     # Update domain progress

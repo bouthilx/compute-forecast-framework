@@ -99,7 +99,7 @@ def main():
             ml_papers.append(paper)
 
     print(
-        f"\nML/AI-related papers: {len(ml_papers)} ({len(ml_papers)/len(mila_papers)*100:.1f}%)"
+        f"\nML/AI-related papers: {len(ml_papers)} ({len(ml_papers) / len(mila_papers) * 100:.1f}%)"
     )
 
     # Sample papers with links

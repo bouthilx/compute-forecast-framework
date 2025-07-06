@@ -52,10 +52,10 @@ def calculate_complete_paper_flow():
 
     print("\nSTEP 2: AI Analysis Filter")
     print(
-        f"Papers WITH analysis: {len(papers_with_analysis):,} ({len(papers_with_analysis)/total_papers*100:.1f}%)"
+        f"Papers WITH analysis: {len(papers_with_analysis):,} ({len(papers_with_analysis) / total_papers * 100:.1f}%)"
     )
     print(
-        f"Papers WITHOUT analysis: {len(papers_without_analysis):,} ({len(papers_without_analysis)/total_papers*100:.1f}%)"
+        f"Papers WITHOUT analysis: {len(papers_without_analysis):,} ({len(papers_without_analysis) / total_papers * 100:.1f}%)"
     )
     print(
         f"Total accounted: {len(papers_with_analysis) + len(papers_without_analysis):,}"
@@ -159,7 +159,7 @@ def create_complete_accounting_diagram():
           ┌─────────────────┐           ┌─────────────────┐
           │  WITH ANALYSIS  │           │ WITHOUT ANALYSIS│
           │   {with_analysis:,} papers   │           │   {without_analysis:,} papers    │
-          │    ({with_analysis/total*100:.1f}%)        │           │    ({without_analysis/total*100:.1f}%)         │
+          │    ({with_analysis / total * 100:.1f}%)        │           │    ({without_analysis / total * 100:.1f}%)         │
           └─────────────────┘           └─────────────────┘
                     │                           │
                     ▼                           ▼
@@ -336,18 +336,18 @@ def final_paper_flow_summary():
     COMPLETE PAPER ACCOUNTING:
 
     Starting papers:                    {total:,}
-    ├─ WITH AI analysis:                {analyzed:,} ({analyzed/total*100:.1f}%)
-    │  ├─ Classified by domain methods: {classified:,} ({classified/analyzed*100:.1f}% of analyzed)
-    │  │  ├─ Research domains only:     {stats['research_only']:,}
-    │  │  ├─ Dataset/env only:          {stats['dataset_only']:,}
-    │  │  └─ Both methods:              {stats['both_methods']:,}
-    │  └─ NOT classified:               {not_classified:,} ({not_classified/analyzed*100:.1f}% of analyzed)
-    └─ WITHOUT AI analysis:             {not_analyzed:,} ({not_analyzed/total*100:.1f}%)
+    ├─ WITH AI analysis:                {analyzed:,} ({analyzed / total * 100:.1f}%)
+    │  ├─ Classified by domain methods: {classified:,} ({classified / analyzed * 100:.1f}% of analyzed)
+    │  │  ├─ Research domains only:     {stats["research_only"]:,}
+    │  │  ├─ Dataset/env only:          {stats["dataset_only"]:,}
+    │  │  └─ Both methods:              {stats["both_methods"]:,}
+    │  └─ NOT classified:               {not_classified:,} ({not_classified / analyzed * 100:.1f}% of analyzed)
+    └─ WITHOUT AI analysis:             {not_analyzed:,} ({not_analyzed / total * 100:.1f}%)
 
     METHOD COVERAGE:
-    ├─ Research domains method:         {stats['total_research_domains']:,} papers
-    ├─ Dataset/environment method:      {stats['total_datasets']:,} papers
-    ├─ Overlap between methods:         {stats['both_methods']:,} papers
+    ├─ Research domains method:         {stats["total_research_domains"]:,} papers
+    ├─ Dataset/environment method:      {stats["total_datasets"]:,} papers
+    ├─ Overlap between methods:         {stats["both_methods"]:,} papers
     └─ Union of both methods:           {classified:,} papers
 
     PAPERS EXCLUDED AT EACH STEP:

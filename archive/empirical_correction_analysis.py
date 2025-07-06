@@ -485,7 +485,7 @@ def analyze_specific_domains_empirical_gaps():
         paper_json = paper_lookup.get(paper_id)
         if paper_json:
             title = paper_json.get("title", "Unknown")[:80]
-            print(f"  {i+1}. {title}...")
+            print(f"  {i + 1}. {title}...")
 
 
 def final_empirical_based_recommendations():

@@ -131,12 +131,12 @@ class ValidationRulesEngine:
             result["valid"] = False
             result["warnings"].append(
                 f"Training time ({training_time}h) seems too short for "
-                f"{parameters/1e9:.1f}B parameter model based on scaling laws"
+                f"{parameters / 1e9:.1f}B parameter model based on scaling laws"
             )
         elif training_time > expected_max_hours * 10:  # Way too slow
             result["warnings"].append(
                 f"Training time ({training_time}h) seems excessive for "
-                f"{parameters/1e9:.1f}B parameter model"
+                f"{parameters / 1e9:.1f}B parameter model"
             )
 
         return result

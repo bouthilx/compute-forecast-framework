@@ -71,15 +71,16 @@ class TestOrchestratorPerformance:
         orchestrator = EnhancedOrchestrator()
 
         # Mock each source with delayed responses
-        with patch(
-            "src.data.sources.semantic_scholar.SemanticScholarSource.search"
-        ) as mock_ss, patch(
-            "src.data.sources.openalex.OpenAlexSource.search"
-        ) as mock_oa, patch(
-            "src.data.sources.crossref.CrossRefSource.search"
-        ) as mock_cr, patch(
-            "src.data.sources.google_scholar.GoogleScholarSource.search"
-        ) as mock_gs:
+        with (
+            patch(
+                "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+            ) as mock_ss,
+            patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+            patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "src.data.sources.google_scholar.GoogleScholarSource.search"
+            ) as mock_gs,
+        ):
             # Configure mocks with delays to simulate real API calls
             mock_ss.return_value = await mock_delay_responses(
                 mock_responses["semantic_scholar"], 0.5
@@ -176,15 +177,16 @@ class TestOrchestratorPerformance:
         """Test that errors in one source don't affect others."""
         orchestrator = EnhancedOrchestrator()
 
-        with patch(
-            "src.data.sources.semantic_scholar.SemanticScholarSource.search"
-        ) as mock_ss, patch(
-            "src.data.sources.openalex.OpenAlexSource.search"
-        ) as mock_oa, patch(
-            "src.data.sources.crossref.CrossRefSource.search"
-        ) as mock_cr, patch(
-            "src.data.sources.google_scholar.GoogleScholarSource.search"
-        ) as mock_gs:
+        with (
+            patch(
+                "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+            ) as mock_ss,
+            patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+            patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "src.data.sources.google_scholar.GoogleScholarSource.search"
+            ) as mock_gs,
+        ):
             # Make one source fail
             mock_ss.side_effect = Exception("API Error")
             mock_oa.return_value = mock_responses["openalex"]

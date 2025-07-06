@@ -109,11 +109,12 @@ class TestDOIResolverCollector:
         self, collector, sample_paper, mock_crossref_response, mock_unpaywall_response
     ):
         """Test successful discovery from both CrossRef and Unpaywall."""
-        with patch.object(
-            collector.crossref_client, "lookup_doi"
-        ) as mock_crossref, patch.object(
-            collector.unpaywall_client, "find_open_access"
-        ) as mock_unpaywall:
+        with (
+            patch.object(collector.crossref_client, "lookup_doi") as mock_crossref,
+            patch.object(
+                collector.unpaywall_client, "find_open_access"
+            ) as mock_unpaywall,
+        ):
             mock_crossref.return_value = mock_crossref_response
             mock_unpaywall.return_value = mock_unpaywall_response
 
@@ -134,11 +135,12 @@ class TestDOIResolverCollector:
         self, collector, sample_paper, mock_crossref_response
     ):
         """Test discovery with only CrossRef success."""
-        with patch.object(
-            collector.crossref_client, "lookup_doi"
-        ) as mock_crossref, patch.object(
-            collector.unpaywall_client, "find_open_access"
-        ) as mock_unpaywall:
+        with (
+            patch.object(collector.crossref_client, "lookup_doi") as mock_crossref,
+            patch.object(
+                collector.unpaywall_client, "find_open_access"
+            ) as mock_unpaywall,
+        ):
             mock_crossref.return_value = mock_crossref_response
             mock_unpaywall.return_value = APIResponse(
                 success=False, papers=[], metadata=None, errors=[]
@@ -156,11 +158,12 @@ class TestDOIResolverCollector:
         self, collector, sample_paper, mock_unpaywall_response
     ):
         """Test discovery with only Unpaywall success."""
-        with patch.object(
-            collector.crossref_client, "lookup_doi"
-        ) as mock_crossref, patch.object(
-            collector.unpaywall_client, "find_open_access"
-        ) as mock_unpaywall:
+        with (
+            patch.object(collector.crossref_client, "lookup_doi") as mock_crossref,
+            patch.object(
+                collector.unpaywall_client, "find_open_access"
+            ) as mock_unpaywall,
+        ):
             mock_crossref.return_value = APIResponse(
                 success=False, papers=[], metadata=None, errors=[]
             )
@@ -181,11 +184,12 @@ class TestDOIResolverCollector:
 
     def test_discover_single_no_results(self, collector, sample_paper):
         """Test discovery when both sources fail."""
-        with patch.object(
-            collector.crossref_client, "lookup_doi"
-        ) as mock_crossref, patch.object(
-            collector.unpaywall_client, "find_open_access"
-        ) as mock_unpaywall:
+        with (
+            patch.object(collector.crossref_client, "lookup_doi") as mock_crossref,
+            patch.object(
+                collector.unpaywall_client, "find_open_access"
+            ) as mock_unpaywall,
+        ):
             mock_crossref.return_value = APIResponse(
                 success=False, papers=[], metadata=None, errors=[]
             )

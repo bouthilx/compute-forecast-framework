@@ -80,7 +80,7 @@ class TestCitationAnalyzer:
                     normalized_venue="ICML",
                     year=2022,
                     citations=30 + i * 5,
-                    authors=[Author(name=f"Author {i+5}")],
+                    authors=[Author(name=f"Author {i + 5}")],
                 )
             )
 
@@ -94,7 +94,7 @@ class TestCitationAnalyzer:
                     normalized_venue="CVPR",
                     year=2021,
                     citations=i * 2,
-                    authors=[Author(name=f"Author {i+10}")],
+                    authors=[Author(name=f"Author {i + 10}")],
                 )
             )
 
@@ -108,7 +108,7 @@ class TestCitationAnalyzer:
                     normalized_venue="Workshop",
                     year=2023,
                     citations=0,
-                    authors=[Author(name=f"Author {i+15}")],
+                    authors=[Author(name=f"Author {i + 15}")],
                 )
             )
 

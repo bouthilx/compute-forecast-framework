@@ -400,9 +400,9 @@ def main():
 
     # Print summary
     summary = fixed_data["analysis_summary"]
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("VENUE STATISTICS DATA QUALITY FIXES COMPLETE")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Total venues: {summary['total_venues']}")
     print(f"Total papers: {summary['total_papers']}")
     print(
@@ -412,7 +412,7 @@ def main():
     print(
         f"Data quality fixes applied: {summary.get('data_quality_fixes_applied', False)}"
     )
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     return fixed_data
 

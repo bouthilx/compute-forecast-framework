@@ -108,9 +108,9 @@ def print_full_venue_list(final_venues):
         rank += 1
 
     # Print summary statistics
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("SUMMARY STATISTICS")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
     total_venues = len(sorted_venues)
     merged_venues = sum(1 for _, info in sorted_venues if info["is_merged"])
@@ -127,10 +127,10 @@ def print_full_venue_list(final_venues):
     top_20_papers = sum(info["total_papers"] for _, info in sorted_venues[:20])
 
     print(
-        f"\nTop 10 venues represent: {top_10_papers} papers ({top_10_papers/total_papers:.1%})"
+        f"\nTop 10 venues represent: {top_10_papers} papers ({top_10_papers / total_papers:.1%})"
     )
     print(
-        f"Top 20 venues represent: {top_20_papers} papers ({top_20_papers/total_papers:.1%})"
+        f"Top 20 venues represent: {top_20_papers} papers ({top_20_papers / total_papers:.1%})"
     )
 
     # Merged venue impact
@@ -147,7 +147,7 @@ def print_full_venue_list(final_venues):
     )
     print(f"Venues eliminated through merging: {venues_eliminated}")
     print(
-        f"Reduction: {venues_eliminated/(total_original_venues + standalone_venues):.1%}"
+        f"Reduction: {venues_eliminated / (total_original_venues + standalone_venues):.1%}"
     )
 
 

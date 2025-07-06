@@ -455,7 +455,7 @@ def analyze_sample_papers(rl_with_data, rl_without_data, paper_research_domains)
     for i, paper_id in enumerate(sample_with):
         info = get_paper_info(paper_id)
         if info:
-            print(f"  {i+1}. {info['title'][:70]}... ({info['year']})")
+            print(f"  {i + 1}. {info['title'][:70]}... ({info['year']})")
             if info["other_domains"]:
                 print(f"      Other domains: {', '.join(info['other_domains'][:3])}")
             print()
@@ -467,7 +467,7 @@ def analyze_sample_papers(rl_with_data, rl_without_data, paper_research_domains)
     for i, paper_id in enumerate(sample_without):
         info = get_paper_info(paper_id)
         if info:
-            print(f"  {i+1}. {info['title'][:70]}... ({info['year']})")
+            print(f"  {i + 1}. {info['title'][:70]}... ({info['year']})")
             if info["other_domains"]:
                 print(f"      Other domains: {', '.join(info['other_domains'][:3])}")
             print()
@@ -563,10 +563,10 @@ def final_pattern_analysis():
     # Final computational implications
     print("\n4. COMPUTATIONAL RESOURCE IMPLICATIONS:")
     print(
-        f"   - RL papers with datasets/envs: {len(rl_with_data)} ({len(rl_with_data)/(total_with+total_without)*100:.1f}%)"
+        f"   - RL papers with datasets/envs: {len(rl_with_data)} ({len(rl_with_data) / (total_with + total_without) * 100:.1f}%)"
     )
     print(
-        f"   - RL papers without datasets/envs: {len(rl_without_data)} ({len(rl_without_data)/(total_with+total_without)*100:.1f}%)"
+        f"   - RL papers without datasets/envs: {len(rl_without_data)} ({len(rl_without_data) / (total_with + total_without) * 100:.1f}%)"
     )
     print(
         f"   → For compute projections, focus on the {len(rl_with_data)} papers with actual computational work"

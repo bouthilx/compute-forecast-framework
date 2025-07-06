@@ -36,7 +36,7 @@ jobs:
 
     - name: Run tests
       run: |
-        uv sync --frozen --all-extras
+        uv sync --group test --group dev
         uv run pytest tests/ -v
 
     - name: Create Pull Request

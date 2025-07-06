@@ -341,7 +341,7 @@ class EnhancedNeurIPS2024Pipeline:
                         f.write(f"Venue: {paper['venue']}\n")
                         f.write(f"Year: {paper['year']}\n")
                         f.write(f"Extraction timestamp: {datetime.now().isoformat()}\n")
-                        f.write(f"{'='*80}\n\n")
+                        f.write(f"{'=' * 80}\n\n")
                         f.write(full_text)
 
                     self.results["saved_text_files"].append(str(text_path))

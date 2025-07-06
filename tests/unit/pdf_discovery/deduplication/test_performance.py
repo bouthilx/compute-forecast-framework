@@ -24,17 +24,20 @@ class TestDeduplicationPerformance:
             paper = Paper(
                 title=f"Research Paper {i:04d}: Deep Learning Applications",
                 authors=[
-                    Author(name=f"Author {i%100}", affiliation=f"University {i%50}"),
                     Author(
-                        name=f"Co-Author {(i+1)%100}", affiliation=f"Institute {i%30}"
+                        name=f"Author {i % 100}", affiliation=f"University {i % 50}"
+                    ),
+                    Author(
+                        name=f"Co-Author {(i + 1) % 100}",
+                        affiliation=f"Institute {i % 30}",
                     ),
                 ],
-                venue=f"Conference {i%20}",
+                venue=f"Conference {i % 20}",
                 year=2020 + (i % 4),
                 citations=i * 10,
                 paper_id=f"paper_{i:04d}",
                 doi=f"10.1234/paper.{i:04d}" if i % 5 != 0 else None,  # 80% have DOIs
-                arxiv_id=f"2{(i%2)+3}01.{i:05d}"
+                arxiv_id=f"2{(i % 2) + 3}01.{i:05d}"
                 if i % 3 == 0
                 else None,  # 33% have arXiv IDs
             )
@@ -117,9 +120,9 @@ class TestDeduplicationPerformance:
             paper = Paper(
                 title=f"Large Scale Research {i:05d}: AI and ML",
                 authors=[
-                    Author(name=f"Researcher {i%500}", affiliation=f"Uni {i%100}"),
+                    Author(name=f"Researcher {i % 500}", affiliation=f"Uni {i % 100}"),
                 ],
-                venue=f"Venue {i%50}",
+                venue=f"Venue {i % 50}",
                 year=2020 + (i % 5),
                 citations=i,
                 paper_id=f"large_{i:05d}",
@@ -206,7 +209,7 @@ class TestDeduplicationPerformance:
             paper = Paper(
                 title=title,
                 authors=[
-                    Author(name=f"Author {i%100}", affiliation=f"Uni {i%50}"),
+                    Author(name=f"Author {i % 100}", affiliation=f"Uni {i % 50}"),
                 ],
                 venue="TestConf",
                 year=2023,

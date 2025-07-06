@@ -76,7 +76,7 @@ def create_pdf_storage_folder():
         else:
             env_content = f"""# Google Drive Storage Configuration
 GOOGLE_CREDENTIALS_PATH={creds_path}
-GOOGLE_DRIVE_FOLDER_ID={folder['id']}
+GOOGLE_DRIVE_FOLDER_ID={folder["id"]}
 """
 
         with open(env_path, "w") as f:

@@ -125,7 +125,7 @@ def extract_multi_domain_classifications():
     }
 
     print(
-        f"\\nPapers with multiple domains: {len(multi_domain_papers)} ({len(multi_domain_papers)/len(multi_domain_classifications)*100:.1f}%)"
+        f"\\nPapers with multiple domains: {len(multi_domain_papers)} ({len(multi_domain_papers) / len(multi_domain_classifications) * 100:.1f}%)"
     )
 
     # Show most common domain combinations
@@ -350,10 +350,10 @@ def main():
 
     print("\\n=== KEY INSIGHTS ===")
     print(
-        f"1. {len(multi_papers)} papers ({len(multi_papers)/len(multi_classifications)*100:.1f}%) are interdisciplinary"
+        f"1. {len(multi_papers)} papers ({len(multi_papers) / len(multi_classifications) * 100:.1f}%) are interdisciplinary"
     )
     print(
-        f"2. Average domains per paper: {sum(domain_counts.values())/len(multi_classifications):.2f}"
+        f"2. Average domains per paper: {sum(domain_counts.values()) / len(multi_classifications):.2f}"
     )
     print(f"3. Domain assignment inflation: {comparison['inflation_factor']:.2f}x")
     print(

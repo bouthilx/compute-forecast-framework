@@ -298,7 +298,7 @@ class EnhancedClassificationValidator(ClassificationValidator):
         if failures:
             report += "\nSample Failures:\n"
             for i, (test_case, result) in enumerate(failures[:5]):
-                report += f"{i+1}. '{test_case.affiliation}'\n"
+                report += f"{i + 1}. '{test_case.affiliation}'\n"
                 report += f"   Expected: {test_case.expected_type}, Got: {result.type.value}\n"
                 report += f"   Confidence: {result.confidence:.3f}\n"
 

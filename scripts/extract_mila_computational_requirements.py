@@ -238,7 +238,7 @@ def main():
     }
 
     for i, paper in enumerate(papers):
-        print(f"\rProcessing paper {i+1}/{len(papers)}...", end="", flush=True)
+        print(f"\rProcessing paper {i + 1}/{len(papers)}...", end="", flush=True)
 
         try:
             extraction = pipeline.extract_from_paper(paper)

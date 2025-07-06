@@ -105,14 +105,14 @@ def validate_venue_statistics():
     venues_with_scores = len(data["venue_metadata"]["computational_scores"])
     print("\n🔬 Computational Scores Coverage:")
     print(
-        f"   Venues with scores: {venues_with_scores}/{summary['total_venues']} ({venues_with_scores/summary['total_venues']*100:.1f}%)"
+        f"   Venues with scores: {venues_with_scores}/{summary['total_venues']} ({venues_with_scores / summary['total_venues'] * 100:.1f}%)"
     )
 
     # 8. Check citation averages coverage
     venues_with_citations = len(data["venue_metadata"]["citation_averages"])
     print("\n📖 Citation Averages Coverage:")
     print(
-        f"   Venues with citations: {venues_with_citations}/{summary['total_venues']} ({venues_with_citations/summary['total_venues']*100:.1f}%)"
+        f"   Venues with citations: {venues_with_citations}/{summary['total_venues']} ({venues_with_citations / summary['total_venues'] * 100:.1f}%)"
     )
 
     # 9. Venue type distribution
@@ -122,9 +122,9 @@ def validate_venue_statistics():
     for venue_type, count in type_counts.most_common():
         print(f"   {venue_type:<12}: {count:3d} venues")
 
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print("VALIDATION COMPLETE")
-    print(f"{'='*50}")
+    print(f"{'=' * 50}")
 
     return data
 

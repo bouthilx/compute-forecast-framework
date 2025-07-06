@@ -132,15 +132,17 @@ def analyze_dataset_structure():
 
     if papers_with_analysis > 0:
         print("\nCOVERAGE PERCENTAGES:")
-        print(f"Dataset coverage: {papers_with_datasets/papers_with_analysis*100:.1f}%")
         print(
-            f"Environment coverage: {papers_with_environments/papers_with_analysis*100:.1f}%"
+            f"Dataset coverage: {papers_with_datasets / papers_with_analysis * 100:.1f}%"
         )
         print(
-            f"Empirical work coverage (datasets OR environments): {(papers_with_datasets + papers_with_environments - papers_with_both)/papers_with_analysis*100:.1f}%"
+            f"Environment coverage: {papers_with_environments / papers_with_analysis * 100:.1f}%"
         )
         print(
-            f"Theoretical only (domains without datasets/envs): {papers_with_domains_only/papers_with_analysis*100:.1f}%"
+            f"Empirical work coverage (datasets OR environments): {(papers_with_datasets + papers_with_environments - papers_with_both) / papers_with_analysis * 100:.1f}%"
+        )
+        print(
+            f"Theoretical only (domains without datasets/envs): {papers_with_domains_only / papers_with_analysis * 100:.1f}%"
         )
 
     print("\nDATASET EXAMPLES:")

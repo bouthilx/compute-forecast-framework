@@ -435,9 +435,9 @@ class MilaVenueStatisticsGenerator:
 
             # Print summary
             summary = results["analysis_summary"]
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print("MILA VENUE STATISTICS GENERATION COMPLETE")
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
             print(f"Total venues analyzed: {summary['total_venues']}")
             print(f"Total papers processed: {summary['total_papers']}")
             print(
@@ -446,7 +446,7 @@ class MilaVenueStatisticsGenerator:
             print(f"Active venues (>1 paper): {summary['active_venues']}")
             print(f"Domain coverage: {summary['total_domains']} domains")
             print(f"Output saved to: {self.output_file}")
-            print(f"{'='*60}\n")
+            print(f"{'=' * 60}\n")
 
             return results
 

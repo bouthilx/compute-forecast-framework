@@ -1,0 +1,104 @@
+metadata:
+  paper_id: arxiv_2023_1234_5678
+  title: 'Scaling Language Models: A Computational Analysis'
+  authors:
+  - Smith, J.
+  - Doe, A.
+  - Johnson, K.
+  venue: NeurIPS
+  year: 2023
+  extraction_date: '2024-01-15T10:30:00'
+  analyst: analyst_001
+  time_spent_minutes: 45
+  extraction_version: '1.0'
+automated_extraction:
+  confidence_score: 0.75
+  fields_found:
+  - gpu_type
+  - training_time
+  - parameters
+  fields_missing:
+  - dataset_size
+  - cost
+  analyzer_version: 2.1.0
+  analysis_timestamp: '2024-01-15T10:00:00'
+hardware:
+  gpu_type: A100
+  gpu_count: 64
+  gpu_memory_gb: 40
+  tpu_version: ''
+  tpu_cores: null
+  cpu_cores: null
+  nodes_used: 8
+  cluster_name: internal_cluster
+  special_hardware: ''
+  hardware_notes: 8 nodes with 8 A100 GPUs each
+training:
+  total_time_hours: 168
+  time_unit_original: 1 week
+  pre_training_hours: 144
+  fine_tuning_hours: 24
+  inference_time_hours: null
+  number_of_runs: 3
+  wall_clock_time: 168
+  distributed_training: true
+  training_notes: Training included 3 full runs for statistical significance
+model:
+  parameters_count: 13000
+  parameters_unit: millions
+  architecture: Transformer
+  layers: 40
+  hidden_size: 5120
+  attention_heads: 40
+  model_size_gb: 52
+  precision: fp16
+  model_notes: 13B parameter model similar to GPT-3 architecture
+dataset:
+  name: Common Crawl + Books
+  size_gb: 500
+  samples_count: null
+  tokens_count: 300000000000
+  batch_size: 512
+  sequence_length: 2048
+  preprocessing_time: 48
+  dataset_notes: 300B tokens from web crawl and book corpus
+computation:
+  total_gpu_hours: 10752
+  total_tpu_hours: null
+  calculation_method: "64 GPUs \xD7 168 hours"
+  estimated_cost_usd: 32256
+  cost_calculation_method: $3/GPU-hour estimate
+  flops_estimate: 3.2e+21
+  energy_consumption_kwh: 43008
+  computation_notes: Cost estimated based on cloud pricing
+validation:
+  confidence_hardware: high
+  confidence_training: high
+  confidence_model: high
+  confidence_dataset: medium
+  confidence_computation: medium
+  confidence_overall: high
+  consistency_checks_passed: true
+  outliers_flagged: []
+  validation_notes: All calculations verified and consistent
+extraction_notes:
+  paper_sections_reviewed:
+  - abstract
+  - experimental_setup
+  - appendix_a
+  ambiguities:
+  - Exact preprocessing time unclear
+  assumptions:
+  - Used $3/GPU-hour for cost estimation
+  follow_up_needed: []
+  quality_issues: []
+  extraction_challenges:
+  - Dataset size given in tokens, not GB
+  additional_sources:
+  - GitHub repository for exact config
+review:
+  reviewer: ''
+  review_date: ''
+  review_status: pending
+  review_comments: []
+  approved: false

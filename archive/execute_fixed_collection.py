@@ -70,7 +70,7 @@ def main():
     collection_errors = []
 
     for domain_idx, domain in enumerate(domains):
-        print(f"\n=== Domain {domain_idx+1}/{len(domains)}: {domain} ===")
+        print(f"\n=== Domain {domain_idx + 1}/{len(domains)}: {domain} ===")
 
         domain_papers = []
         domain_year_stats = {}

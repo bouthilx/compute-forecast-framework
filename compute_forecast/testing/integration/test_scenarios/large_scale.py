@@ -351,7 +351,7 @@ class LargeScaleTestScenario:
         expected_memory = 4096 * 10  # Linear scaling from 4GB baseline
         if peak_memory > expected_memory * 0.5:  # More than 50% of linear scaling
             issues.append(
-                f"Memory scaling issue: {peak_memory:.0f}MB (expected ~{expected_memory*0.5:.0f}MB)"
+                f"Memory scaling issue: {peak_memory:.0f}MB (expected ~{expected_memory * 0.5:.0f}MB)"
             )
 
         # Throughput issues
@@ -366,7 +366,7 @@ class LargeScaleTestScenario:
 
             if growth_rate > 0.5:  # 50% growth suggests leak
                 issues.append(
-                    f"Potential memory leak: {growth_rate*100:.1f}% growth during execution"
+                    f"Potential memory leak: {growth_rate * 100:.1f}% growth during execution"
                 )
 
         return issues

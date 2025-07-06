@@ -734,20 +734,56 @@ class ExtractionProtocol:
         """Export extraction result to YAML format."""
 
         # Convert dataclasses to dictionaries for YAML serialization
-        def dataclass_to_dict(obj):
+        def dataclass_to_dict(obj, visited=None):
+            if visited is None:
+                visited = set()
+
+            # Check for circular references
+            if id(obj) in visited:
+                return f"<circular reference to {type(obj).__name__}>"
+
+            # Handle basic types that can be serialized directly
+            if obj is None or isinstance(obj, (str, int, float, bool, list, tuple)):
+                return obj
+
+            # Handle special types
+            if isinstance(obj, Enum):
+                return obj.value
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+
+            # Handle dictionaries
+            if isinstance(obj, dict):
+                result = {}
+                for key, value in obj.items():
+                    result[str(key)] = dataclass_to_dict(value, visited)
+                return result
+
+            # Handle lists and tuples
+            if isinstance(obj, (list, tuple)):
+                return [dataclass_to_dict(item, visited) for item in obj]
+
+            # Handle objects with __dict__
             if hasattr(obj, "__dict__"):
+                visited.add(id(obj))
                 result = {}
                 for key, value in obj.__dict__.items():
-                    if hasattr(value, "__dict__"):
-                        result[key] = dataclass_to_dict(value)
-                    elif isinstance(value, Enum):
-                        result[key] = value.value
-                    elif isinstance(value, datetime):
-                        result[key] = value.isoformat()
-                    else:
-                        result[key] = value
+                    # Skip private attributes and methods
+                    if key.startswith("_") or callable(value):
+                        continue
+                    try:
+                        result[key] = dataclass_to_dict(value, visited)
+                    except (TypeError, AttributeError):
+                        # Skip values that can't be serialized
+                        result[key] = f"<unserializable {type(value).__name__}>"
+                visited.remove(id(obj))
                 return result
-            return obj
+
+            # For everything else, try to convert to string
+            try:
+                return str(obj)
+            except Exception:
+                return f"<unserializable {type(obj).__name__}>"
 
         data = dataclass_to_dict(self.extraction_result)
         return yaml.dump(data, default_flow_style=False, sort_keys=False)

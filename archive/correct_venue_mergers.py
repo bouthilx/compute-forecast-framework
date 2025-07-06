@@ -343,9 +343,9 @@ def print_corrected_mergers(corrected_mergers, merged_venue_counts, venue_counts
                 print(f"  - {incorrect} ({papers} papers)")
 
     # Summary statistics
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("CORRECTED SUMMARY STATISTICS")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
     total_venues_after = len(merged_venue_counts)
     total_merged = len(merger_stats)
@@ -359,7 +359,7 @@ def print_corrected_mergers(corrected_mergers, merged_venue_counts, venue_counts
     print(f"Legitimate mergers: {total_merged}")
     print(f"Standalone venues: {total_standalone}")
     print(f"Venues eliminated: {venues_eliminated}")
-    print(f"Reduction: {venues_eliminated/original_venue_count:.1%}")
+    print(f"Reduction: {venues_eliminated / original_venue_count:.1%}")
 
 
 def save_corrected_mergers(merged_venue_counts, corrected_mergers):

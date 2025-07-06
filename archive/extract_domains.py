@@ -130,7 +130,7 @@ def extract_domain_data():
     # Show sample data
     print("\\n=== SAMPLE DOMAIN EXTRACTIONS ===")
     for i, domain in enumerate(all_domains[:5]):
-        print(f"\\n--- Domain {i+1} ---")
+        print(f"\\n--- Domain {i + 1} ---")
         print(f"Paper: {domain['title'][:60]}...")
         print(f"Domain: {domain['domain_name']}")
         print(f"Type: {domain['domain_type']}")

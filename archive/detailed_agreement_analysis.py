@@ -176,7 +176,7 @@ def analyze_false_positives_negatives():
             title = paper_info.get(paper_id, {}).get("title", "Unknown")[:80]
             datasets = dataset_data["dataset_classifications"][paper_id]["datasets"][:3]
             research_domains = list(paper_research_domains[paper_id])[:3]
-            print(f"  {i+1}. {title}...")
+            print(f"  {i + 1}. {title}...")
             print(f"      Datasets: {datasets}")
             print(f"      Research domains: {research_domains}")
             print()
@@ -187,7 +187,7 @@ def analyze_false_positives_negatives():
     for i, paper_id in enumerate(list(research_fp)[:5]):  # Show first 5
         title = paper_info.get(paper_id, {}).get("title", "Unknown")[:80]
         research_domains = list(paper_research_domains[paper_id])[:3]
-        print(f"  {i+1}. {title}...")
+        print(f"  {i + 1}. {title}...")
         print(f"      Research domains: {research_domains}")
         print()
 
@@ -213,7 +213,7 @@ def analyze_false_positives_negatives():
     for i, paper_id in enumerate(list(rl_research_fp)[:5]):
         title = paper_info.get(paper_id, {}).get("title", "Unknown")[:80]
         research_domains = list(paper_research_domains[paper_id])[:3]
-        print(f"  {i+1}. {title}...")
+        print(f"  {i + 1}. {title}...")
         print(f"      Research domains: {research_domains}")
         print()
 

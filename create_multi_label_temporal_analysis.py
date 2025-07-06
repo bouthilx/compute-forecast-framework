@@ -351,13 +351,13 @@ def create_multi_label_visualizations():
     total_2019 = total_papers_by_year[2019]
     total_2024 = total_papers_by_year[2024]
     print(
-        f"Overall paper growth: {total_2019} → {total_2024} ({(total_2024/total_2019-1)*100:+.1f}%)"
+        f"Overall paper growth: {total_2019} → {total_2024} ({(total_2024 / total_2019 - 1) * 100:+.1f}%)"
     )
 
     assignments_2019 = sum(year_data[2019][cat] for cat in research_categories)
     assignments_2024 = sum(year_data[2024][cat] for cat in research_categories)
     print(
-        f"Domain assignment growth: {assignments_2019} → {assignments_2024} ({(assignments_2024/assignments_2019-1)*100:+.1f}%)"
+        f"Domain assignment growth: {assignments_2019} → {assignments_2024} ({(assignments_2024 / assignments_2019 - 1) * 100:+.1f}%)"
     )
 
     print("\nCategory trends (2019 → 2024):")

@@ -15,8 +15,8 @@ with_abstract = sum(1 for p in papers if p.get("abstract", "").strip())
 without_abstract = total - with_abstract
 
 print(f"Total papers: {total}")
-print(f"With abstract: {with_abstract} ({with_abstract/total*100:.1f}%)")
-print(f"Without abstract: {without_abstract} ({without_abstract/total*100:.1f}%)")
+print(f"With abstract: {with_abstract} ({with_abstract / total * 100:.1f}%)")
+print(f"Without abstract: {without_abstract} ({without_abstract / total * 100:.1f}%)")
 
 # Check papers with PDF links
 with_pdf = 0
@@ -29,5 +29,5 @@ for paper in papers:
                 arxiv_pdf += 1
             break
 
-print(f"\nWith PDF links: {with_pdf} ({with_pdf/total*100:.1f}%)")
-print(f"With ArXiv PDF: {arxiv_pdf} ({arxiv_pdf/total*100:.1f}%)")
+print(f"\nWith PDF links: {with_pdf} ({with_pdf / total * 100:.1f}%)")
+print(f"With ArXiv PDF: {arxiv_pdf} ({arxiv_pdf / total * 100:.1f}%)")

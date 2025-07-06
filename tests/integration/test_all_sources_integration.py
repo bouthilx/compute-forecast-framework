@@ -120,15 +120,16 @@ class TestAllSourcesIntegration:
         """Test that all 4 sources can be collected and combined successfully."""
         orchestrator = EnhancedOrchestrator()
 
-        with patch(
-            "src.data.sources.semantic_scholar.SemanticScholarSource.search"
-        ) as mock_ss, patch(
-            "src.data.sources.openalex.OpenAlexSource.search"
-        ) as mock_oa, patch(
-            "src.data.sources.crossref.CrossRefSource.search"
-        ) as mock_cr, patch(
-            "src.data.sources.google_scholar.GoogleScholarSource.search"
-        ) as mock_gs:
+        with (
+            patch(
+                "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+            ) as mock_ss,
+            patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+            patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "src.data.sources.google_scholar.GoogleScholarSource.search"
+            ) as mock_gs,
+        ):
             # Configure all mocks
             mock_ss.return_value = comprehensive_mock_data["semantic_scholar"]
             mock_oa.return_value = comprehensive_mock_data["openalex"]
@@ -167,15 +168,16 @@ class TestAllSourcesIntegration:
         """Test that papers from all sources are normalized to a unified format."""
         orchestrator = EnhancedOrchestrator()
 
-        with patch(
-            "src.data.sources.semantic_scholar.SemanticScholarSource.search"
-        ) as mock_ss, patch(
-            "src.data.sources.openalex.OpenAlexSource.search"
-        ) as mock_oa, patch(
-            "src.data.sources.crossref.CrossRefSource.search"
-        ) as mock_cr, patch(
-            "src.data.sources.google_scholar.GoogleScholarSource.search"
-        ) as mock_gs:
+        with (
+            patch(
+                "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+            ) as mock_ss,
+            patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+            patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "src.data.sources.google_scholar.GoogleScholarSource.search"
+            ) as mock_gs,
+        ):
             mock_ss.return_value = comprehensive_mock_data["semantic_scholar"]
             mock_oa.return_value = comprehensive_mock_data["openalex"]
             mock_cr.return_value = comprehensive_mock_data["crossref"]
@@ -236,18 +238,23 @@ class TestAllSourcesIntegration:
             await asyncio.sleep(2)  # Google Scholar has 2s rate limit
             return comprehensive_mock_data["google_scholar"]
 
-        with patch(
-            "src.data.sources.semantic_scholar.SemanticScholarSource.search",
-            side_effect=track_ss_calls,
-        ), patch(
-            "src.data.sources.openalex.OpenAlexSource.search",
-            side_effect=track_oa_calls,
-        ), patch(
-            "src.data.sources.crossref.CrossRefSource.search",
-            side_effect=track_cr_calls,
-        ), patch(
-            "src.data.sources.google_scholar.GoogleScholarSource.search",
-            side_effect=track_gs_calls,
+        with (
+            patch(
+                "src.data.sources.semantic_scholar.SemanticScholarSource.search",
+                side_effect=track_ss_calls,
+            ),
+            patch(
+                "src.data.sources.openalex.OpenAlexSource.search",
+                side_effect=track_oa_calls,
+            ),
+            patch(
+                "src.data.sources.crossref.CrossRefSource.search",
+                side_effect=track_cr_calls,
+            ),
+            patch(
+                "src.data.sources.google_scholar.GoogleScholarSource.search",
+                side_effect=track_gs_calls,
+            ),
         ):
             # Make multiple concurrent searches
             tasks = []
@@ -280,15 +287,16 @@ class TestAllSourcesIntegration:
         ]
 
         for scenario in scenarios:
-            with patch(
-                "src.data.sources.semantic_scholar.SemanticScholarSource.search"
-            ) as mock_ss, patch(
-                "src.data.sources.openalex.OpenAlexSource.search"
-            ) as mock_oa, patch(
-                "src.data.sources.crossref.CrossRefSource.search"
-            ) as mock_cr, patch(
-                "src.data.sources.google_scholar.GoogleScholarSource.search"
-            ) as mock_gs:
+            with (
+                patch(
+                    "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+                ) as mock_ss,
+                patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+                patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+                patch(
+                    "src.data.sources.google_scholar.GoogleScholarSource.search"
+                ) as mock_gs,
+            ):
                 # Configure mocks based on scenario
                 if "semantic_scholar" in scenario["failing_sources"]:
                     mock_ss.side_effect = Exception("API Error")
@@ -327,15 +335,16 @@ class TestAllSourcesIntegration:
         orchestrator = EnhancedOrchestrator()
         query = "deep learning transformer architecture"
 
-        with patch(
-            "src.data.sources.semantic_scholar.SemanticScholarSource.search"
-        ) as mock_ss, patch(
-            "src.data.sources.openalex.OpenAlexSource.search"
-        ) as mock_oa, patch(
-            "src.data.sources.crossref.CrossRefSource.search"
-        ) as mock_cr, patch(
-            "src.data.sources.google_scholar.GoogleScholarSource.search"
-        ) as mock_gs:
+        with (
+            patch(
+                "src.data.sources.semantic_scholar.SemanticScholarSource.search"
+            ) as mock_ss,
+            patch("src.data.sources.openalex.OpenAlexSource.search") as mock_oa,
+            patch("src.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "src.data.sources.google_scholar.GoogleScholarSource.search"
+            ) as mock_gs,
+        ):
             mock_ss.return_value = comprehensive_mock_data["semantic_scholar"]
             mock_oa.return_value = comprehensive_mock_data["openalex"]
             mock_cr.return_value = comprehensive_mock_data["crossref"]

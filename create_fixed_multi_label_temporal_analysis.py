@@ -400,7 +400,7 @@ def create_fixed_multi_label_visualizations():
     total_2019 = total_papers_by_year[2019]
     total_2024 = total_papers_by_year[2024]
     print(
-        f"Overall paper growth: {total_2019} → {total_2024} ({(total_2024/total_2019-1)*100:+.1f}%)"
+        f"Overall paper growth: {total_2019} → {total_2024} ({(total_2024 / total_2019 - 1) * 100:+.1f}%)"
     )
 
     main_assignments_2019 = sum(
@@ -410,7 +410,7 @@ def create_fixed_multi_label_visualizations():
         year_data[2024][cat] for cat in main_research_categories
     )
     print(
-        f"Main domain assignment growth: {main_assignments_2019} → {main_assignments_2024} ({(main_assignments_2024/main_assignments_2019-1)*100:+.1f}%)"
+        f"Main domain assignment growth: {main_assignments_2019} → {main_assignments_2024} ({(main_assignments_2024 / main_assignments_2019 - 1) * 100:+.1f}%)"
     )
 
     other_2019 = other_only_papers[2019]

@@ -104,7 +104,7 @@ def analyze_venue_patterns(venue_stats):
 
     print("=== VENUE DISTRIBUTION ANALYSIS ===")
     print(
-        f"Venues with single domain entry: {single_pub_venues} ({single_pub_venues/total_venues:.1%})"
+        f"Venues with single domain entry: {single_pub_venues} ({single_pub_venues / total_venues:.1%})"
     )
     print(
         f"Venues with 2-4 entries: {sum(1 for c in venue_counts.values() if 2 <= c <= 4)}"
@@ -113,7 +113,7 @@ def analyze_venue_patterns(venue_stats):
         f"Venues with 5-9 entries: {sum(1 for c in venue_counts.values() if 5 <= c <= 9)}"
     )
     print(
-        f"Venues with 10+ entries: {prolific_venues} ({prolific_venues/total_venues:.1%})"
+        f"Venues with 10+ entries: {prolific_venues} ({prolific_venues / total_venues:.1%})"
     )
     print()
 

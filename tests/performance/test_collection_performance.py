@@ -481,12 +481,14 @@ class PerformanceValidationTest:
 
         for i in range(count):
             paper = Paper(
-                title=f"Performance Test Paper {i+1}",
-                authors=[Author(name=f"Author {i+1}", affiliation=f"University {i+1}")],
+                title=f"Performance Test Paper {i + 1}",
+                authors=[
+                    Author(name=f"Author {i + 1}", affiliation=f"University {i + 1}")
+                ],
                 venue=venues[i % len(venues)],
                 year=2020 + (i % 5),
                 citations=max(0, 100 - (i // 10)),
-                abstract=f"Abstract for performance test paper {i+1}"
+                abstract=f"Abstract for performance test paper {i + 1}"
                 * 5,  # Make it longer
             )
             papers.append(paper)

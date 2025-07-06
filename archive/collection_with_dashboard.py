@@ -403,7 +403,8 @@ class CollectionDashboard:
 
                         self.update_domain_stats(domain, papers_added=1)
                         self.add_log(
-                            f"Collected paper {j+1} for {domain.split()[0]}", "success"
+                            f"Collected paper {j + 1} for {domain.split()[0]}",
+                            "success",
                         )
                         self.update_display()
 

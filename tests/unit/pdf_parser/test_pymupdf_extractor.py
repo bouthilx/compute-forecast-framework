@@ -111,7 +111,7 @@ class TestPyMuPDFExtractor:
 
         for i in range(3):
             page = Mock()
-            page.get_text.return_value = f"Content of page {i+1}"
+            page.get_text.return_value = f"Content of page {i + 1}"
             mock_pages.append(page)
 
         mock_doc.__iter__ = Mock(return_value=iter(mock_pages))

@@ -188,7 +188,7 @@ class PaperCollector:
                     "..." if len(paper.get("venue", "")) > 30 else ""
                 )
 
-                print(f'📄 Paper {i+1}: "{title}" ({citations} citations) - {venue}')
+                print(f'📄 Paper {i + 1}: "{title}" ({citations} citations) - {venue}')
 
                 papers.append(
                     {
@@ -261,7 +261,7 @@ class PaperCollector:
                             else ""
                         )
 
-                print(f'📄 Paper {i+1}: "{title}" ({citations} citations) - {venue}')
+                print(f'📄 Paper {i + 1}: "{title}" ({citations} citations) - {venue}')
 
                 papers.append(
                     {
@@ -335,7 +335,9 @@ def create_layout(tracker):
 
     summary_table.add_row("Total Papers", str(tracker.stats["total_papers"]))
     summary_table.add_row("Target", "800")
-    summary_table.add_row("Progress", f"{(tracker.stats['total_papers']/800)*100:.1f}%")
+    summary_table.add_row(
+        "Progress", f"{(tracker.stats['total_papers'] / 800) * 100:.1f}%"
+    )
     summary_table.add_row("New Papers", str(tracker.stats["new_papers"]))
     summary_table.add_row("API Calls", str(tracker.stats["api_calls"]))
     summary_table.add_row("Rate Limits", str(tracker.stats["rate_limits"]))
@@ -497,7 +499,7 @@ def main():
                                 )
                                 break
 
-                            print(f"🔍 Keyword {i+1}/3: '{keyword}'")
+                            print(f"🔍 Keyword {i + 1}/3: '{keyword}'")
 
                             # Semantic Scholar
                             ss_papers = collector.semantic_scholar_search(
@@ -522,11 +524,11 @@ def main():
                                     year_papers.append(paper)
                                     new_papers += 1
                                     print(
-                                        f"➕ Added: \"{paper.get('title', '')[:40]}...\""
+                                        f'➕ Added: "{paper.get("title", "")[:40]}..."'
                                     )
                                 elif title in existing_titles:
                                     print(
-                                        f"🔄 Duplicate: \"{paper.get('title', '')[:40]}...\""
+                                        f'🔄 Duplicate: "{paper.get("title", "")[:40]}..."'
                                     )
 
                             print(f"📈 Semantic Scholar: {new_papers} new papers")
@@ -559,7 +561,7 @@ def main():
                                     year_papers.append(paper)
                                     new_papers += 1
                                     print(
-                                        f"➕ Added: \"{paper.get('title', '')[:40]}...\""
+                                        f'➕ Added: "{paper.get("title", "")[:40]}..."'
                                     )
 
                             print(f"📈 OpenAlex: {new_papers} new papers")
@@ -584,7 +586,7 @@ def main():
 
                         progress.update(main_task, completed=current_total)
                         print(
-                            f"🎯 Total: {current_total}/800 ({(current_total/800)*100:.1f}%)"
+                            f"🎯 Total: {current_total}/800 ({(current_total / 800) * 100:.1f}%)"
                         )
 
                         # Save progress periodically

@@ -1421,7 +1421,7 @@ if __name__ == "__main__":
     print(f"Total Tests: {total_tests}")
     print(f"Successful: {successful_tests}")
     print(f"Failed: {total_tests - successful_tests}")
-    print(f"Success Rate: {successful_tests/total_tests*100:.1f}%")
+    print(f"Success Rate: {successful_tests / total_tests * 100:.1f}%")
 
     print("\nDetailed Results:")
     print("-" * 40)

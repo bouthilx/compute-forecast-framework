@@ -230,10 +230,10 @@ def calculate_empirical_coverage_by_domain(data):
             print(f"{category}:")
             print(f"  Total papers: {len(domain_papers_with_analysis)}")
             print(
-                f"  Empirical (with datasets): {len(domain_papers_with_datasets)} ({coverage*100:.1f}%)"
+                f"  Empirical (with datasets): {len(domain_papers_with_datasets)} ({coverage * 100:.1f}%)"
             )
             print(
-                f"  Theoretical (domains only): {len(domain_papers_with_analysis) - len(domain_papers_with_datasets)} ({(1-coverage)*100:.1f}%)"
+                f"  Theoretical (domains only): {len(domain_papers_with_analysis) - len(domain_papers_with_datasets)} ({(1 - coverage) * 100:.1f}%)"
             )
             print()
 
@@ -253,8 +253,8 @@ def calculate_correction_factors(domain_coverage):
     )
     overall_coverage = total_empirical / total_papers if total_papers > 0 else 0
 
-    print(f"Overall empirical coverage: {overall_coverage*100:.1f}%")
-    print(f"Overall theoretical gap: {(1-overall_coverage)*100:.1f}%")
+    print(f"Overall empirical coverage: {overall_coverage * 100:.1f}%")
+    print(f"Overall theoretical gap: {(1 - overall_coverage) * 100:.1f}%")
     print()
 
     # Calculate correction factors
@@ -284,7 +284,7 @@ def calculate_correction_factors(domain_coverage):
         }
 
         print(f"{category}:")
-        print(f"  Raw empirical coverage: {domain_coverage_rate*100:.1f}%")
+        print(f"  Raw empirical coverage: {domain_coverage_rate * 100:.1f}%")
         print(f"  Correction factor: {correction_factor:.3f}")
         print(f"  Interpretation: {correction_factors[category]['interpretation']}")
         print()

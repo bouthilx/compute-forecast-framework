@@ -140,13 +140,13 @@ def validate_collection_results() -> Dict[str, Any]:
 
     print("📈 Quality Indicators:")
     print(
-        f"  Papers with citations: {papers_with_citations}/{len(papers)} ({papers_with_citations/len(papers):.1%})"
+        f"  Papers with citations: {papers_with_citations}/{len(papers)} ({papers_with_citations / len(papers):.1%})"
     )
     print(
-        f"  Papers with abstracts: {papers_with_abstracts}/{len(papers)} ({papers_with_abstracts/len(papers):.1%})"
+        f"  Papers with abstracts: {papers_with_abstracts}/{len(papers)} ({papers_with_abstracts / len(papers):.1%})"
     )
     print(
-        f"  Papers with venues: {papers_with_venues}/{len(papers)} ({papers_with_venues/len(papers):.1%})"
+        f"  Papers with venues: {papers_with_venues}/{len(papers)} ({papers_with_venues / len(papers):.1%})"
     )
     print(f"  Average citations per paper: {avg_citations:.1f}")
     print(f"  Source diversity: {len(source_distribution)} sources")

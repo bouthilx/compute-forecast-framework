@@ -144,7 +144,7 @@ def analyze_duplicates():
     if exact_duplicates:
         print("\n   📝 Examples of exact title duplicates:")
         for i, (title, papers_list) in enumerate(list(exact_duplicates.items())[:3]):
-            print(f"   {i+1}. \"{papers_list[0][1].get('title', 'N/A')[:60]}...\"")
+            print(f'   {i + 1}. "{papers_list[0][1].get("title", "N/A")[:60]}..."')
             print(f"      Found {len(papers_list)} times:")
             for j, (idx, paper) in enumerate(papers_list[:3]):
                 source = paper.get("source", "unknown")
@@ -206,9 +206,9 @@ def analyze_duplicates():
     if similar_pairs:
         print("\n   📝 Examples of similar titles:")
         for i, (idx1, idx2, sim, p1, p2) in enumerate(similar_pairs[:3]):
-            print(f"   {i+1}. Similarity: {sim:.2%}")
-            print(f"      Paper {idx1}: \"{p1.get('title', 'N/A')[:50]}...\"")
-            print(f"      Paper {idx2}: \"{p2.get('title', 'N/A')[:50]}...\"")
+            print(f"   {i + 1}. Similarity: {sim:.2%}")
+            print(f'      Paper {idx1}: "{p1.get("title", "N/A")[:50]}..."')
+            print(f'      Paper {idx2}: "{p2.get("title", "N/A")[:50]}..."')
             print(
                 f"      Sources: {p1.get('source', 'unknown')} vs {p2.get('source', 'unknown')}"
             )

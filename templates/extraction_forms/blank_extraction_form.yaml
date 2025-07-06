@@ -1,0 +1,89 @@
+metadata:
+  paper_id: ''
+  title: ''
+  authors: []
+  venue: ''
+  year: null
+  extraction_date: ''
+  analyst: ''
+  time_spent_minutes: 0
+  extraction_version: '1.0'
+automated_extraction:
+  confidence_score: 0.0
+  fields_found: []
+  fields_missing: []
+  analyzer_version: ''
+  analysis_timestamp: ''
+hardware:
+  gpu_type: ''
+  gpu_count: null
+  gpu_memory_gb: null
+  tpu_version: ''
+  tpu_cores: null
+  cpu_cores: null
+  nodes_used: null
+  cluster_name: ''
+  special_hardware: ''
+  hardware_notes: ''
+training:
+  total_time_hours: null
+  time_unit_original: ''
+  pre_training_hours: null
+  fine_tuning_hours: null
+  inference_time_hours: null
+  number_of_runs: 1
+  wall_clock_time: null
+  distributed_training: false
+  training_notes: ''
+model:
+  parameters_count: null
+  parameters_unit: millions
+  architecture: ''
+  layers: null
+  hidden_size: null
+  attention_heads: null
+  model_size_gb: null
+  precision: ''
+  model_notes: ''
+dataset:
+  name: ''
+  size_gb: null
+  samples_count: null
+  tokens_count: null
+  batch_size: null
+  sequence_length: null
+  preprocessing_time: null
+  dataset_notes: ''
+computation:
+  total_gpu_hours: null
+  total_tpu_hours: null
+  calculation_method: ''
+  estimated_cost_usd: null
+  cost_calculation_method: ''
+  flops_estimate: null
+  energy_consumption_kwh: null
+  computation_notes: ''
+validation:
+  confidence_hardware: low
+  confidence_training: low
+  confidence_model: low
+  confidence_dataset: low
+  confidence_computation: low
+  confidence_overall: low
+  consistency_checks_passed: false
+  outliers_flagged: []
+  validation_notes: ''
+extraction_notes:
+  paper_sections_reviewed: []
+  ambiguities: []
+  assumptions: []
+  follow_up_needed: []
+  quality_issues: []
+  extraction_challenges: []
+  additional_sources: []
+review:
+  reviewer: ''
+  review_date: ''
+  review_status: pending
+  review_comments: []
+  approved: false

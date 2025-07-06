@@ -132,7 +132,7 @@ def create_layout(tracker):
     summary_table.add_row("Total Papers", str(tracker.stats["total_papers"]))
     summary_table.add_row("Target", str(TARGET_TOTAL))
     summary_table.add_row(
-        "Progress", f"{(tracker.stats['total_papers']/TARGET_TOTAL)*100:.1f}%"
+        "Progress", f"{(tracker.stats['total_papers'] / TARGET_TOTAL) * 100:.1f}%"
     )
     summary_table.add_row("New Papers", str(tracker.stats["new_papers"]))
     summary_table.add_row("API Calls", str(tracker.stats["api_calls"]))

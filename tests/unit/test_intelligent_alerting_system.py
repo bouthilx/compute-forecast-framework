@@ -550,7 +550,7 @@ if __name__ == "__main__":
     result = runner.run(suite)
 
     # Print summary
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print("Test Summary:")
     print(f"Tests run: {result.testsRun}")
     print(f"Failures: {len(result.failures)}")
@@ -558,7 +558,7 @@ if __name__ == "__main__":
     print(
         f"Success rate: {((result.testsRun - len(result.failures) - len(result.errors)) / result.testsRun * 100):.1f}%"
     )
-    print(f"{'='*50}")
+    print(f"{'=' * 50}")
 
     # Exit with appropriate code
     sys.exit(0 if result.wasSuccessful() else 1)

@@ -130,7 +130,7 @@ def create_filtering_diagram():
         f"           │  {papers_with_analysis:,} papers   │   │   {papers_without_analysis:,} papers   │"
     )
     print(
-        f"           │   ({papers_with_analysis/stats['total_papers']*100:.1f}%)      │   │    ({papers_without_analysis/stats['total_papers']*100:.1f}%)       │"
+        f"           │   ({papers_with_analysis / stats['total_papers'] * 100:.1f}%)      │   │    ({papers_without_analysis / stats['total_papers'] * 100:.1f}%)       │"
     )
     print("           └───────────────┘   └───────────────┘")
     print("                     │               │")
@@ -154,7 +154,7 @@ def create_filtering_diagram():
         f"         │   {papers_with_domains:,} papers    │   │   {papers_with_datasets:,} papers     │"
     )
     print(
-        f"         │    ({papers_with_domains/papers_with_analysis*100:.1f}%)        │   │    ({papers_with_datasets/papers_with_analysis*100:.1f}%)         │"
+        f"         │    ({papers_with_domains / papers_with_analysis * 100:.1f}%)        │   │    ({papers_with_datasets / papers_with_analysis * 100:.1f}%)         │"
     )
     print("         └─────────────────┘   └─────────────────┘")
     print()

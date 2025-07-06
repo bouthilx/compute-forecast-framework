@@ -488,7 +488,7 @@ class FullPipelineIntegrationTest:
             assert (
                 collection_duration <= 21600
             ), (
-                f"Collection took too long: {collection_duration/3600:.1f} hours"
+                f"Collection took too long: {collection_duration / 3600:.1f} hours"
             )  # 6 hours max
             test_result.assertions_passed += 1
 
@@ -815,12 +815,12 @@ class TestDataGenerator:
 
         for i in range(count):
             paper = Paper(
-                title=f"Test Paper {i+1}",
-                authors=[Author(name=f"Author {i+1}", affiliation="Test University")],
+                title=f"Test Paper {i + 1}",
+                authors=[Author(name=f"Author {i + 1}", affiliation="Test University")],
                 venue="Test Venue",
                 year=2024,
                 citations=i * 2,
-                abstract=f"Abstract for test paper {i+1}",
+                abstract=f"Abstract for test paper {i + 1}",
             )
             papers.append(paper)
 

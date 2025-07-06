@@ -25,13 +25,14 @@ class TestEnhancedCollectionOrchestrator:
     @pytest.fixture
     def orchestrator(self):
         """Create orchestrator with mocked API clients"""
-        with patch(
-            "src.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
-        ), patch(
-            "src.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
-        ), patch(
-            "src.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
-        ), patch("src.data.collectors.enhanced_orchestrator.GoogleScholarClient"):
+        with (
+            patch(
+                "src.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
+            ),
+            patch("src.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"),
+            patch("src.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"),
+            patch("src.data.collectors.enhanced_orchestrator.GoogleScholarClient"),
+        ):
             return EnhancedCollectionOrchestrator()
 
     @pytest.fixture
@@ -70,15 +71,20 @@ class TestEnhancedCollectionOrchestrator:
 
     def test_initialization_default(self):
         """Test orchestrator initialization without API keys"""
-        with patch(
-            "src.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
-        ) as mock_ss, patch(
-            "src.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
-        ) as mock_oa, patch(
-            "src.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
-        ) as mock_cr, patch(
-            "src.data.collectors.enhanced_orchestrator.GoogleScholarClient"
-        ) as mock_gs:
+        with (
+            patch(
+                "src.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
+            ) as mock_ss,
+            patch(
+                "src.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
+            ) as mock_oa,
+            patch(
+                "src.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
+            ) as mock_cr,
+            patch(
+                "src.data.collectors.enhanced_orchestrator.GoogleScholarClient"
+            ) as mock_gs,
+        ):
             orchestrator = EnhancedCollectionOrchestrator()
 
             # Verify clients were created
@@ -103,15 +109,20 @@ class TestEnhancedCollectionOrchestrator:
             "google_scholar_proxy": True,
         }
 
-        with patch(
-            "src.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
-        ) as mock_ss, patch(
-            "src.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
-        ) as mock_oa, patch(
-            "src.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
-        ) as mock_cr, patch(
-            "src.data.collectors.enhanced_orchestrator.GoogleScholarClient"
-        ) as mock_gs:
+        with (
+            patch(
+                "src.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
+            ) as mock_ss,
+            patch(
+                "src.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
+            ) as mock_oa,
+            patch(
+                "src.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
+            ) as mock_cr,
+            patch(
+                "src.data.collectors.enhanced_orchestrator.GoogleScholarClient"
+            ) as mock_gs,
+        ):
             EnhancedCollectionOrchestrator(api_keys)
 
             # Verify clients were created with keys

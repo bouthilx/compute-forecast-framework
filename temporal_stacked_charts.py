@@ -245,7 +245,7 @@ def create_stacked_area_charts():
     total_2019 = sum(year_data[2019].values())
     total_2024 = sum(year_data[2024].values())
     print(f"Overall growth: {total_2019} papers (2019) → {total_2024} papers (2024)")
-    print(f"Growth rate: {(total_2024/total_2019-1)*100:+.1f}%")
+    print(f"Growth rate: {(total_2024 / total_2019 - 1) * 100:+.1f}%")
 
     print("\nCategory trends (2019 → 2024):")
     for category in categories:
@@ -259,7 +259,7 @@ def create_stacked_area_charts():
             print(f"  {category}:")
             print(f"    Count: {count_2019} → {count_2024} ({growth:+.1f}%)")
             print(
-                f"    Proportion: {pct_2019:.1f}% → {pct_2024:.1f}% ({pct_2024-pct_2019:+.1f}pp)"
+                f"    Proportion: {pct_2019:.1f}% → {pct_2024:.1f}% ({pct_2024 - pct_2019:+.1f}pp)"
             )
         else:
             print(f"  {category}: 0 → {count_2024} papers")

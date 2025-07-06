@@ -399,19 +399,19 @@ class CitationAnalyzer:
 
         if impact_preservation_rate < 0.9:
             warnings.append(
-                f"High-impact paper loss: {1-impact_preservation_rate:.1%} of high-impact papers filtered out"
+                f"High-impact paper loss: {1 - impact_preservation_rate:.1%} of high-impact papers filtered out"
             )
             recommendations.append("Review threshold settings for high-impact papers")
 
         if breakthrough_preservation_rate < 0.95:
             warnings.append(
-                f"Breakthrough paper loss: {1-breakthrough_preservation_rate:.1%} of breakthrough papers filtered out"
+                f"Breakthrough paper loss: {1 - breakthrough_preservation_rate:.1%} of breakthrough papers filtered out"
             )
             recommendations.append("Enable breakthrough preservation in filtering")
 
         if filtered_count < original_count * 0.1:
             warnings.append(
-                f"Aggressive filtering: only {filtered_count/original_count:.1%} of papers retained"
+                f"Aggressive filtering: only {filtered_count / original_count:.1%} of papers retained"
             )
             recommendations.append("Consider more lenient filtering thresholds")
 

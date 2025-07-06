@@ -34,10 +34,10 @@ def create_fast_paper_accounting():
 
     print("\nSTEP 2: AI Analysis Filter")
     print(
-        f"Papers WITH analysis: {papers_with_analysis:,} ({papers_with_analysis/total_papers*100:.1f}%)"
+        f"Papers WITH analysis: {papers_with_analysis:,} ({papers_with_analysis / total_papers * 100:.1f}%)"
     )
     print(
-        f"Papers WITHOUT analysis: {papers_without_analysis:,} ({papers_without_analysis/total_papers*100:.1f}%)"
+        f"Papers WITHOUT analysis: {papers_without_analysis:,} ({papers_without_analysis / total_papers * 100:.1f}%)"
     )
 
     # Step 3: Domain classification
@@ -103,7 +103,7 @@ def create_fast_paper_accounting():
           ┌─────────────────┐           ┌─────────────────┐
           │  WITH ANALYSIS  │           │ WITHOUT ANALYSIS│
           │   {papers_with_analysis:,} papers   │           │   {papers_without_analysis:,} papers    │
-          │    ({papers_with_analysis/total_papers*100:.1f}%)        │           │    ({papers_without_analysis/total_papers*100:.1f}%)         │
+          │    ({papers_with_analysis / total_papers * 100:.1f}%)        │           │    ({papers_without_analysis / total_papers * 100:.1f}%)         │
           └─────────────────┘           └─────────────────┘
                     │                           │
                     ▼                           ▼

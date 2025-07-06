@@ -297,7 +297,7 @@ def demonstrate_monitoring_integration():
     print("\nCollection Results:")
     print(f"  Total Papers Evaluated: {total_papers}")
     print(f"  Papers Collected: {collected_papers}")
-    print(f"  Collection Rate: {collected_papers/total_papers:.2%}")
+    print(f"  Collection Rate: {collected_papers / total_papers:.2%}")
 
     print("\nDashboard Metrics:")
     print(f"  Active Venues: {dashboard_metrics['active_venues']}")

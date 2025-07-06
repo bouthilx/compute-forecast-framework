@@ -135,7 +135,7 @@ def analyze_papers():
     print("\n=== ANALYSIS SUMMARY ===")
     print(f"Total papers: {len(papers_data)}")
     print(
-        f"Papers with analysis: {papers_with_analysis} ({papers_with_analysis/len(papers_data)*100:.1f}%)"
+        f"Papers with analysis: {papers_with_analysis} ({papers_with_analysis / len(papers_data) * 100:.1f}%)"
     )
 
     print("\n=== TOP RESEARCH DOMAINS ===")

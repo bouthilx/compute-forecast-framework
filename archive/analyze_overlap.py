@@ -51,13 +51,13 @@ def analyze_paper_overlap():
 
     print("\\nOverlap analysis:")
     print(
-        f"  Papers with both: {len(overlap)} ({len(overlap)/len(papers_with_datasets)*100:.1f}% of dataset papers)"
+        f"  Papers with both: {len(overlap)} ({len(overlap) / len(papers_with_datasets) * 100:.1f}% of dataset papers)"
     )
     print(
-        f"  Only datasets: {len(only_datasets)} ({len(only_datasets)/len(papers_with_datasets)*100:.1f}% of dataset papers)"
+        f"  Only datasets: {len(only_datasets)} ({len(only_datasets) / len(papers_with_datasets) * 100:.1f}% of dataset papers)"
     )
     print(
-        f"  Only research domains: {len(only_research_domains)} ({len(only_research_domains)/len(papers_with_research_domains)*100:.1f}% of research papers)"
+        f"  Only research domains: {len(only_research_domains)} ({len(only_research_domains) / len(papers_with_research_domains) * 100:.1f}% of research papers)"
     )
 
     total_papers = len(papers_with_datasets | papers_with_research_domains)
@@ -147,7 +147,7 @@ def analyze_domain_agreement(overlap_analysis):
 
     print(f"Total papers for comparison: {total_comparisons}")
     print(f"Agreements: {agreements} ({agreement_rate:.1f}%)")
-    print(f"Disagreements: {disagreements} ({100-agreement_rate:.1f}%)")
+    print(f"Disagreements: {disagreements} ({100 - agreement_rate:.1f}%)")
 
     print("\\nAgreement breakdown:")
     for domain, count in sorted(
@@ -230,7 +230,7 @@ def calculate_missing_proportions(overlap_analysis):
         print(f"{research_domain}:")
         print(f"  Research domain papers: {len(research_papers)}")
         print(
-            f"  With datasets: {len(research_with_datasets)} ({100-missing_rate:.1f}%)"
+            f"  With datasets: {len(research_with_datasets)} ({100 - missing_rate:.1f}%)"
         )
         print(
             f"  Missing datasets: {len(research_missing_datasets)} ({missing_rate:.1f}%)"
