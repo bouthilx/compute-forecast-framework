@@ -13,7 +13,7 @@ class TestPackageConfiguration:
     @pytest.fixture
     def pyproject_path(self):
         """Get the path to pyproject.toml."""
-        return Path(__file__).parent.parent / "pyproject.toml"
+        return Path(__file__).parent.parent.parent / "pyproject.toml"
 
     @pytest.fixture
     def pyproject_data(self, pyproject_path):
@@ -53,7 +53,7 @@ class TestPackageConfiguration:
 
     def test_no_poetry_in_precommit(self):
         """Test that poetry-check is removed from pre-commit configuration."""
-        precommit_path = Path(__file__).parent.parent / ".pre-commit-config.yaml"
+        precommit_path = Path(__file__).parent.parent.parent / ".pre-commit-config.yaml"
         with open(precommit_path, "r") as f:
             content = f.read()
 
