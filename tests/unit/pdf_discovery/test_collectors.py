@@ -163,7 +163,9 @@ class TestBasePDFCollector:
 
     def test_collector_logging(self):
         """Test that collector logs activities."""
-        with patch("compute_forecast.pdf_discovery.core.collectors.logger") as mock_logger:
+        with patch(
+            "compute_forecast.pdf_discovery.core.collectors.logger"
+        ) as mock_logger:
             collector = MockPDFCollector()
             papers = [
                 Paper(

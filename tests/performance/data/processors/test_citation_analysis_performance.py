@@ -90,7 +90,8 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(50000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -124,7 +125,8 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(100000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -153,7 +155,8 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(1000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=False,
         ):
             detector = BreakthroughDetector()
 
@@ -182,7 +185,8 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(50000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -211,7 +215,8 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(10000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -236,9 +241,9 @@ class TestCitationAnalysisPerformance:
 
         # Requirement: <1 second per venue/year
         avg_time_per_group = duration / len(venue_year_groups)
-        assert (
-            avg_time_per_group < 1.0
-        ), f"Average {avg_time_per_group:.2f}s per group, should be < 1s"
+        assert avg_time_per_group < 1.0, (
+            f"Average {avg_time_per_group:.2f}s per group, should be < 1s"
+        )
 
         print("\nThreshold calculation performance:")
         print(f"  Total groups: {len(venue_year_groups)}")
@@ -251,7 +256,8 @@ class TestCitationAnalysisPerformance:
         memory_usage = []
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 
@@ -278,9 +284,9 @@ class TestCitationAnalysisPerformance:
         for i in range(1, len(memory_usage)):
             ratio = memory_usage[i] / memory_usage[i - 1]
             size_ratio = sizes[i] / sizes[i - 1]
-            assert (
-                ratio < size_ratio * 1.5
-            ), f"Memory scaling non-linear: {ratio:.2f}x for {size_ratio}x data"
+            assert ratio < size_ratio * 1.5, (
+                f"Memory scaling non-linear: {ratio:.2f}x for {size_ratio}x data"
+            )
 
     def test_percentile_calculation_performance(self):
         """Test performance of percentile calculations."""
@@ -293,7 +299,8 @@ class TestCitationAnalysisPerformance:
         ]
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=False,
         ):
             analyzer = CitationAnalyzer([])
 
@@ -315,7 +322,8 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(30000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
 

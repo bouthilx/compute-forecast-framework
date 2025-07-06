@@ -310,9 +310,7 @@ class TestVenueCollectionEngineIntegration:
         # Batched approach: ceil(20/6) = 4 API calls
 
         reduction_percentage = (naive_calls - estimate.api_calls_required) / naive_calls
-        assert (
-            reduction_percentage >= 0.80
-        ), (
+        assert reduction_percentage >= 0.80, (
             f"Only achieved {reduction_percentage:.2%} reduction"
         )  # 80% is still very good
 

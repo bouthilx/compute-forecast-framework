@@ -16,7 +16,8 @@ class TestBreakthroughDetector:
     def detector(self):
         """Create detector instance."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=False
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=False,
         ):
             return BreakthroughDetector()
 
@@ -77,7 +78,8 @@ class TestBreakthroughDetector:
         mock_keywords = {"keywords": ["test1", "test2", "test3"]}
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists", return_value=True
+            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            return_value=True,
         ):
             with patch("builtins.open", mock_open(read_data=json.dumps(mock_keywords))):
                 detector = BreakthroughDetector()

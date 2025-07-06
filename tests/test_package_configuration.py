@@ -24,9 +24,9 @@ class TestPackageConfiguration:
     def test_python_version_requirement(self, pyproject_data):
         """Test that Python version is constrained to 3.12 only."""
         requires_python = pyproject_data["project"]["requires-python"]
-        assert (
-            requires_python == "==3.12.*"
-        ), f"Expected Python 3.12 only, got {requires_python}"
+        assert requires_python == "==3.12.*", (
+            f"Expected Python 3.12 only, got {requires_python}"
+        )
 
     def test_python_classifiers(self, pyproject_data):
         """Test that classifiers only include Python 3.12."""
@@ -40,16 +40,16 @@ class TestPackageConfiguration:
             "Programming Language :: Python :: 3.12",
         ]
 
-        assert set(python_classifiers) == set(
-            expected_classifiers
-        ), f"Expected only Python 3.12 classifiers, got {python_classifiers}"
+        assert set(python_classifiers) == set(expected_classifiers), (
+            f"Expected only Python 3.12 classifiers, got {python_classifiers}"
+        )
 
     def test_current_python_version(self):
         """Test that we're running on Python 3.12."""
         assert sys.version_info.major == 3
-        assert (
-            sys.version_info.minor == 12
-        ), f"Tests should run on Python 3.12, but running on {sys.version_info.major}.{sys.version_info.minor}"
+        assert sys.version_info.minor == 12, (
+            f"Tests should run on Python 3.12, but running on {sys.version_info.major}.{sys.version_info.minor}"
+        )
 
     def test_no_poetry_in_precommit(self):
         """Test that poetry-check is removed from pre-commit configuration."""
@@ -57,12 +57,12 @@ class TestPackageConfiguration:
         with open(precommit_path, "r") as f:
             content = f.read()
 
-        assert (
-            "poetry-check" not in content
-        ), "poetry-check should be removed from pre-commit config"
-        assert (
-            "python-poetry/poetry" not in content
-        ), "poetry repo should be removed from pre-commit config"
+        assert "poetry-check" not in content, (
+            "poetry-check should be removed from pre-commit config"
+        )
+        assert "python-poetry/poetry" not in content, (
+            "poetry repo should be removed from pre-commit config"
+        )
 
     def test_uv_is_package_manager(self, pyproject_data):
         """Test that the project uses uv (implied by not using Poetry config)."""
@@ -73,6 +73,6 @@ class TestPackageConfiguration:
 
         # Check build system is setuptools
         build_system = pyproject_data["build-system"]["build-backend"]
-        assert (
-            build_system == "setuptools.build_meta"
-        ), f"Expected setuptools build backend, got {build_system}"
+        assert build_system == "setuptools.build_meta", (
+            f"Expected setuptools build backend, got {build_system}"
+        )

@@ -188,9 +188,9 @@ class TestDashboardAlertingIntegration:
         ]
 
         for expected_route in expected_analytics_routes:
-            assert any(
-                expected_route in route for route in routes
-            ), f"Missing route: {expected_route}"
+            assert any(expected_route in route for route in routes), (
+                f"Missing route: {expected_route}"
+            )
 
     def test_notification_channel_integration(self):
         """Test notification channels can be integrated with dashboard"""
@@ -251,9 +251,9 @@ class TestDashboardAlertingIntegration:
         CollectionDashboard(host="127.0.0.1", port=5010, debug=False)
         creation_time = time.time() - start_time
 
-        assert (
-            creation_time < 2.0
-        ), f"Dashboard creation took {creation_time:.2f}s, should be < 2s"
+        assert creation_time < 2.0, (
+            f"Dashboard creation took {creation_time:.2f}s, should be < 2s"
+        )
 
     def test_websocket_configuration(self):
         """Test WebSocket configuration for real-time updates"""

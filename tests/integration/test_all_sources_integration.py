@@ -124,8 +124,12 @@ class TestAllSourcesIntegration:
             patch(
                 "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
-            patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-            patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "compute_forecast.data.sources.openalex.OpenAlexSource.search"
+            ) as mock_oa,
+            patch(
+                "compute_forecast.data.sources.crossref.CrossRefSource.search"
+            ) as mock_cr,
             patch(
                 "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,
@@ -172,8 +176,12 @@ class TestAllSourcesIntegration:
             patch(
                 "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
-            patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-            patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "compute_forecast.data.sources.openalex.OpenAlexSource.search"
+            ) as mock_oa,
+            patch(
+                "compute_forecast.data.sources.crossref.CrossRefSource.search"
+            ) as mock_cr,
             patch(
                 "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,
@@ -191,14 +199,14 @@ class TestAllSourcesIntegration:
             required_fields = ["title", "year", "source", "url"]
             for paper in results["papers"]:
                 for field in required_fields:
-                    assert (
-                        field in paper
-                    ), f"Paper missing required field '{field}': {paper}"
+                    assert field in paper, (
+                        f"Paper missing required field '{field}': {paper}"
+                    )
 
                 # Verify year is integer
-                assert isinstance(
-                    paper["year"], int
-                ), f"Year should be int: {paper['year']}"
+                assert isinstance(paper["year"], int), (
+                    f"Year should be int: {paper['year']}"
+                )
 
                 # Verify source is valid
                 assert paper["source"] in [
@@ -291,8 +299,12 @@ class TestAllSourcesIntegration:
                 patch(
                     "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
                 ) as mock_ss,
-                patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-                patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
+                patch(
+                    "compute_forecast.data.sources.openalex.OpenAlexSource.search"
+                ) as mock_oa,
+                patch(
+                    "compute_forecast.data.sources.crossref.CrossRefSource.search"
+                ) as mock_cr,
                 patch(
                     "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
                 ) as mock_gs,
@@ -339,8 +351,12 @@ class TestAllSourcesIntegration:
             patch(
                 "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
-            patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-            patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "compute_forecast.data.sources.openalex.OpenAlexSource.search"
+            ) as mock_oa,
+            patch(
+                "compute_forecast.data.sources.crossref.CrossRefSource.search"
+            ) as mock_cr,
             patch(
                 "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,

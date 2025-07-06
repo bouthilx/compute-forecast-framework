@@ -75,8 +75,12 @@ class TestOrchestratorPerformance:
             patch(
                 "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
-            patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-            patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "compute_forecast.data.sources.openalex.OpenAlexSource.search"
+            ) as mock_oa,
+            patch(
+                "compute_forecast.data.sources.crossref.CrossRefSource.search"
+            ) as mock_cr,
             patch(
                 "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,
@@ -133,9 +137,9 @@ class TestOrchestratorPerformance:
             improvement = ((sequential_time - parallel_time) / sequential_time) * 100
 
             # Assertions
-            assert (
-                improvement >= 60
-            ), f"Expected at least 60% improvement, got {improvement:.1f}%"
+            assert improvement >= 60, (
+                f"Expected at least 60% improvement, got {improvement:.1f}%"
+            )
             assert len(parallel_results["papers"]) == len(sequential_results["papers"])
             assert (
                 parallel_results["total_results"] == sequential_results["total_results"]
@@ -168,9 +172,9 @@ class TestOrchestratorPerformance:
             if len(call_times) > 1:
                 for i in range(1, len(call_times)):
                     time_diff = call_times[i] - call_times[i - 1]
-                    assert (
-                        time_diff >= 1.9
-                    ), f"Rate limit not enforced: {time_diff}s between calls"
+                    assert time_diff >= 1.9, (
+                        f"Rate limit not enforced: {time_diff}s between calls"
+                    )
 
     @pytest.mark.asyncio
     async def test_error_handling_with_fallbacks(self, mock_responses):
@@ -181,8 +185,12 @@ class TestOrchestratorPerformance:
             patch(
                 "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
-            patch("compute_forecast.data.sources.openalex.OpenAlexSource.search") as mock_oa,
-            patch("compute_forecast.data.sources.crossref.CrossRefSource.search") as mock_cr,
+            patch(
+                "compute_forecast.data.sources.openalex.OpenAlexSource.search"
+            ) as mock_oa,
+            patch(
+                "compute_forecast.data.sources.crossref.CrossRefSource.search"
+            ) as mock_cr,
             patch(
                 "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,

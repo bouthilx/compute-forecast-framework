@@ -73,9 +73,9 @@ class ComponentIntegrationTest:
             # Test API connectivity check
             if hasattr(api_engine, "test_api_connectivity"):
                 api_status = api_engine.test_api_connectivity()
-                assert isinstance(
-                    api_status, dict
-                ), "API status should return dictionary"
+                assert isinstance(api_status, dict), (
+                    "API status should return dictionary"
+                )
                 test_result.assertions_passed += 1
 
             # Test state persistence with API results
@@ -218,26 +218,26 @@ class ComponentIntegrationTest:
                     )
                     normalized_papers.append(paper)
 
-            assert len(normalized_papers) == len(
-                test_papers
-            ), "All papers should be processed"
+            assert len(normalized_papers) == len(test_papers), (
+                "All papers should be processed"
+            )
             test_result.assertions_passed += 1
 
             # Test deduplication
             dedup_result = deduplicator.deduplicate_papers(normalized_papers)
 
-            assert hasattr(
-                dedup_result, "unique_papers"
-            ), "Deduplication should return result with unique_papers"
-            assert hasattr(
-                dedup_result, "deduplicated_count"
-            ), "Deduplication should return count"
+            assert hasattr(dedup_result, "unique_papers"), (
+                "Deduplication should return result with unique_papers"
+            )
+            assert hasattr(dedup_result, "deduplicated_count"), (
+                "Deduplication should return count"
+            )
             test_result.assertions_passed += 1
 
             # Should deduplicate the duplicate paper
-            assert dedup_result.deduplicated_count < len(
-                test_papers
-            ), "Deduplication should reduce paper count"
+            assert dedup_result.deduplicated_count < len(test_papers), (
+                "Deduplication should reduce paper count"
+            )
             test_result.assertions_passed += 1
 
             # Test data flow integrity
@@ -331,12 +331,12 @@ class ComponentIntegrationTest:
                 test_papers
             )
 
-            assert hasattr(
-                citation_report, "total_papers"
-            ), "Citation report should have total_papers"
-            assert citation_report.total_papers == len(
-                test_papers
-            ), "Citation report should count all papers"
+            assert hasattr(citation_report, "total_papers"), (
+                "Citation report should have total_papers"
+            )
+            assert citation_report.total_papers == len(test_papers), (
+                "Citation report should count all papers"
+            )
             test_result.assertions_passed += 1
 
             # Test state checkpoint with processing results
@@ -368,9 +368,9 @@ class ComponentIntegrationTest:
             # Test session recovery with processed data
             recovered_session = state_manager.recover_session(session_id)
             assert recovered_session is not None, "Session should be recoverable"
-            assert recovered_session["papers_collected"] == len(
-                test_papers
-            ), "Recovered session should have correct paper count"
+            assert recovered_session["papers_collected"] == len(test_papers), (
+                "Recovered session should have correct paper count"
+            )
             test_result.assertions_passed += 1
 
             test_result.success = True
@@ -438,17 +438,17 @@ class ComponentIntegrationTest:
             metrics = metrics_collector.collect_current_metrics(session_id)
             assert metrics is not None, "Metrics should be collected"
             assert hasattr(metrics, "session_id"), "Metrics should have session_id"
-            assert (
-                metrics.session_id == session_id
-            ), "Metrics should have correct session_id"
+            assert metrics.session_id == session_id, (
+                "Metrics should have correct session_id"
+            )
             test_result.assertions_passed += 1
 
             # Test dashboard integration
             dashboard_data = dashboard.get_dashboard_data(session_id)
             assert dashboard_data is not None, "Dashboard data should be available"
-            assert (
-                dashboard_data["session_id"] == session_id
-            ), "Dashboard should track correct session"
+            assert dashboard_data["session_id"] == session_id, (
+                "Dashboard should track correct session"
+            )
             test_result.assertions_passed += 1
 
             # Test alert system
@@ -493,9 +493,9 @@ class ComponentIntegrationTest:
 
             # Check that monitoring captured the workflow
             session_summary = metrics_collector.get_session_summary(session_id)
-            assert isinstance(
-                session_summary, dict
-            ), "Session summary should be available"
+            assert isinstance(session_summary, dict), (
+                "Session summary should be available"
+            )
             test_result.assertions_passed += 1
 
             test_result.success = True

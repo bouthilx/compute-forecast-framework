@@ -171,19 +171,19 @@ class FullPipelineIntegrationTest:
             collection_duration = time.time() - collection_start
 
             # Validate collection results
-            assert (
-                collection_result.success
-            ), f"Collection failed: {collection_result.execution_errors}"
+            assert collection_result.success, (
+                f"Collection failed: {collection_result.execution_errors}"
+            )
             test_result.assertions_passed += 1
 
-            assert (
-                collection_result.raw_papers_collected >= 1000
-            ), f"Too few papers collected: {collection_result.raw_papers_collected}"
+            assert collection_result.raw_papers_collected >= 1000, (
+                f"Too few papers collected: {collection_result.raw_papers_collected}"
+            )
             test_result.assertions_passed += 1
 
-            assert (
-                collection_duration <= 1800
-            ), f"Collection took too long: {collection_duration:.1f}s (>30min)"
+            assert collection_duration <= 1800, (
+                f"Collection took too long: {collection_duration:.1f}s (>30min)"
+            )
             test_result.assertions_passed += 1
 
             # Phase 4: Data Quality Validation
@@ -206,14 +206,14 @@ class FullPipelineIntegrationTest:
 
             # Check key performance metrics
             papers_per_minute = collection_result.papers_per_minute
-            assert (
-                papers_per_minute >= self.test_config.min_collection_rate
-            ), f"Collection rate too low: {papers_per_minute} papers/min"
+            assert papers_per_minute >= self.test_config.min_collection_rate, (
+                f"Collection rate too low: {papers_per_minute} papers/min"
+            )
             test_result.assertions_passed += 1
 
-            assert (
-                collection_result.api_efficiency >= 0.8
-            ), f"API efficiency too low: {collection_result.api_efficiency}"
+            assert collection_result.api_efficiency >= 0.8, (
+                f"API efficiency too low: {collection_result.api_efficiency}"
+            )
             test_result.assertions_passed += 1
 
             # Phase 6: System Health Validation
@@ -434,9 +434,9 @@ class FullPipelineIntegrationTest:
 
             orchestrator = VenueCollectionOrchestrator(large_config)
             init_result = orchestrator.initialize_system()
-            assert (
-                init_result.success
-            ), "Large dataset orchestrator initialization failed"
+            assert init_result.success, (
+                "Large dataset orchestrator initialization failed"
+            )
             test_result.assertions_passed += 1
 
             # Monitor system resources
@@ -471,23 +471,21 @@ class FullPipelineIntegrationTest:
             resource_stats = resource_monitor.stop_monitoring()
 
             # Validate performance requirements
-            assert (
-                collection_result.success
-            ), f"Large collection failed: {collection_result.execution_errors}"
+            assert collection_result.success, (
+                f"Large collection failed: {collection_result.execution_errors}"
+            )
             test_result.assertions_passed += 1
 
             # Mock large paper count for testing
             mock_large_count = 10000
             collection_result.raw_papers_collected = mock_large_count
 
-            assert (
-                collection_result.raw_papers_collected >= 10000
-            ), f"Not enough papers: {collection_result.raw_papers_collected}"
+            assert collection_result.raw_papers_collected >= 10000, (
+                f"Not enough papers: {collection_result.raw_papers_collected}"
+            )
             test_result.assertions_passed += 1
 
-            assert (
-                collection_duration <= 21600
-            ), (
+            assert collection_duration <= 21600, (
                 f"Collection took too long: {collection_duration / 3600:.1f} hours"
             )  # 6 hours max
             test_result.assertions_passed += 1
@@ -596,23 +594,23 @@ class FullPipelineIntegrationTest:
 
             # Test venue normalization
             venue_accuracy = self._test_venue_normalization_accuracy(test_papers)
-            assert (
-                venue_accuracy >= 0.95
-            ), f"Venue normalization accuracy too low: {venue_accuracy}"
+            assert venue_accuracy >= 0.95, (
+                f"Venue normalization accuracy too low: {venue_accuracy}"
+            )
             test_result.assertions_passed += 1
 
             # Test deduplication effectiveness
             dedup_effectiveness = self._test_deduplication_effectiveness(test_papers)
-            assert (
-                dedup_effectiveness >= 0.90
-            ), f"Deduplication effectiveness too low: {dedup_effectiveness}"
+            assert dedup_effectiveness >= 0.90, (
+                f"Deduplication effectiveness too low: {dedup_effectiveness}"
+            )
             test_result.assertions_passed += 1
 
             # Test citation filtering precision
             citation_precision = self._test_citation_filtering_precision(test_papers)
-            assert (
-                citation_precision >= 0.85
-            ), f"Citation filtering precision too low: {citation_precision}"
+            assert citation_precision >= 0.85, (
+                f"Citation filtering precision too low: {citation_precision}"
+            )
             test_result.assertions_passed += 1
 
             # Test data integrity

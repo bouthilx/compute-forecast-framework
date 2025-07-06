@@ -29,9 +29,15 @@ class TestEnhancedCollectionOrchestrator:
             patch(
                 "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
             ),
-            patch("compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"),
-            patch("compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"),
-            patch("compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"),
+            patch(
+                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
+            ),
+            patch(
+                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
+            ),
+            patch(
+                "compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"
+            ),
         ):
             return EnhancedCollectionOrchestrator()
 

@@ -98,7 +98,9 @@ class TestEnhancedOrchestratorEnvironment:
                 patch(
                     "compute_forecast.data.sources.enhanced_crossref.EnhancedCrossrefClient"
                 ) as mock_cr,
-                patch("compute_forecast.data.sources.google_scholar.GoogleScholarClient"),
+                patch(
+                    "compute_forecast.data.sources.google_scholar.GoogleScholarClient"
+                ),
             ):
                 EnhancedCollectionOrchestrator(api_keys=init_keys)
 
@@ -131,7 +133,9 @@ class TestEnhancedOrchestratorEnvironment:
                 patch(
                     "compute_forecast.data.sources.enhanced_crossref.EnhancedCrossrefClient"
                 ) as mock_cr,
-                patch("compute_forecast.data.sources.google_scholar.GoogleScholarClient") as mock_gs,
+                patch(
+                    "compute_forecast.data.sources.google_scholar.GoogleScholarClient"
+                ) as mock_gs,
             ):
                 EnhancedCollectionOrchestrator()
 

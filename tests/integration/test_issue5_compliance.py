@@ -54,9 +54,9 @@ class TestIssue5StateManager:
         assert session_id is not None
         assert isinstance(session_id, str)
         assert session_id.startswith("session_")
-        assert (
-            duration < 1.0
-        ), f"Session creation took {duration:.3f}s (>1s requirement)"
+        assert duration < 1.0, (
+            f"Session creation took {duration:.3f}s (>1s requirement)"
+        )
 
         # Verify directory structure created
         session_dir = self.temp_dir / "states" / "sessions" / session_id
@@ -243,9 +243,9 @@ class TestIssue5StateManager:
         assert result.session_id == session_id
         assert result.plan_id == recovery_plan.plan_id
         assert isinstance(result.success, bool)
-        assert (
-            duration < 300.0
-        ), f"Session recovery took {duration:.1f}s (>300s requirement)"
+        assert duration < 300.0, (
+            f"Session recovery took {duration:.1f}s (>300s requirement)"
+        )
         assert (
             abs(result.recovery_duration_seconds - duration) < 0.001
         )  # Allow small timing differences
@@ -482,9 +482,9 @@ class TestIssue5PerformanceRequirements:
             )
             duration = time.time() - start_time
 
-            assert (
-                duration < 2.0
-            ), f"Checkpoint {i} save took {duration:.3f}s (>2s requirement)"
+            assert duration < 2.0, (
+                f"Checkpoint {i} save took {duration:.3f}s (>2s requirement)"
+            )
             assert checkpoint_id is not None
 
     def test_state_loading_5_second_requirement(self):
@@ -517,9 +517,9 @@ class TestIssue5PerformanceRequirements:
             checkpoint = self.state_manager.load_latest_checkpoint(session_id)
             duration = time.time() - start_time
 
-            assert (
-                duration < 5.0
-            ), f"Checkpoint load {i} took {duration:.3f}s (>5s requirement)"
+            assert duration < 5.0, (
+                f"Checkpoint load {i} took {duration:.3f}s (>5s requirement)"
+            )
             assert checkpoint is not None
 
     def test_recovery_5_minute_requirement(self):

@@ -178,8 +178,9 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
 ## Package Management
 - **Use `uv` for dependency management** (not pip or conda)
 - Dependencies are defined in `pyproject.toml` under `[dependency-groups]`
-- Install dependencies: `uv sync --extra test --extra dev --extra docs`
+- Install dependencies: `uv sync --group test --group dev --group docs`
 - Add new dependencies: `uv add <package>` or `uv add --group <group> <package>`
+- For new dependecies of optional plugins: `uv add --extra <plugin>`
 
 ## Code Quality & Linting
 - **Use `ruff` for linting and formatting** (configured in `pyproject.toml`)
@@ -239,7 +240,7 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
 ## Common Commands
 ```bash
 # Install dependencies
-uv sync --group test --group dev --group docs
+uv sync --group test --group docs
 
 # Run all tests with coverage
 uv run pytest
