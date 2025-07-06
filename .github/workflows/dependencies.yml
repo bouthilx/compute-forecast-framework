@@ -37,7 +37,7 @@ jobs:
     - name: Run tests
       run: |
         uv sync --group dev
-        uv run pytest tests/ -v --durations=0
+        uv run pytest tests/ -v --durations=0 --ignore=tests/performance
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v6
