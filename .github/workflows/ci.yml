@@ -32,18 +32,16 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cd package
         uv sync --frozen --all-extras
     
     - name: Run tests with coverage
       run: |
-        cd package
         uv run pytest tests/ -v --cov=compute_forecast --cov-report=xml --cov-report=term
     
     - name: Upload coverage
       uses: codecov/codecov-action@v4
       with:
-        file: ./package/coverage.xml
+        file: ./coverage.xml
         fail_ci_if_error: true
         token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -67,22 +65,18 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cd package
         uv sync --frozen --all-extras
     
     - name: Run ruff check
       run: |
-        cd package
         uv run ruff check . --output-format=github
     
     - name: Run ruff format check
       run: |
-        cd package
         uv run ruff format . --check
     
     - name: Run mypy
       run: |
-        cd package
         uv run mypy compute_forecast --install-types --non-interactive
 
   pre-commit:

@@ -1,6 +1,6 @@
 package:
   - changed-files:
-    - any-glob-to-any-file: 'package/**/*'
+    - any-glob-to-any-file: 'compute_forecast/**/*'
 
 documentation:
   - changed-files:
@@ -10,7 +10,7 @@ documentation:
 
 tests:
   - changed-files:
-    - any-glob-to-any-file: 'package/tests/**/*'
+    - any-glob-to-any-file: 'tests/**/*'
 
 ci:
   - changed-files:
@@ -19,5 +19,5 @@ ci:
 dependencies:
   - changed-files:
     - any-glob-to-any-file:
-      - 'package/pyproject.toml'
-      - 'package/uv.lock'
+      - 'pyproject.toml'
+      - 'uv.lock'

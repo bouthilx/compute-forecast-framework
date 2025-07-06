@@ -31,13 +31,11 @@ jobs:
     
     - name: Update dependencies
       run: |
-        cd package
         # Update all dependencies to latest compatible versions
         uv lock --upgrade
     
     - name: Run tests
       run: |
-        cd package
         uv sync --frozen --all-extras
         uv run pytest tests/ -v
     

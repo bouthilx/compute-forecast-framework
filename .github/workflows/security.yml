@@ -32,19 +32,16 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cd package
         uv sync --frozen --all-extras
     
     - name: Run safety check
       run: |
-        cd package
         uv run pip install safety
         uv run safety check --json
       continue-on-error: true
     
     - name: Run bandit
       run: |
-        cd package
         uv run pip install bandit[toml]
         uv run bandit -r compute_forecast/ -ll
       continue-on-error: true
