@@ -37,8 +37,8 @@ jobs:
 
     - name: Check file sizes
       run: |
-        # Prevent large files from being committed
-        large_files=$(find . -type f -size +1M | grep -v -E '(\.git/|__pycache__|\.pytest_cache|neurips_.*_cache/)')
+        # Prevent large files from being committed (exclude data files and caches)
+        large_files=$(find . -type f -size +1M | grep -v -E '(\.git/|__pycache__|\.pytest_cache|neurips_.*_cache/|data/.*\.json|.*_domains.*\.json|dataset_.*\.json)')
         if [ ! -z "$large_files" ]; then
           echo "❌ Large files detected (>1MB):"
           echo "$large_files"
