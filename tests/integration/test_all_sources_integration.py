@@ -199,14 +199,14 @@ class TestAllSourcesIntegration:
             required_fields = ["title", "year", "source", "url"]
             for paper in results["papers"]:
                 for field in required_fields:
-                    assert (
-                        field in paper
-                    ), f"Paper missing required field '{field}': {paper}"
+                    assert field in paper, (
+                        f"Paper missing required field '{field}': {paper}"
+                    )
 
                 # Verify year is integer
-                assert isinstance(
-                    paper["year"], int
-                ), f"Year should be int: {paper['year']}"
+                assert isinstance(paper["year"], int), (
+                    f"Year should be int: {paper['year']}"
+                )
 
                 # Verify source is valid
                 assert paper["source"] in [

@@ -172,9 +172,9 @@ class TestRateLimitManager:
 
         # Should average less than 10ms per call
         avg_time_ms = ((end_time - start_time) / 100) * 1000
-        assert (
-            avg_time_ms < 10.0
-        ), f"Average response time {avg_time_ms:.2f}ms exceeds 10ms requirement"
+        assert avg_time_ms < 10.0, (
+            f"Average response time {avg_time_ms:.2f}ms exceeds 10ms requirement"
+        )
 
     def test_wait_if_needed_basic_functionality(self):
         """Test wait calculation functionality"""
@@ -420,9 +420,9 @@ class TestRateLimitManagerIntegration:
 
         # Wait times should generally increase (exponential backoff)
         # Allow some flexibility for implementation details
-        assert (
-            len([w for w in wait_times if w > 0]) > 0
-        ), "Should have some non-zero wait times"
+        assert len([w for w in wait_times if w > 0]) > 0, (
+            "Should have some non-zero wait times"
+        )
 
     def test_realistic_collection_scenario(self):
         """Test rate limiting in a realistic 4-6 hour collection scenario"""
@@ -500,9 +500,9 @@ class TestRateLimitManagerPerformance:
         avg_time_ms = ((end_time - start_time) / total_requests) * 1000
 
         # Should maintain <10ms average even under load
-        assert (
-            avg_time_ms < 10.0
-        ), f"Performance degraded: {avg_time_ms:.2f}ms per request"
+        assert avg_time_ms < 10.0, (
+            f"Performance degraded: {avg_time_ms:.2f}ms per request"
+        )
 
     def test_memory_usage_24_hour_simulation(self):
         """Test memory usage over 24-hour simulation"""
@@ -531,9 +531,9 @@ class TestRateLimitManagerPerformance:
 
         # Should not have significant memory growth (rolling windows should clean up)
         # Allow some growth for test infrastructure
-        assert (
-            object_growth < 1000
-        ), f"Memory leak detected: {object_growth} objects created"
+        assert object_growth < 1000, (
+            f"Memory leak detected: {object_growth} objects created"
+        )
 
 
 if __name__ == "__main__":

@@ -97,9 +97,9 @@ def calculate_complete_paper_flow():
     classified_total = (
         len(research_only) + len(dataset_only) + len(both_methods) + len(neither_method)
     )
-    assert classified_total == len(
-        papers_with_analysis
-    ), f"Mismatch: {classified_total} vs {len(papers_with_analysis)}"
+    assert classified_total == len(papers_with_analysis), (
+        f"Mismatch: {classified_total} vs {len(papers_with_analysis)}"
+    )
 
     # Totals for each method
     total_research_domains = len(papers_with_research_domains)
