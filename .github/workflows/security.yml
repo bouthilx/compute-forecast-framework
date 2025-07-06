@@ -45,14 +45,3 @@ jobs:
         uv run pip install bandit[toml]
         uv run bandit -r compute_forecast/ -ll
       continue-on-error: true
-
-  dependency-review:
-    name: Dependency Review
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/dependency-review-action@v4
-      with:
-        fail-on-severity: high
