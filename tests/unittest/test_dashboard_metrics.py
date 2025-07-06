@@ -16,7 +16,7 @@ from compute_forecast.monitoring.dashboard_metrics import (
     SystemResourceMetrics,
     StateManagementMetrics,
     VenueProgressMetrics,
-    MetricsBuffer
+    MetricsBuffer,
 )
 
 
@@ -32,7 +32,7 @@ class TestDashboardMetrics(unittest.TestCase):
             venues_in_progress=2,
             venues_remaining=5,
             total_venues=10,
-            session_duration_minutes=60.0
+            session_duration_minutes=60.0,
         )
 
         self.assertEqual(metrics.total_papers_collected, 1500)
@@ -49,7 +49,7 @@ class TestDashboardMetrics(unittest.TestCase):
             failed_requests=5,
             success_rate=0.95,
             avg_response_time_ms=750.0,
-            health_status="healthy"
+            health_status="healthy",
         )
 
         self.assertEqual(metrics.api_name, "semantic_scholar")
@@ -67,7 +67,7 @@ class TestDashboardMetrics(unittest.TestCase):
             target_papers=50,
             progress_percent=50.0,
             start_time=start_time,
-            api_source="semantic_scholar"
+            api_source="semantic_scholar",
         )
 
         self.assertEqual(metrics.venue_name, "ICML")
@@ -87,23 +87,22 @@ class TestDashboardMetrics(unittest.TestCase):
             processing_metrics=ProcessingMetrics(),
             system_metrics=SystemResourceMetrics(),
             state_metrics=StateManagementMetrics(),
-            venue_progress={}
+            venue_progress={},
         )
 
         metrics_dict = system_metrics.to_dict()
 
-        self.assertIn('timestamp', metrics_dict)
-        self.assertIn('collection_progress', metrics_dict)
-        self.assertIn('api_metrics', metrics_dict)
-        self.assertIn('venue_progress', metrics_dict)
+        self.assertIn("timestamp", metrics_dict)
+        self.assertIn("collection_progress", metrics_dict)
+        self.assertIn("api_metrics", metrics_dict)
+        self.assertIn("venue_progress", metrics_dict)
 
         # Check timestamp serialization
-        self.assertEqual(metrics_dict['timestamp'], timestamp.isoformat())
+        self.assertEqual(metrics_dict["timestamp"], timestamp.isoformat())
 
         # Check nested structure serialization
         self.assertEqual(
-            metrics_dict['collection_progress']['total_papers_collected'],
-            100
+            metrics_dict["collection_progress"]["total_papers_collected"], 100
         )
 
 
@@ -119,12 +118,14 @@ class TestMetricsBuffer(unittest.TestCase):
         """Create test SystemMetrics instance"""
         return SystemMetrics(
             timestamp=datetime.now(),
-            collection_progress=CollectionProgressMetrics(total_papers_collected=papers_count),
+            collection_progress=CollectionProgressMetrics(
+                total_papers_collected=papers_count
+            ),
             api_metrics={},
             processing_metrics=ProcessingMetrics(),
             system_metrics=SystemResourceMetrics(),
             state_metrics=StateManagementMetrics(),
-            venue_progress={}
+            venue_progress={},
         )
 
     def test_add_metrics(self):
@@ -212,18 +213,12 @@ class TestMetricsBuffer(unittest.TestCase):
 
         # 3 writer threads
         for worker_id in range(3):
-            thread = threading.Thread(
-                target=add_metrics_worker,
-                args=(worker_id, 10)
-            )
+            thread = threading.Thread(target=add_metrics_worker, args=(worker_id, 10))
             threads.append(thread)
 
         # 2 reader threads
         for _ in range(2):
-            thread = threading.Thread(
-                target=read_metrics_worker,
-                args=(20,)
-            )
+            thread = threading.Thread(target=read_metrics_worker, args=(20,))
             threads.append(thread)
 
         # Start all threads
@@ -237,7 +232,7 @@ class TestMetricsBuffer(unittest.TestCase):
 
         # Verify buffer is in valid state
         self.assertLessEqual(self.buffer.size(), 10)  # Respects max size
-        self.assertGreater(self.buffer.size(), 0)     # Has some data
+        self.assertGreater(self.buffer.size(), 0)  # Has some data
 
         latest = self.buffer.get_latest_metrics()
         self.assertIsNotNone(latest)
@@ -258,5 +253,5 @@ class TestMetricsBuffer(unittest.TestCase):
         self.assertEqual(len(self.buffer.get_metrics_history(10)), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

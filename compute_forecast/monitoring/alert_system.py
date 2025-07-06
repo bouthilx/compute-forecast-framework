@@ -7,14 +7,18 @@ import time
 import threading
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Set
+from typing import Dict, List, Optional, Any
 from collections import defaultdict, deque
-import re
 
 from .alert_structures import (
-    Alert, AlertRule, AlertSeverity, AlertStatus, EvaluationContext,
-    AlertConfiguration, AlertSummary, NotificationResult,
-    BUILT_IN_ALERT_RULES
+    Alert,
+    AlertRule,
+    AlertStatus,
+    EvaluationContext,
+    AlertConfiguration,
+    AlertSummary,
+    NotificationResult,
+    BUILT_IN_ALERT_RULES,
 )
 from .dashboard_metrics import SystemMetrics
 
@@ -26,15 +30,15 @@ class AlertRuleEvaluator:
 
     def __init__(self):
         self._safe_builtins = {
-            'any': any,
-            'all': all,
-            'len': len,
-            'max': max,
-            'min': min,
-            'sum': sum,
-            'abs': abs,
-            'round': round,
-            '__builtins__': {}  # Disable dangerous builtins
+            "any": any,
+            "all": all,
+            "len": len,
+            "max": max,
+            "min": min,
+            "sum": sum,
+            "abs": abs,
+            "round": round,
+            "__builtins__": {},  # Disable dangerous builtins
         }
 
     def evaluate_rule(self, rule: AlertRule, context: EvaluationContext) -> bool:
@@ -46,10 +50,10 @@ class AlertRuleEvaluator:
             # Create safe evaluation environment
             eval_globals = self._safe_builtins.copy()
             eval_locals = {
-                'metrics': context.metrics,
-                'context': context,
-                'threshold_value': rule.threshold_value,
-                'rule': rule
+                "metrics": context.metrics,
+                "context": context,
+                "threshold_value": rule.threshold_value,
+                "rule": rule,
             }
 
             # Evaluate the condition
@@ -66,11 +70,9 @@ class AlertNotificationManager:
 
     def __init__(self):
         self.channels = {}
-        self._notification_stats = defaultdict(lambda: {
-            'sent': 0,
-            'failed': 0,
-            'total_latency_ms': 0.0
-        })
+        self._notification_stats = defaultdict(
+            lambda: {"sent": 0, "failed": 0, "total_latency_ms": 0.0}
+        )
 
     def add_channel(self, name: str, handler: callable) -> None:
         """Add a notification channel"""
@@ -94,7 +96,7 @@ class AlertNotificationManager:
                 channel=channel_name,
                 success=success,
                 timestamp=datetime.now(),
-                latency_ms=latency_ms
+                latency_ms=latency_ms,
             )
 
         except Exception as e:
@@ -106,10 +108,12 @@ class AlertNotificationManager:
                 success=False,
                 timestamp=datetime.now(),
                 latency_ms=latency_ms,
-                error_message=str(e)
+                error_message=str(e),
             )
 
-    def send_to_all_channels(self, alert: Alert, channels: List[str]) -> List[NotificationResult]:
+    def send_to_all_channels(
+        self, alert: Alert, channels: List[str]
+    ) -> List[NotificationResult]:
         """Send alert to multiple channels"""
         results = []
 
@@ -125,11 +129,11 @@ class AlertNotificationManager:
         stats = self._notification_stats[channel]
 
         if success:
-            stats['sent'] += 1
+            stats["sent"] += 1
         else:
-            stats['failed'] += 1
+            stats["failed"] += 1
 
-        stats['total_latency_ms'] += latency_ms
+        stats["total_latency_ms"] += latency_ms
 
     def get_stats(self) -> Dict[str, Any]:
         """Get notification statistics"""
@@ -150,7 +154,7 @@ class IntelligentAlertSystem:
         # Core components
         self.rule_evaluator = AlertRuleEvaluator()
         self.notification_manager = None  # Set via dependency injection
-        self.suppression_manager = None   # Set via dependency injection
+        self.suppression_manager = None  # Set via dependency injection
 
         # Alert storage
         self.active_alerts: Dict[str, Alert] = {}
@@ -189,9 +193,7 @@ class IntelligentAlertSystem:
 
             self._running = True
             self._evaluation_thread = threading.Thread(
-                target=self._evaluation_loop,
-                daemon=True,
-                name="AlertEvaluator"
+                target=self._evaluation_loop, daemon=True, name="AlertEvaluator"
             )
             self._evaluation_thread.start()
 
@@ -221,7 +223,7 @@ class IntelligentAlertSystem:
                 metrics=metrics,
                 current_time=datetime.now(),
                 rule_history=dict(self.rule_history),
-                system_config={}
+                system_config={},
             )
 
             # Evaluate each enabled rule
@@ -253,7 +255,9 @@ class IntelligentAlertSystem:
             self._evaluation_times.append(eval_time_ms)
 
             if eval_time_ms > 500:
-                logger.warning(f"Alert evaluation took {eval_time_ms:.1f}ms (>500ms limit)")
+                logger.warning(
+                    f"Alert evaluation took {eval_time_ms:.1f}ms (>500ms limit)"
+                )
 
             return processed_alerts
 
@@ -261,7 +265,9 @@ class IntelligentAlertSystem:
             logger.error(f"Critical error in alert evaluation: {e}")
             return []
 
-    def send_notifications(self, alerts: List[Alert]) -> Dict[str, List[NotificationResult]]:
+    def send_notifications(
+        self, alerts: List[Alert]
+    ) -> Dict[str, List[NotificationResult]]:
         """Send notifications for alerts"""
         if not self.notification_manager:
             logger.warning("No notification manager configured")
@@ -277,20 +283,24 @@ class IntelligentAlertSystem:
             try:
                 results = self.notification_manager.send_to_all_channels(
                     alert,
-                    alert.rule_id in self.alert_rules and
-                    self.alert_rules[alert.rule_id].notification_channels or
-                    self.config.default_channels
+                    alert.rule_id in self.alert_rules
+                    and self.alert_rules[alert.rule_id].notification_channels
+                    or self.config.default_channels,
                 )
 
                 notification_results[alert.alert_id] = results
 
                 # Update alert notification tracking
-                alert.notifications_sent.extend([r.channel for r in results if r.success])
+                alert.notifications_sent.extend(
+                    [r.channel for r in results if r.success]
+                )
                 alert.last_notification = datetime.now()
                 alert.notification_count += 1
 
             except Exception as e:
-                logger.error(f"Error sending notifications for alert {alert.alert_id}: {e}")
+                logger.error(
+                    f"Error sending notifications for alert {alert.alert_id}: {e}"
+                )
 
         # Track notification time
         notif_time_ms = (time.time() - start_time) * 1000
@@ -334,11 +344,11 @@ class IntelligentAlertSystem:
     def get_alert_summary(self, hours: int = 1) -> AlertSummary:
         """Get summary of alert activity"""
         cutoff_time = datetime.now() - timedelta(hours=hours)
-        
+
         # Count alerts by severity and status
         severity_counts = defaultdict(int)
         status_counts = defaultdict(int)
-        
+
         for alert in self.alert_history:
             if alert.timestamp >= cutoff_time:
                 severity_counts[alert.severity.value] += 1
@@ -348,7 +358,9 @@ class IntelligentAlertSystem:
         resolution_times = []
         for alert in self.alert_history:
             if alert.resolved_at and alert.timestamp >= cutoff_time:
-                resolution_time = (alert.resolved_at - alert.timestamp).total_seconds() / 60
+                resolution_time = (
+                    alert.resolved_at - alert.timestamp
+                ).total_seconds() / 60
                 resolution_times.append(resolution_time)
 
         # Get most frequent rules
@@ -357,31 +369,39 @@ class IntelligentAlertSystem:
             if alert.timestamp >= cutoff_time:
                 rule_frequency[alert.rule_name] += 1
 
-        most_frequent = sorted(rule_frequency.items(), key=lambda x: x[1], reverse=True)[:5]
+        most_frequent = sorted(
+            rule_frequency.items(), key=lambda x: x[1], reverse=True
+        )[:5]
 
         return AlertSummary(
             time_period=f"Last {hours} hour(s)",
             start_time=cutoff_time,
             end_time=datetime.now(),
             total_alerts=sum(severity_counts.values()),
-            info_alerts=severity_counts.get('info', 0),
-            warning_alerts=severity_counts.get('warning', 0),
-            error_alerts=severity_counts.get('error', 0),
-            critical_alerts=severity_counts.get('critical', 0),
-            active_alerts=status_counts.get('active', 0),
-            acknowledged_alerts=status_counts.get('acknowledged', 0),
-            resolved_alerts=status_counts.get('resolved', 0),
-            suppressed_alerts=status_counts.get('suppressed', 0),
-            avg_resolution_time_minutes=sum(resolution_times) / len(resolution_times) if resolution_times else 0.0,
-            avg_notification_latency_ms=sum(self._notification_times) / len(self._notification_times) if self._notification_times else 0.0,
-            most_frequent_rules=[rule for rule, _ in most_frequent]
+            info_alerts=severity_counts.get("info", 0),
+            warning_alerts=severity_counts.get("warning", 0),
+            error_alerts=severity_counts.get("error", 0),
+            critical_alerts=severity_counts.get("critical", 0),
+            active_alerts=status_counts.get("active", 0),
+            acknowledged_alerts=status_counts.get("acknowledged", 0),
+            resolved_alerts=status_counts.get("resolved", 0),
+            suppressed_alerts=status_counts.get("suppressed", 0),
+            avg_resolution_time_minutes=sum(resolution_times) / len(resolution_times)
+            if resolution_times
+            else 0.0,
+            avg_notification_latency_ms=sum(self._notification_times)
+            / len(self._notification_times)
+            if self._notification_times
+            else 0.0,
+            most_frequent_rules=[rule for rule, _ in most_frequent],
         )
 
     def get_active_alerts(self) -> List[Alert]:
         """Get all currently active alerts"""
         with self._evaluation_lock:
             return [
-                alert for alert in self.active_alerts.values()
+                alert
+                for alert in self.active_alerts.values()
                 if alert.status == AlertStatus.ACTIVE
             ]
 
@@ -399,11 +419,11 @@ class IntelligentAlertSystem:
             if alert_id in self.active_alerts:
                 alert = self.active_alerts[alert_id]
                 alert.resolve(reason)
-                
+
                 # Move to history and remove from active
                 self.alert_history.append(alert)
                 del self.active_alerts[alert_id]
-                
+
                 return True
             return False
 
@@ -414,29 +434,36 @@ class IntelligentAlertSystem:
 
         logger.info(f"Loaded {len(BUILT_IN_ALERT_RULES)} built-in alert rules")
 
-    def _should_evaluate_rule(self, rule: AlertRule, context: EvaluationContext) -> bool:
+    def _should_evaluate_rule(
+        self, rule: AlertRule, context: EvaluationContext
+    ) -> bool:
         """Check if rule should be evaluated based on cooldown and other factors"""
         # Check cooldown
         if rule.rule_id in self.rule_history:
             recent_alerts = self.rule_history[rule.rule_id]
             if recent_alerts:
                 last_alert = recent_alerts[-1]
-                time_since_last = (context.current_time - last_alert.timestamp).total_seconds() / 60
-                
+                time_since_last = (
+                    context.current_time - last_alert.timestamp
+                ).total_seconds() / 60
+
                 if time_since_last < rule.cooldown_minutes:
                     return False
 
         # Check minimum trigger count within time window
         if rule.minimum_trigger_count > 1:
-            window_start = context.current_time - timedelta(minutes=rule.time_window_minutes)
+            window_start = context.current_time - timedelta(
+                minutes=rule.time_window_minutes
+            )
             recent_triggers = sum(
-                1 for alert in self.rule_history.get(rule.rule_id, [])
+                1
+                for alert in self.rule_history.get(rule.rule_id, [])
                 if alert.timestamp >= window_start
             )
-            
+
             if recent_triggers < rule.minimum_trigger_count - 1:
                 return True  # Need more triggers
-            
+
         return True
 
     def _create_alert(self, rule: AlertRule, context: EvaluationContext) -> Alert:
@@ -449,39 +476,43 @@ class IntelligentAlertSystem:
             severity=rule.severity,
             metric_values=self._extract_metric_values(rule, context),
             system_context={
-                'threshold_value': rule.threshold_value,
-                'evaluation_time': context.current_time.isoformat()
+                "threshold_value": rule.threshold_value,
+                "evaluation_time": context.current_time.isoformat(),
             },
-            tags=rule.tags
+            tags=rule.tags,
         )
 
         return alert
 
-    def _extract_metric_values(self, rule: AlertRule, context: EvaluationContext) -> Dict[str, Any]:
+    def _extract_metric_values(
+        self, rule: AlertRule, context: EvaluationContext
+    ) -> Dict[str, Any]:
         """Extract relevant metric values for alert context"""
         metric_values = {}
 
         # Extract values mentioned in rule condition
         # This is a simplified implementation - could be enhanced with AST parsing
         try:
-            if 'collection_progress' in rule.condition:
-                metric_values['collection_progress'] = {
-                    'papers_per_minute': context.metrics.collection_progress.papers_per_minute,
-                    'total_papers': context.metrics.collection_progress.papers_collected
+            if "collection_progress" in rule.condition:
+                metric_values["collection_progress"] = {
+                    "papers_per_minute": context.metrics.collection_progress.papers_per_minute,
+                    "total_papers": context.metrics.collection_progress.papers_collected,
                 }
 
-            if 'api_metrics' in rule.condition:
-                metric_values['api_health'] = {
+            if "api_metrics" in rule.condition:
+                metric_values["api_health"] = {
                     api_name: {
-                        'status': api.health_status,
-                        'requests': api.requests_made,
-                        'failed': api.failed_requests
+                        "status": api.health_status,
+                        "requests": api.requests_made,
+                        "failed": api.failed_requests,
                     }
                     for api_name, api in context.metrics.api_metrics.items()
                 }
 
-            if 'memory_usage' in rule.condition:
-                metric_values['memory_usage_percent'] = context.metrics.system_metrics.memory_usage_percent
+            if "memory_usage" in rule.condition:
+                metric_values["memory_usage_percent"] = (
+                    context.metrics.system_metrics.memory_usage_percent
+                )
 
         except Exception as e:
             logger.debug(f"Error extracting metric values: {e}")
@@ -503,10 +534,10 @@ class IntelligentAlertSystem:
 
             # Add to active alerts
             self.active_alerts[alert.alert_id] = alert
-            
+
             # Add to history
             self.alert_history.append(alert)
-            
+
             processed_alerts.append(alert)
 
         return processed_alerts
@@ -519,21 +550,24 @@ class IntelligentAlertSystem:
                 time.sleep(self.config.evaluation_interval_seconds)
 
                 # Skip if no metrics provider is available
-                if not hasattr(self, 'metrics_provider'):
+                if not hasattr(self, "metrics_provider"):
                     continue
 
                 # Get current metrics
                 metrics = self.metrics_provider()
-                
+
                 # Evaluate alerts
                 alerts = self.evaluate_alerts(metrics)
-                
+
                 # Send notifications for new alerts
                 if alerts:
-                    self.send_notifications([
-                        alert for alert in alerts
-                        if alert.status == AlertStatus.ACTIVE
-                    ])
+                    self.send_notifications(
+                        [
+                            alert
+                            for alert in alerts
+                            if alert.status == AlertStatus.ACTIVE
+                        ]
+                    )
 
                 # Check for auto-resolution
                 self._check_auto_resolution(metrics)
@@ -559,7 +593,7 @@ class IntelligentAlertSystem:
                     metrics=metrics,
                     current_time=datetime.now(),
                     rule_history=dict(self.rule_history),
-                    system_config={}
+                    system_config={},
                 )
 
                 # Check auto-resolve condition
@@ -567,9 +601,9 @@ class IntelligentAlertSystem:
                     if rule.auto_resolve_condition:
                         eval_globals = self.rule_evaluator._safe_builtins.copy()
                         eval_locals = {
-                            'metrics': metrics,
-                            'context': context,
-                            'alert': alert
+                            "metrics": metrics,
+                            "context": context,
+                            "alert": alert,
                         }
 
                         if eval(rule.auto_resolve_condition, eval_globals, eval_locals):
@@ -582,19 +616,33 @@ class IntelligentAlertSystem:
     def get_system_status(self) -> Dict[str, Any]:
         """Get comprehensive system status"""
         with self._evaluation_lock:
-            avg_eval_time = sum(self._evaluation_times) / len(self._evaluation_times) if self._evaluation_times else 0
-            avg_notif_time = sum(self._notification_times) / len(self._notification_times) if self._notification_times else 0
+            avg_eval_time = (
+                sum(self._evaluation_times) / len(self._evaluation_times)
+                if self._evaluation_times
+                else 0
+            )
+            avg_notif_time = (
+                sum(self._notification_times) / len(self._notification_times)
+                if self._notification_times
+                else 0
+            )
 
             return {
-                'running': self._running,
-                'enabled_rules': sum(1 for r in self.alert_rules.values() if r.enabled),
-                'total_rules': len(self.alert_rules),
-                'active_alerts': len([a for a in self.active_alerts.values() if a.status == AlertStatus.ACTIVE]),
-                'total_alerts_in_memory': len(self.active_alerts),
-                'last_evaluation': self._last_evaluation.isoformat(),
-                'avg_evaluation_time_ms': avg_eval_time,
-                'avg_notification_time_ms': avg_notif_time,
-                'evaluation_performance': 'good' if avg_eval_time < 500 else 'degraded'
+                "running": self._running,
+                "enabled_rules": sum(1 for r in self.alert_rules.values() if r.enabled),
+                "total_rules": len(self.alert_rules),
+                "active_alerts": len(
+                    [
+                        a
+                        for a in self.active_alerts.values()
+                        if a.status == AlertStatus.ACTIVE
+                    ]
+                ),
+                "total_alerts_in_memory": len(self.active_alerts),
+                "last_evaluation": self._last_evaluation.isoformat(),
+                "avg_evaluation_time_ms": avg_eval_time,
+                "avg_notification_time_ms": avg_notif_time,
+                "evaluation_performance": "good" if avg_eval_time < 500 else "degraded",
             }
 
 
@@ -605,35 +653,42 @@ class AlertSystemFactory:
     def create_default_system() -> IntelligentAlertSystem:
         """Create alert system with default configuration"""
         from .alert_suppression import AlertSuppressionManager
-        
+
         # Create system
         alert_system = IntelligentAlertSystem()
-        
+
         # Create and inject dependencies
         notification_manager = AlertNotificationManager()
         suppression_manager = AlertSuppressionManager()
-        
+
         # Import notification channels
         from .notification_channels import (
             ConsoleNotificationChannel,
             DashboardNotificationChannel,
-            LogNotificationChannel
+            LogNotificationChannel,
         )
-        
+
         # Add default notification channels using wrapper lambdas
         console_channel = ConsoleNotificationChannel(verbose=False)
-        notification_manager.add_channel('console', lambda alert: console_channel.send_notification(alert).success)
-        
+        notification_manager.add_channel(
+            "console", lambda alert: console_channel.send_notification(alert).success
+        )
+
         dashboard_channel = DashboardNotificationChannel()
-        notification_manager.add_channel('dashboard', lambda alert: dashboard_channel.send_notification(alert).success)
-        
+        notification_manager.add_channel(
+            "dashboard",
+            lambda alert: dashboard_channel.send_notification(alert).success,
+        )
+
         log_channel = LogNotificationChannel()
-        notification_manager.add_channel('log', lambda alert: log_channel.send_notification(alert).success)
-        
+        notification_manager.add_channel(
+            "log", lambda alert: log_channel.send_notification(alert).success
+        )
+
         # Inject dependencies
         alert_system.set_notification_manager(notification_manager)
         alert_system.set_suppression_manager(suppression_manager)
-        
+
         return alert_system
 
     @staticmethod
@@ -642,7 +697,7 @@ class AlertSystemFactory:
         config = AlertConfiguration(
             evaluation_interval_seconds=1,
             max_alert_history_size=100,
-            enable_auto_suppression=False
+            enable_auto_suppression=False,
         )
-        
+
         return IntelligentAlertSystem(config)

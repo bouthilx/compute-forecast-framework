@@ -8,7 +8,7 @@ import threading
 import logging
 import json
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Any
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -42,12 +42,12 @@ class ConsoleNotificationChannel(NotificationChannel):
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
         self.color_codes = {
-            AlertSeverity.INFO: '\033[94m',      # Blue
-            AlertSeverity.WARNING: '\033[93m',   # Yellow
-            AlertSeverity.ERROR: '\033[91m',     # Red
-            AlertSeverity.CRITICAL: '\033[95m'   # Magenta
+            AlertSeverity.INFO: "\033[94m",  # Blue
+            AlertSeverity.WARNING: "\033[93m",  # Yellow
+            AlertSeverity.ERROR: "\033[91m",  # Red
+            AlertSeverity.CRITICAL: "\033[95m",  # Magenta
         }
-        self.reset_code = '\033[0m'
+        self.reset_code = "\033[0m"
 
     def send_notification(self, alert: Alert) -> NotificationResult:
         """Send alert to console with color coding"""
@@ -55,7 +55,7 @@ class ConsoleNotificationChannel(NotificationChannel):
 
         try:
             # Format alert message
-            color = self.color_codes.get(alert.severity, '')
+            color = self.color_codes.get(alert.severity, "")
             severity_icon = self._get_severity_icon(alert.severity)
 
             message = f"{color}🚨 {severity_icon} [{alert.severity.value.upper()}] {alert.rule_name}: {alert.message}{self.reset_code}"
@@ -64,7 +64,9 @@ class ConsoleNotificationChannel(NotificationChannel):
                 message += f"\n   Time: {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
                 message += f"\n   Alert ID: {alert.alert_id}"
                 if alert.metric_values:
-                    message += f"\n   Metrics: {json.dumps(alert.metric_values, indent=4)}"
+                    message += (
+                        f"\n   Metrics: {json.dumps(alert.metric_values, indent=4)}"
+                    )
 
             print(message)
 
@@ -74,7 +76,7 @@ class ConsoleNotificationChannel(NotificationChannel):
                 channel="console",
                 success=True,
                 timestamp=datetime.now(),
-                latency_ms=latency
+                latency_ms=latency,
             )
 
         except Exception as e:
@@ -84,7 +86,7 @@ class ConsoleNotificationChannel(NotificationChannel):
                 success=False,
                 timestamp=datetime.now(),
                 latency_ms=0.0,
-                error_message=str(e)
+                error_message=str(e),
             )
 
     def get_channel_name(self) -> str:
@@ -96,12 +98,12 @@ class ConsoleNotificationChannel(NotificationChannel):
     def _get_severity_icon(self, severity: AlertSeverity) -> str:
         """Get emoji icon for severity level"""
         icons = {
-            AlertSeverity.INFO: 'ℹ️',
-            AlertSeverity.WARNING: '⚠️',
-            AlertSeverity.ERROR: '❌',
-            AlertSeverity.CRITICAL: '💥'
+            AlertSeverity.INFO: "ℹ️",
+            AlertSeverity.WARNING: "⚠️",
+            AlertSeverity.ERROR: "❌",
+            AlertSeverity.CRITICAL: "💥",
         }
-        return icons.get(severity, '📢')
+        return icons.get(severity, "📢")
 
 
 class DashboardNotificationChannel(NotificationChannel):
@@ -123,23 +125,25 @@ class DashboardNotificationChannel(NotificationChannel):
                     success=False,
                     timestamp=datetime.now(),
                     latency_ms=0.0,
-                    error_message="Dashboard server not configured"
+                    error_message="Dashboard server not configured",
                 )
 
             # Format alert for dashboard
             alert_data = {
-                'alert_id': alert.alert_id,
-                'rule_name': alert.rule_name,
-                'message': alert.message,
-                'severity': alert.severity.value,
-                'timestamp': alert.timestamp.isoformat(),
-                'metric_values': alert.metric_values,
-                'tags': alert.tags
+                "alert_id": alert.alert_id,
+                "rule_name": alert.rule_name,
+                "message": alert.message,
+                "severity": alert.severity.value,
+                "timestamp": alert.timestamp.isoformat(),
+                "metric_values": alert.metric_values,
+                "tags": alert.tags,
             }
 
             # Send via WebSocket if dashboard has socketio
-            if hasattr(self.dashboard_server, 'socketio'):
-                self.dashboard_server.socketio.emit('alert_notification', alert_data, broadcast=True)
+            if hasattr(self.dashboard_server, "socketio"):
+                self.dashboard_server.socketio.emit(
+                    "alert_notification", alert_data, broadcast=True
+                )
 
             with self._lock:
                 self._notifications_sent += 1
@@ -151,7 +155,7 @@ class DashboardNotificationChannel(NotificationChannel):
                 success=True,
                 timestamp=datetime.now(),
                 latency_ms=latency,
-                delivery_id=f"dashboard_{self._notifications_sent}"
+                delivery_id=f"dashboard_{self._notifications_sent}",
             )
 
         except Exception as e:
@@ -161,7 +165,7 @@ class DashboardNotificationChannel(NotificationChannel):
                 success=False,
                 timestamp=datetime.now(),
                 latency_ms=0.0,
-                error_message=str(e)
+                error_message=str(e),
             )
 
     def get_channel_name(self) -> str:
@@ -174,7 +178,9 @@ class DashboardNotificationChannel(NotificationChannel):
 class LogNotificationChannel(NotificationChannel):
     """File-based log notification channel with structured JSON logging"""
 
-    def __init__(self, log_file_path: str = "alerts.log", structured_format: bool = True):
+    def __init__(
+        self, log_file_path: str = "alerts.log", structured_format: bool = True
+    ):
         self.log_file_path = Path(log_file_path)
         self.structured_format = structured_format
         self._ensure_log_directory()
@@ -187,10 +193,10 @@ class LogNotificationChannel(NotificationChannel):
         if not self.alert_logger.handlers:
             handler = logging.FileHandler(self.log_file_path)
             if structured_format:
-                formatter = logging.Formatter('%(message)s')  # JSON will be the message
+                formatter = logging.Formatter("%(message)s")  # JSON will be the message
             else:
                 formatter = logging.Formatter(
-                    '%(asctime)s - %(levelname)s - %(message)s'
+                    "%(asctime)s - %(levelname)s - %(message)s"
                 )
             handler.setFormatter(formatter)
             self.alert_logger.addHandler(handler)
@@ -203,19 +209,19 @@ class LogNotificationChannel(NotificationChannel):
             if self.structured_format:
                 # Structured JSON logging
                 log_entry = {
-                    'timestamp': datetime.now().isoformat(),
-                    'alert_id': alert.alert_id,
-                    'rule_id': alert.rule_id,
-                    'rule_name': alert.rule_name,
-                    'severity': alert.severity.value,
-                    'status': alert.status.value,
-                    'message': alert.message,
-                    'description': alert.description,
-                    'alert_timestamp': alert.timestamp.isoformat(),
-                    'metric_values': alert.metric_values,
-                    'system_context': alert.system_context,
-                    'tags': alert.tags,
-                    'notification_count': alert.notification_count
+                    "timestamp": datetime.now().isoformat(),
+                    "alert_id": alert.alert_id,
+                    "rule_id": alert.rule_id,
+                    "rule_name": alert.rule_name,
+                    "severity": alert.severity.value,
+                    "status": alert.status.value,
+                    "message": alert.message,
+                    "description": alert.description,
+                    "alert_timestamp": alert.timestamp.isoformat(),
+                    "metric_values": alert.metric_values,
+                    "system_context": alert.system_context,
+                    "tags": alert.tags,
+                    "notification_count": alert.notification_count,
                 }
 
                 self.alert_logger.info(json.dumps(log_entry, indent=None))
@@ -234,7 +240,7 @@ class LogNotificationChannel(NotificationChannel):
                 success=True,
                 timestamp=datetime.now(),
                 latency_ms=latency,
-                delivery_id=f"log_{alert.alert_id}"
+                delivery_id=f"log_{alert.alert_id}",
             )
 
         except Exception as e:
@@ -244,7 +250,7 @@ class LogNotificationChannel(NotificationChannel):
                 success=False,
                 timestamp=datetime.now(),
                 latency_ms=0.0,
-                error_message=str(e)
+                error_message=str(e),
             )
 
     def get_channel_name(self) -> str:
@@ -287,11 +293,11 @@ class NotificationChannelManager:
 
             if channel_name not in self.delivery_stats:
                 self.delivery_stats[channel_name] = {
-                    'total_attempts': 0,
-                    'successful_deliveries': 0,
-                    'failed_deliveries': 0,
-                    'avg_latency_ms': 0.0,
-                    'last_delivery': None
+                    "total_attempts": 0,
+                    "successful_deliveries": 0,
+                    "failed_deliveries": 0,
+                    "avg_latency_ms": 0.0,
+                    "last_delivery": None,
                 }
 
             logger.info(f"Added notification channel: {channel_name}")
@@ -305,7 +311,7 @@ class NotificationChannelManager:
                     success=False,
                     timestamp=datetime.now(),
                     latency_ms=0.0,
-                    error_message=f"Channel '{channel_name}' not found"
+                    error_message=f"Channel '{channel_name}' not found",
                 )
 
             channel = self.channels[channel_name]
@@ -317,7 +323,7 @@ class NotificationChannelManager:
                     success=False,
                     timestamp=datetime.now(),
                     latency_ms=0.0,
-                    error_message=f"Channel '{channel_name}' not available"
+                    error_message=f"Channel '{channel_name}' not available",
                 )
 
             # Send notification
@@ -328,7 +334,9 @@ class NotificationChannelManager:
 
             return result
 
-    def send_to_multiple_channels(self, alert: Alert, channel_names: List[str]) -> List[NotificationResult]:
+    def send_to_multiple_channels(
+        self, alert: Alert, channel_names: List[str]
+    ) -> List[NotificationResult]:
         """Send notification to multiple channels"""
         results = []
 
@@ -342,7 +350,8 @@ class NotificationChannelManager:
         """Get list of available channels"""
         with self._lock:
             return [
-                name for name, channel in self.channels.items()
+                name
+                for name, channel in self.channels.items()
                 if channel.is_available()
             ]
 
@@ -350,10 +359,10 @@ class NotificationChannelManager:
         """Get delivery statistics for all channels"""
         with self._lock:
             return {
-                'channels': dict(self.delivery_stats),
-                'total_channels': len(self.channels),
-                'available_channels': len(self.get_available_channels()),
-                'overall_success_rate': self._calculate_overall_success_rate()
+                "channels": dict(self.delivery_stats),
+                "total_channels": len(self.channels),
+                "available_channels": len(self.get_available_channels()),
+                "overall_success_rate": self._calculate_overall_success_rate(),
             }
 
     def _setup_default_channels(self) -> None:
@@ -364,32 +373,39 @@ class NotificationChannelManager:
         # Log channel
         self.add_channel(LogNotificationChannel())
 
-    def _update_delivery_stats(self, channel_name: str, result: NotificationResult) -> None:
+    def _update_delivery_stats(
+        self, channel_name: str, result: NotificationResult
+    ) -> None:
         """Update delivery statistics for channel"""
         if channel_name not in self.delivery_stats:
             return
 
         stats = self.delivery_stats[channel_name]
-        stats['total_attempts'] += 1
-        stats['last_delivery'] = result.timestamp
+        stats["total_attempts"] += 1
+        stats["last_delivery"] = result.timestamp
 
         if result.success:
-            stats['successful_deliveries'] += 1
+            stats["successful_deliveries"] += 1
         else:
-            stats['failed_deliveries'] += 1
+            stats["failed_deliveries"] += 1
 
         # Update average latency
         if result.success and result.latency_ms > 0:
-            current_avg = stats['avg_latency_ms']
-            total_success = stats['successful_deliveries']
-            stats['avg_latency_ms'] = (
-                (current_avg * (total_success - 1) + result.latency_ms) / total_success
-            )
+            current_avg = stats["avg_latency_ms"]
+            total_success = stats["successful_deliveries"]
+            stats["avg_latency_ms"] = (
+                current_avg * (total_success - 1) + result.latency_ms
+            ) / total_success
 
     def _calculate_overall_success_rate(self) -> float:
         """Calculate overall success rate across all channels"""
-        total_attempts = sum(stats.get('total_attempts', 0) for stats in self.delivery_stats.values())
-        total_successful = sum(stats.get('successful_deliveries', 0) for stats in self.delivery_stats.values())
+        total_attempts = sum(
+            stats.get("total_attempts", 0) for stats in self.delivery_stats.values()
+        )
+        total_successful = sum(
+            stats.get("successful_deliveries", 0)
+            for stats in self.delivery_stats.values()
+        )
 
         return (total_successful / max(total_attempts, 1)) * 100
 
@@ -409,18 +425,20 @@ def create_notification_channel(channel_type: str, **kwargs) -> NotificationChan
     Raises:
         ValueError: If channel_type is not supported
     """
-    if channel_type.lower() == 'console':
-        verbose = kwargs.get('verbose', False)
+    if channel_type.lower() == "console":
+        verbose = kwargs.get("verbose", False)
         return ConsoleNotificationChannel(verbose=verbose)
 
-    elif channel_type.lower() == 'dashboard':
-        dashboard_server = kwargs.get('dashboard_server')
+    elif channel_type.lower() == "dashboard":
+        dashboard_server = kwargs.get("dashboard_server")
         return DashboardNotificationChannel(dashboard_server=dashboard_server)
 
-    elif channel_type.lower() == 'log':
-        log_file_path = kwargs.get('log_file_path', 'alerts.log')
-        structured_format = kwargs.get('structured_format', True)
-        return LogNotificationChannel(log_file_path=log_file_path, structured_format=structured_format)
+    elif channel_type.lower() == "log":
+        log_file_path = kwargs.get("log_file_path", "alerts.log")
+        structured_format = kwargs.get("structured_format", True)
+        return LogNotificationChannel(
+            log_file_path=log_file_path, structured_format=structured_format
+        )
 
     else:
         raise ValueError(f"Unsupported channel type: {channel_type}")
@@ -428,7 +446,7 @@ def create_notification_channel(channel_type: str, **kwargs) -> NotificationChan
 
 # Default channel configuration
 DEFAULT_NOTIFICATION_CHANNELS = {
-    'console': {'type': 'console', 'verbose': False},
-    'dashboard': {'type': 'dashboard'},
-    'log': {'type': 'log', 'log_file_path': 'system_alerts.log'}
+    "console": {"type": "console", "verbose": False},
+    "dashboard": {"type": "dashboard"},
+    "log": {"type": "log", "log_file_path": "system_alerts.log"},
 }

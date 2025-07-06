@@ -1,6 +1,6 @@
 # Merge Conflict Resolution Plan
 
-**Date**: 2025-07-06  
+**Date**: 2025-07-06
 **Purpose**: Document the systematic approach for resolving merge conflicts in the compute-forecast-framework repository
 
 ## Overview
@@ -13,7 +13,7 @@ The repository has 57 files with unresolved merge conflicts between HEAD and a p
 
 1. **Monitoring System Files** (compute_forecast/monitoring/)
    - alert_structures.py ✓ (resolved)
-   - alert_suppression.py ✓ (resolved) 
+   - alert_suppression.py ✓ (resolved)
    - alert_system.py ✓ (resolved)
    - notification_channels.py (pending)
    - dashboard_server.py (pending)

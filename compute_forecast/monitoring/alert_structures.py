@@ -4,14 +4,15 @@ Defines comprehensive alert hierarchy with built-in rules and smart suppression.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Literal, Union
-from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Any
+from datetime import datetime
 from enum import Enum
 import uuid
 
 
 class AlertSeverity(Enum):
     """Alert severity levels with escalation priorities"""
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -20,6 +21,7 @@ class AlertSeverity(Enum):
 
 class AlertStatus(Enum):
     """Alert lifecycle status"""
+
     ACTIVE = "active"
     ACKNOWLEDGED = "acknowledged"
     RESOLVED = "resolved"
@@ -29,6 +31,7 @@ class AlertStatus(Enum):
 @dataclass
 class AlertRule:
     """Defines conditions and actions for alert evaluation"""
+
     rule_id: str
     name: str
     description: str
@@ -59,16 +62,17 @@ class AlertRule:
 @dataclass
 class EvaluationContext:
     """Context provided to alert rule evaluation"""
+
     metrics: Any  # SystemMetrics object
     current_time: datetime
-    rule_history: Dict[str, List['Alert']]
+    rule_history: Dict[str, List["Alert"]]
     system_config: Dict[str, Any] = field(default_factory=dict)
 
     def get_metric_value(self, path: str) -> Any:
         """Get metric value using dot notation path"""
         try:
             obj = self.metrics
-            for part in path.split('.'):
+            for part in path.split("."):
                 obj = getattr(obj, part)
             return obj
         except (AttributeError, KeyError):
@@ -78,6 +82,7 @@ class EvaluationContext:
 @dataclass
 class Alert:
     """Individual alert instance"""
+
     alert_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     rule_id: str = ""
     rule_name: str = ""
@@ -128,6 +133,7 @@ class Alert:
 @dataclass
 class SuppressionRule:
     """Rules for automatic alert suppression"""
+
     rule_id: str
     name: str
     description: str
@@ -158,6 +164,7 @@ class SuppressionRule:
 @dataclass
 class NotificationResult:
     """Result of a notification attempt"""
+
     channel: str
     success: bool
     timestamp: datetime
@@ -169,6 +176,7 @@ class NotificationResult:
 @dataclass
 class AlertConfiguration:
     """System-wide alert configuration"""
+
     enabled: bool = True
 
     # Global settings
@@ -182,7 +190,9 @@ class AlertConfiguration:
     batch_evaluation: bool = True
 
     # Notification settings
-    default_channels: List[str] = field(default_factory=lambda: ["console", "dashboard"])
+    default_channels: List[str] = field(
+        default_factory=lambda: ["console", "dashboard"]
+    )
     notification_timeout_seconds: int = 10
     max_retry_attempts: int = 3
     retry_delay_seconds: int = 5
@@ -205,6 +215,7 @@ class AlertConfiguration:
 @dataclass
 class AlertSummary:
     """Summary of alert activity for reporting"""
+
     time_period: str
     start_time: datetime
     end_time: datetime
@@ -248,9 +259,8 @@ BUILT_IN_ALERT_RULES = {
         time_window_minutes=5,
         notification_channels=["console", "dashboard"],
         cooldown_minutes=15,
-        tags={"category": "performance", "component": "collection"}
+        tags={"category": "performance", "component": "collection"},
     ),
-
     "api_health_degraded": AlertRule(
         rule_id="api_health_degraded",
         name="API Health Degraded",
@@ -261,9 +271,8 @@ BUILT_IN_ALERT_RULES = {
         notification_channels=["console", "dashboard", "log"],
         cooldown_minutes=10,
         escalation_delay_minutes=30,
-        tags={"category": "infrastructure", "component": "api"}
+        tags={"category": "infrastructure", "component": "api"},
     ),
-
     "high_error_rate": AlertRule(
         rule_id="high_error_rate",
         name="High Error Rate",
@@ -276,9 +285,8 @@ BUILT_IN_ALERT_RULES = {
         notification_channels=["console", "dashboard", "log"],
         cooldown_minutes=5,
         escalation_delay_minutes=15,
-        tags={"category": "quality", "component": "processing"}
+        tags={"category": "quality", "component": "processing"},
     ),
-
     "memory_usage_high": AlertRule(
         rule_id="memory_usage_high",
         name="High Memory Usage",
@@ -291,9 +299,8 @@ BUILT_IN_ALERT_RULES = {
         cooldown_minutes=20,
         auto_resolve=True,
         auto_resolve_condition="metrics.system_metrics.memory_usage_percent < 70.0",
-        tags={"category": "system", "component": "resources"}
+        tags={"category": "system", "component": "resources"},
     ),
-
     "venue_collection_stalled": AlertRule(
         rule_id="venue_collection_stalled",
         name="Venue Collection Stalled",
@@ -304,8 +311,8 @@ BUILT_IN_ALERT_RULES = {
         time_window_minutes=10,
         notification_channels=["console", "dashboard", "log"],
         cooldown_minutes=30,
-        tags={"category": "performance", "component": "venues"}
-    )
+        tags={"category": "performance", "component": "venues"},
+    ),
 }
 
 
@@ -322,9 +329,8 @@ BUILT_IN_SUPPRESSION_RULES = {
         burst_window_seconds=60,
         suppression_duration_minutes=15,
         escalation_override=True,  # Critical alerts override suppression
-        tags={"type": "burst", "auto": "true"}
+        tags={"type": "burst", "auto": "true"},
     ),
-
     "maintenance_suppression": SuppressionRule(
         rule_id="maintenance_suppression",
         name="Maintenance Window Suppression",
@@ -336,6 +342,6 @@ BUILT_IN_SUPPRESSION_RULES = {
         suppression_duration_minutes=60,
         escalation_override=False,
         enabled=False,  # Manually enabled during maintenance
-        tags={"type": "maintenance", "manual": "true"}
-    )
+        tags={"type": "maintenance", "manual": "true"},
+    ),
 }

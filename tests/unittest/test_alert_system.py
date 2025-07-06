@@ -5,24 +5,30 @@ Tests alert evaluation, suppression, and notification functionality.
 
 import unittest
 import time
-import threading
-from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
+from datetime import datetime
 
-from compute_forecast.monitoring.alert_system import IntelligentAlertSystem, AlertRuleEvaluator
-from compute_forecast.monitoring.alert_suppression import AlertSuppressionManager
-from compute_forecast.monitoring.notification_channels import (
-    NotificationChannelManager,
-    ConsoleNotificationChannel,
-    LogNotificationChannel
+from compute_forecast.monitoring.alert_system import (
+    IntelligentAlertSystem,
+    AlertRuleEvaluator,
 )
+from compute_forecast.monitoring.alert_suppression import AlertSuppressionManager
+from compute_forecast.monitoring.notification_channels import NotificationChannelManager
 from compute_forecast.monitoring.alert_structures import (
-    Alert, AlertRule, AlertSeverity, AlertStatus, EvaluationContext,
-    AlertConfiguration, SuppressionRule, BUILT_IN_ALERT_RULES
+    Alert,
+    AlertRule,
+    AlertSeverity,
+    AlertStatus,
+    EvaluationContext,
+    AlertConfiguration,
+    BUILT_IN_ALERT_RULES,
 )
 from compute_forecast.monitoring.dashboard_metrics import (
-    SystemMetrics, CollectionProgressMetrics, APIMetrics,
-    ProcessingMetrics, SystemResourceMetrics, StateManagementMetrics
+    SystemMetrics,
+    CollectionProgressMetrics,
+    APIMetrics,
+    ProcessingMetrics,
+    SystemResourceMetrics,
+    StateManagementMetrics,
 )
 
 
@@ -43,37 +49,35 @@ class TestAlertRuleEvaluator(unittest.TestCase):
                 venues_completed=2,
                 venues_in_progress=1,
                 venues_remaining=3,
-                total_venues=6
+                total_venues=6,
             ),
             api_metrics={
-                'semantic_scholar': APIMetrics(
-                    api_name='semantic_scholar',
-                    health_status='degraded',
+                "semantic_scholar": APIMetrics(
+                    api_name="semantic_scholar",
+                    health_status="degraded",
                     success_rate=0.7,
-                    avg_response_time_ms=1500.0
+                    avg_response_time_ms=1500.0,
                 )
             },
             processing_metrics=ProcessingMetrics(
                 papers_processed=100,
                 processing_errors=15,  # 15% error rate
                 papers_filtered=10,
-                papers_normalized=100
+                papers_normalized=100,
             ),
             system_metrics=SystemResourceMetrics(
                 memory_usage_percent=85.0,  # Above 80% threshold
-                cpu_usage_percent=45.0
+                cpu_usage_percent=45.0,
             ),
             state_metrics=StateManagementMetrics(),
-            venue_progress={}
+            venue_progress={},
         )
 
     def test_collection_rate_low_rule(self):
         """Test collection rate low alert rule"""
-        rule = BUILT_IN_ALERT_RULES['collection_rate_low']
+        rule = BUILT_IN_ALERT_RULES["collection_rate_low"]
         context = EvaluationContext(
-            metrics=self.test_metrics,
-            current_time=datetime.now(),
-            rule_history={}
+            metrics=self.test_metrics, current_time=datetime.now(), rule_history={}
         )
 
         # Should trigger because papers_per_minute (5.0) < threshold (10.0)
@@ -82,11 +86,9 @@ class TestAlertRuleEvaluator(unittest.TestCase):
 
     def test_api_health_degraded_rule(self):
         """Test API health degraded alert rule"""
-        rule = BUILT_IN_ALERT_RULES['api_health_degraded']
+        rule = BUILT_IN_ALERT_RULES["api_health_degraded"]
         context = EvaluationContext(
-            metrics=self.test_metrics,
-            current_time=datetime.now(),
-            rule_history={}
+            metrics=self.test_metrics, current_time=datetime.now(), rule_history={}
         )
 
         # Should trigger because semantic_scholar has 'degraded' status
@@ -95,11 +97,9 @@ class TestAlertRuleEvaluator(unittest.TestCase):
 
     def test_high_error_rate_rule(self):
         """Test high error rate alert rule"""
-        rule = BUILT_IN_ALERT_RULES['high_error_rate']
+        rule = BUILT_IN_ALERT_RULES["high_error_rate"]
         context = EvaluationContext(
-            metrics=self.test_metrics,
-            current_time=datetime.now(),
-            rule_history={}
+            metrics=self.test_metrics, current_time=datetime.now(), rule_history={}
         )
 
         # Should trigger because error rate (15/100 = 0.15) > threshold (0.1)
@@ -108,11 +108,9 @@ class TestAlertRuleEvaluator(unittest.TestCase):
 
     def test_memory_usage_high_rule(self):
         """Test high memory usage alert rule"""
-        rule = BUILT_IN_ALERT_RULES['memory_usage_high']
+        rule = BUILT_IN_ALERT_RULES["memory_usage_high"]
         context = EvaluationContext(
-            metrics=self.test_metrics,
-            current_time=datetime.now(),
-            rule_history={}
+            metrics=self.test_metrics, current_time=datetime.now(), rule_history={}
         )
 
         # Should trigger because memory usage (85%) > threshold (80%)
@@ -126,13 +124,11 @@ class TestAlertRuleEvaluator(unittest.TestCase):
             name="Dangerous Test",
             description="Test dangerous code",
             condition="__import__('os').system('echo pwned')",
-            severity=AlertSeverity.ERROR
+            severity=AlertSeverity.ERROR,
         )
 
         context = EvaluationContext(
-            metrics=self.test_metrics,
-            current_time=datetime.now(),
-            rule_history={}
+            metrics=self.test_metrics, current_time=datetime.now(), rule_history={}
         )
 
         # Should not crash and should return False
@@ -141,17 +137,15 @@ class TestAlertRuleEvaluator(unittest.TestCase):
 
     def test_metric_context_extraction(self):
         """Test extraction of relevant metric values for alert context"""
-        rule = BUILT_IN_ALERT_RULES['collection_rate_low']
+        rule = BUILT_IN_ALERT_RULES["collection_rate_low"]
         context = EvaluationContext(
-            metrics=self.test_metrics,
-            current_time=datetime.now(),
-            rule_history={}
+            metrics=self.test_metrics, current_time=datetime.now(), rule_history={}
         )
 
         metric_context = self.evaluator.get_metric_context(rule, context)
 
-        self.assertIn('papers_per_minute', metric_context)
-        self.assertEqual(metric_context['papers_per_minute'], 5.0)
+        self.assertIn("papers_per_minute", metric_context)
+        self.assertEqual(metric_context["papers_per_minute"], 5.0)
 
 
 class TestIntelligentAlertSystem(unittest.TestCase):
@@ -160,7 +154,7 @@ class TestIntelligentAlertSystem(unittest.TestCase):
     def setUp(self):
         self.config = AlertConfiguration(
             evaluation_interval_seconds=1,  # Fast for testing
-            max_alerts_per_minute=100
+            max_alerts_per_minute=100,
         )
         self.alert_system = IntelligentAlertSystem(self.config)
         self.test_metrics = self._create_test_metrics()
@@ -173,20 +167,17 @@ class TestIntelligentAlertSystem(unittest.TestCase):
                 papers_per_minute=5.0  # Below threshold
             ),
             api_metrics={
-                'test_api': APIMetrics(
-                    api_name='test_api',
-                    health_status='critical'
-                )
+                "test_api": APIMetrics(api_name="test_api", health_status="critical")
             },
             processing_metrics=ProcessingMetrics(
                 papers_processed=100,
-                processing_errors=20  # High error rate
+                processing_errors=20,  # High error rate
             ),
             system_metrics=SystemResourceMetrics(
                 memory_usage_percent=90.0  # High memory
             ),
             state_metrics=StateManagementMetrics(),
-            venue_progress={}
+            venue_progress={},
         )
 
     def test_alert_evaluation_performance(self):
@@ -197,9 +188,14 @@ class TestIntelligentAlertSystem(unittest.TestCase):
 
         evaluation_time = (time.time() - start_time) * 1000  # Convert to ms
 
-        self.assertLess(evaluation_time, 500.0,
-                       f"Alert evaluation took {evaluation_time:.1f}ms (requirement: <500ms)")
-        self.assertGreater(len(alerts), 0, "Should trigger some alerts with test metrics")
+        self.assertLess(
+            evaluation_time,
+            500.0,
+            f"Alert evaluation took {evaluation_time:.1f}ms (requirement: <500ms)",
+        )
+        self.assertGreater(
+            len(alerts), 0, "Should trigger some alerts with test metrics"
+        )
 
     def test_built_in_rules_loaded(self):
         """Test that built-in alert rules are properly loaded"""
@@ -259,10 +255,10 @@ class TestIntelligentAlertSystem(unittest.TestCase):
 
         stats = self.alert_system.get_performance_stats()
 
-        self.assertIn('avg_evaluation_time_ms', stats)
-        self.assertIn('evaluation_count', stats)
-        self.assertIn('active_alerts_count', stats)
-        self.assertGreaterEqual(stats['evaluation_count'], 5)
+        self.assertIn("avg_evaluation_time_ms", stats)
+        self.assertIn("evaluation_count", stats)
+        self.assertIn("active_alerts_count", stats)
+        self.assertGreaterEqual(stats["evaluation_count"], 5)
 
 
 class TestAlertSuppressionManager(unittest.TestCase):
@@ -277,7 +273,7 @@ class TestAlertSuppressionManager(unittest.TestCase):
             rule_id="test_rule",
             rule_name="Test Rule",
             message="Test alert",
-            severity=AlertSeverity.WARNING
+            severity=AlertSeverity.WARNING,
         )
 
         # Normal operation - should not suppress
@@ -297,14 +293,14 @@ class TestAlertSuppressionManager(unittest.TestCase):
             rule_id="test_rule",
             rule_name="Test Warning",
             message="Test warning",
-            severity=AlertSeverity.WARNING
+            severity=AlertSeverity.WARNING,
         )
 
         critical_alert = Alert(
             rule_id="critical_rule",
             rule_name="Critical Alert",
             message="Critical issue",
-            severity=AlertSeverity.CRITICAL
+            severity=AlertSeverity.CRITICAL,
         )
 
         # Enable maintenance mode
@@ -326,11 +322,13 @@ class TestAlertSuppressionManager(unittest.TestCase):
             rule_id="collection_rate_low",
             rule_name="Collection Rate Low",
             message="Collection rate is low",
-            severity=AlertSeverity.WARNING
+            severity=AlertSeverity.WARNING,
         )
 
         # Suppress pattern manually
-        self.suppression_manager.suppress_pattern("collection_rate_low", duration_minutes=30)
+        self.suppression_manager.suppress_pattern(
+            "collection_rate_low", duration_minutes=30
+        )
 
         # Should be suppressed now
         # Note: This test might not work exactly as expected since the pattern matching
@@ -344,10 +342,10 @@ class TestAlertSuppressionManager(unittest.TestCase):
         """Test suppression statistics tracking"""
         stats = self.suppression_manager.get_suppression_stats()
 
-        self.assertIn('total_evaluations', stats)
-        self.assertIn('suppressed_alerts', stats)
-        self.assertIn('suppression_rate', stats)
-        self.assertGreaterEqual(stats['total_evaluations'], 0)
+        self.assertIn("total_evaluations", stats)
+        self.assertIn("suppressed_alerts", stats)
+        self.assertIn("suppression_rate", stats)
+        self.assertGreaterEqual(stats["total_evaluations"], 0)
 
 
 class TestNotificationChannelManager(unittest.TestCase):
@@ -359,36 +357,38 @@ class TestNotificationChannelManager(unittest.TestCase):
             rule_id="test_rule",
             rule_name="Test Alert",
             message="Test notification",
-            severity=AlertSeverity.INFO
+            severity=AlertSeverity.INFO,
         )
 
     def test_default_channels_available(self):
         """Test that default channels are available"""
         available_channels = self.notification_manager.get_available_channels()
 
-        self.assertIn('console', available_channels)
-        self.assertIn('log', available_channels)
+        self.assertIn("console", available_channels)
+        self.assertIn("log", available_channels)
 
     def test_console_notification(self):
         """Test console notification delivery"""
-        result = self.notification_manager.send_notification(self.test_alert, 'console')
+        result = self.notification_manager.send_notification(self.test_alert, "console")
 
         self.assertTrue(result.success)
-        self.assertEqual(result.channel, 'console')
+        self.assertEqual(result.channel, "console")
         self.assertGreater(result.latency_ms, 0)
 
     def test_log_notification(self):
         """Test log notification delivery"""
-        result = self.notification_manager.send_notification(self.test_alert, 'log')
+        result = self.notification_manager.send_notification(self.test_alert, "log")
 
         self.assertTrue(result.success)
-        self.assertEqual(result.channel, 'log')
+        self.assertEqual(result.channel, "log")
         self.assertIsNotNone(result.delivery_id)
 
     def test_multiple_channel_notifications(self):
         """Test sending to multiple channels"""
-        channels = ['console', 'log']
-        results = self.notification_manager.send_to_multiple_channels(self.test_alert, channels)
+        channels = ["console", "log"]
+        results = self.notification_manager.send_to_multiple_channels(
+            self.test_alert, channels
+        )
 
         self.assertEqual(len(results), 2)
         self.assertTrue(all(result.success for result in results))
@@ -396,18 +396,20 @@ class TestNotificationChannelManager(unittest.TestCase):
     def test_notification_statistics(self):
         """Test notification delivery statistics"""
         # Send a few notifications
-        self.notification_manager.send_notification(self.test_alert, 'console')
-        self.notification_manager.send_notification(self.test_alert, 'log')
+        self.notification_manager.send_notification(self.test_alert, "console")
+        self.notification_manager.send_notification(self.test_alert, "log")
 
         stats = self.notification_manager.get_delivery_stats()
 
-        self.assertIn('channels', stats)
-        self.assertIn('overall_success_rate', stats)
-        self.assertGreater(stats['overall_success_rate'], 0)
+        self.assertIn("channels", stats)
+        self.assertIn("overall_success_rate", stats)
+        self.assertGreater(stats["overall_success_rate"], 0)
 
     def test_invalid_channel_handling(self):
         """Test handling of invalid channel names"""
-        result = self.notification_manager.send_notification(self.test_alert, 'invalid_channel')
+        result = self.notification_manager.send_notification(
+            self.test_alert, "invalid_channel"
+        )
 
         self.assertFalse(result.success)
         self.assertIn("not found", result.error_message)
@@ -434,7 +436,7 @@ class TestAlertSystemIntegration(unittest.TestCase):
             processing_metrics=ProcessingMetrics(),
             system_metrics=SystemResourceMetrics(memory_usage_percent=95.0),  # High
             state_metrics=StateManagementMetrics(),
-            venue_progress={}
+            venue_progress={},
         )
 
     def test_end_to_end_alert_flow(self):
@@ -448,7 +450,9 @@ class TestAlertSystemIntegration(unittest.TestCase):
         self.assertGreater(len(notification_results), 0)
 
         # Check that some notifications succeeded
-        successful_notifications = sum(1 for result in notification_results if result.success)
+        successful_notifications = sum(
+            1 for result in notification_results if result.success
+        )
         self.assertGreater(successful_notifications, 0)
 
     def test_alert_suppression_integration(self):
@@ -460,12 +464,16 @@ class TestAlertSystemIntegration(unittest.TestCase):
         alerts = self.alert_system.evaluate_alerts(self.test_metrics)
 
         # Check that non-critical alerts are suppressed
-        active_alerts = [alert for alert in alerts if alert.status == AlertStatus.ACTIVE]
-        suppressed_alerts = [alert for alert in alerts if alert.status == AlertStatus.SUPPRESSED]
+        active_alerts = [
+            alert for alert in alerts if alert.status == AlertStatus.ACTIVE
+        ]
+        suppressed_alerts = [
+            alert for alert in alerts if alert.status == AlertStatus.SUPPRESSED
+        ]
 
         # In maintenance mode, we should have fewer active alerts
         self.assertGreaterEqual(len(suppressed_alerts), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
