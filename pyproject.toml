@@ -75,6 +75,13 @@ dev = [
     "types-pyyaml>=6.0.0",
     "types-requests>=2.32.0",
 ]
+types = [
+    "types-beautifulsoup4>=4.12.0.20250516",
+    "types-cachetools>=5.6.0",
+    "types-flask>=1.1.6",
+    "types-psutil>=7.0.0.20250601",
+    "types-setuptools>=80.9.0.20250529",
+]
 
 [tool.mypy]
 python_version = "3.12"
