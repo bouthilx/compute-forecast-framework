@@ -404,7 +404,7 @@ class TestAdaptiveThresholdEngine:
 
         # Get initial thresholds (should be same for both)
         conservative_initial = conservative_engine.get_thresholds("ICML", 2024)
-        aggressive_initial = aggressive_engine.get_thresholds("ICML", 2024)
+        aggressive_engine.get_thresholds("ICML", 2024)
 
         initial_score = conservative_initial.min_paper_quality_score
 

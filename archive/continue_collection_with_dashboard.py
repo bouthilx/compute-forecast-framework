@@ -865,7 +865,6 @@ def collect_additional_papers_for_domain(
         )
 
         # Log API efficiency stats
-        total_calls_before = dashboard.stats.api_calls_made
         efficiency_msg = f"Collected {len(final_papers)} papers with reduced API calls (batching used)"
         dashboard.add_log(efficiency_msg, "success")
 

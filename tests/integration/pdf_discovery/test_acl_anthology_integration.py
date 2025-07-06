@@ -152,7 +152,7 @@ class TestACLAnthologyIntegration:
         mock_session = Mock()
         mock_session_class.return_value = mock_session
 
-        collector = ACLAnthologyCollector()
+        ACLAnthologyCollector()
 
         # Check session was created
         mock_session_class.assert_called_once()

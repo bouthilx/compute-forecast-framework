@@ -203,7 +203,7 @@ def create_merged_venue_heatmap(venue_trends, years):
     # Add text annotations
     for i in range(len(venues)):
         for j in range(len(years)):
-            text = ax.text(
+            ax.text(
                 j,
                 i,
                 int(data_matrix[i, j]),

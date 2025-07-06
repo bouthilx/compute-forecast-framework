@@ -6,7 +6,7 @@ Implements robust state management with checkpoint validation and recovery.
 import json
 import threading
 from pathlib import Path
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 from datetime import datetime
 import logging
 

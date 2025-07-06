@@ -98,7 +98,7 @@ class TestGoogleScholarClient:
         mock_scholarly.search_pubs.return_value = iter([])
 
         # Perform search
-        response = client.search_papers("test", 2023, limit=10)
+        client.search_papers("test", 2023, limit=10)
 
         # Verify rate limiting was applied
         mock_sleep.assert_called_once_with(5.0)  # Should sleep for 5 seconds
@@ -170,7 +170,7 @@ class TestGoogleScholarClient:
 
         # Perform batch search
         venues = ["NeurIPS", "ICML", "ICLR"]
-        response = client.search_venue_batch(venues, 2023, limit=50)
+        client.search_venue_batch(venues, 2023, limit=50)
 
         # Verify query construction
         expected_query = 'source:"NeurIPS" OR source:"ICML" OR source:"ICLR" 2023'
@@ -196,7 +196,7 @@ class TestGoogleScholarClient:
         mock_scholarly.search_pubs.return_value = iter(results)
 
         # Perform search
-        response = client.search_papers("test", 2023, limit=15)
+        client.search_papers("test", 2023, limit=15)
 
         # Should have added delay after 10th result (index 9)
         assert mock_sleep.call_count >= 1  # At least one delay call

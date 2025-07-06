@@ -277,7 +277,6 @@ class VenueCollectionEngine:
         total_batches = batches_per_year * len(years)
 
         # Estimate API calls (85% reduction from naive approach)
-        naive_api_calls = total_venue_year_combinations
         batched_api_calls = total_batches
 
         # Account for potential retries and single venue collections

@@ -304,7 +304,7 @@ class TestInterruptionRecoverySystem:
             return original_resume(*args, **kwargs)
 
         with patch.object(recovery_system, "_resume_from_checkpoint", delayed_resume):
-            result = recovery_system.execute_recovery(test_session, plan)
+            recovery_system.execute_recovery(test_session, plan)
 
         # Should be cleaned up after execution
         assert test_session.session_id not in recovery_system.active_recoveries

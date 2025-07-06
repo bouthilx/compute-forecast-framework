@@ -23,7 +23,6 @@ from compute_forecast.data.collectors.state_structures import (
     CollectionSession,
     VenueConfig,
     IntegrityCheckResult,
-    DataIntegrityAssessment,
 )
 
 
@@ -312,36 +311,37 @@ class TestRecoveryPlan:
         assert len(plan.venues_to_skip) == 1
 
 
-class TestDataIntegrityAssessment:
-    """Test DataIntegrityAssessment structure"""
+# DataIntegrityAssessment class no longer exists in state_structures
+# class TestDataIntegrityAssessment:
+#     """Test DataIntegrityAssessment structure"""
 
-    def test_data_integrity_assessment(self):
-        """Test creating data integrity assessment"""
-        assessment = DataIntegrityAssessment(
-            session_id="session_123",
-            assessment_time=datetime.now(),
-            total_data_files=10,
-            valid_data_files=9,
-            corrupted_data_files=1,
-            missing_data_files=0,
-            total_checkpoints=50,
-            valid_checkpoints=48,
-            corrupted_checkpoints=2,
-            venue_data_consistency={"CVPR": True, "ICLR": False},
-            paper_count_consistency=True,
-            timestamp_consistency=True,
-            data_loss_severity="minimal",
-            recovery_feasibility="simple",
-            estimated_recovery_time_minutes=3.0,
-        )
-
-        assert assessment.session_id == "session_123"
-        assert assessment.total_data_files == 10
-        assert assessment.valid_data_files == 9
-        assert assessment.data_loss_severity == "minimal"
-        assert assessment.recovery_feasibility == "simple"
-        assert assessment.venue_data_consistency["CVPR"] is True
-        assert assessment.venue_data_consistency["ICLR"] is False
+#     def test_data_integrity_assessment(self):
+#         """Test creating data integrity assessment"""
+#         assessment = DataIntegrityAssessment(
+#             session_id="session_123",
+#             assessment_time=datetime.now(),
+#             total_data_files=10,
+#             valid_data_files=9,
+#             corrupted_data_files=1,
+#             missing_data_files=0,
+#             total_checkpoints=50,
+#             valid_checkpoints=48,
+#             corrupted_checkpoints=2,
+#             venue_data_consistency={"CVPR": True, "ICLR": False},
+#             paper_count_consistency=True,
+#             timestamp_consistency=True,
+#             data_loss_severity="minimal",
+#             recovery_feasibility="simple",
+#             estimated_recovery_time_minutes=3.0,
+#         )
+#
+#         assert assessment.session_id == "session_123"
+#         assert assessment.total_data_files == 10
+#         assert assessment.valid_data_files == 9
+#         assert assessment.data_loss_severity == "minimal"
+#         assert assessment.recovery_feasibility == "simple"
+#         assert assessment.venue_data_consistency["CVPR"] is True
+#         assert assessment.venue_data_consistency["ICLR"] is False
 
 
 class TestIntegrityCheckResult:

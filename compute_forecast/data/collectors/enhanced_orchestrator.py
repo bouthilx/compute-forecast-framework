@@ -14,7 +14,7 @@ from ..models import Paper, CollectionQuery, APIConfig
 from ..sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
 from ..sources.enhanced_openalex import EnhancedOpenAlexClient
 from ..sources.enhanced_crossref import EnhancedCrossrefClient
-from ..sources.google_scholar import GoogleScholarClient
+from ..sources.google_scholar import GoogleScholarSource as GoogleScholarClient
 from .rate_limit_manager import RateLimitManager
 
 logger = logging.getLogger(__name__)

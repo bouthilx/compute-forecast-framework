@@ -210,7 +210,7 @@ class FuzzyVenueMatcher:
             threshold = self.fuzzy_threshold
 
         matches = []
-        normalized_raw = self.normalize_venue_name(raw_venue)
+        self.normalize_venue_name(raw_venue)
 
         for candidate in candidates:
             similarity = self.calculate_venue_similarity(raw_venue, candidate)

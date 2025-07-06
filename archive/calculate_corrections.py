@@ -73,7 +73,6 @@ def calculate_correction_factors():
     }
 
     correction_factors = {}
-    corrected_proportions = {}
 
     print("Domain-by-domain correction analysis:")
     print("-" * 80)
@@ -176,7 +175,7 @@ def apply_corrections_method2():
     print("=== METHOD 2: PROPORTIONAL SCALING ===\\n")
 
     dataset_stats = dataset_data["dataset_domain_stats"]
-    total_dataset_papers = sum(dataset_stats.values())
+    sum(dataset_stats.values())
     detection_rates = calculate_detection_rates()
 
     # Scale up dataset proportions based on detection rates
@@ -326,10 +325,10 @@ def main():
     print("Calculating correction factors for research domain proportions...\\n")
 
     # 1. Calculate detection rates
-    detection_rates = calculate_detection_rates()
+    calculate_detection_rates()
 
     # 2. Calculate basic correction factors
-    correction_factors = calculate_correction_factors()
+    calculate_correction_factors()
 
     # 3. Apply corrections using both methods
     results = compare_all_methods()

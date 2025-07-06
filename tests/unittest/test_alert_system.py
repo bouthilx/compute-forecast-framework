@@ -318,7 +318,7 @@ class TestAlertSuppressionManager(unittest.TestCase):
 
     def test_manual_pattern_suppression(self):
         """Test manual pattern suppression"""
-        test_alert = Alert(
+        Alert(
             rule_id="collection_rate_low",
             rule_name="Collection Rate Low",
             message="Collection rate is low",
@@ -464,9 +464,7 @@ class TestAlertSystemIntegration(unittest.TestCase):
         alerts = self.alert_system.evaluate_alerts(self.test_metrics)
 
         # Check that non-critical alerts are suppressed
-        active_alerts = [
-            alert for alert in alerts if alert.status == AlertStatus.ACTIVE
-        ]
+        [alert for alert in alerts if alert.status == AlertStatus.ACTIVE]
         suppressed_alerts = [
             alert for alert in alerts if alert.status == AlertStatus.SUPPRESSED
         ]

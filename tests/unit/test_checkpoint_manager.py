@@ -371,7 +371,7 @@ class TestCheckpointManager:
 
         # Create 6 checkpoints - should trigger cleanup at checkpoint 2, 4, 6
         for i in range(6):
-            checkpoint_id = manager.create_checkpoint(
+            manager.create_checkpoint(
                 session_id=session_id,
                 checkpoint_type="venue_completed",
                 venues_completed=[],

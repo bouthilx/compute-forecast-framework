@@ -40,7 +40,7 @@ class TestAdditionalModelCoverage:
 
         assert record != "not a record"
         assert record != 123
-        assert record != None
+        assert record is not None
         assert record != {"paper_id": "test_123"}
 
     def test_discovery_result_with_empty_source_stats(self):

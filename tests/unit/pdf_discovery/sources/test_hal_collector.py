@@ -284,6 +284,6 @@ class TestHALPDFCollector:
             <error code="badArgument">Invalid request</error>
         </OAI-PMH>"""
 
-        root = ET.fromstring(error_xml)
+        ET.fromstring(error_xml)
         with pytest.raises(APIError, match="OAI-PMH error"):
             collector._parse_oai_response(error_xml)

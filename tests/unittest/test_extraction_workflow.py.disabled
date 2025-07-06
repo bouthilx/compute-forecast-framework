@@ -10,13 +10,12 @@ from unittest.mock import Mock
 from datetime import datetime
 
 from compute_forecast.analysis.computational.extraction_workflow import (
-    ExtractionWorkflow,
+    ExtractionWorkflowOrchestrator,
     WorkflowStep,
-    WorkflowState,
-    TaskQueue,
-    WorkflowManager,
-    ExtractionTask,
-    TaskStatus,
+    WorkflowStatus,
+    WorkflowConfig,
+    WorkflowResult,
+    WorkflowStage,
     TaskPriority,
     WorkflowConfig,
     ExecutionContext,

@@ -54,5 +54,5 @@ class TestAdditionalCollectorCoverage:
         with patch.object(
             collector, "_discover_single", return_value=Mock(paper_id="p1")
         ) as mock_discover:
-            results = collector.discover_pdfs(papers)
+            collector.discover_pdfs(papers)
             assert mock_discover.called

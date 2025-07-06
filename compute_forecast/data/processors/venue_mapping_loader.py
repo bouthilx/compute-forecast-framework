@@ -195,7 +195,7 @@ class VenueMappingLoader:
         """Load additional venue data from Worker 3 status"""
         try:
             with open(file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+                json.load(f)
 
             # Worker 3 data might contain additional venue information
             # This is a backup source, so we don't override existing mappings

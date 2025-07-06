@@ -290,7 +290,7 @@ class TestStateManager:
             rate_limit_status={},
         )
 
-        checkpoint_id = state_manager.save_checkpoint(session_id, checkpoint_data)
+        state_manager.save_checkpoint(session_id, checkpoint_data)
 
         # Get recovery plan
         recovery_plan = state_manager.get_recovery_plan(session_id)

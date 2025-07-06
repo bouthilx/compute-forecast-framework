@@ -513,7 +513,7 @@ class AnalyticsDashboardAdapter:
             if analytics_engine:
                 # Configure custom metrics
                 config = {"custom_metrics": custom_metrics}
-                results = analytics_engine.get_custom_analytics(config)
+                analytics_engine.get_custom_analytics(config)
 
                 logger.info(f"Setup {len(custom_metrics)} custom metrics")
 

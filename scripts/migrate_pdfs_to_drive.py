@@ -52,7 +52,7 @@ class PDFMigrationTool:
         pdf_locations = {}
 
         # Common PDF directories
-        search_dirs = [
+        [
             self.project_root / "pdf_cache",
             self.project_root / "pdf_download_cache",
             self.project_root / "temp_pdf_cache",

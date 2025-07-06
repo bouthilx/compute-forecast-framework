@@ -265,7 +265,7 @@ class TestEnhancedOpenAlexClient:
             mock_response.json.return_value = {"results": [], "meta": {"count": 0}}
             mock_get.return_value = mock_response
 
-            result = self.client.search_venue_batch(venues, year)
+            self.client.search_venue_batch(venues, year)
 
             # Should use OpenAlex filter syntax
             called_args = mock_get.call_args
@@ -409,7 +409,7 @@ class TestEnhancedCrossrefClient:
             }
             mock_get.return_value = mock_response
 
-            result = self.client.search_venue_batch(venues, year)
+            self.client.search_venue_batch(venues, year)
 
             # Should use Crossref query syntax
             called_args = mock_get.call_args

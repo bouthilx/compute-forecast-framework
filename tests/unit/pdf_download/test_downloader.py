@@ -42,7 +42,7 @@ class TestSimplePDFDownloader:
     def test_init_creates_cache_directory(self, temp_cache_dir):
         """Test that initialization creates the cache directory."""
         cache_path = temp_cache_dir / "pdf_cache"
-        downloader = SimplePDFDownloader(cache_dir=str(cache_path))
+        SimplePDFDownloader(cache_dir=str(cache_path))
         assert cache_path.exists()
         assert cache_path.is_dir()
 

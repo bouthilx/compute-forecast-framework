@@ -27,7 +27,6 @@ from .alert_structures import (
     AlertRule,
     AlertSeverity,
     AlertStatus,
-    AlertDeliveryResult,
     SuppressionRule,
     AlertConfiguration,
     AlertSummary,

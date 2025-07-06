@@ -157,7 +157,7 @@ class QualityAnalyzer:
     ) -> float:
         """Calculate combined quality score from paper and venue scores."""
         # Weighted combination favoring paper quality slightly
-        combined_score = (paper_score * 0.6) + (venue_score * 0.4)
+        (paper_score * 0.6) + (venue_score * 0.4)
 
         # Normalize to 0-1 range (paper_score can exceed 1.0)
         max_possible_paper_score = (

@@ -118,7 +118,7 @@ class TestAlertSuppressionManager:
     def test_cleanup_expired_suppressions(self, suppression_manager):
         """Test cleanup of expired suppression rules"""
         # Add rule that expires immediately
-        rule_id = suppression_manager.add_suppression_rule(
+        suppression_manager.add_suppression_rule(
             pattern="test",
             duration_minutes=0,  # Expires immediately
             reason="Test expiration",

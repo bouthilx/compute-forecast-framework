@@ -141,7 +141,7 @@ class EnhancedCollectionOrchestratorStreaming:
         active_sources = sources_to_use or list(self.sources.keys())
 
         # Use a bounded queue to control memory usage
-        paper_queue = deque(maxlen=self.max_memory_papers)
+        deque(maxlen=self.max_memory_papers)
 
         # Track statistics
         source_counts = {source: 0 for source in active_sources}
@@ -227,7 +227,7 @@ class EnhancedCollectionOrchestratorStreaming:
                 await queue.put(None)  # Sentinel
 
             # Start all enqueue tasks
-            enqueue_tasks = [
+            [
                 asyncio.create_task(enqueue_papers(task, queue))
                 for task, queue in zip(tasks, queues)
             ]
@@ -278,7 +278,7 @@ class EnhancedCollectionOrchestratorStreaming:
             source_client = self.sources[source_name]
 
             # Create paginated query
-            paginated_query = CollectionQuery(
+            CollectionQuery(
                 domain=query.domain,
                 keywords=query.keywords,
                 venue=query.venue,
@@ -359,7 +359,7 @@ class EnhancedCollectionOrchestratorStreaming:
 
         # Calculate approximate papers per MB (assuming ~5KB per paper)
         papers_per_mb = 200
-        max_papers_in_memory = memory_limit_mb * papers_per_mb
+        memory_limit_mb * papers_per_mb
 
         # Initialize statistics
         source_counts = {}

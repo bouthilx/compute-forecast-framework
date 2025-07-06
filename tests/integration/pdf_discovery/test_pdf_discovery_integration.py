@@ -223,7 +223,6 @@ class TestPDFDiscoveryIntegration:
         ]
 
         # Track which collectors process which papers
-        processed_counts = {}
 
         # Discover PDFs
         result = framework.discover_pdfs(papers)
@@ -293,7 +292,7 @@ class TestPDFDiscoveryIntegration:
             for i in range(10)
         ]
 
-        result = framework.discover_pdfs(papers, progress_callback=track_progress)
+        framework.discover_pdfs(papers, progress_callback=track_progress)
 
         # Should have progress updates
         assert len(progress_updates) == 2  # One per collector

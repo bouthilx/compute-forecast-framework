@@ -828,7 +828,7 @@ def main():
     )
 
     # 3. Compare with original dataset-only approach
-    comparison = compare_original_vs_enhanced()
+    compare_original_vs_enhanced()
 
     # 4. Analyze environment vs dataset split
     analyze_environment_vs_dataset_split()

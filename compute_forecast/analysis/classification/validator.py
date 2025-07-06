@@ -85,7 +85,7 @@ class ClassificationValidator(BaseValidator):
 
         # Edge case handling (prefer fewer edge cases needing manual review)
         dist = validation_result.get("classification_distribution", {})
-        total_papers = dist.get("total_papers", 1)
+        dist.get("total_papers", 1)
         review_percentage = dist.get("review_percentage", 1.0)
         edge_case_score = max(0.0, 1.0 - review_percentage)
 

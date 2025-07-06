@@ -112,7 +112,7 @@ class TestEnhancedCollectionOrchestrator:
         ) as mock_cr, patch(
             "src.data.collectors.enhanced_orchestrator.GoogleScholarClient"
         ) as mock_gs:
-            orchestrator = EnhancedCollectionOrchestrator(api_keys)
+            EnhancedCollectionOrchestrator(api_keys)
 
             # Verify clients were created with keys
             mock_ss.assert_called_once_with(api_key="test_key")
@@ -315,7 +315,7 @@ class TestEnhancedCollectionOrchestrator:
         )
 
         # Collect from single source
-        papers = orchestrator._collect_from_source_with_rate_limit(
+        orchestrator._collect_from_source_with_rate_limit(
             "semantic_scholar", sample_query
         )
 
@@ -353,7 +353,7 @@ class TestEnhancedCollectionOrchestrator:
         sample_query.venue = None
 
         # Collect
-        papers = orchestrator._collect_from_source_with_rate_limit(
+        orchestrator._collect_from_source_with_rate_limit(
             "semantic_scholar", sample_query
         )
 

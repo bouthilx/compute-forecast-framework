@@ -401,12 +401,12 @@ class ThresholdOptimizer:
         # Analyze performance distribution
         precisions = [p.precision for p in performance_history if p.precision > 0]
         recalls = [p.recall for p in performance_history if p.recall > 0]
-        f1_scores = [p.f1_score for p in performance_history if p.f1_score > 0]
+        [p.f1_score for p in performance_history if p.f1_score > 0]
 
         if precisions and recalls:
             # Suggest bounds based on performance distribution
             avg_precision = np.mean(precisions)
-            avg_recall = np.mean(recalls)
+            np.mean(recalls)
 
             # For paper quality score - affects precision most
             if avg_precision < self.config.target_precision:

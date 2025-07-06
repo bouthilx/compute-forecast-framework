@@ -23,7 +23,7 @@ class TestRateLimiter:
         """Test that wait() enforces the rate limit."""
         limiter = RateLimiter.per_second(2.0)  # 0.5 second interval
 
-        start_time = time.time()
+        time.time()
         limiter.wait()  # First call should not wait
         first_call_time = time.time()
 

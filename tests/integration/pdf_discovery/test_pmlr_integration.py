@@ -160,7 +160,7 @@ class TestPMLRIntegration:
         assert mock_get.call_count == 1  # Should not increase
 
         # Different title should trigger new request
-        paper_id3 = collector._search_proceedings_page("v202", "Different Paper")
+        collector._search_proceedings_page("v202", "Different Paper")
         assert mock_get.call_count == 2
 
     def test_pmlr_statistics_through_framework(self, framework, sample_papers):

@@ -55,7 +55,7 @@ class TestVenueCollectionOrchestrator:
     def test_component_interface_validation(self, orchestrator):
         """Test that component interfaces are properly validated"""
         # Initialize system first
-        init_result = orchestrator.initialize_system()
+        orchestrator.initialize_system()
 
         # Test integration validation
         validation_result = orchestrator.validate_system_integration()
@@ -75,7 +75,7 @@ class TestVenueCollectionOrchestrator:
     def test_session_lifecycle(self, orchestrator):
         """Test complete session lifecycle"""
         # Initialize system
-        init_result = orchestrator.initialize_system()
+        orchestrator.initialize_system()
 
         # Only proceed if system is somewhat functional
         if not (orchestrator.state_manager and orchestrator.api_engine):
@@ -98,7 +98,7 @@ class TestVenueCollectionOrchestrator:
     def test_venue_collection_workflow(self, orchestrator):
         """Test venue collection execution workflow"""
         # Initialize and start session
-        init_result = orchestrator.initialize_system()
+        orchestrator.initialize_system()
 
         if not orchestrator.system_ready:
             pytest.skip("System not ready for collection testing")
@@ -203,7 +203,7 @@ class TestSystemIntegrationRobustness:
 
             start_time = time.time()
             result = orchestrator.initialize_system()
-            duration = time.time() - start_time
+            time.time() - start_time
 
             # Should still complete
             assert result is not None

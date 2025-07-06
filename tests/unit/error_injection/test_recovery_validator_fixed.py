@@ -240,7 +240,7 @@ class TestRecoveryValidatorFixed:
 
         # Should generate recommendations
         # Check actual recommendations content
-        recommendations_text = " ".join(report["recommendations"]).lower()
+        " ".join(report["recommendations"]).lower()
         # We know we have data loss and recovery time issues
         assert len(report["recommendations"]) >= 2
         # Check for specific issues we created

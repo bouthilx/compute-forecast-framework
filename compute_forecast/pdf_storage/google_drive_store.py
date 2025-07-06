@@ -261,9 +261,7 @@ class GoogleDriveStore:
         """
         try:
             # First test basic API access by listing files (doesn't require folder access)
-            test_response = (
-                self._service.files().list(pageSize=1, fields="files(id)").execute()
-            )
+            (self._service.files().list(pageSize=1, fields="files(id)").execute())
 
             # Now try to access the specific folder
             try:

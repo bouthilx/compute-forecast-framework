@@ -244,11 +244,11 @@ class TestDashboardAlertingIntegration:
 
     def test_performance_requirements(self):
         """Test dashboard meets performance requirements"""
-        dashboard = CollectionDashboard(host="127.0.0.1", port=5009, debug=False)
+        CollectionDashboard(host="127.0.0.1", port=5009, debug=False)
 
         # Test that dashboard can be created quickly (< 2 seconds)
         start_time = time.time()
-        dashboard = CollectionDashboard(host="127.0.0.1", port=5010, debug=False)
+        CollectionDashboard(host="127.0.0.1", port=5010, debug=False)
         creation_time = time.time() - start_time
 
         assert (

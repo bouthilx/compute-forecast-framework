@@ -524,7 +524,7 @@ def main():
     print("=" * 50)
 
     # Create multi-label domain analysis
-    multi_label_data = create_multi_label_visualizations()
+    create_multi_label_visualizations()
 
     # Create paper classification chart
     create_paper_classification_chart()

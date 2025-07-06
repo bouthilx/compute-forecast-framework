@@ -184,7 +184,7 @@ class TestBasePDFCollector:
                 ),
             ]
 
-            results = collector.discover_pdfs(papers)
+            collector.discover_pdfs(papers)
 
             # Check logging calls
             assert mock_logger.info.called

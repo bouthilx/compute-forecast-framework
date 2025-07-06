@@ -233,7 +233,7 @@ class TestExtractionQualityAssurance:
                 )
                 partial_results.append(batch)
 
-        is_valid = qa_system.validate_coverage(partial_results)
+        qa_system.validate_coverage(partial_results)
         qa_report = qa_system.generate_qa_report(partial_results)
 
         # Should detect missing years

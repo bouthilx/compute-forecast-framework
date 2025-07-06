@@ -94,10 +94,8 @@ class TestEnhancedOrchestratorEnvironment:
                 "src.data.sources.enhanced_openalex.EnhancedOpenAlexClient"
             ) as mock_oa, patch(
                 "src.data.sources.enhanced_crossref.EnhancedCrossrefClient"
-            ) as mock_cr, patch(
-                "src.data.sources.google_scholar.GoogleScholarClient"
-            ) as mock_gs:
-                orchestrator = EnhancedCollectionOrchestrator(api_keys=init_keys)
+            ) as mock_cr, patch("src.data.sources.google_scholar.GoogleScholarClient"):
+                EnhancedCollectionOrchestrator(api_keys=init_keys)
 
                 # Check that init_key overrides env_key for semantic_scholar
                 mock_ss.assert_called_with(api_key="init_key")
@@ -127,7 +125,7 @@ class TestEnhancedOrchestratorEnvironment:
             ) as mock_cr, patch(
                 "src.data.sources.google_scholar.GoogleScholarClient"
             ) as mock_gs:
-                orchestrator = EnhancedCollectionOrchestrator()
+                EnhancedCollectionOrchestrator()
 
                 # Verify each client was initialized with the correct parameters
                 mock_ss.assert_called_once_with(api_key="ss_test_key")
@@ -145,7 +143,7 @@ class TestEnhancedOrchestratorEnvironment:
 
         with patch.dict(os.environ, env_vars):
             with caplog.at_level("INFO"):
-                orchestrator = EnhancedCollectionOrchestrator()
+                EnhancedCollectionOrchestrator()
 
                 # Check that the log message was created
                 assert (

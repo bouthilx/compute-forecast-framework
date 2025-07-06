@@ -155,7 +155,7 @@ def extract_all_domains_final_fix():
         papers_data = json.load(f)
 
     # Load taxonomy
-    taxonomy = load_research_taxonomy()
+    load_research_taxonomy()
 
     sys.path.insert(0, "/home/bouthilx/projects/paperext/src")
     from paperext.utils import Paper

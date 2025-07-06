@@ -560,7 +560,7 @@ class CitationAnalyzer:
         recommendations = {}
 
         for venue, venue_stats in venue_analysis.items():
-            venue_tier = self._get_venue_tier(venue)
+            self._get_venue_tier(venue)
 
             # Use the venue's recommended threshold for all years in the venue
             for year in venue_stats.yearly_stats.keys():

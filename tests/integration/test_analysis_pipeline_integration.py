@@ -1168,7 +1168,7 @@ class AnalysisPipelineIntegrationTest:
 
                 # Simulate pipeline processing
                 # In real implementation, this would run actual components
-                processing_time = self._simulate_pipeline_processing(papers)
+                self._simulate_pipeline_processing(papers)
 
                 process_end = time.time()
                 actual_processing_time = process_end - process_start

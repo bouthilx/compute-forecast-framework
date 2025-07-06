@@ -253,7 +253,7 @@ class TestRLBenchmarkExtractor:
         """
 
         benchmarks = rl_extractor.identify_benchmarks(paper)
-        metrics = rl_extractor.extract_rl_specific_metrics(paper)
+        rl_extractor.extract_rl_specific_metrics(paper)
 
         assert len(benchmarks) >= 3
         assert "Atari" in benchmarks

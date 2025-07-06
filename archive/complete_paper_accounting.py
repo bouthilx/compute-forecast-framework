@@ -30,7 +30,7 @@ def calculate_complete_paper_flow():
 
     # Step 1: Total papers
     total_papers = len(papers_data)
-    all_paper_ids = {paper["paper_id"] for paper in papers_data}
+    {paper["paper_id"] for paper in papers_data}
 
     print("\nSTEP 1: Starting Universe")
     print(f"Total Mila papers (2019-2024): {total_papers:,}")

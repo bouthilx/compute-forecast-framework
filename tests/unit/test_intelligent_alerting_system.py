@@ -285,7 +285,7 @@ class TestAlertRules(unittest.TestCase):
     def test_api_health_conditions(self):
         """Test API health alert conditions"""
         # Test API down condition
-        metrics_api_down = {
+        {
             "api_metrics": {
                 "semantic_scholar": Mock(health_status="unhealthy", success_rate=0.0)
             }
@@ -298,7 +298,7 @@ class TestAlertRules(unittest.TestCase):
         self.assertIsNotNone(api_down_rule)
 
         # Test success rate condition
-        metrics_low_success = {
+        {
             "api_metrics": {
                 "semantic_scholar": Mock(success_rate=0.7, health_status="degraded")
             }

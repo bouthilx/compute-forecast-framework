@@ -1045,7 +1045,7 @@ class ProductionReadinessValidator:
 
         for scenario in scenarios:
             try:
-                start_time = time.time()
+                time.time()
 
                 # Mock recovery test
                 if scenario == "api_failure":
@@ -1065,7 +1065,7 @@ class ProductionReadinessValidator:
                 logger.error(f"Recovery test for {scenario} failed: {e}")
 
         # Calculate overall recovery metrics
-        avg_recovery_time = sum(recovery_times.values()) / len(recovery_times)
+        sum(recovery_times.values()) / len(recovery_times)
         successful_recoveries = len([t for t in recovery_times.values() if t < 300])
         success_rate = successful_recoveries / len(scenarios)
 
@@ -1117,7 +1117,7 @@ class ProductionReadinessValidator:
 
         try:
             # Venue normalization quality
-            venues_with_papers = len(set(p.venue for p in papers))
+            len(set(p.venue for p in papers))
             normalized_venues = len(
                 [
                     p

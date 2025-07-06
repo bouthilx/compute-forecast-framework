@@ -202,7 +202,7 @@ class TestOrchestratorPerformance:
     @pytest.mark.asyncio
     async def test_mock_api_responses_validity(self, mock_responses):
         """Validate that mock responses match expected API formats."""
-        orchestrator = EnhancedOrchestrator()
+        EnhancedOrchestrator()
 
         # Test Semantic Scholar format
         ss_response = mock_responses["semantic_scholar"]

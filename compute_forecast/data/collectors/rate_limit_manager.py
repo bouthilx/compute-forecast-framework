@@ -120,7 +120,7 @@ class RateLimitManager:
             if can_make_request:
                 return 0.0
 
-            config = self.api_configs[api_name]
+            self.api_configs[api_name]
 
             # Calculate base wait time from rolling window
             base_wait = window.time_until_next_slot()

@@ -311,7 +311,7 @@ def main():
     sys.stdout = tracker.output_capture
 
     try:
-        with Live(create_full_layout(), refresh_per_second=2) as live:
+        with Live(create_full_layout(), refresh_per_second=2):
             domain_count = 0
             for domain_name, keywords in DOMAINS.items():
                 domain_count += 1

@@ -236,7 +236,7 @@ class TestMetricsCollector:
         assert stats["session_id"] == "stats_test"
         assert stats["metrics_collected"] == 10
         assert stats["collection_errors"] == 2
-        assert stats["is_collecting"] == False
+        assert not stats["is_collecting"]
         assert "session_start_time" in stats
         assert "collection_interval_seconds" in stats
 

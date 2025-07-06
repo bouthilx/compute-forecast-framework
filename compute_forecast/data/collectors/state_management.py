@@ -746,7 +746,7 @@ class StateManager:
         """Validate that a path is safe from directory traversal attacks"""
         try:
             # Resolve the path and check it doesn't escape the intended directory
-            resolved = path.resolve()
+            path.resolve()
             return ".." not in str(path)
         except Exception:
             return False

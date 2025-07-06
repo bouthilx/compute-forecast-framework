@@ -176,8 +176,8 @@ class PatternTestSuite:
         for case_name, test_text in error_cases.items():
             try:
                 # Should not crash, even with bad input
-                metrics = self.analyzer.extract_resource_metrics(test_text)
-                keyword_analysis = self.analyzer.analyze_keywords(test_text)
+                self.analyzer.extract_resource_metrics(test_text)
+                self.analyzer.analyze_keywords(test_text)
                 results[case_name] = True  # No crash = success
 
             except Exception:

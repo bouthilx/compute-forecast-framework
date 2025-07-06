@@ -502,7 +502,7 @@ def main():
 
         with Live(
             create_full_layout(), refresh_per_second=6
-        ) as live:  # High refresh rate for real-time feel
+        ):  # High refresh rate for real-time feel
             domain_count = 0
             for domain_name, keywords in DOMAINS.items():
                 domain_count += 1

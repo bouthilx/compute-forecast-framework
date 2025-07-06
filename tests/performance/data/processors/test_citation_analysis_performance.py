@@ -131,7 +131,7 @@ class TestCitationAnalysisPerformance:
         start_time = time.time()
         start_memory = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
 
-        report = analyzer.analyze_citation_distributions(papers)
+        analyzer.analyze_citation_distributions(papers)
 
         end_time = time.time()
         end_memory = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
@@ -161,7 +161,7 @@ class TestCitationAnalysisPerformance:
         times = []
         for paper in papers[:100]:  # Test first 100 papers
             start = time.perf_counter()
-            score = detector.calculate_breakthrough_score(paper)
+            detector.calculate_breakthrough_score(paper)
             end = time.perf_counter()
             times.append((end - start) * 1000)  # Convert to ms
 
@@ -265,7 +265,7 @@ class TestCitationAnalysisPerformance:
 
             start_memory = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
 
-            report = analyzer.analyze_citation_distributions(papers)
+            analyzer.analyze_citation_distributions(papers)
 
             end_memory = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
             memory_used = end_memory - start_memory
@@ -303,7 +303,7 @@ class TestCitationAnalysisPerformance:
             citations = [int(c) for c in citations]
 
             start = time.perf_counter()
-            percentiles = analyzer._calculate_percentiles(citations)
+            analyzer._calculate_percentiles(citations)
             duration = (time.perf_counter() - start) * 1000
 
             assert duration < 50, f"{dist_name} took {duration:.2f}ms, should be < 50ms"
@@ -324,7 +324,7 @@ class TestCitationAnalysisPerformance:
 
         # Operation 1: Full analysis
         start = time.time()
-        report = analyzer.analyze_citation_distributions(papers)
+        analyzer.analyze_citation_distributions(papers)
         operations.append(("Analysis", time.time() - start))
 
         # Operation 2: Filtering
@@ -334,7 +334,7 @@ class TestCitationAnalysisPerformance:
 
         # Operation 3: Quality validation
         start = time.time()
-        quality = analyzer.validate_filtering_quality(
+        analyzer.validate_filtering_quality(
             papers, filter_result.papers_above_threshold
         )
         operations.append(("Validation", time.time() - start))

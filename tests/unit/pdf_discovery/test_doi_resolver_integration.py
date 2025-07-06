@@ -163,7 +163,7 @@ class TestDOIResolverIntegration:
 
             # Only pass papers with DOIs
             papers_with_dois = [p for p in sample_papers if p.doi]
-            result = collector.discover_pdfs(papers_with_dois)
+            collector.discover_pdfs(papers_with_dois)
 
             # Check statistics
             stats = collector.get_statistics()

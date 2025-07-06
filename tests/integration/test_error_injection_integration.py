@@ -106,7 +106,7 @@ class TestErrorInjectionIntegration:
         """Test data corruption detection and recovery."""
         # Setup
         framework = ErrorInjectionFramework()
-        validator = RecoveryValidator()
+        RecoveryValidator()
         analyzer_handler = AnalyzerErrorHandler()
 
         # Register injection point
@@ -163,7 +163,7 @@ class TestErrorInjectionIntegration:
         """Test graceful degradation under resource pressure."""
         # Setup
         framework = ErrorInjectionFramework()
-        validator = RecoveryValidator()
+        RecoveryValidator()
         analyzer_handler = AnalyzerErrorHandler()
         reporter_handler = ReporterErrorHandler()
 

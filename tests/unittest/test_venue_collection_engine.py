@@ -50,7 +50,7 @@ class TestVenueCollectionEngine:
         year = 2023
 
         # Mock successful API responses
-        mock_papers = [
+        [
             Paper(
                 title="Test Paper 1",
                 authors=[Author(name="Author 1")],
@@ -113,7 +113,7 @@ class TestVenueCollectionEngine:
         self.mock_rate_limiter.wait_if_needed.return_value = 2.0  # 2 second wait
 
         # This should fail until implementation exists
-        result = self.engine.collect_venue_batch(venues, year)
+        self.engine.collect_venue_batch(venues, year)
 
         # Should have called rate limiter methods
         assert self.mock_rate_limiter.can_make_request.called
@@ -308,7 +308,6 @@ class TestVenueCollectionEngineIntegration:
         # Naive approach: 20 API calls (one per venue)
         naive_calls = 20
         # Batched approach: ceil(20/6) = 4 API calls
-        expected_batched_calls = 4
 
         reduction_percentage = (naive_calls - estimate.api_calls_required) / naive_calls
         assert (

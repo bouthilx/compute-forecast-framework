@@ -20,9 +20,9 @@ def generate_collection_validation():
     # Load statistics
     try:
         with open("data/collection_statistics.json", "r") as f:
-            stats = json.load(f)
+            json.load(f)
     except FileNotFoundError:
-        stats = {}
+        pass
 
     # Generate validation report
     validation = {

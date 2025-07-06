@@ -275,7 +275,7 @@ class TestPDFDiscoveryFramework:
         framework = PDFDiscoveryFramework()
 
         # Add same paper to framework multiple times
-        record1 = PDFRecord(
+        PDFRecord(
             paper_id="paper_1",
             pdf_url="https://arxiv.org/paper_1.pdf",
             source="arxiv",
@@ -403,7 +403,7 @@ class TestPDFDiscoveryFramework:
             for i in range(3)
         ]
 
-        result = framework.discover_pdfs(papers, progress_callback=progress_callback)
+        framework.discover_pdfs(papers, progress_callback=progress_callback)
 
         # Should have progress updates
         assert len(progress_updates) > 0

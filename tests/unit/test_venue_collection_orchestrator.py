@@ -8,16 +8,25 @@ from concurrent.futures import Future
 
 from compute_forecast.orchestration.venue_collection_orchestrator import (
     VenueCollectionOrchestrator,
-    OrchestrationConfig,
-    WorkflowPhase,
     ComponentStatus,
 )
+from compute_forecast.data.models import CollectionConfig
 from compute_forecast.data.models import Paper
 
 # Mock classes for testing
 from dataclasses import dataclass
 from enum import Enum
 from typing import List
+
+
+class WorkflowPhase(Enum):
+    """Mock workflow phases for testing"""
+
+    INITIALIZATION = "initialization"
+    API_SETUP = "api_setup"
+    COLLECTION = "collection"
+    COMPLETION = "completion"
+    ERROR_RECOVERY = "error_recovery"
 
 
 class SessionState(Enum):
@@ -60,16 +69,11 @@ class TestVenueCollectionOrchestrator:
     @pytest.fixture
     def orchestrator_config(self):
         """Create test orchestration config."""
-        return OrchestrationConfig(
-            max_concurrent_venues=3,
-            max_retry_attempts=2,
-            retry_delay_seconds=1.0,
-            checkpoint_interval_seconds=5.0,
-            health_check_interval_seconds=2.0,
-            resource_allocation_interval_seconds=10.0,
-            failure_recovery_timeout_seconds=30.0,
-            enable_adaptive_scaling=True,
-            enable_performance_optimization=True,
+        return CollectionConfig(
+            max_venues_per_batch=3,
+            max_retries=2,
+            batch_timeout_seconds=300,
+            single_venue_timeout_seconds=1800,
         )
 
     @pytest.fixture
@@ -114,7 +118,7 @@ class TestVenueCollectionOrchestrator:
         # Run coordination
         with patch.object(orchestrator, "_start_background_tasks"):
             with patch.object(orchestrator, "_cleanup_resources"):
-                results = orchestrator.coordinate_collection_session(
+                orchestrator.coordinate_collection_session(
                     test_session, ["NeurIPS", "ICML"], [2023]
                 )
 

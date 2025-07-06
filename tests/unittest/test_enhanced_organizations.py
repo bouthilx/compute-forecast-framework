@@ -265,7 +265,7 @@ class TestClassificationValidator:
         from compute_forecast.data.models import Paper, Author
 
         # Create paper with mixed affiliations (edge case)
-        edge_case_paper = Paper(
+        Paper(
             title="Edge Case Paper",
             authors=[
                 Author(name="Author 1", affiliation="MIT"),

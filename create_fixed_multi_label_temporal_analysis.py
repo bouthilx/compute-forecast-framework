@@ -478,13 +478,6 @@ def create_complete_paper_classification_chart():
     classification_data = np.zeros((len(classification_categories), len(years)))
     classification_props = np.zeros((len(classification_categories), len(years)))
 
-    main_research_categories = [
-        "Computer Vision & Medical Imaging",
-        "Natural Language Processing",
-        "Reinforcement Learning & Robotics",
-        "Graph Learning & Network Analysis",
-    ]
-
     for i, year in enumerate(years):
         total_papers = total_papers_by_year[year]
         without_analysis = year_data[year]["WITHOUT AI analysis"]
@@ -602,7 +595,7 @@ def main():
     print("=" * 55)
 
     # Create fixed multi-label domain analysis
-    fixed_multi_label_data = create_fixed_multi_label_visualizations()
+    create_fixed_multi_label_visualizations()
 
     # Create complete paper classification chart
     create_complete_paper_classification_chart()

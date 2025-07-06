@@ -8,13 +8,13 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
-from testing.error_injection.component_handlers.collector_errors import (
+from compute_forecast.testing.error_injection.component_handlers.collector_errors import (
     CollectorErrorHandler,
 )
-from testing.error_injection.component_handlers.analyzer_errors import (
+from compute_forecast.testing.error_injection.component_handlers.analyzer_errors import (
     AnalyzerErrorHandler,
 )
-from testing.error_injection.component_handlers.reporter_errors import (
+from compute_forecast.testing.error_injection.component_handlers.reporter_errors import (
     ReporterErrorHandler,
 )
 

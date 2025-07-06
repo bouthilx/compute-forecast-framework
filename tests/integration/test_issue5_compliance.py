@@ -142,7 +142,7 @@ class TestIssue5StateManager:
             rate_limit_status={},
         )
 
-        checkpoint_id = self.state_manager.save_checkpoint(session_id, checkpoint_data)
+        self.state_manager.save_checkpoint(session_id, checkpoint_data)
 
         # Test loading
         start_time = time.time()
