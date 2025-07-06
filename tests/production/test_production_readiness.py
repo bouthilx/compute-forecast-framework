@@ -314,7 +314,7 @@ class StressTester:
             for orchestrator in orchestrators:
                 try:
                     orchestrator.shutdown_system()
-                except:
+                except Exception:
                     pass
 
         return result
@@ -410,7 +410,7 @@ class StressTester:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return result
@@ -498,7 +498,7 @@ class StressTester:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return result
@@ -1017,7 +1017,7 @@ class ProductionReadinessValidator:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return result

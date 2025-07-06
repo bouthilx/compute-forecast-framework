@@ -142,7 +142,7 @@ class InterruptionRecoveryTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result
@@ -253,7 +253,7 @@ class InterruptionRecoveryTest:
             try:
                 if "recovery_orchestrator" in locals():
                     recovery_orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result
@@ -367,7 +367,7 @@ class InterruptionRecoveryTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result
@@ -458,7 +458,7 @@ class InterruptionRecoveryTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result
@@ -603,7 +603,7 @@ class InterruptionRecoveryTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result

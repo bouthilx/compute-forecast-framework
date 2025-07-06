@@ -106,7 +106,7 @@ def analyze_dataset_structure():
                                 sample_count += 1
 
                         break  # Only need to check one query file per paper
-                    except:
+                    except Exception:
                         continue
 
                 # Count combinations

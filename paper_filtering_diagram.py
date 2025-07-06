@@ -55,7 +55,7 @@ def calculate_filtering_stats():
             paper = Paper(paper_json)
             if paper.queries:
                 papers_with_analysis += 1
-        except:
+        except Exception:
             continue
 
     # Step 3: Papers with research domains

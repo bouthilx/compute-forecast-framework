@@ -147,7 +147,7 @@ class ScalabilityTest:
                 for orchestrator in orchestrators:
                     try:
                         orchestrator.shutdown_system()
-                    except:
+                    except Exception:
                         pass
 
             # Analyze scaling results

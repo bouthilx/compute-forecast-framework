@@ -172,7 +172,7 @@ def create_comparison_chart():
     try:
         with open("temporal_analysis_data.json", "r") as f:
             original_data = json.load(f)
-    except:
+    except Exception:
         print("Original data not found, skipping comparison")
         return
 

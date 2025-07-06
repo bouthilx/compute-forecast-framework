@@ -126,7 +126,7 @@ class ComponentIntegrationTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result
@@ -268,7 +268,7 @@ class ComponentIntegrationTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result
@@ -389,7 +389,7 @@ class ComponentIntegrationTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result
@@ -514,7 +514,7 @@ class ComponentIntegrationTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result

@@ -51,7 +51,7 @@ def create_fixed_temporal_analysis():
                 try:
                     year = int(venue_date["text"][:4])
                     break
-                except:
+                except Exception:
                     continue
 
         if year and 2019 <= year <= 2024:
@@ -62,7 +62,7 @@ def create_fixed_temporal_analysis():
                 paper = Paper(paper_json)
                 if paper.queries:
                     papers_with_analysis.add(paper_id)
-            except:
+            except Exception:
                 pass
 
     # Create domain mappings
@@ -143,7 +143,7 @@ def create_comparison_summary():
         with open("temporal_analysis_data.json", "r") as f:
             original_data = json.load(f)
         original_available = True
-    except:
+    except Exception:
         print("Original temporal data not available")
         original_available = False
 

@@ -196,7 +196,7 @@ def extract_all_domains_completely_fixed():
                 try:
                     year = int(venue_date["text"][:4])
                     break
-                except:
+                except Exception:
                     continue
 
         if not year or not (2019 <= year <= 2024):

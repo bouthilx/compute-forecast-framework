@@ -54,7 +54,7 @@ def analyze_empirical_vs_theoretical():
                 try:
                     year = int(venue_date["text"][:4])
                     break
-                except:
+                except Exception:
                     continue
 
         if year and 2019 <= year <= 2024:
@@ -85,13 +85,13 @@ def analyze_empirical_vs_theoretical():
                                             ) and dataset.get("name", {}).get("value"):
                                                 dataset_count += 1
                             break
-                        except:
+                        except Exception:
                             continue
 
                     paper_to_dataset_count[paper_id] = dataset_count
                     if dataset_count > 0:
                         papers_with_datasets.add(paper_id)
-            except:
+            except Exception:
                 pass
 
     # Create domain mappings (same as before)

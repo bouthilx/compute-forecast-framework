@@ -129,7 +129,7 @@ class GoogleDriveSetupWizard:
                 creds_data = json.load(f)
                 service_account_email = creds_data.get("client_email", "Unknown")
                 print(f"Your service account email is: {service_account_email}")
-        except:
+        except Exception:
             service_account_email = (
                 "your-service-account@project.iam.gserviceaccount.com"
             )

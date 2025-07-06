@@ -29,7 +29,7 @@ def extract_year(paper):
         if date_text:
             try:
                 return int(date_text[:4])
-            except:
+            except Exception:
                 pass
     return None
 

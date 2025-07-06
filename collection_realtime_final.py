@@ -445,7 +445,7 @@ def main():
         with open("data/collection_statistics.json", "r") as f:
             existing_stats = json.load(f)
         domain_stats = existing_stats.get("domain_distribution", {})
-    except:
+    except Exception:
         domain_stats = defaultdict(lambda: defaultdict(int))
 
     all_papers = existing_papers.copy()

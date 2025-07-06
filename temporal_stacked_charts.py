@@ -47,7 +47,7 @@ def extract_year_data():
                 try:
                     year = int(venue_date["text"][:4])
                     break
-                except:
+                except Exception:
                     continue
 
         if year and 2019 <= year <= 2024:
@@ -58,7 +58,7 @@ def extract_year_data():
                 paper = Paper(paper_json)
                 if paper.queries:
                     papers_with_analysis.add(paper_id)
-            except:
+            except Exception:
                 pass
 
     print(f"Found {len(paper_to_year)} papers with valid years (2019-2024)")

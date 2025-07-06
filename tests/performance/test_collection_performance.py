@@ -110,7 +110,7 @@ class PerformanceValidationTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return result
@@ -157,7 +157,7 @@ class PerformanceValidationTest:
                 for paper in test_papers[:100]:  # Test with subset
                     try:
                         orchestrator.venue_normalizer.normalize_venue(paper.venue)
-                    except:
+                    except Exception:
                         pass
             normalization_time = time.time() - normalization_start
 
@@ -232,7 +232,7 @@ class PerformanceValidationTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return result
@@ -349,7 +349,7 @@ class PerformanceValidationTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return result

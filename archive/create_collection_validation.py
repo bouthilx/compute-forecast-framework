@@ -240,7 +240,7 @@ def generate_collection_statistics(validation: Dict[str, Any]) -> Dict[str, Any]
         try:
             with open(stats_file, "r") as f:
                 existing_stats = json.load(f)
-        except:
+        except Exception:
             existing_stats = {}
     else:
         existing_stats = {}

@@ -47,7 +47,7 @@ def calculate_complete_paper_flow():
                 papers_with_analysis.add(paper_id)
             else:
                 papers_without_analysis.add(paper_id)
-        except:
+        except Exception:
             papers_without_analysis.add(paper_id)
 
     print("\nSTEP 2: AI Analysis Filter")

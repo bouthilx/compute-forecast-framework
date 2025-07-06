@@ -252,7 +252,7 @@ class FullPipelineIntegrationTest:
             try:
                 if "orchestrator" in locals():
                     orchestrator.shutdown_system()
-            except:
+            except Exception:
                 pass
 
         return test_result
@@ -402,7 +402,7 @@ class FullPipelineIntegrationTest:
             for orchestrator in orchestrators:
                 try:
                     orchestrator.shutdown_system()
-                except:
+                except Exception:
                     pass
 
         return test_result

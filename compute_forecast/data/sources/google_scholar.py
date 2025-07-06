@@ -387,7 +387,7 @@ class GoogleScholarSource(BaseCitationSource):
             try:
                 self.driver.quit()
                 self.logger.info("Browser session closed")
-            except:
+            except Exception:
                 pass
             finally:
                 self.driver = None
