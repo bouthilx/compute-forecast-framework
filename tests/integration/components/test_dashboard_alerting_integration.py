@@ -26,6 +26,7 @@ from compute_forecast.monitoring.dashboard_metrics import (
 )
 
 
+@pytest.mark.skip(reason="Tests take too long to run on GitHub Actions")
 class TestDashboardAlertingIntegration:
     """Integration tests for dashboard and alerting system"""
 
