@@ -2,7 +2,7 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from collections import defaultdict
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class CostTracker:
         extractor_name: str,
         operation: str,
         cost: float,
-        details: Dict[str, Any] = None,
+        details: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Record cost for an extraction operation.
 
@@ -53,7 +53,7 @@ class CostTracker:
         Returns:
             Dictionary mapping extractor name to total cost
         """
-        costs = defaultdict(float)
+        costs: Dict[str, float] = defaultdict(float)
 
         for record in self.cost_records:
             costs[record["extractor"]] += record["cost"]
@@ -66,7 +66,7 @@ class CostTracker:
         Returns:
             Dictionary mapping operation type to total cost
         """
-        costs = defaultdict(float)
+        costs: Dict[str, float] = defaultdict(float)
 
         for record in self.cost_records:
             costs[record["operation"]] += record["cost"]
@@ -79,7 +79,7 @@ class CostTracker:
         Returns:
             Dictionary mapping operation type to count
         """
-        counts = defaultdict(int)
+        counts: Dict[str, int] = defaultdict(int)
 
         for record in self.cost_records:
             counts[record["operation"]] += 1
