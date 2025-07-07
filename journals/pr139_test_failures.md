@@ -51,6 +51,7 @@ Running tests locally to identify failures faster and fix them before pushing.
 1. **test_parse_department_affiliation** (FAILED)
    - Fixed AI expansion issue, but now failing on UC Berkeley parsing
    - Error: `AssertionError: assert None == 'UC Berkeley'`
+   - Issue: Parser doesn't recognize "UC Berkeley" as an organization - only "UCB" is in common abbreviations
 
 2. **test_parse_location_information** (FAILED)
    - Error: `AssertionError: assert None == 'Cambridge'`
@@ -64,7 +65,7 @@ Running tests locally to identify failures faster and fix them before pushing.
    - Error: `AssertionError: assert 0.3 == 0`
    - Empty inputs should have 0 confidence but getting 0.3
 
-**Note:** The enhanced affiliation parser appears to have undergone significant changes that broke multiple tests. This would require reviewing the parser implementation to either fix the parser or update all the tests to match the new behavior.
+**Note:** The enhanced affiliation parser appears to have undergone significant changes that broke multiple tests. This would require reviewing the parser implementation to either fix the parser or update all the tests to match the new behavior. Per user instructions, skipping this as it requires significant changes.
 
 ##### tests/unit/analysis/benchmark/test_workflow_manager.py ✓
 
@@ -85,6 +86,15 @@ Fixed issue:
 
 **Status:** Fixed!
 
+##### tests/unit/quality/extraction/test_consistency_checker.py
+
+1. **test_cross_paper_consistency_high_variation** (FAILED) ✗
+   - Error: Test expects high variation to fail consistency check
+   - Issue: Implementation uses CV > 2.0 threshold, test data produces CV < 2.0
+   - Tried multiple value sets but couldn't exceed CV > 2.0 threshold
+   - Outlier detection also not triggered (requires z-score > 3.0)
+   - **Note:** Would require changing implementation thresholds, skipping per instructions
+
 ##### tests/unit/quality module - Multiple failures
 
 Many tests failing due to API changes in monitoring and metrics subsystems:
@@ -95,3 +105,30 @@ Many tests failing due to API changes in monitoring and metrics subsystems:
 - Missing modules and attributes
 
 **Note:** These would require significant refactoring to match the new API.
+
+##### tests/unit/orchestration/test_enhanced_api_clients.py ✓
+
+Fixed issues:
+- Updated retry logic test to match implementation (only retries on timeout/server errors, not general network errors)
+- Fixed rate limit error type assertion
+
+**Status:** Fixed!
+
+## CI Status Update
+
+### Commit 6657075 - Test Fix Commit
+
+**Status after fixes:**
+- ✅ PR Checks: SUCCESS
+- ✅ Security Scan: SUCCESS
+- ✅ Auto Label PR: SUCCESS
+- ❌ Pre-commit: FAILURE (mypy errors - ignoring as requested)
+- ⏳ Test: IN PROGRESS (running very slowly on GitHub)
+
+**Summary:** Fixed multiple test failures locally. Main issues were:
+1. Paper model instantiation missing required fields
+2. ComputationalAnalysis using wrong parameters
+3. Test expectations not matching actual behavior
+4. Domain key splitting issues with multi-word domains
+
+Pre-commit continues to fail due to mypy type checking errors which are being ignored per instructions.
