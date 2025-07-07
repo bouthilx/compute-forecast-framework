@@ -16,10 +16,14 @@ class SimplePaper:
     venue: str
     year: int
     
+    # Paper identifier
+    paper_id: Optional[str] = None
+    
     # Optional fields
     abstract: Optional[str] = None
-    pdf_url: Optional[str] = None
+    pdf_urls: List[str] = field(default_factory=list)  # Multiple PDF URLs
     doi: Optional[str] = None
+    arxiv_id: Optional[str] = None
     
     # Source tracking
     source_scraper: str = ""
@@ -28,6 +32,7 @@ class SimplePaper:
     
     # Quality indicators
     extraction_confidence: float = 1.0
+    metadata_completeness: float = 0.0
     
     def to_package_paper(self) -> Paper:
         """Convert to package's Paper model"""
@@ -38,7 +43,7 @@ class SimplePaper:
             year=self.year,
             abstract=self.abstract or "",
             doi=self.doi or "",
-            urls=[self.pdf_url] if self.pdf_url else [],
+            urls=self.pdf_urls,
             collection_source=self.source_scraper,
             collection_timestamp=self.scraped_at,
             citations=0,  # Default for scraped papers
@@ -70,12 +75,11 @@ class PaperoniAdapter:
             if hasattr(release, 'date'):
                 year = release.date.year
         
-        # Extract PDF URL from links
-        pdf_url = None
+        # Extract PDF URLs from links
+        pdf_urls = []
         for link in paperoni_paper.links:
             if hasattr(link, 'type') and 'pdf' in str(link.type).lower():
-                pdf_url = link.url
-                break
+                pdf_urls.append(link.url)
         
         # Safe extraction of DOI - only if attribute exists and is not a Mock
         doi = None
@@ -91,7 +95,7 @@ class PaperoniAdapter:
             venue=venue,
             year=year or datetime.now().year,
             abstract=paperoni_paper.abstract,
-            pdf_url=pdf_url,
+            pdf_urls=pdf_urls,
             doi=doi,
             source_scraper="paperoni",
             extraction_confidence=0.95,  # High confidence for established scrapers
