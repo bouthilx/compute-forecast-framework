@@ -256,7 +256,7 @@ class PDFDiscoveryFramework:
         Returns:
             Dictionary mapping venue to list of papers
         """
-        grouped = {}
+        grouped: Dict[str, List[Paper]] = {}
         for paper in papers:
             venue = paper.venue or "unknown"
             if venue not in grouped:

@@ -64,7 +64,7 @@ class SystemInitializer:
     def get_initialization_order(self) -> List[InitializationStep]:
         """Get components in correct initialization order based on dependencies"""
 
-        ordered_steps = []
+        ordered_steps: List[InitializationStep] = []
         completed_components = set()
 
         while len(ordered_steps) < len(self.initialization_steps):

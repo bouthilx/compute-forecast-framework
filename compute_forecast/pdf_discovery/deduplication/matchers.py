@@ -234,7 +234,7 @@ class PaperFuzzyMatcher:
         matched_indices1 = set()
         matched_indices2 = set()
         exact_matches = 0
-        fuzzy_matches = 0
+        fuzzy_matches = 0.0
 
         # First pass: exact matches
         for i, name1 in enumerate(names1):
@@ -249,7 +249,7 @@ class PaperFuzzyMatcher:
         # Second pass: fuzzy matches on unmatched names
         for i, name1 in enumerate(names1):
             if i not in matched_indices1:
-                best_match_score = 0
+                best_match_score = 0.0
                 best_match_j = -1
 
                 for j, name2 in enumerate(names2):
@@ -394,7 +394,7 @@ class PaperFuzzyMatcher:
 
     def find_duplicates_fuzzy(self, records: List[PDFRecord]) -> List[FuzzyMatch]:
         """Find fuzzy duplicates based on title/author similarity."""
-        matches = []
+        matches: List[FuzzyMatch] = []
 
         # Skip fuzzy matching if dataset is too large to avoid O(n²) performance issues
         if len(records) > 5000:
