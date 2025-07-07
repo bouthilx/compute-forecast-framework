@@ -6,7 +6,7 @@ Provides intelligent alert suppression with pattern matching and burst detection
 import threading
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List
+from typing import Dict, List, Any
 from collections import defaultdict, deque
 import re
 
@@ -170,7 +170,7 @@ class AlertSuppressionManager:
                 return True
             return False
 
-    def get_suppression_status(self) -> Dict[str, any]:
+    def get_suppression_status(self) -> Dict[str, Any]:
         """Get current suppression system status"""
         with self._lock:
             # Clean expired patterns
@@ -188,7 +188,7 @@ class AlertSuppressionManager:
                 "stats": self._suppression_stats.copy(),
             }
 
-    def get_suppression_stats(self) -> Dict[str, any]:
+    def get_suppression_stats(self) -> Dict[str, Any]:
         """Get detailed suppression statistics"""
         with self._lock:
             total_evals = self._suppression_stats["total_evaluations"]
@@ -397,10 +397,10 @@ class SuppressionRuleManager:
 
         logger.info("SuppressionRuleManager initialized")
 
-    def analyze_suppression_patterns(self, alerts: List[Alert]) -> Dict[str, any]:
+    def analyze_suppression_patterns(self, alerts: List[Alert]) -> Dict[str, Any]:
         """Analyze alert patterns to suggest suppression rules"""
         with self._lock:
-            pattern_frequency = defaultdict(int)
+            pattern_frequency: Dict[str, int] = defaultdict(int)
             burst_patterns = defaultdict(list)
 
             # Analyze alert patterns
