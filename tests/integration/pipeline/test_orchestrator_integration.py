@@ -65,13 +65,13 @@ class TestVenueCollectionOrchestrator:
         assert isinstance(validation_result.integration_errors, list)
         assert isinstance(validation_result.validated_integrations, list)
 
-        # Should test major component interfaces
-        expected_components = ["agent_alpha", "agent_beta", "agent_gamma_venue"]
-        for component in expected_components:
-            if component in validation_result.component_validations:
-                comp_validation = validation_result.component_validations[component]
-                assert hasattr(comp_validation, "validation_passed")
-                assert isinstance(comp_validation.interface_methods_found, list)
+        # Should have validated integrations
+        if validation_result.all_connections_valid:
+            assert len(validation_result.validated_integrations) > 0
+        
+        # Check for any integration errors
+        if not validation_result.all_connections_valid:
+            assert len(validation_result.integration_errors) > 0
 
     def test_session_lifecycle(self, orchestrator):
         """Test complete session lifecycle"""
@@ -131,7 +131,7 @@ class TestVenueCollectionOrchestrator:
         """Test system resilience to component failures"""
         # Test with invalid session
         with pytest.raises(ValueError):
-            orchestrator.execute_venue_collection("invalid_session", ["ICML"], [2024])
+            orchestrator.execute_collection("invalid_session")
 
         # Test system status with failures
         status = orchestrator.get_system_status()

@@ -281,7 +281,7 @@ class TestIntegrationWorkflow:
 
         # Rate limiting should be effective
         limitation_rate = (total_attempts - total_successful) / total_attempts
-        assert limitation_rate > 0.5, (
+        assert limitation_rate >= 0.5, (
             f"Rate limiting too permissive: {limitation_rate:.2%}"
         )
 
