@@ -371,3 +371,7 @@ class MetricsBuffer:
         """Get current buffer size"""
         with self._lock:
             return len(self._buffer)
+
+    def __len__(self) -> int:
+        """Get current buffer size (for len() built-in)"""
+        return self.size()

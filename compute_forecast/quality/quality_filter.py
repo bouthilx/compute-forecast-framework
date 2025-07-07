@@ -25,7 +25,7 @@ class QualityFilter:
 
     def __init__(self, thresholds: QualityThresholds):
         self.thresholds = thresholds
-        self.filter_statistics = {
+        self.filter_statistics: Dict[str, Any] = {
             "papers_evaluated": 0,
             "papers_passed": 0,
             "papers_rejected": 0,
@@ -100,7 +100,7 @@ class QualityFilter:
         Returns:
             Dictionary with 'passed' and 'failed' lists
         """
-        results = {"passed": [], "failed": []}
+        results: Dict[str, List[QualityMetrics]] = {"passed": [], "failed": []}
 
         for metrics in papers:
             passes, reasons = self.evaluate_paper(metrics)

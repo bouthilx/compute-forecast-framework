@@ -35,47 +35,85 @@ class TestDashboardAlertingIntegration:
         return SystemMetrics(
             timestamp=datetime.now(),
             collection_progress=CollectionProgressMetrics(
-                total_papers_collected=5000,
-                papers_per_minute=25.5,
-                estimated_completion_time=datetime.now(),
-                venues_completed=10,
-                venues_in_progress=2,
-                venues_remaining=13,
+                session_id="test_session",
                 total_venues=25,
+                completed_venues=10,
+                in_progress_venues=2,
+                failed_venues=0,
+                papers_collected=5000,
+                papers_per_minute=25.5,
+                estimated_total_papers=6000,
+                completion_percentage=40.0,
                 session_duration_minutes=120.0,
+                estimated_remaining_minutes=60.0,
+                estimated_completion_time=datetime.now(),
+                venues_remaining=13,
             ),
             api_metrics={
                 "semantic_scholar": APIMetrics(
                     api_name="semantic_scholar",
-                    total_requests=1000,
+                    health_status="healthy",
+                    requests_made=1000,
                     successful_requests=985,
                     failed_requests=15,
                     success_rate=0.985,
                     avg_response_time_ms=1200.0,
-                    health_status="healthy",
+                    min_response_time_ms=800.0,
+                    max_response_time_ms=2000.0,
+                    rate_limit_status={},
+                    requests_throttled=0,
+                    papers_collected=500,
+                    papers_per_request=0.5,
                 )
             },
             processing_metrics=ProcessingMetrics(
+                venues_normalized=25,
+                normalization_accuracy=0.95,
+                normalization_rate_per_second=10.0,
+                papers_deduplicated=4600,
+                duplicates_removed=400,
+                deduplication_rate=0.08,
+                deduplication_confidence=0.95,
+                papers_analyzed=5000,
+                papers_above_threshold=4800,
+                breakthrough_papers_found=50,
+                filtering_rate_per_second=20.0,
                 papers_processed=5000,
                 papers_filtered=200,
                 papers_normalized=4800,
-                papers_deduplicated=4600,
                 processing_rate_per_minute=100.0,
             ),
             system_metrics=SystemResourceMetrics(
-                memory_usage_percent=65.0,
-                cpu_usage_percent=45.0,
-                disk_usage_mb=2000.0,
-                disk_free_mb=6000.0,
+                memory_usage_percentage=65.0,
+                memory_used_mb=2000.0,
+                memory_available_mb=6000.0,
+                cpu_usage_percentage=45.0,
+                cpu_count=8,
                 network_bytes_sent=1000000,
                 network_bytes_received=5000000,
+                network_connections=10,
+                disk_usage_percentage=25.0,
+                disk_free_gb=6.0,
+                process_memory_mb=500.0,
+                process_cpu_percentage=25.0,
+                thread_count=10,
             ),
             state_metrics=StateManagementMetrics(
-                total_checkpoints=50,
+                checkpoints_created=50,
+                last_checkpoint_time=datetime.now(),
+                checkpoint_creation_rate_per_hour=10.0,
+                recovery_possible=True,
+                last_recovery_time=datetime.now(),
+                recovery_success_rate=0.95,
+                state_size_mb=20.0,
                 checkpoint_size_mb=15.2,
-                checkpoints_per_hour=10.0,
+                checkpoint_creation_time_ms=500.0,
+                state_save_time_ms=300.0,
                 recovery_time_seconds=300.0,
+                state_validation_errors=0,
+                backup_count=5,
             ),
+            venue_progress={},
         )
 
     def test_basic_dashboard_creation(self):
@@ -106,15 +144,18 @@ class TestDashboardAlertingIntegration:
         """Test dashboard can receive and display metrics"""
         dashboard = CollectionDashboard(host="127.0.0.1", port=5003, debug=False)
         metrics_collector = Mock(spec=MetricsCollector)
-        metrics_collector.collect_current_metrics.return_value = mock_metrics
+        metrics_collector.get_current_metrics.return_value = mock_metrics
 
-        dashboard.set_metrics_collector(metrics_collector)
+        dashboard.start_dashboard(metrics_collector)
         assert dashboard.metrics_collector is not None
 
         # Test metrics can be retrieved
-        current_metrics = dashboard.metrics_collector.collect_current_metrics()
-        assert current_metrics.collection_progress.total_papers_collected == 5000
+        current_metrics = dashboard.metrics_collector.get_current_metrics()
+        assert current_metrics.collection_progress.papers_collected == 5000
         assert current_metrics.collection_progress.papers_per_minute == 25.5
+
+        # Clean up
+        dashboard.stop_dashboard()
 
     def test_alerting_dashboard_integration(self, mock_metrics):
         """Test alerting system integration with dashboard"""
@@ -151,7 +192,7 @@ class TestDashboardAlertingIntegration:
 
         # Mock metrics collector
         metrics_collector = Mock(spec=MetricsCollector)
-        metrics_collector.collect_current_metrics.return_value = mock_metrics
+        metrics_collector.get_current_metrics.return_value = mock_metrics
 
         dashboard.set_metrics_collector(metrics_collector)
 
@@ -204,7 +245,7 @@ class TestDashboardAlertingIntegration:
             dashboard.broadcast_alert = Mock()
 
             # Create dashboard notification channel
-            channel = DashboardNotificationChannel("test_dashboard", dashboard)
+            channel = DashboardNotificationChannel(dashboard)
 
             # Test channel properties
             assert channel.get_channel_name() == "test_dashboard"
@@ -228,7 +269,7 @@ class TestDashboardAlertingIntegration:
             metrics_collector = Mock(spec=MetricsCollector)
 
             # Set up metrics
-            metrics_collector.collect_current_metrics.return_value = mock_metrics
+            metrics_collector.get_current_metrics.return_value = mock_metrics
             dashboard.set_metrics_collector(metrics_collector)
 
             # Test basic functionality

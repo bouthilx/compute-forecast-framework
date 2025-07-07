@@ -418,11 +418,17 @@ class CollectionDashboard:
                 "breakthrough_papers_found": metrics.processing_metrics.breakthrough_papers_found,
             },
             "system_resources": {
-                "cpu_usage": round(metrics.system_metrics.cpu_usage_percent, 1),
-                "memory_usage": round(metrics.system_metrics.memory_usage_percent, 1),
-                "disk_usage": round(metrics.system_metrics.disk_usage_percent, 1),
-                "network_sent_mb": round(metrics.system_metrics.network_sent_mb, 2),
-                "network_recv_mb": round(metrics.system_metrics.network_recv_mb, 2),
+                "cpu_usage": round(metrics.system_metrics.cpu_usage_percentage, 1),
+                "memory_usage": round(
+                    metrics.system_metrics.memory_usage_percentage, 1
+                ),
+                "disk_usage": round(metrics.system_metrics.disk_usage_percentage, 1),
+                "network_sent_mb": round(
+                    metrics.system_metrics.network_bytes_sent / (1024 * 1024), 2
+                ),
+                "network_recv_mb": round(
+                    metrics.system_metrics.network_bytes_received / (1024 * 1024), 2
+                ),
             },
         }
 

@@ -346,16 +346,21 @@ class MetricsCollector:
             open_fds = process.num_fds() if hasattr(process, "num_fds") else 0
 
             return SystemResourceMetrics(
-                cpu_usage_percent=cpu_percent,
-                cpu_cores=cpu_count,
-                memory_usage_percent=memory_percent,
+                cpu_usage_percentage=cpu_percent,
+                cpu_count=cpu_count,
+                memory_usage_percentage=memory_percent,
                 memory_used_mb=memory_used_mb,
                 memory_available_mb=memory_available_mb,
-                disk_usage_percent=disk_percent,
-                disk_used_mb=disk_used_mb,
+                disk_usage_percentage=disk_percent,
+                disk_usage_mb=disk_used_mb,
                 disk_free_mb=disk_free_mb,
-                network_sent_mb=network_sent_mb,
-                network_recv_mb=network_recv_mb,
+                network_bytes_sent=int(network_sent_mb * 1024 * 1024),
+                network_bytes_received=int(network_recv_mb * 1024 * 1024),
+                network_connections=0,  # TODO: Implement network connections count
+                disk_free_gb=disk_free_mb / 1024,
+                process_memory_mb=memory_used_mb,  # TODO: Get process-specific memory
+                process_cpu_percentage=cpu_percent,  # TODO: Get process-specific CPU
+                thread_count=thread_count,
                 active_threads=thread_count,
                 open_file_descriptors=open_fds,
             )
@@ -394,7 +399,7 @@ class MetricsCollector:
 
     def _collect_venue_progress(self) -> Dict[str, VenueProgressMetrics]:
         """Collect individual venue progress metrics"""
-        venue_progress = {}
+        venue_progress: Dict[str, VenueProgressMetrics] = {}
 
         if not self.venue_engine:
             return venue_progress
@@ -495,16 +500,21 @@ class MetricsCollector:
 
     def _empty_system_metrics(self) -> SystemResourceMetrics:
         return SystemResourceMetrics(
-            cpu_usage_percent=0.0,
-            cpu_cores=0,
-            memory_usage_percent=0.0,
+            cpu_usage_percentage=0.0,
+            cpu_count=0,
+            memory_usage_percentage=0.0,
             memory_used_mb=0.0,
             memory_available_mb=0.0,
-            disk_usage_percent=0.0,
-            disk_used_mb=0.0,
+            disk_usage_percentage=0.0,
+            disk_usage_mb=0.0,
             disk_free_mb=0.0,
-            network_sent_mb=0.0,
-            network_recv_mb=0.0,
+            network_bytes_sent=0,
+            network_bytes_received=0,
+            network_connections=0,
+            disk_free_gb=0.0,
+            process_memory_mb=0.0,
+            process_cpu_percentage=0.0,
+            thread_count=0,
             active_threads=0,
             open_file_descriptors=0,
         )
