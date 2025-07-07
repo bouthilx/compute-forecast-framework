@@ -110,9 +110,7 @@ class TestVenueCollectionOrchestrator:
         test_venues = ["ICML", "ICLR"]
         test_years = [2024]
 
-        result = orchestrator.execute_collection(
-            session_id, test_venues, test_years
-        )
+        result = orchestrator.execute_collection(session_id, test_venues, test_years)
 
         # Validate result structure
         assert hasattr(result, "session_id")
@@ -170,7 +168,7 @@ class TestVenueCollectionOrchestrator:
 
         # Should return health information
         assert isinstance(health, dict)
-        assert 'system_status' in health
+        assert "system_status" in health
 
     def test_performance_benchmarks(self, orchestrator):
         """Test performance benchmarking"""
@@ -283,9 +281,7 @@ class TestSystemIntegrationRobustness:
         test_years = [2023, 2024]
 
         start_time = time.time()
-        result = orchestrator.execute_collection(
-            session_id, test_venues, test_years
-        )
+        result = orchestrator.execute_collection(session_id, test_venues, test_years)
         execution_time = time.time() - start_time
 
         # Should complete in reasonable time

@@ -255,7 +255,10 @@ class TestErrorInjectionIntegration:
         severity_levels = list(stats["by_severity"].keys())
         assert len(severity_levels) > 0
         # Verify common severity levels are present
-        assert any(severity in stats["by_severity"] for severity in ["low", "medium", "high", "critical"])
+        assert any(
+            severity in stats["by_severity"]
+            for severity in ["low", "medium", "high", "critical"]
+        )
 
         # Success criteria: framework executed all scenarios
         assert results["scenarios_executed"] == results["total_scenarios"]
