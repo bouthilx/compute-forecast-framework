@@ -4,7 +4,7 @@ Defines intelligent conditions for API health, collection progress, and system m
 """
 
 import logging
-from typing import Dict, Any, List, Callable
+from typing import Dict, Any, List, Callable, Optional
 from datetime import datetime
 
 from .alerting_engine import AlertRule, AlertSeverity, EscalationRule
@@ -476,7 +476,7 @@ class CustomAlertRule:
         threshold: float,
         comparison: str = "greater_than",
         severity: AlertSeverity = AlertSeverity.MEDIUM,
-        channels: List[str] = None,
+        channels: Optional[List[str]] = None,
     ) -> AlertRule:
         """
         Create a custom alert rule based on metric threshold
@@ -536,7 +536,7 @@ class CustomAlertRule:
         conditions: List[Callable[[Dict[str, Any]], bool]],
         logic: str = "AND",
         severity: AlertSeverity = AlertSeverity.MEDIUM,
-        channels: List[str] = None,
+        channels: Optional[List[str]] = None,
     ) -> AlertRule:
         """
         Create composite alert rule with multiple conditions

@@ -1,9 +1,10 @@
 import logging
 import sys
 from pathlib import Path
+from typing import Optional
 
 
-def setup_logging(log_level: str = "INFO", log_file: str = None):
+def setup_logging(log_level: str = "INFO", log_file: Optional[str] = None):
     """Setup centralized logging configuration"""
 
     # Create logs directory if it doesn't exist
