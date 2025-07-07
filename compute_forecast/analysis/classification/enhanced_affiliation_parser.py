@@ -44,7 +44,7 @@ class EnhancedAffiliationParser(AffiliationParser):
 
     def parse_complex_affiliation(self, affiliation: str) -> Dict[str, Any]:
         """Handle complex multi-part affiliations."""
-        if not affiliation:
+        if not affiliation or not affiliation.strip():
             return {
                 "organization": None,
                 "department": None,
@@ -99,8 +99,8 @@ class EnhancedAffiliationParser(AffiliationParser):
                                 rf"\b{abbrev}\b", expansion, dept, flags=re.IGNORECASE
                             )
                         result["department"] = dept.title()
-                        # Remove department from part for further processing
-                        part = re.sub(pattern, "", part, flags=re.IGNORECASE).strip()
+                        # Don't remove department from part - it might contain org info
+                        # Just mark that we found a department
                         break
 
             # Check for state abbreviation (US states)
@@ -109,27 +109,39 @@ class EnhancedAffiliationParser(AffiliationParser):
                 continue
 
             # Check for location information
-            if i >= 2:  # Location info usually comes after org and dept
+            if i >= 1:  # Location info usually comes after organization
                 if len(part) <= 30 and not any(
                     keyword in part_lower
-                    for keyword in ["university", "institute", "college"]
+                    for keyword in [
+                        "university",
+                        "institute",
+                        "college",
+                        "department",
+                        "dept",
+                        "school",
+                    ]
                 ):
                     # Check if it's a country
-                    if part.upper() in [
-                        "USA",
-                        "UK",
-                        "CA",
-                        "CANADA",
-                        "FRANCE",
-                        "GERMANY",
-                        "CHINA",
-                        "JAPAN",
-                    ]:
-                        result["country"] = part.upper()
+                    country_map = {
+                        "USA": "USA",
+                        "UK": "UK",
+                        "CA": "CA",
+                        "CANADA": "Canada",
+                        "FRANCE": "France",
+                        "GERMANY": "Germany",
+                        "CHINA": "China",
+                        "JAPAN": "Japan",
+                        "SWITZERLAND": "Switzerland",
+                    }
+                    if part.upper() in country_map:
+                        result["country"] = country_map.get(part.upper(), part)
                     # Check if it's already identified as state
+                    elif part != result.get("state") and not result["organization"]:
+                        # Skip this - it might be the organization
+                        pass
                     elif part != result.get("state"):
                         # If we don't have a city yet, this could be the city
-                        if not result["city"] and i < len(parts) - 1:
+                        if not result["city"]:
                             result["city"] = part
 
             # Extract organization name (usually first substantial part)
@@ -146,7 +158,7 @@ class EnhancedAffiliationParser(AffiliationParser):
                     "foundation",
                     "academy",
                 ]
-                # Common university abbreviations
+                # Common university abbreviations including UC variants
                 common_abbreviations = [
                     "MIT",
                     "UCLA",
@@ -158,11 +170,18 @@ class EnhancedAffiliationParser(AffiliationParser):
                     "UCSD",
                 ]
 
-                if any(keyword in part_lower for keyword in org_keywords):
+                # Special handling for UC Berkeley and similar patterns
+                uc_pattern = r"UC\s+(\w+)"
+                uc_match = re.search(uc_pattern, part)
+                if uc_match:
+                    result["organization"] = f"UC {uc_match.group(1)}"
+                elif any(keyword in part_lower for keyword in org_keywords):
                     result["organization"] = self._clean_organization_name(part)
                 elif part.upper() in common_abbreviations:
                     result["organization"] = part.upper()
-                elif i == 0:  # First part is often the organization
+                elif (
+                    i == 0 and not result["department"]
+                ):  # First part is often the organization if no dept found
                     result["organization"] = self._clean_organization_name(part)
 
         # If no organization found, check parenthetical content
@@ -179,12 +198,34 @@ class EnhancedAffiliationParser(AffiliationParser):
         confidence = 1.0
         if not result["organization"]:
             confidence *= 0.3
+        elif (
+            "unknown" in result["organization"].lower()
+            and "affiliation" in result["organization"].lower()
+        ):
+            # Very vague/unknown affiliation
+            confidence *= 0.3
+        elif any(
+            vague in result["organization"].lower()
+            for vague in ["unknown", "research lab", "laboratory"]
+        ):
+            # Generic or vague organization names
+            confidence *= 0.7
+
         if not result["department"] and any(
             word in affiliation.lower() for word in ["dept", "department"]
         ):
             confidence *= 0.8
+
         if email_domain and not result["organization"]:
             confidence *= 0.7
+
+        # Check for location quality
+        if result.get("city") and "unknown" in result["city"].lower():
+            confidence *= 0.8
+
+        # Very short affiliations are less reliable
+        if affiliation and len(affiliation.strip()) < 10:
+            confidence *= 0.9
 
         result["parse_confidence"] = confidence
         return result
