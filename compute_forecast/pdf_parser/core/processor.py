@@ -21,7 +21,7 @@ class OptimizedPDFProcessor:
         Args:
             config: Configuration dictionary for the processor
         """
-        self.extractors = {}  # Will store {name: {'extractor': BaseExtractor, 'level': int}}
+        self.extractors: Dict[str, Dict[str, Any]] = {}  # Will store {name: {'extractor': BaseExtractor, 'level': int}}
         self.config = config
         self.validator = AffiliationValidator()
         self.cost_tracker = CostTracker()

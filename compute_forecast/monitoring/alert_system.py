@@ -346,8 +346,8 @@ class IntelligentAlertSystem:
         cutoff_time = datetime.now() - timedelta(hours=hours)
 
         # Count alerts by severity and status
-        severity_counts = defaultdict(int)
-        status_counts = defaultdict(int)
+        severity_counts: Dict[str, int] = defaultdict(int)
+        status_counts: Dict[str, int] = defaultdict(int)
 
         for alert in self.alert_history:
             if alert.timestamp >= cutoff_time:
@@ -364,7 +364,7 @@ class IntelligentAlertSystem:
                 resolution_times.append(resolution_time)
 
         # Get most frequent rules
-        rule_frequency = defaultdict(int)
+        rule_frequency: Dict[str, int] = defaultdict(int)
         for alert in self.alert_history:
             if alert.timestamp >= cutoff_time:
                 rule_frequency[alert.rule_name] += 1
