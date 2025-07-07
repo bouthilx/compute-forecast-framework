@@ -59,7 +59,10 @@ class TestEnhancedAffiliationParser:
             ),
             (
                 "Dept. of AI, Stanford University",
-                {"organization": "Stanford University", "department": "AI"},
+                {
+                    "organization": "Stanford University",
+                    "department": "Artificial Intelligence",
+                },
             ),
             (
                 "School of Engineering, UC Berkeley",

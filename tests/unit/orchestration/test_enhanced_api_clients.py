@@ -68,14 +68,14 @@ class TestEnhancedSemanticScholarClient:
         # Real implementation should include offset in API call
 
     def test_search_papers_with_retry_logic(self):
-        """Test retry logic for failed requests"""
+        """Test retry logic for timeout and server errors"""
         query = 'venue:"ICML" year:2023'
         year = 2023
 
         with patch("requests.get") as mock_get:
-            # First call fails, second succeeds
+            # First call times out, second succeeds
             mock_get.side_effect = [
-                requests.exceptions.RequestException("Connection error"),
+                requests.exceptions.Timeout("Connection timeout"),
                 Mock(status_code=200, json=lambda: {"data": [], "total": 0}),
             ]
 
@@ -84,6 +84,25 @@ class TestEnhancedSemanticScholarClient:
             # Should have retried and succeeded
             assert result.success is True
             assert mock_get.call_count == 2
+
+    def test_search_papers_network_error_no_retry(self):
+        """Test that general network errors are not retried"""
+        query = 'venue:"ICML" year:2023'
+        year = 2023
+
+        with patch("requests.get") as mock_get:
+            # Network error - should not retry
+            mock_get.side_effect = requests.exceptions.RequestException(
+                "Connection error"
+            )
+
+            result = self.client.search_papers(query, year)
+
+            # Should fail without retry
+            assert result.success is False
+            assert mock_get.call_count == 1
+            assert len(result.errors) > 0
+            assert result.errors[0].error_type == "network_error"
 
     def test_search_papers_rate_limit_handling(self):
         """Test handling of rate limit responses (429)"""
@@ -102,7 +121,7 @@ class TestEnhancedSemanticScholarClient:
             # Should handle rate limit gracefully
             assert result.success is False
             assert len(result.errors) > 0
-            assert "rate limit" in result.errors[0].error_type.lower()
+            assert result.errors[0].error_type == "rate_limit_exceeded"
 
     def test_search_venue_batch_or_query_construction(self):
         """Test batch venue search with OR query construction"""

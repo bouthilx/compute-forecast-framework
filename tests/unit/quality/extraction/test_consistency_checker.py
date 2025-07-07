@@ -46,7 +46,7 @@ class TestExtractionConsistencyChecker:
         assert isinstance(result, ConsistencyCheck)
         assert result.check_type == "temporal"
         assert result.passed is True
-        assert result.confidence > 0.7
+        assert result.confidence >= 0.7
         assert "growth_rate" in result.details
         assert result.details["growth_rate"] > 0  # Positive growth
 

@@ -1,6 +1,7 @@
 """Tests for extraction quality assurance."""
 
 import pytest
+from unittest.mock import Mock
 
 from compute_forecast.analysis.benchmark.quality_assurance import (
     ExtractionQualityAssurance,
@@ -11,7 +12,14 @@ from compute_forecast.analysis.benchmark.models import (
     BenchmarkPaper,
     ExtractionQA,
 )
-from compute_forecast.data.models import Paper, ComputationalAnalysis
+from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
+
+
+def create_mock_paper(extraction_confidence=0.8):
+    """Create a mock paper with extraction_confidence attribute."""
+    mock = Mock()
+    mock.extraction_confidence = extraction_confidence
+    return mock
 
 
 class TestExtractionQualityAssurance:
@@ -29,7 +37,7 @@ class TestExtractionQualityAssurance:
 
         # Create balanced results across domains and years
         for domain in [BenchmarkDomain.NLP, BenchmarkDomain.CV, BenchmarkDomain.RL]:
-            for year in [2022, 2023]:
+            for year in [2022, 2023, 2024]:
                 papers = []
                 for i in range(40):  # 40 papers per domain-year
                     confidence = 0.9 - (i * 0.02)  # Gradually decreasing confidence
@@ -38,7 +46,8 @@ class TestExtractionQualityAssurance:
                         title=f"Paper {i}",
                         year=year,
                         venue="Test",
-                        authors=["Author"],
+                        authors=[Author(name="Author")],
+                        citations=i * 10,  # Add required citations field
                     )
 
                     benchmark_paper = BenchmarkPaper(
@@ -47,7 +56,12 @@ class TestExtractionQualityAssurance:
                         is_sota=(i < 5),  # First 5 are SOTA
                         benchmark_datasets=["Dataset1"],
                         computational_requirements=ComputationalAnalysis(
-                            gpu_hours=100.0 if confidence > 0.5 else None,
+                            computational_richness=confidence,
+                            keyword_matches={"gpu": 1} if confidence > 0.5 else {},
+                            resource_metrics={"gpu_hours": 100.0}
+                            if confidence > 0.5
+                            else {},
+                            experimental_indicators={"has_ablation": confidence > 0.7},
                             confidence_score=confidence,
                         ),
                         extraction_confidence=confidence,
@@ -100,11 +114,11 @@ class TestExtractionQualityAssurance:
         # Check domain distribution
         assert len(distribution["domains"]) == 3
         assert all(
-            count == 80 for count in distribution["domains"].values()
-        )  # 40 × 2 years
+            count == 120 for count in distribution["domains"].values()
+        )  # 40 × 3 years
 
         # Check year distribution
-        assert len(distribution["years"]) == 2
+        assert len(distribution["years"]) == 3
         assert all(
             count == 120 for count in distribution["years"].values()
         )  # 40 × 3 domains
@@ -116,8 +130,8 @@ class TestExtractionQualityAssurance:
         qa_report = qa_system.generate_qa_report(sample_extraction_results)
 
         assert isinstance(qa_report, ExtractionQA)
-        assert qa_report.total_papers == 240  # 40 × 3 domains × 2 years
-        assert qa_report.successfully_extracted == 240
+        assert qa_report.total_papers == 360  # 40 × 3 domains × 3 years
+        assert qa_report.successfully_extracted == 360
 
         # Check confidence distribution
         assert qa_report.high_confidence > 0
@@ -132,7 +146,7 @@ class TestExtractionQualityAssurance:
 
         # Check domain distribution
         assert sum(qa_report.domain_distribution.values()) == qa_report.total_papers
-        assert all(count == 80 for count in qa_report.domain_distribution.values())
+        assert all(count == 120 for count in qa_report.domain_distribution.values())
 
         # Check year distribution
         assert sum(qa_report.year_distribution.values()) == qa_report.total_papers
@@ -144,7 +158,7 @@ class TestExtractionQualityAssurance:
             ExtractionBatch(
                 domain=BenchmarkDomain.NLP,
                 year=2023,
-                papers=[Mock() for _ in range(100)],
+                papers=[create_mock_paper() for _ in range(100)],
                 total_extracted=85,  # 85% extraction rate
                 high_confidence_count=60,
                 requires_manual_review=[],
@@ -159,7 +173,7 @@ class TestExtractionQualityAssurance:
             ExtractionBatch(
                 domain=BenchmarkDomain.CV,
                 year=2023,
-                papers=[Mock() for _ in range(100)],
+                papers=[create_mock_paper() for _ in range(100)],
                 total_extracted=50,  # 50% extraction rate
                 high_confidence_count=30,
                 requires_manual_review=list(range(50)),
@@ -175,7 +189,7 @@ class TestExtractionQualityAssurance:
             ExtractionBatch(
                 domain=BenchmarkDomain.RL,
                 year=2023,
-                papers=[Mock() for _ in range(100)],
+                papers=[create_mock_paper() for _ in range(100)],
                 total_extracted=100,
                 high_confidence_count=65,  # 65% high confidence
                 requires_manual_review=list(range(35)),
@@ -195,7 +209,7 @@ class TestExtractionQualityAssurance:
             batch = ExtractionBatch(
                 domain=BenchmarkDomain.NLP,
                 year=year,
-                papers=[Mock() for _ in range(100)],
+                papers=[create_mock_paper() for _ in range(100)],
                 total_extracted=100,
                 high_confidence_count=80,
                 requires_manual_review=[],
@@ -206,7 +220,7 @@ class TestExtractionQualityAssurance:
         batch = ExtractionBatch(
             domain=BenchmarkDomain.RL,
             year=2023,
-            papers=[Mock() for _ in range(10)],
+            papers=[create_mock_paper() for _ in range(10)],
             total_extracted=10,
             high_confidence_count=8,
             requires_manual_review=[],
@@ -226,7 +240,7 @@ class TestExtractionQualityAssurance:
                 batch = ExtractionBatch(
                     domain=domain,
                     year=year,
-                    papers=[Mock() for _ in range(30)],
+                    papers=[create_mock_paper() for _ in range(30)],
                     total_extracted=30,
                     high_confidence_count=20,
                     requires_manual_review=[],
@@ -256,10 +270,3 @@ class TestExtractionQualityAssurance:
         assert 0 <= metrics["manual_review_rate"] <= 1
         assert metrics["sota_paper_count"] > 0
         assert 0 <= metrics["avg_confidence_score"] <= 1
-
-
-# Mock class for testing
-class Mock:
-    """Simple mock class for creating placeholder objects."""
-
-    pass

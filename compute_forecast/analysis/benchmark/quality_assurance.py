@@ -63,13 +63,14 @@ class ExtractionQualityAssurance:
         self, results: List[ExtractionBatch]
     ) -> Dict[str, float]:
         """Calculate extraction statistics."""
-        total_papers = sum(batch.total_extracted for batch in results)
+        total_papers_available = sum(len(batch.papers) for batch in results)
+        total_papers_extracted = sum(batch.total_extracted for batch in results)
         total_high_confidence = sum(batch.high_confidence_count for batch in results)
         total_manual_review = sum(
             len(batch.requires_manual_review) for batch in results
         )
 
-        if total_papers == 0:
+        if total_papers_available == 0:
             return {
                 "extraction_rate": 0.0,
                 "high_confidence_rate": 0.0,
@@ -77,9 +78,13 @@ class ExtractionQualityAssurance:
             }
 
         return {
-            "extraction_rate": total_papers / total_papers,  # Assume 100% extraction
-            "high_confidence_rate": total_high_confidence / total_papers,
-            "manual_review_rate": total_manual_review / total_papers,
+            "extraction_rate": total_papers_extracted / total_papers_available,
+            "high_confidence_rate": total_high_confidence / total_papers_extracted
+            if total_papers_extracted > 0
+            else 0.0,
+            "manual_review_rate": total_manual_review / total_papers_extracted
+            if total_papers_extracted > 0
+            else 0.0,
         }
 
     def calculate_quality_metrics(

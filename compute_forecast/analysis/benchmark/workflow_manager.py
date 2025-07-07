@@ -123,7 +123,9 @@ class ExtractionWorkflowManager:
             # Submit extraction jobs
             future_to_batch = {}
             for batch_key, papers in batches.items():
-                domain_str, year_str = batch_key.split("_")
+                # Split from the right to handle multi-word domains
+                parts = batch_key.rsplit("_", 1)
+                domain_str, year_str = parts
                 domain = BenchmarkDomain(domain_str)
 
                 future = executor.submit(

@@ -16,7 +16,7 @@ from compute_forecast.analysis.benchmark.extractor import AcademicBenchmarkExtra
 from compute_forecast.analysis.benchmark.domain_extractors import (
     NLPBenchmarkExtractor,
 )
-from compute_forecast.data.models import Paper, ComputationalAnalysis
+from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
 
 
 class TestExtractionWorkflowManager:
@@ -38,7 +38,8 @@ class TestExtractionWorkflowManager:
                         title=f"{domain} Paper {i} - {year}",
                         year=year,
                         venue="NeurIPS" if domain == "NLP" else "ICML",
-                        authors=[f"Author {paper_id}"],
+                        authors=[Author(name=f"Author {paper_id}")],
+                        citations=i * 50,  # Add required citations field
                         abstract=f"Research in {domain} using deep learning",
                     )
                     papers.append(paper)
@@ -74,7 +75,10 @@ class TestExtractionWorkflowManager:
         # Check batch keys follow expected format
         for key in batches:
             assert "_" in key  # Format: "domain_year"
-            domain_str, year_str = key.split("_")
+            # Split from the right to handle multi-word domains
+            parts = key.rsplit("_", 1)
+            assert len(parts) == 2
+            domain_str, year_str = parts
             assert domain_str in ["nlp", "computer_vision", "reinforcement_learning"]
             assert int(year_str) in workflow_manager.years
 
@@ -102,7 +106,10 @@ class TestExtractionWorkflowManager:
                             is_sota=False,
                             benchmark_datasets=["Test"],
                             computational_requirements=ComputationalAnalysis(
-                                gpu_hours=100.0,
+                                computational_richness=0.8,
+                                keyword_matches={"gpu": 1},
+                                resource_metrics={"gpu_hours": 100.0},
+                                experimental_indicators={"has_ablation": True},
                                 confidence_score=0.8,
                             ),
                             extraction_confidence=0.8,
@@ -159,7 +166,8 @@ class TestExtractionWorkflowManager:
                 title=f"Paper needing review {i}",
                 year=2023,
                 venue="ICML",
-                authors=[f"Author {i}"],
+                authors=[Author(name=f"Author {i}")],
+                citations=10,
             )
             papers_needing_review.append(paper)
 
@@ -170,7 +178,11 @@ class TestExtractionWorkflowManager:
                     is_sota=False,
                     benchmark_datasets=[],
                     computational_requirements=ComputationalAnalysis(
-                        confidence_score=0.4
+                        computational_richness=0.4,
+                        keyword_matches={},
+                        resource_metrics={},
+                        experimental_indicators={},
+                        confidence_score=0.4,
                     ),
                     extraction_confidence=0.4,
                 )
@@ -195,11 +207,23 @@ class TestExtractionWorkflowManager:
         """Test error handling in parallel extraction."""
         batches = {
             "nlp_2023": [
-                Paper(paper_id="1", title="Test", year=2023, venue="ACL", authors=["A"])
-            ],
-            "cv_2023": [
                 Paper(
-                    paper_id="2", title="Test2", year=2023, venue="CVPR", authors=["B"]
+                    paper_id="1",
+                    title="Test",
+                    year=2023,
+                    venue="ACL",
+                    authors=[Author(name="A")],
+                    citations=10,
+                )
+            ],
+            "computer_vision_2023": [
+                Paper(
+                    paper_id="2",
+                    title="Test2",
+                    year=2023,
+                    venue="CVPR",
+                    authors=[Author(name="B")],
+                    citations=10,
                 )
             ],
         }
@@ -235,7 +259,8 @@ class TestExtractionWorkflowManager:
             title="BERT for Natural Language Understanding",
             year=2023,
             venue="ACL",
-            authors=["NLP Researcher"],
+            authors=[Author(name="NLP Researcher")],
+            citations=100,
             abstract="We present improvements to transformer models for NLP tasks.",
         )
 
@@ -244,7 +269,8 @@ class TestExtractionWorkflowManager:
             title="Vision Transformer for Image Classification",
             year=2023,
             venue="CVPR",
-            authors=["CV Researcher"],
+            authors=[Author(name="CV Researcher")],
+            citations=150,
             abstract="We apply transformers to computer vision and image recognition.",
         )
 
@@ -253,7 +279,8 @@ class TestExtractionWorkflowManager:
             title="Deep Reinforcement Learning for Atari Games",
             year=2023,
             venue="ICML",
-            authors=["RL Researcher"],
+            authors=[Author(name="RL Researcher")],
+            citations=80,
             abstract="We train agents using reinforcement learning on Atari environments.",
         )
 
