@@ -50,7 +50,7 @@ class TestVenueCollectionOrchestrator:
 
         # Should have integration validation
         assert result.integration_validation is not None
-        assert isinstance(result.integration_validation.overall_success, bool)
+        assert isinstance(result.integration_validation.all_connections_valid, bool)
 
     def test_component_interface_validation(self, orchestrator):
         """Test that component interfaces are properly validated"""

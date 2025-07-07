@@ -124,7 +124,7 @@ class VenueCollectionOrchestrator:
         self.alert_system = None  # Agent Delta
 
         # Supporting components
-        self.system_initializer = SystemInitializer(config)
+        self.system_initializer = SystemInitializer()
         self.component_validator = ComponentValidator()
         self.workflow_coordinator = WorkflowCoordinator()
 
