@@ -168,7 +168,7 @@ class ExperimentalDetector:
 
     def _detect_sections(self, text: str) -> Dict[str, Any]:
         """Detect presence of experimental sections in paper"""
-        section_presence = {}
+        section_presence: Dict[str, Any] = {}
 
         for section_name, pattern in self.section_patterns.items():
             matches = pattern.findall(text)

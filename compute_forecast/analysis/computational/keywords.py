@@ -192,7 +192,7 @@ def validate_patterns() -> Dict[str, Any]:
         "flops": "2.3 TFLOPS",
     }
 
-    results = {}
+    results: Dict[str, Any] = {}
     for pattern_name, test_text in test_cases.items():
         pattern = COMPUTATIONAL_PATTERNS[pattern_name]
         matches = pattern.findall(test_text)
