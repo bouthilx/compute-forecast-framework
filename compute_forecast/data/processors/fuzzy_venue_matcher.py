@@ -34,7 +34,8 @@ class FuzzyVenueMatcher:
         # Common abbreviations and expansions
         self.abbreviation_map = {
             # Conference names
-            "NIPS": "NEURIPS",
+            "NIPS": "Neural Information Processing Systems",
+            "NEURIPS": "Neural Information Processing Systems",
             "IJCAI": "International Joint Conference on Artificial Intelligence",
             "AAAI": "Association for the Advancement of Artificial Intelligence",
             "SIGIR": "Special Interest Group on Information Retrieval",
@@ -145,6 +146,12 @@ class FuzzyVenueMatcher:
             "TO",
             "WITH",
             "BY",
+            "PROCEEDINGS",
+            "CONFERENCE",
+            "JOURNAL",
+            "TRANSACTIONS",
+            "SYMPOSIUM",
+            "WORKSHOP",
         }
         filtered_words = [
             word for word in expanded_words if word and word not in stop_words
@@ -238,13 +245,19 @@ class FuzzyVenueMatcher:
         # Check for exact match first
         for candidate in candidates:
             if self.normalize_venue_name(candidate) == normalized_raw:
+                # Only consider it an exact match if the original strings are also the same
+                if raw_venue.upper().strip() == candidate.upper().strip():
+                    match_type = "exact"
+                else:
+                    match_type = "fuzzy"
+                
                 return FuzzyMatchResult(
                     original_venue=raw_venue,
                     matched_venue=candidate,
                     similarity_score=1.0,
                     normalized_original=normalized_raw,
                     normalized_matched=self.normalize_venue_name(candidate),
-                    match_type="exact",
+                    match_type=match_type,
                 )
 
         # Check for abbreviation match
@@ -311,64 +324,9 @@ class FuzzyVenueMatcher:
 
         results = {}
 
-        # Use rapidfuzz's process.extract for efficient batch processing
+        # Process each venue using find_best_match for consistency
         for raw_venue in raw_venues:
-            try:
-                # Get top matches using rapidfuzz
-                matches = process.extract(
-                    raw_venue,
-                    candidates,
-                    scorer=fuzz.token_sort_ratio,
-                    limit=3,
-                    score_cutoff=threshold * 100,
-                )
-
-                if matches:
-                    # Get the best match and calculate our custom similarity
-                    best_candidate = matches[0][0]
-                    custom_similarity = self.calculate_venue_similarity(
-                        raw_venue, best_candidate
-                    )
-
-                    if custom_similarity >= threshold:
-                        results[raw_venue] = FuzzyMatchResult(
-                            original_venue=raw_venue,
-                            matched_venue=best_candidate,
-                            similarity_score=custom_similarity,
-                            normalized_original=self.normalize_venue_name(raw_venue),
-                            normalized_matched=self.normalize_venue_name(
-                                best_candidate
-                            ),
-                            match_type="fuzzy",
-                        )
-                    else:
-                        results[raw_venue] = FuzzyMatchResult(
-                            original_venue=raw_venue,
-                            matched_venue=None,
-                            similarity_score=0.0,
-                            normalized_original=self.normalize_venue_name(raw_venue),
-                            normalized_matched=None,
-                            match_type="none",
-                        )
-                else:
-                    results[raw_venue] = FuzzyMatchResult(
-                        original_venue=raw_venue,
-                        matched_venue=None,
-                        similarity_score=0.0,
-                        normalized_original=self.normalize_venue_name(raw_venue),
-                        normalized_matched=None,
-                        match_type="none",
-                    )
-
-            except Exception as e:
-                self.logger.error(f"Error matching venue '{raw_venue}': {e}")
-                results[raw_venue] = FuzzyMatchResult(
-                    original_venue=raw_venue,
-                    matched_venue=None,
-                    similarity_score=0.0,
-                    normalized_original=self.normalize_venue_name(raw_venue),
-                    normalized_matched=None,
-                    match_type="none",
-                )
+            result = self.find_best_match(raw_venue, candidates, threshold)
+            results[raw_venue] = result
 
         return results
