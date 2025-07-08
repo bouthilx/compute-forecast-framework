@@ -190,6 +190,9 @@ class SemanticScholarPDFCollector(BasePDFCollector):
             else CONFIDENCE_SCORE_TITLE_SEARCH
         )
 
+        if paper.paper_id is None:
+            raise ValueError(f"Paper has no paper_id: {paper.title}")
+
         return PDFRecord(
             paper_id=paper.paper_id,
             pdf_url=open_access_pdf["url"],
@@ -267,7 +270,11 @@ class SemanticScholarPDFCollector(BasePDFCollector):
 
                         # Extract PDF if available
                         open_access_pdf = ss_paper.get("openAccessPdf")
-                        if open_access_pdf and open_access_pdf.get("url"):
+                        if (
+                            open_access_pdf
+                            and open_access_pdf.get("url")
+                            and our_paper.paper_id is not None
+                        ):
                             pdf_record = PDFRecord(
                                 paper_id=our_paper.paper_id,
                                 pdf_url=open_access_pdf["url"],

@@ -7,7 +7,7 @@ import re
 from typing import List, Tuple, Optional, Dict
 from dataclasses import dataclass
 import logging
-from rapidfuzz import fuzz, process
+from rapidfuzz import fuzz
 
 logger = logging.getLogger(__name__)
 
@@ -190,10 +190,10 @@ class FuzzyVenueMatcher:
             return 1.0
 
         # Multiple similarity measures
-        token_sort_ratio = fuzz.token_sort_ratio(norm1, norm2) / 100.0
-        partial_ratio = fuzz.partial_ratio(norm1, norm2) / 100.0
-        token_set_ratio = fuzz.token_set_ratio(norm1, norm2) / 100.0
-        ratio = fuzz.ratio(norm1, norm2) / 100.0
+        token_sort_ratio = float(fuzz.token_sort_ratio(norm1, norm2)) / 100.0
+        partial_ratio = float(fuzz.partial_ratio(norm1, norm2)) / 100.0
+        token_set_ratio = float(fuzz.token_set_ratio(norm1, norm2)) / 100.0
+        ratio = float(fuzz.ratio(norm1, norm2)) / 100.0
 
         # Weighted combination (favor token-based comparisons)
         similarity = (
@@ -206,7 +206,7 @@ class FuzzyVenueMatcher:
         return similarity
 
     def find_fuzzy_matches(
-        self, raw_venue: str, candidates: List[str], threshold: float = None
+        self, raw_venue: str, candidates: List[str], threshold: Optional[float] = None
     ) -> List[Tuple[str, float]]:
         """
         Find fuzzy matches above threshold
@@ -230,7 +230,7 @@ class FuzzyVenueMatcher:
         return matches
 
     def find_best_match(
-        self, raw_venue: str, candidates: List[str], threshold: float = None
+        self, raw_venue: str, candidates: List[str], threshold: Optional[float] = None
     ) -> FuzzyMatchResult:
         """
         Find the best fuzzy match for a venue name
@@ -312,7 +312,7 @@ class FuzzyVenueMatcher:
         return False
 
     def batch_find_matches(
-        self, raw_venues: List[str], candidates: List[str], threshold: float = None
+        self, raw_venues: List[str], candidates: List[str], threshold: Optional[float] = None
     ) -> Dict[str, FuzzyMatchResult]:
         """
         Batch processing for multiple venue matches

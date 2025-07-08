@@ -55,7 +55,7 @@ class VenueStatistics:
     years_covered: List[int] = field(default_factory=list)
     impact_metrics: Dict[str, float] = field(default_factory=dict)
     author_metrics: Dict[str, Any] = field(default_factory=dict)
-    citation_metrics: Dict[str, float] = field(default_factory=dict)
+    citation_metrics: Dict[str, Any] = field(default_factory=dict)
     quality_metrics: Dict[str, float] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -152,7 +152,7 @@ class StatisticalAnalyzer:
         ]
         venues = [p.get("venue", "Unknown") for p in papers if p.get("venue")]
         years = [
-            p.get("year", 0) for p in papers if p.get("year") and p.get("year") > 1900
+            year for p in papers if (year := p.get("year")) is not None and year > 1900
         ]
 
         # Citation statistics
@@ -248,9 +248,9 @@ class StatisticalAnalyzer:
 
         # Years covered
         years = [
-            p.get("year")
+            year
             for p in venue_papers
-            if p.get("year") and p.get("year") > 1900
+            if (year := p.get("year")) is not None and year > 1900
         ]
         stats.years_covered = sorted(list(set(years)))
 
@@ -362,7 +362,7 @@ class StatisticalAnalyzer:
         # Extract basic information
         venues = list(set(p.get("venue", "Unknown") for p in papers if p.get("venue")))
         years = [
-            p.get("year") for p in papers if p.get("year") and p.get("year") > 1900
+            year for p in papers if (year := p.get("year")) is not None and year > 1900
         ]
 
         summary.venues_analyzed = sorted(venues)

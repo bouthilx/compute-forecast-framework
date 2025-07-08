@@ -165,7 +165,10 @@ class SimpleDashboard:
             self.active_dashboards[session_id]["closed_at"] = datetime.now()
 
     def update_progress(
-        self, session_id: str, papers_collected: int, current_venue: str = None
+        self,
+        session_id: str,
+        papers_collected: int,
+        current_venue: Optional[str] = None,
     ):
         """Update dashboard progress"""
         if session_id in self.active_dashboards:
@@ -263,7 +266,7 @@ class SimpleAlertSystem:
 
         return new_alerts
 
-    def clear_alerts(self, session_id: str, alert_types: List[str] = None):
+    def clear_alerts(self, session_id: str, alert_types: Optional[List[str]] = None):
         """Clear alerts for session"""
         if session_id not in self.active_alerts:
             return

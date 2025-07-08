@@ -7,7 +7,7 @@ approaches for handling edge cases and ambiguous information.
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 import re
 import logging
 
@@ -347,7 +347,7 @@ class EdgeCaseHandler:
         return estimated_gpu_hours
 
     @classmethod
-    def resolve_model_reference(cls, model_name: str) -> Dict[str, any]:
+    def resolve_model_reference(cls, model_name: str) -> Dict[str, Any]:
         """Resolve implicit model references to known configurations."""
         model_name_clean = model_name.upper().replace("-", "").replace("_", "")
 
@@ -369,7 +369,7 @@ class EdgeCaseHandler:
         return {}
 
     @classmethod
-    def handle_distributed_training(cls, text: str) -> Dict[str, any]:
+    def handle_distributed_training(cls, text: str) -> Dict[str, Any]:
         """Extract distributed training configuration."""
         text_lower = text.lower()
         result = {}
@@ -407,7 +407,7 @@ class EdgeCaseHandler:
         return result
 
     @classmethod
-    def handle_multiple_experiments(cls, text: str) -> Dict[str, any]:
+    def handle_multiple_experiments(cls, text: str) -> Dict[str, Any]:
         """Handle cases with multiple experimental runs."""
         text_lower = text.lower()
         result = {}
@@ -487,7 +487,7 @@ class PatternMatcher:
 
         return patterns
 
-    def extract_all_patterns(self, text: str) -> Dict[PatternType, Dict[str, any]]:
+    def extract_all_patterns(self, text: str) -> Dict[PatternType, Dict[str, Any]]:
         """Extract information using all applicable patterns."""
         results = {}
         pattern_types = self.identify_pattern_type(text)
@@ -510,7 +510,7 @@ class PatternMatcher:
 
         return results
 
-    def _extract_explicit_resources(self, text: str) -> Dict[str, any]:
+    def _extract_explicit_resources(self, text: str) -> Dict[str, Any]:
         """Extract explicit resource information."""
         result = {}
 
@@ -540,7 +540,7 @@ class PatternMatcher:
 
         return result
 
-    def _extract_multiple_phases(self, text: str) -> Dict[str, any]:
+    def _extract_multiple_phases(self, text: str) -> Dict[str, Any]:
         """Extract multiple training phases."""
         result = {}
         text_lower = text.lower()
@@ -556,7 +556,7 @@ class PatternMatcher:
 
         return result
 
-    def _extract_implicit_info(self, text: str) -> Dict[str, any]:
+    def _extract_implicit_info(self, text: str) -> Dict[str, Any]:
         """Extract implicit model information."""
         result = {}
         text_lower = text.lower()
@@ -571,7 +571,7 @@ class PatternMatcher:
 
         return result
 
-    def _extract_cost_info(self, text: str) -> Dict[str, any]:
+    def _extract_cost_info(self, text: str) -> Dict[str, Any]:
         """Extract cost information."""
         result = {}
 
@@ -594,7 +594,7 @@ class PatternMatcher:
 
         return result
 
-    def _extract_relative_info(self, text: str) -> Dict[str, any]:
+    def _extract_relative_info(self, text: str) -> Dict[str, Any]:
         """Extract relative reference information."""
         result = {}
         text_lower = text.lower()

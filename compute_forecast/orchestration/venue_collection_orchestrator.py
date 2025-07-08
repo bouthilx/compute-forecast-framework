@@ -116,12 +116,12 @@ class VenueCollectionOrchestrator:
         self.config = config
 
         # Agent components (initialized during system startup)
-        self.api_integration_layer = None  # Agent Alpha
-        self.state_manager = None  # Agent Beta
-        self.data_processors = {}  # Agent Gamma components
-        self.metrics_collector = None  # Agent Delta
-        self.dashboard = None  # Agent Delta
-        self.alert_system = None  # Agent Delta
+        self.api_integration_layer: Optional[Any] = None  # Agent Alpha
+        self.state_manager: Optional[Any] = None  # Agent Beta
+        self.data_processors: dict[str, Any] = {}  # Agent Gamma components
+        self.metrics_collector: Optional[Any] = None  # Agent Delta
+        self.dashboard: Optional[Any] = None  # Agent Delta
+        self.alert_system: Optional[Any] = None  # Agent Delta
 
         # Supporting components
         self.system_initializer = SystemInitializer()
@@ -130,12 +130,12 @@ class VenueCollectionOrchestrator:
 
         # System state
         self.system_ready = False
-        self.active_sessions = {}  # session_id -> SessionMetadata
-        self.component_status = {}  # component_name -> ComponentStatus
+        self.active_sessions: dict[str, Any] = {}  # session_id -> SessionMetadata
+        self.component_status: dict[str, Any] = {}  # component_name -> ComponentStatus
 
         # Performance tracking
-        self.initialization_time = None
-        self.startup_metrics = {}
+        self.initialization_time: Optional[float] = None
+        self.startup_metrics: dict[str, Any] = {}
 
         logger.info("VenueCollectionOrchestrator initialized with config")
 
@@ -279,23 +279,19 @@ class VenueCollectionOrchestrator:
 
         try:
             # Import and initialize API components
-            from ..data.collectors import APIIntegrationLayer
-            from ..data.sources import (
-                EnhancedCrossrefClient,
-                EnhancedOpenAlexClient,
-                EnhancedSemanticScholarClient,
-            )
+            from ..data.collectors.api_integration_layer import VenueCollectionEngine
+            from ..monitoring.health_monitor import HealthMonitor
+            from ..monitoring.rate_limiter import AdaptiveRateLimiter
 
-            # Create API clients
-            api_clients = {
-                "crossref": EnhancedCrossrefClient(self.config),
-                "openalex": EnhancedOpenAlexClient(self.config),
-                "semantic_scholar": EnhancedSemanticScholarClient(self.config),
-            }
+            # Initialize dependencies for VenueCollectionEngine
+            rate_limiter = AdaptiveRateLimiter()
+            health_monitor = HealthMonitor()
 
             # Initialize integration layer
-            self.api_integration_layer = APIIntegrationLayer(
-                api_clients=api_clients, config=self.config
+            self.api_integration_layer = VenueCollectionEngine(
+                config=self.config,
+                rate_limiter=rate_limiter,
+                health_monitor=health_monitor,
             )
 
             # Validate initialization

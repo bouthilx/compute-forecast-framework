@@ -124,7 +124,9 @@ class ExtractionConsistencyChecker:
                         growth_rate = 0
                     else:
                         coeffs = np.polyfit(years - years[0], values, 1)
-                        growth_rate = coeffs[0] / np.mean(values) if np.mean(values) > 0 else 0
+                        growth_rate = (
+                            coeffs[0] / np.mean(values) if np.mean(values) > 0 else 0
+                        )
                 else:
                     log_values = np.log(values)
                     # Check for invalid values (NaN or inf)

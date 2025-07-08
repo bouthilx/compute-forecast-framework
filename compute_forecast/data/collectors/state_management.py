@@ -230,25 +230,25 @@ class StateManager:
         # Handle Issue #5 compatibility - session_config contains everything
         if session_config is not None:
             # Extract configuration from session_config
-            if hasattr(session_config, '__dict__'):
+            if hasattr(session_config, "__dict__"):
                 collection_config = session_config.__dict__
             else:
                 collection_config = {}
-            
+
             # Create default venues and years if not provided
             if target_venues is None:
                 target_venues = [
                     VenueConfig(
-                        venue_name="NeurIPS", 
+                        venue_name="NeurIPS",
                         target_years=list(range(2019, 2025)),
                         max_papers_per_year=50,
-                        priority=1
+                        priority=1,
                     ),
                     VenueConfig(
-                        venue_name="ICML", 
+                        venue_name="ICML",
                         target_years=list(range(2019, 2025)),
                         max_papers_per_year=50,
-                        priority=1
+                        priority=1,
                     ),
                 ]
             if target_years is None:
@@ -256,7 +256,9 @@ class StateManager:
 
         # Ensure we have required parameters
         if target_venues is None or target_years is None or collection_config is None:
-            raise ValueError("Must provide either session_config or (target_venues, target_years, collection_config)")
+            raise ValueError(
+                "Must provide either session_config or (target_venues, target_years, collection_config)"
+            )
 
         if session_id is None:
             session_id = f"session_{uuid.uuid4().hex[:8]}"
