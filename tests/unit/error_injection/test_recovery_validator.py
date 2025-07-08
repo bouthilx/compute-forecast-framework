@@ -1,6 +1,6 @@
 """Tests for Recovery Validator."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 from datetime import datetime, timedelta
 
 from compute_forecast.testing.error_injection.recovery_validator import (
@@ -16,13 +16,7 @@ from compute_forecast.testing.error_injection.injection_framework import (
 class TestRecoveryValidator:
     """Test suite for RecoveryValidator."""
 
-    @patch(
-        "compute_forecast.testing.error_injection.recovery_validator.InterruptionRecoveryEngine"
-    )
-    @patch(
-        "compute_forecast.testing.error_injection.recovery_validator.StatePersistenceManager"
-    )
-    def test_initialization(self, mock_state_manager, mock_recovery_engine):
+    def test_initialization(self):
         """Test validator initialization."""
         validator = RecoveryValidator()
 
