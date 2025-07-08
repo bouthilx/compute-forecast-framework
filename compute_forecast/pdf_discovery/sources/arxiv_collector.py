@@ -12,6 +12,7 @@ from urllib.parse import quote_plus
 from compute_forecast.data.models import Paper
 from compute_forecast.pdf_discovery.core.models import PDFRecord
 from compute_forecast.pdf_discovery.core.collectors import BasePDFCollector
+from compute_forecast.pdf_discovery.utils.exceptions import SourceNotApplicableError
 
 logger = logging.getLogger(__name__)
 
@@ -354,4 +355,6 @@ class ArXivPDFCollector(BasePDFCollector):
             return pdf_record
 
         # No arXiv version found
-        raise Exception(f"No arXiv version found for paper {paper.paper_id}")
+        raise SourceNotApplicableError(
+            f"No arXiv ID for {paper.paper_id}", source="arxiv"
+        )

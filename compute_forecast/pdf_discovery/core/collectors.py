@@ -7,6 +7,7 @@ import logging
 
 from compute_forecast.data.models import Paper
 from .models import PDFRecord
+from ..utils.exceptions import SourceNotApplicableError
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +87,12 @@ class BasePDFCollector(ABC):
                 except FutureTimeoutError:
                     logger.warning(
                         f"Timeout discovering PDF for {paper.paper_id} from {self.source_name}"
+                    )
+                    self._stats["failed"] += 1
+
+                except SourceNotApplicableError as e:
+                    logger.info(
+                        f"Source {self.source_name} not applicable for {paper.paper_id}: {e}"
                     )
                     self._stats["failed"] += 1
 
