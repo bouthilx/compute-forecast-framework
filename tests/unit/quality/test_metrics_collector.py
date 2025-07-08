@@ -229,9 +229,9 @@ class TestMetricsCollector:
         collector.session_start_time = datetime.now()
 
         # Simulate some collection activity
-        collector.collection_stats["metrics_collected"] = 10
-        collector.collection_stats["collection_errors"] = 2
-        collector.collection_stats["last_collection_time"] = datetime.now()
+        collector._collection_count = 10
+        collector._collection_errors = 2
+        collector._last_collection_time = time.time()
 
         stats = collector.get_collection_statistics()
 

@@ -44,7 +44,7 @@ class MetricsCollector:
         self.venue_engine = None
         self.state_manager = None
         self.api_managers: Dict[str, Any] = {}
-        self.data_processors: Dict[str, Any] = {}
+        self.data_processors = None
 
         # Collection control
         self._running = False
@@ -56,6 +56,7 @@ class MetricsCollector:
         self._collection_count = 0
         self._collection_errors = 0
         self._session_id = None
+        self.session_start_time = None
 
         logger.info(
             f"MetricsCollector initialized with {collection_interval_seconds}s interval"
@@ -85,6 +86,11 @@ class MetricsCollector:
         """Get current session ID"""
         return self._session_id
 
+    @session_id.setter
+    def session_id(self, value: Optional[str]):
+        """Set session ID"""
+        self._session_id = value
+
     def start_collection(
         self,
         venue_engine,
@@ -112,9 +118,10 @@ class MetricsCollector:
             self.api_managers = api_managers
             self.data_processors = data_processors
 
-            # Generate session ID
+            # Generate session ID and start time
             import uuid
             self._session_id = str(uuid.uuid4())
+            self.session_start_time = datetime.now()
 
             # Start collection thread
             self._running = True
@@ -173,6 +180,7 @@ class MetricsCollector:
                 peak_cpu_usage=0.0,
                 total_venues_completed=0,
                 total_processing_time_minutes=time_window_minutes,
+                processing_throughput=0.0,
             )
         
         # Calculate collection rates
@@ -224,6 +232,7 @@ class MetricsCollector:
             peak_cpu_usage=peak_cpu_usage,
             total_venues_completed=0,  # TODO: Calculate from metrics
             total_processing_time_minutes=time_window_minutes,
+            processing_throughput=avg_collection_rate,
         )
 
     def collect_metrics(self) -> SystemMetrics:
@@ -324,7 +333,7 @@ class MetricsCollector:
             estimated_remaining = venues_remaining * avg_time_per_venue
 
             return CollectionProgressMetrics(
-                session_id=progress.get("session_id"),
+                session_id=self._session_id,
                 total_venues=total_venues,
                 completed_venues=completed,
                 in_progress_venues=in_progress,
@@ -563,11 +572,14 @@ class MetricsCollector:
         """Get metrics collector statistics"""
         with self._lock:
             return {
-                "collection_count": self._collection_count,
+                "session_id": self._session_id,
+                "metrics_collected": self._collection_count,
                 "collection_errors": self._collection_errors,
                 "last_collection_time_seconds": self._last_collection_time,
                 "buffer_size": len(self.metrics_buffer),
                 "is_collecting": self._running,
+                "session_start_time": self.session_start_time,
+                "collection_interval_seconds": self.collection_interval,
             }
 
     # Empty metric factory methods for error cases
