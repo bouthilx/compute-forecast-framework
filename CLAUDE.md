@@ -194,13 +194,15 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
 ## Testing
 - **Use `pytest` for all testing**
 - Test structure:
-  - `tests/unittest/` - Unit tests for individual components
-  - `tests/functional/` - Integration and scenario tests
+  - `tests/unit/` - Unit tests for individual components
+  - `tests/integration/` - Integration and scenario tests
+  - `tests/performance/` - Performance (scaling) tests.
 - **Coverage requirement: 90% minimum**
 - Run tests:
   - All tests with coverage: `uv run tox -e all` or `uv run pytest`
   - Unit tests only: `uv run tox -e unit`
-  - Functional tests only: `uv run tox -e functional`
+  - Functional tests only: `uv run tox -e integration`
+  - Performance tests only: `uv run tox -e performance`
   - Quick tests (no coverage): `uv run tox -e quick`
   - Debug mode: `uv run tox -e debug`
 - Coverage reports are generated in `htmlcov/index.html`
