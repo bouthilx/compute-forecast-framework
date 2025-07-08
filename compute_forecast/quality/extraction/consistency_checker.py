@@ -108,9 +108,27 @@ class ExtractionConsistencyChecker:
         # Check for general increasing trend
         if metric in ["parameters", "gpu_hours"]:
             # Fit exponential trend
-            log_values = np.log(values)
-            coeffs = np.polyfit(years - years[0], log_values, 1)
-            growth_rate = np.exp(coeffs[0]) - 1
+            try:
+                log_values = np.log(values)
+                # Check for invalid values (NaN or inf)
+                if not np.all(np.isfinite(log_values)):
+                    # Fall back to linear trend if log doesn't work
+                    coeffs = np.polyfit(years - years[0], values, 1)
+                    # Use linear growth rate approximation
+                    growth_rate = coeffs[0] / np.mean(values) if np.mean(values) > 0 else 0
+                else:
+                    coeffs = np.polyfit(years - years[0], log_values, 1)
+                    growth_rate = np.exp(coeffs[0]) - 1
+            except (np.linalg.LinAlgError, ValueError, RuntimeWarning):
+                # If polynomial fitting fails, use simple linear trend
+                try:
+                    # Simple linear growth rate
+                    if len(values) >= 2:
+                        growth_rate = (values[-1] - values[0]) / (values[0] * (years[-1] - years[0])) if values[0] > 0 else 0
+                    else:
+                        growth_rate = 0
+                except (ZeroDivisionError, ValueError):
+                    growth_rate = 0
 
             # Check if growth rate is reasonable
             expected_growth = self.scaling_laws.get(f"{metric}_vs_year", {}).get(
@@ -128,7 +146,7 @@ class ExtractionConsistencyChecker:
                     "growth_rate": growth_rate,
                     "expected_positive": True,
                 }
-            elif abs(growth_rate - expected_growth) / expected_growth > tolerance:
+            elif expected_growth != 0 and abs(growth_rate - expected_growth) / expected_growth > tolerance:
                 passed = True  # Pass but note deviation
                 confidence = 0.7
                 details = {
@@ -146,11 +164,22 @@ class ExtractionConsistencyChecker:
                 }
         else:
             # For other metrics, just check for outliers
-            z_scores = np.abs((values - np.mean(values)) / np.std(values))
-            outliers = np.where(z_scores > self.outlier_z_score)[0]
+            try:
+                std_val = np.std(values)
+                if std_val == 0 or not np.isfinite(std_val):
+                    # All values are the same, no outliers
+                    outliers = []
+                    z_scores = np.zeros_like(values)
+                else:
+                    z_scores = np.abs((values - np.mean(values)) / std_val)
+                    outliers = np.where(z_scores > self.outlier_z_score)[0]
+            except (ValueError, RuntimeWarning):
+                # If calculation fails, assume no outliers
+                outliers = []
+                z_scores = np.zeros_like(values)
 
             passed = len(outliers) == 0
-            confidence = 1.0 - (len(outliers) / len(values))
+            confidence = 1.0 - (len(outliers) / len(values)) if len(values) > 0 else 1.0
             details = {
                 "outliers": len(outliers),
                 "total": len(values),

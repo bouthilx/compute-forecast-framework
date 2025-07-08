@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Dict, Optional, Any
 from datetime import datetime, timedelta
 import shutil
+import requests
 
 from .google_drive_store import GoogleDriveStore
 from compute_forecast.pdf_download.cache_manager import PDFCacheManager
@@ -22,6 +23,7 @@ class PDFManager:
         cache_dir: str = "./temp_pdf_cache",
         max_cache_size_gb: float = 10.0,
         cache_ttl_days: int = 7,
+        cache_ttl_hours: Optional[int] = None,
     ):
         """Initialize PDF Manager.
 
@@ -30,6 +32,7 @@ class PDFManager:
             cache_dir: Directory for local cache
             max_cache_size_gb: Maximum cache size in GB
             cache_ttl_days: Cache time-to-live in days
+            cache_ttl_hours: Cache time-to-live in hours (overrides cache_ttl_days)
         """
         self.drive_store = drive_store
         self.cache_dir = Path(cache_dir)
@@ -40,7 +43,10 @@ class PDFManager:
 
         # Cache configuration
         self.max_cache_size_bytes = int(max_cache_size_gb * 1024 * 1024 * 1024)
-        self.cache_ttl = timedelta(days=cache_ttl_days)
+        if cache_ttl_hours is not None:
+            self.cache_ttl = timedelta(hours=cache_ttl_hours)
+        else:
+            self.cache_ttl = timedelta(days=cache_ttl_days)
 
         # Metadata tracking
         self.metadata_file = self.cache_dir / "pdf_metadata.json"
@@ -158,16 +164,28 @@ class PDFManager:
         removed_count = 0
 
         for paper_id, info in list(self.metadata.items()):
-            last_accessed = datetime.fromisoformat(info.get("last_accessed", ""))
+            # Use cached_at if available, otherwise try last_accessed
+            cached_at_str = info.get("cached_at") or info.get("last_accessed")
+            if not cached_at_str:
+                continue
+                
+            try:
+                last_accessed = datetime.fromisoformat(cached_at_str)
+            except ValueError:
+                # Skip entries with invalid timestamps
+                continue
 
             if now - last_accessed > self.cache_ttl:
                 if self.cache_manager.remove_from_cache(paper_id):
                     removed_count += 1
+                    del self.metadata[paper_id]
 
         logger.info(f"Removed {removed_count} expired files from cache")
 
         # Check cache size and remove oldest if needed
         self._enforce_cache_size_limit()
+        
+        return removed_count
 
     def _enforce_cache_size_limit(self):
         """Ensure cache doesn't exceed size limit."""

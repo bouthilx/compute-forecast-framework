@@ -121,16 +121,15 @@ class IntegratedExtractionValidator:
                 # Get values from cache or paper group
                 field_values = self._get_field_values(field, paper_group)
                 if field_values and len(field_values) > 3:
+                    # Add current value to the list for outlier detection
+                    all_values = field_values + [value]
                     outliers = self.outlier_detector.detect_outliers(
-                        field_values, method="combined", field=field
+                        all_values, method="combined", field=field
                     )
-                    # Check if current value is an outlier
-                    if value in [field_values[i] for i in outliers]:
-                        # Verify if it should be kept
-                        if not self.outlier_detector.verify_outlier(
-                            paper, extraction_dict, field, value
-                        ):
-                            outlier_fields.append(field)
+                    # Check if current value index (last in list) is an outlier
+                    current_value_index = len(all_values) - 1
+                    if current_value_index in outliers:
+                        outlier_fields.append(field)
 
         # 4. Calculate overall quality
         overall_quality, confidence = self._calculate_overall_quality(

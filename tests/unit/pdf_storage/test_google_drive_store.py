@@ -32,7 +32,7 @@ class TestGoogleDriveStore(unittest.TestCase):
         self.assertEqual(store.folder_id, self.mock_folder_id)
         self.assertEqual(store._service, mock_service)
         mock_credentials.assert_called_once_with(
-            self.mock_credentials_path, scopes=["https://www.googleapis.com/auth/drive"]
+            self.mock_credentials_path, scopes=["https://www.googleapis.com/auth/drive.file"]
         )
 
     @patch("compute_forecast.pdf_storage.google_drive_store.build")

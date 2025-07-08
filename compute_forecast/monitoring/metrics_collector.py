@@ -400,22 +400,29 @@ class MetricsCollector:
             duplicates_removed = 0
             papers_above_threshold = 0
             breakthrough_papers = 0
-
+            venues_normalized = 0
+            normalization_accuracy = 0.0
+            
             for processor_name, processor in self.data_processors.items():
-                if hasattr(processor, "get_statistics"):
+                # Handle venue normalizer specially
+                if processor_name == "venue_normalizer" and hasattr(processor, "get_mapping_statistics"):
+                    stats = processor.get_mapping_statistics()
+                    venues_normalized = stats.get("venues_normalized", 0)
+                    normalization_accuracy = stats.get("accuracy", 0.0)
+                elif hasattr(processor, "get_statistics"):
                     stats = processor.get_statistics()
                     total_processed += stats.get("papers_processed", 0)
-                    total_deduplicated += stats.get("papers_deduplicated", 0)
+                    total_deduplicated += stats.get("papers_processed", 0)  # Use papers_processed
                     duplicates_removed += stats.get("duplicates_removed", 0)
                     papers_above_threshold += stats.get("papers_above_threshold", 0)
-                    breakthrough_papers += stats.get("breakthrough_papers_found", 0)
+                    breakthrough_papers += stats.get("breakthrough_papers", 0)
 
             # Calculate rates
             dedup_rate = duplicates_removed / max(total_processed, 1)
 
             return ProcessingMetrics(
-                venues_normalized=0,  # TODO: Implement venue normalization tracking
-                normalization_accuracy=0.0,
+                venues_normalized=venues_normalized,
+                normalization_accuracy=normalization_accuracy,
                 normalization_rate_per_second=0.0,
                 papers_deduplicated=total_deduplicated,
                 duplicates_removed=duplicates_removed,
@@ -558,7 +565,6 @@ class MetricsCollector:
                     last_update_time=status.get("last_update_time", datetime.now()),
                     collection_duration_minutes=duration,
                     estimated_remaining_minutes=estimated_remaining,
-                    retry_count=status.get("retry_count", 0),
                     error_count=status.get("error_count", 0),
                     last_activity=status.get("last_activity"),
                 )

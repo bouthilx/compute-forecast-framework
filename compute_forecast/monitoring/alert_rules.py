@@ -386,8 +386,8 @@ class AlertRuleFactory:
             return False
 
         return (
-            hasattr(system_metrics, "memory_usage_percent")
-            and system_metrics.memory_usage_percent > 90
+            hasattr(system_metrics, "memory_usage_percentage")
+            and system_metrics.memory_usage_percentage > 90
         )
 
     @staticmethod
@@ -398,8 +398,8 @@ class AlertRuleFactory:
             return False
 
         return (
-            hasattr(system_metrics, "cpu_usage_percent")
-            and system_metrics.cpu_usage_percent > 85
+            hasattr(system_metrics, "cpu_usage_percentage")
+            and system_metrics.cpu_usage_percentage > 85
         )
 
     @staticmethod

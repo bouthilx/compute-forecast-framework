@@ -8,7 +8,7 @@ import threading
 import logging
 import json
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -377,6 +377,21 @@ class NotificationChannelManager:
             results.append(result)
 
         return results
+
+    def send_to_all_channels(
+        self, alert: Alert, channel_names: Optional[List[str]] = None
+    ) -> List[NotificationResult]:
+        """Send notification to all channels or specified channels"""
+        # If specific channels are provided, use them
+        if channel_names:
+            return self.send_to_multiple_channels(alert, channel_names)
+        
+        # Otherwise, send to all available channels
+        available_channels = [
+            name for name, channel in self.channels.items()
+            if channel.is_available()
+        ]
+        return self.send_to_multiple_channels(alert, available_channels)
 
     def get_available_channels(self) -> List[str]:
         """Get list of available channels"""

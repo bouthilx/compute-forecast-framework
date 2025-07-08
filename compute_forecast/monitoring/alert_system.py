@@ -64,6 +64,39 @@ class AlertRuleEvaluator:
             logger.error(f"Error evaluating rule {rule.rule_id}: {e}")
             return False
 
+    def get_metric_context(self, rule: AlertRule, context: EvaluationContext) -> Dict[str, Any]:
+        """
+        Extract relevant metric values for alert context.
+        Parses the rule condition to identify which metrics are referenced.
+        """
+        metric_context = {}
+        
+        # Simple approach: extract metric references from the condition string
+        # Look for patterns like metrics.field or metrics.field.subfield
+        import re
+        
+        # Find all metrics references in the condition
+        pattern = r'metrics\.(\w+(?:\.\w+)*)'
+        matches = re.findall(pattern, rule.condition)
+        
+        for match in matches:
+            # Navigate through nested attributes
+            try:
+                value = context.metrics
+                for attr in match.split('.'):
+                    value = getattr(value, attr)
+                metric_context[match.replace('.', '_')] = value
+            except AttributeError:
+                # Skip if attribute doesn't exist
+                pass
+        
+        # Also check for specific known patterns
+        if 'papers_per_minute' in rule.condition:
+            if hasattr(context.metrics, 'collection_progress'):
+                metric_context['papers_per_minute'] = context.metrics.collection_progress.papers_per_minute
+        
+        return metric_context
+
 
 class AlertNotificationManager:
     """Manages alert notification delivery across multiple channels"""
@@ -341,9 +374,9 @@ class IntelligentAlertSystem:
                 return True
             return False
 
-    def get_alert_summary(self, hours: int = 1) -> AlertSummary:
+    def get_alert_summary(self, time_period_hours: int = 1) -> AlertSummary:
         """Get summary of alert activity"""
-        cutoff_time = datetime.now() - timedelta(hours=hours)
+        cutoff_time = datetime.now() - timedelta(hours=time_period_hours)
 
         # Count alerts by severity and status
         severity_counts: Dict[str, int] = defaultdict(int)
@@ -374,7 +407,7 @@ class IntelligentAlertSystem:
         )[:5]
 
         return AlertSummary(
-            time_period=f"Last {hours} hour(s)",
+            time_period=f"{time_period_hours}h",
             start_time=cutoff_time,
             end_time=datetime.now(),
             total_alerts=sum(severity_counts.values()),
@@ -521,16 +554,14 @@ class IntelligentAlertSystem:
 
     def _process_alerts(self, alerts: List[Alert]) -> List[Alert]:
         """Process alerts through suppression and deduplication"""
-        if not self.suppression_manager:
-            return alerts
-
         processed_alerts = []
 
         for alert in alerts:
-            # Check suppression
-            if self.suppression_manager.should_suppress_alert(alert):
-                alert.suppress("automatic suppression")
-                logger.debug(f"Alert {alert.alert_id} suppressed")
+            # Check suppression if manager is available
+            if self.suppression_manager:
+                if self.suppression_manager.should_suppress_alert(alert):
+                    alert.suppress("automatic suppression")
+                    logger.debug(f"Alert {alert.alert_id} suppressed")
 
             # Add to active alerts
             self.active_alerts[alert.alert_id] = alert
@@ -541,6 +572,23 @@ class IntelligentAlertSystem:
             processed_alerts.append(alert)
 
         return processed_alerts
+
+    def get_performance_stats(self) -> Dict[str, Any]:
+        """Get performance statistics for alert system"""
+        return {
+            "avg_evaluation_time_ms": sum(self._evaluation_times) / len(self._evaluation_times)
+            if self._evaluation_times
+            else 0.0,
+            "max_evaluation_time_ms": max(self._evaluation_times) if self._evaluation_times else 0.0,
+            "evaluation_count": len(self._evaluation_times),
+            "avg_notification_time_ms": sum(self._notification_times) / len(self._notification_times)
+            if self._notification_times
+            else 0.0,
+            "active_alerts_count": len(self.active_alerts),
+            "total_alerts_processed": len(self.alert_history),
+            "rules_enabled": sum(1 for r in self.alert_rules.values() if r.enabled),
+            "total_rules": len(self.alert_rules),
+        }
 
     def _evaluation_loop(self) -> None:
         """Main evaluation loop that runs periodically"""
