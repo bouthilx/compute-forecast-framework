@@ -272,12 +272,18 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
             paper_url = urljoin(self.base_url, paper_url)
             
         # Extract paper ID from URL
-        paper_id_match = re.search(r'/([A-Z]\d{2}-\d+)/?$', paper_url)
-        if paper_id_match:
-            paper_id = paper_id_match.group(1)
+        # Try new format first (2024.acl-long.0)
+        new_format_match = re.search(r'/(\d{4}\.\w+-\w+\.\d+)/?$', paper_url)
+        if new_format_match:
+            paper_id = new_format_match.group(1)
         else:
-            # Try to extract from other patterns
-            paper_id = paper_url.split('/')[-1] or paper_url.split('/')[-2]
+            # Try old format (P24-1234)
+            old_format_match = re.search(r'/([A-Z]\d{2}-\d+)/?$', paper_url)
+            if old_format_match:
+                paper_id = old_format_match.group(1)
+            else:
+                # Fallback to URL segments
+                paper_id = paper_url.split('/')[-1] or paper_url.split('/')[-2]
         
         # Get title
         title = paper_link.get_text(strip=True)
@@ -365,11 +371,17 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
                 pdf_url = urljoin(self.base_url, pdf_url)
             return pdf_url
             
-        # ACL Anthology often has predictable PDF URLs based on paper ID
-        paper_id_match = re.search(r'/([A-Z]\d{2}-\d+)/?$', paper_url)
-        if paper_id_match:
-            paper_id = paper_id_match.group(1)
-            # Common PDF URL pattern
+        # ACL Anthology has predictable PDF URLs based on paper URL
+        # Pattern 1: New format like /2024.acl-long.0/ -> /2024.acl-long.0.pdf
+        new_format_match = re.search(r'/(\d{4}\.\w+-\w+\.\d+)/?$', paper_url)
+        if new_format_match:
+            paper_id = new_format_match.group(1)
+            return f"https://aclanthology.org/{paper_id}.pdf"
+            
+        # Pattern 2: Old format like /P24-1234/ -> /P24-1234.pdf
+        old_format_match = re.search(r'/([A-Z]\d{2}-\d+)/?$', paper_url)
+        if old_format_match:
+            paper_id = old_format_match.group(1)
             return f"https://aclanthology.org/{paper_id}.pdf"
             
         return None

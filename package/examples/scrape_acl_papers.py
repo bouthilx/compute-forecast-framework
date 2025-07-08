@@ -77,8 +77,11 @@ def scrape_acl_papers(year: int, limit: int = 10):
         if len(paper.authors) > 3:
             print(f"            ... and {len(paper.authors) - 3} more")
         print(f"   Paper ID: {paper.paper_id}")
+        print(f"   Source URL: {paper.source_url}")
         if paper.pdf_urls:
-            print(f"   PDF: {paper.pdf_urls[0]}")
+            print(f"   PDF URL: {paper.pdf_urls[0]}")
+        else:
+            print(f"   PDF URL: ❌ Not found")
         print(f"   Metadata completeness: {paper.metadata_completeness:.0%}")
         print()
     

@@ -130,9 +130,9 @@ class TestACLAnthologyScraper:
         """Test extracting paper data from HTML entry"""
         entry_html = """
         <div>
-            <a href="/2024.acl-main.123/">Understanding Large Language Models</a>
+            <a href="/2024.acl-long.123/">Understanding Large Language Models</a>
             <i>John Doe, Jane Smith, Bob Johnson</i>
-            <a href="/2024.acl-main.123.pdf">PDF</a>
+            <a href="/2024.acl-long.123.pdf">PDF</a>
         </div>
         """
         
@@ -147,8 +147,30 @@ class TestACLAnthologyScraper:
         assert paper.venue == "ACL"
         assert paper.year == 2024
         assert len(paper.pdf_urls) == 1
-        assert paper.pdf_urls[0] == "https://aclanthology.org/2024.acl-main.123.pdf"
-        assert paper.paper_id == "acl_2024.acl-main.123"
+        assert paper.pdf_urls[0] == "https://aclanthology.org/2024.acl-long.123.pdf"
+        assert paper.paper_id == "acl_2024.acl-long.123"
+        
+    def test_extract_pdf_url_patterns(self):
+        """Test PDF URL extraction with different ACL Anthology patterns"""
+        # Test new format pattern
+        entry1 = self._create_entry('<a href="/2024.acl-long.0/">Paper Title</a>')
+        pdf_url1 = self.scraper._extract_pdf_url(entry1, "https://aclanthology.org/2024.acl-long.0/")
+        assert pdf_url1 == "https://aclanthology.org/2024.acl-long.0.pdf"
+        
+        # Test old format pattern  
+        entry2 = self._create_entry('<a href="/P24-1234/">Paper Title</a>')
+        pdf_url2 = self.scraper._extract_pdf_url(entry2, "https://aclanthology.org/P24-1234/")
+        assert pdf_url2 == "https://aclanthology.org/P24-1234.pdf"
+        
+        # Test with explicit PDF link
+        entry3 = self._create_entry('<a href="/2024.acl-long.0.pdf">PDF</a>')
+        pdf_url3 = self.scraper._extract_pdf_url(entry3, "https://aclanthology.org/2024.acl-long.0/")
+        assert pdf_url3 == "https://aclanthology.org/2024.acl-long.0.pdf"
+        
+        # Test other volume types
+        entry4 = self._create_entry('<a href="/2024.acl-short.15/">Short Paper</a>')
+        pdf_url4 = self.scraper._extract_pdf_url(entry4, "https://aclanthology.org/2024.acl-short.15/")
+        assert pdf_url4 == "https://aclanthology.org/2024.acl-short.15.pdf"
         
     def test_extract_authors_various_formats(self):
         """Test author extraction with different formats"""
