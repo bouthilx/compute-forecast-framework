@@ -204,6 +204,9 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
   - Quick tests (no coverage): `uv run tox -e quick`
   - Debug mode: `uv run tox -e debug`
 - Coverage reports are generated in `htmlcov/index.html`
+- Unit tests must complete in less than 2 minutes on github actions.
+- Functional tests must complete in less than 5 minutes on github actions.
+- Long running tests should be limited to tests/performance.
 
 ## Code Organization
 [TODO]
