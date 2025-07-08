@@ -250,7 +250,7 @@ class FuzzyVenueMatcher:
                     match_type = "exact"
                 else:
                     match_type = "fuzzy"
-                
+
                 return FuzzyMatchResult(
                     original_venue=raw_venue,
                     matched_venue=candidate,

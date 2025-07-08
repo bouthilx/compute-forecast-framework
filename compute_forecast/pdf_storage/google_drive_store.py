@@ -258,6 +258,75 @@ class GoogleDriveStore:
 
         return results
 
+    def upload_file(
+        self, file_path: Path, filename: str, metadata: Optional[Dict] = None
+    ) -> Optional[str]:
+        """Upload a file to Google Drive with given filename.
+
+        Args:
+            file_path: Path to the file to upload
+            filename: Name to save the file as
+            metadata: Optional metadata to store with the file
+
+        Returns:
+            Google Drive file ID
+        """
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+
+        # Prepare file metadata
+        file_metadata = {
+            "name": filename,
+            "parents": [self.folder_id],
+        }
+
+        if metadata:
+            file_metadata["properties"] = metadata
+
+        # Upload the file
+        media = MediaFileUpload(str(file_path), mimetype="application/pdf")
+
+        try:
+            file_obj = (
+                self._service.files()
+                .create(body=file_metadata, media_body=media, fields="id")
+                .execute()
+            )
+
+            file_id = file_obj.get("id")
+            logger.info(f"Successfully uploaded file {filename} with ID: {file_id}")
+            return file_id
+
+        except Exception as e:
+            logger.error(f"Failed to upload file {filename}: {e}")
+            return None
+
+    def file_exists(self, filename: str) -> bool:
+        """Check if a file exists in the Google Drive folder.
+
+        Args:
+            filename: Name of the file to check
+
+        Returns:
+            True if file exists, False otherwise
+        """
+        try:
+            query = (
+                f"name='{filename}' and parents in '{self.folder_id}' and trashed=false"
+            )
+            results = (
+                self._service.files()
+                .list(q=query, pageSize=1, fields="files(id, name)")
+                .execute()
+            )
+
+            files = results.get("files", [])
+            return len(files) > 0
+
+        except HttpError as e:
+            logger.error(f"Failed to check file existence for {filename}: {e}")
+            return False
+
     def test_connection(self) -> bool:
         """Test the Google Drive connection.
 

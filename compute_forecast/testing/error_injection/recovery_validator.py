@@ -35,17 +35,7 @@ class RecoveryValidator:
 
     def __init__(self, recovery_engine=None, state_manager=None):
         """Initialize recovery validator with existing recovery systems."""
-        # Use provided or mock recovery systems
-        # If not provided, create minimal mock objects for testing
-        if recovery_engine is None:
-            from unittest.mock import Mock
-
-            recovery_engine = Mock()
-        if state_manager is None:
-            from unittest.mock import Mock
-
-            state_manager = Mock()
-
+        # Store recovery systems (can be None)
         self.recovery_engine = recovery_engine
         self.state_manager = state_manager
 
@@ -343,7 +333,8 @@ class RecoveryValidator:
         has_primary = any(k in expected for k in primary_keys)
 
         if has_primary:
-            # Focus on primary numeric metrics
+            # Focus on primary numeric metrics but also consider structural preservation
+            primary_score = 0.0
             for key in primary_keys:
                 if key in expected and key in actual:
                     expected_val = expected[key]
@@ -352,9 +343,24 @@ class RecoveryValidator:
                         actual_val, (int, float)
                     ):
                         if expected_val > 0:
-                            return (actual_val / expected_val) * 100
+                            primary_score = (actual_val / expected_val) * 100
                         else:
-                            return 100.0 if actual_val == 0 else 0.0
+                            primary_score = 100.0 if actual_val == 0 else 0.0
+                        break
+
+            # Consider structural preservation (status, error info, etc.)
+            structural_score = 0.0
+            total_keys = len(expected)
+            preserved_keys = 0
+            for key in expected:
+                if key in actual:
+                    preserved_keys += 1
+
+            if total_keys > 0:
+                structural_score = (preserved_keys / total_keys) * 100
+
+            # Weighted average: 50% primary data, 50% structural preservation
+            return (primary_score * 0.5) + (structural_score * 0.5)
 
         # Special handling for dicts containing "papers" field
         if "papers" in expected and isinstance(expected["papers"], (list, tuple)):

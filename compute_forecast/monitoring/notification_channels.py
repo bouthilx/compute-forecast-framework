@@ -8,7 +8,7 @@ import threading
 import logging
 import json
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -58,18 +58,20 @@ class ConsoleNotificationChannel(NotificationChannel):
             # Format alert message - handle both alert formats
             color = self.color_codes.get(alert.severity, "")
             severity_icon = self._get_severity_icon(alert.severity)
-            
+
             # Handle different alert formats
-            alert_id = getattr(alert, 'alert_id', getattr(alert, 'id', 'unknown'))
-            rule_name = getattr(alert, 'rule_name', getattr(alert, 'rule_id', 'unknown'))
-            title = getattr(alert, 'title', getattr(alert, 'message', 'Alert'))
+            alert_id = getattr(alert, "alert_id", getattr(alert, "id", "unknown"))
+            rule_name = getattr(
+                alert, "rule_name", getattr(alert, "rule_id", "unknown")
+            )
+            title = getattr(alert, "title", getattr(alert, "message", "Alert"))
 
             message = f"{color}🚨 {severity_icon} [{alert.severity.value.upper()}] {rule_name}: {title}{self.reset_code}"
 
             if self.verbose:
                 message += f"\n   Time: {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
                 message += f"\n   Alert ID: {alert_id}"
-                if hasattr(alert, 'metric_values') and alert.metric_values:
+                if hasattr(alert, "metric_values") and alert.metric_values:
                     message += (
                         f"\n   Metrics: {json.dumps(alert.metric_values, indent=4)}"
                     )
@@ -135,7 +137,7 @@ class DashboardNotificationChannel(NotificationChannel):
             with self._lock:
                 self._notifications_sent += 1
                 self._last_alert = alert
-                
+
             if not self.dashboard_server:
                 return NotificationResult(
                     channel="dashboard",
@@ -146,13 +148,15 @@ class DashboardNotificationChannel(NotificationChannel):
 
             # Format alert for dashboard
             # Handle different alert formats
-            alert_id = getattr(alert, 'alert_id', getattr(alert, 'id', 'unknown'))
-            rule_name = getattr(alert, 'rule_name', getattr(alert, 'rule_id', 'unknown'))
-            title = getattr(alert, 'title', getattr(alert, 'message', 'Alert'))
-            message = getattr(alert, 'message', getattr(alert, 'description', ''))
-            metric_values = getattr(alert, 'metric_values', {})
-            tags = getattr(alert, 'tags', {})
-            
+            alert_id = getattr(alert, "alert_id", getattr(alert, "id", "unknown"))
+            rule_name = getattr(
+                alert, "rule_name", getattr(alert, "rule_id", "unknown")
+            )
+            title = getattr(alert, "title", getattr(alert, "message", "Alert"))
+            message = getattr(alert, "message", getattr(alert, "description", ""))
+            metric_values = getattr(alert, "metric_values", {})
+            tags = getattr(alert, "tags", {})
+
             alert_data = {
                 "alert_id": alert_id,
                 "rule_name": rule_name,
@@ -202,7 +206,7 @@ class DashboardNotificationChannel(NotificationChannel):
         """Get recent alerts from dashboard (mock implementation)"""
         # In a real implementation, this would query the dashboard server
         # For testing purposes, return mock alerts based on sent notifications
-        if hasattr(self, '_last_alert') and self._last_alert:
+        if hasattr(self, "_last_alert") and self._last_alert:
             return [self._last_alert]
         return []
 
@@ -378,6 +382,20 @@ class NotificationChannelManager:
 
         return results
 
+    def send_to_all_channels(
+        self, alert: Alert, channel_names: Optional[List[str]] = None
+    ) -> List[NotificationResult]:
+        """Send notification to all channels or specified channels"""
+        # If specific channels are provided, use them
+        if channel_names:
+            return self.send_to_multiple_channels(alert, channel_names)
+
+        # Otherwise, send to all available channels
+        available_channels = [
+            name for name, channel in self.channels.items() if channel.is_available()
+        ]
+        return self.send_to_multiple_channels(alert, available_channels)
+
     def get_available_channels(self) -> List[str]:
         """Get list of available channels"""
         with self._lock:
@@ -462,7 +480,7 @@ def create_notification_channel(channel_type, **kwargs) -> NotificationChannel:
         config = channel_type
         channel_type = config.get("type")
         kwargs.update(config)
-    
+
     if channel_type.lower() == "console":
         verbose = kwargs.get("verbose", False)
         name = kwargs.get("name", "console")
@@ -471,7 +489,9 @@ def create_notification_channel(channel_type, **kwargs) -> NotificationChannel:
     elif channel_type.lower() == "dashboard":
         dashboard_server = kwargs.get("dashboard_server")
         name = kwargs.get("name", "dashboard")
-        return DashboardNotificationChannel(dashboard_server=dashboard_server, name=name)
+        return DashboardNotificationChannel(
+            dashboard_server=dashboard_server, name=name
+        )
 
     elif channel_type.lower() == "log":
         log_file_path = kwargs.get("log_file_path", "alerts.log")

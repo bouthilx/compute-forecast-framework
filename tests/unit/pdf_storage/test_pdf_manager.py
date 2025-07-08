@@ -30,19 +30,20 @@ class TestPDFManager(unittest.TestCase):
         """Test PDFManager initialization."""
         mock_home.return_value = self.temp_dir
 
-        manager = PDFManager(self.mock_drive_store)
+        manager = PDFManager(self.mock_drive_store, cache_dir=str(self.temp_dir))
 
         self.assertEqual(manager.drive_store, self.mock_drive_store)
         self.assertTrue(manager.cache_dir.exists())
-        self.assertTrue(manager.metadata_file.exists())
+        # Metadata file is created on first save, not on initialization
+        self.assertEqual(manager.metadata_file, manager.cache_dir / "pdf_metadata.json")
 
     @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
     def test_store_pdf_success(self, mock_home):
         """Test successful PDF storage."""
         mock_home.return_value = self.temp_dir
-        self.mock_drive_store.upload_file.return_value = "drive_file_id"
+        self.mock_drive_store.upload_pdf.return_value = "drive_file_id"
 
-        manager = PDFManager(self.mock_drive_store)
+        manager = PDFManager(self.mock_drive_store, cache_dir=str(self.temp_dir))
 
         # Create test PDF file
         test_pdf = self.temp_dir / "test.pdf"
@@ -52,22 +53,22 @@ class TestPDFManager(unittest.TestCase):
         result = manager.store_pdf("test_paper_1", test_pdf, metadata)
 
         self.assertTrue(result)
-        self.mock_drive_store.upload_file.assert_called_once()
+        self.mock_drive_store.upload_pdf.assert_called_once()
 
         # Check metadata was saved
         with open(manager.metadata_file, "r") as f:
             saved_metadata = json.load(f)
 
         self.assertIn("test_paper_1", saved_metadata)
-        self.assertEqual(saved_metadata["test_paper_1"]["venue"], "Test Conference")
+        self.assertEqual(saved_metadata["test_paper_1"]["metadata"]["venue"], "Test Conference")
 
     @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
     def test_store_pdf_failure(self, mock_home):
         """Test PDF storage failure."""
         mock_home.return_value = self.temp_dir
-        self.mock_drive_store.upload_file.return_value = None
+        self.mock_drive_store.upload_pdf.return_value = None
 
-        manager = PDFManager(self.mock_drive_store)
+        manager = PDFManager(self.mock_drive_store, cache_dir=str(self.temp_dir))
 
         # Create test PDF file
         test_pdf = self.temp_dir / "test.pdf"
@@ -79,53 +80,50 @@ class TestPDFManager(unittest.TestCase):
         self.assertFalse(result)
 
     @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
-    @patch("compute_forecast.pdf_storage.pdf_manager.requests.get")
-    def test_get_pdf_for_analysis_cached(self, mock_get, mock_home):
+    def test_get_pdf_for_analysis_cached(self, mock_home):
         """Test PDF retrieval from cache."""
         mock_home.return_value = self.temp_dir
 
-        manager = PDFManager(self.mock_drive_store)
+        manager = PDFManager(self.mock_drive_store, cache_dir=str(self.temp_dir))
 
         # Create cached file
         cached_file = manager.cache_dir / "test_paper_1.pdf"
         cached_file.write_bytes(b"cached pdf content")
 
         # Add metadata
-        metadata = {
-            "test_paper_1": {
-                "drive_file_id": "drive_id",
-                "cached_at": datetime.utcnow().isoformat(),
-                "venue": "Test Conference",
-            }
+        manager.metadata["test_paper_1"] = {
+            "drive_file_id": "drive_id",
+            "cached_at": datetime.utcnow().isoformat(),
+            "venue": "Test Conference",
         }
-        with open(manager.metadata_file, "w") as f:
-            json.dump(metadata, f)
+        manager._save_metadata()
 
         result = manager.get_pdf_for_analysis("test_paper_1")
 
         self.assertEqual(result, cached_file)
-        mock_get.assert_not_called()  # Should not download from Drive
+        self.mock_drive_store.download_pdf.assert_not_called()  # Should not download from Drive
 
     @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
-    @patch("compute_forecast.pdf_storage.pdf_manager.requests.get")
-    def test_get_pdf_for_analysis_download(self, mock_get, mock_home):
+    def test_get_pdf_for_analysis_download(self, mock_home):
         """Test PDF download from Drive."""
         mock_home.return_value = self.temp_dir
 
         # Mock successful download
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.content = b"downloaded pdf content"
-        mock_get.return_value = mock_response
+        def mock_download(file_id, destination):
+            destination.write_bytes(b"downloaded pdf content")
+        
+        self.mock_drive_store.download_pdf.side_effect = mock_download
 
-        manager = PDFManager(self.mock_drive_store)
+        manager = PDFManager(self.mock_drive_store, cache_dir=str(self.temp_dir))
+        
+        # Ensure no cached file exists
+        potential_cached_file = manager.cache_dir / "test_paper_1.pdf"
+        if potential_cached_file.exists():
+            potential_cached_file.unlink()
 
         # Add metadata without cached file
-        metadata = {
-            "test_paper_1": {"drive_file_id": "drive_id", "venue": "Test Conference"}
-        }
-        with open(manager.metadata_file, "w") as f:
-            json.dump(metadata, f)
+        manager.metadata["test_paper_1"] = {"drive_file_id": "drive_id", "venue": "Test Conference"}
+        manager._save_metadata()
 
         result = manager.get_pdf_for_analysis("test_paper_1")
 
@@ -138,7 +136,7 @@ class TestPDFManager(unittest.TestCase):
         """Test PDF retrieval for non-existent paper."""
         mock_home.return_value = self.temp_dir
 
-        manager = PDFManager(self.mock_drive_store)
+        manager = PDFManager(self.mock_drive_store, cache_dir=str(self.temp_dir))
 
         result = manager.get_pdf_for_analysis("nonexistent_paper")
 
@@ -163,12 +161,9 @@ class TestPDFManager(unittest.TestCase):
         old_time = (datetime.utcnow() - timedelta(hours=2)).isoformat()
         recent_time = datetime.utcnow().isoformat()
 
-        metadata = {
-            "old_paper": {"drive_file_id": "old_id", "cached_at": old_time},
-            "recent_paper": {"drive_file_id": "recent_id", "cached_at": recent_time},
-        }
-        with open(manager.metadata_file, "w") as f:
-            json.dump(metadata, f)
+        manager.metadata["old_paper"] = {"drive_file_id": "old_id", "cached_at": old_time}
+        manager.metadata["recent_paper"] = {"drive_file_id": "recent_id", "cached_at": recent_time}
+        manager._save_metadata()
 
         # Run cleanup
         cleaned_count = manager.cleanup_cache()
@@ -182,21 +177,19 @@ class TestPDFManager(unittest.TestCase):
         """Test statistics generation."""
         mock_home.return_value = self.temp_dir
 
-        manager = PDFManager(self.mock_drive_store)
+        manager = PDFManager(self.mock_drive_store, cache_dir=str(self.temp_dir))
 
         # Create some test files and metadata
-        test_file = manager.cache_dir / "test.pdf"
+        test_file = manager.cache_dir / "test_paper.pdf"
         test_file.write_bytes(b"test content")
 
-        metadata = {
-            "test_paper": {
-                "drive_file_id": "test_id",
-                "venue": "Test Conference",
-                "cached_at": datetime.utcnow().isoformat(),
-            }
+        # Update metadata directly on the manager instance
+        manager.metadata["test_paper"] = {
+            "drive_file_id": "test_id",
+            "venue": "Test Conference",
+            "cached_at": datetime.utcnow().isoformat(),
         }
-        with open(manager.metadata_file, "w") as f:
-            json.dump(metadata, f)
+        manager._save_metadata()
 
         stats = manager.get_statistics()
 

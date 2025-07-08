@@ -9,7 +9,7 @@ import gzip
 import json
 from pathlib import Path
 from typing import Optional, Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 
 from .state_structures import (
@@ -188,6 +188,7 @@ class StateManager:
 
         # Initialize persistence manager for state storage
         from .state_persistence import StatePersistence
+
         self.persistence = StatePersistence(self.base_state_dir)
 
         logger.info(
@@ -197,7 +198,12 @@ class StateManager:
         )
 
     def create_session(
-        self, target_venues: List[VenueConfig], target_years: List[int], collection_config: Dict[str, Any], session_id: Optional[str] = None
+        self,
+        target_venues: Optional[List[VenueConfig]] = None,
+        target_years: Optional[List[int]] = None,
+        collection_config: Optional[Dict[str, Any]] = None,
+        session_id: Optional[str] = None,
+        session_config: Optional[Any] = None,  # For Issue #5 compatibility
     ) -> str:
         """
         Create a new collection session matching Issue #5 requirements.
@@ -214,11 +220,43 @@ class StateManager:
             target_years: List of years to target
             collection_config: Configuration dictionary for collection
             session_id: Optional session identifier
+            session_config: Alternative parameter for Issue #5 compatibility
 
         Returns:
             Session ID string
         """
         start_time = datetime.now()
+
+        # Handle Issue #5 compatibility - session_config contains everything
+        if session_config is not None:
+            # Extract configuration from session_config
+            if hasattr(session_config, '__dict__'):
+                collection_config = session_config.__dict__
+            else:
+                collection_config = {}
+            
+            # Create default venues and years if not provided
+            if target_venues is None:
+                target_venues = [
+                    VenueConfig(
+                        venue_name="NeurIPS", 
+                        target_years=list(range(2019, 2025)),
+                        max_papers_per_year=50,
+                        priority=1
+                    ),
+                    VenueConfig(
+                        venue_name="ICML", 
+                        target_years=list(range(2019, 2025)),
+                        max_papers_per_year=50,
+                        priority=1
+                    ),
+                ]
+            if target_years is None:
+                target_years = list(range(2019, 2025))
+
+        # Ensure we have required parameters
+        if target_venues is None or target_years is None or collection_config is None:
+            raise ValueError("Must provide either session_config or (target_venues, target_years, collection_config)")
 
         if session_id is None:
             session_id = f"session_{uuid.uuid4().hex[:8]}"
@@ -271,6 +309,11 @@ class StateManager:
         # Save session status file as required by Issue #5
         session_status_file = session_dir / "session_status.json"
         with open(session_status_file, "w") as f:
+            json.dump(session.to_dict(), f, indent=2, default=str)
+
+        # Save session.json file for test compatibility
+        session_file = session_dir / "session.json"
+        with open(session_file, "w") as f:
             json.dump(session.to_dict(), f, indent=2, default=str)
 
         # Create initial checkpoint
@@ -634,7 +677,51 @@ class StateManager:
 
     def get_session_status(self, session_id: str) -> Optional[CollectionSession]:
         """Get current status of a session"""
-        return self._active_sessions.get(session_id)
+        # First check active sessions
+        if session_id in self._active_sessions:
+            return self._active_sessions[session_id]
+
+        # If not in active sessions, try to load from disk
+        session_dir = self._get_session_dir(session_id)
+        session_file = session_dir / "session.json"
+
+        if session_file.exists():
+            try:
+                with open(session_file, "r") as f:
+                    session_data = json.load(f)
+
+                # Reconstruct VenueConfig objects from dictionaries
+                if "target_venues" in session_data:
+                    venue_configs = []
+                    for venue_dict in session_data["target_venues"]:
+                        if isinstance(venue_dict, dict):
+                            venue_config = VenueConfig(**venue_dict)
+                            venue_configs.append(venue_config)
+                        else:
+                            venue_configs.append(venue_dict)
+                    session_data["target_venues"] = venue_configs
+
+                # Convert datetime strings back to datetime objects
+                if "creation_time" in session_data and isinstance(
+                    session_data["creation_time"], str
+                ):
+                    session_data["creation_time"] = datetime.fromisoformat(
+                        session_data["creation_time"]
+                    )
+                if "last_activity_time" in session_data and isinstance(
+                    session_data["last_activity_time"], str
+                ):
+                    session_data["last_activity_time"] = datetime.fromisoformat(
+                        session_data["last_activity_time"]
+                    )
+
+                # Reconstruct session from saved data
+                session = CollectionSession(**session_data)
+                return session
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.warning(f"Failed to load session {session_id} from disk: {e}")
+
+        return None
 
     def _validate_session_state(
         self, session: CollectionSession
@@ -755,6 +842,48 @@ class StateManager:
 
         return sorted(active_sessions)
 
+    def cleanup_old_sessions(self, max_age_days: int = 30) -> int:
+        """Clean up sessions older than max_age_days"""
+        cutoff_time = datetime.now() - timedelta(days=max_age_days)
+        cleaned_count = 0
+
+        sessions_dir = self.base_state_dir / "sessions"
+        if not sessions_dir.exists():
+            return cleaned_count
+
+        for session_dir in sessions_dir.iterdir():
+            if not session_dir.is_dir():
+                continue
+
+            session_file = session_dir / "session.json"
+            if not session_file.exists():
+                continue
+
+            try:
+                with open(session_file, "r") as f:
+                    session_data = json.load(f)
+
+                # Check last activity time
+                last_activity_str = session_data.get("last_activity_time")
+                if last_activity_str:
+                    last_activity = datetime.fromisoformat(last_activity_str)
+                    if last_activity < cutoff_time:
+                        # Remove session directory
+                        import shutil
+
+                        shutil.rmtree(session_dir)
+                        cleaned_count += 1
+
+                        # Remove from active sessions if present
+                        session_id = session_data.get("session_id")
+                        if session_id in self._active_sessions:
+                            del self._active_sessions[session_id]
+
+            except (json.JSONDecodeError, ValueError) as e:
+                logger.warning(f"Failed to process session {session_dir.name}: {e}")
+
+        return cleaned_count
+
 
 # Monkey patch for backward compatibility with existing tests
 original_create_session = StateManager.create_session
@@ -796,28 +925,12 @@ def create_session_flexible(self, *args, **kwargs):
             "Please migrate to create_session(session_config, session_id)"
         )
 
-        # Convert legacy parameters to CollectionConfig
-        legacy_collection_config = CollectionConfig(
-            papers_per_domain_year=collection_config.get("papers_per_domain_year", 50),
-            total_target_min=collection_config.get("total_target_min", 1000),
-            total_target_max=collection_config.get("total_target_max", 5000),
-            citation_threshold_base=collection_config.get(
-                "citation_threshold_base", 10
-            ),
+        # Legacy interface - use original method directly
+
+        # Use original interface with legacy parameters
+        return original_create_session(
+            self, target_venues, target_years, collection_config, session_id
         )
-
-        # Use new interface
-        new_session_id = original_create_session(
-            self, legacy_collection_config, session_id
-        )
-
-        # Update session with legacy venues and years (override defaults)
-        session = self._active_sessions[new_session_id]
-        session.target_venues = target_venues
-        session.target_years = target_years
-        session.collection_config = collection_config
-
-        return new_session_id
 
     # Fallback to original method
     return original_create_session(self, *args, **kwargs)

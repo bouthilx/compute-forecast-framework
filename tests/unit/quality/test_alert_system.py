@@ -610,9 +610,11 @@ class TestAlertSystemIntegration(unittest.TestCase):
         self.assertGreater(len(notification_results), 0)
 
         # Check that some notifications succeeded
-        successful_notifications = sum(
-            1 for result in notification_results if result.success
-        )
+        successful_notifications = 0
+        for alert_id, results in notification_results.items():
+            for result in results:
+                if result.success:
+                    successful_notifications += 1
         self.assertGreater(successful_notifications, 0)
 
     def test_alert_suppression_integration(self):

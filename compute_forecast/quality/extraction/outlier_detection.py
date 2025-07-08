@@ -177,7 +177,9 @@ class OutlierDetector:
         if hasattr(paper, "citations") and paper.citations:
             if paper.citations > 1000:
                 context["reasons"].append("Highly cited paper - might be breakthrough")
-                context["severity"] = "possible"
+                # Only update severity if not already determined to be expected
+                if context["severity"] not in ["expected", "suspicious"]:
+                    context["severity"] = "possible"
 
         # If no specific reasons found
         if not context["reasons"]:
@@ -204,12 +206,19 @@ class OutlierDetector:
         # Get context
         context = self.contextualize_outlier(paper, field, value)
 
+        # Always check corroborating evidence for extreme values
+        if field in ["parameters", "gpu_hours", "batch_size"]:
+            has_evidence = self._check_corroborating_evidence(
+                paper, extraction, field, value
+            )
+            if not has_evidence:
+                return False  # Reject outlier without corroborating evidence
+
         # Auto-verify based on severity
         if context["severity"] == "expected":
             return True  # Keep the outlier
         elif context["severity"] == "suspicious":
-            # Check for corroborating evidence
-            return self._check_corroborating_evidence(paper, extraction, field, value)
+            return False  # Already checked corroborating evidence above
         else:
             # For unknown cases, check against other fields
             return self._check_field_consistency(extraction, field, value)

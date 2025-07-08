@@ -19,7 +19,7 @@ class TestGoogleDriveStore(unittest.TestCase):
 
     @patch("compute_forecast.pdf_storage.google_drive_store.build")
     @patch(
-        "compute_forecast.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+        "compute_forecast.pdf_storage.google_drive_store.Credentials.from_service_account_file"
     )
     def test_initialization(self, mock_credentials, mock_build):
         """Test GoogleDriveStore initialization."""
@@ -32,12 +32,13 @@ class TestGoogleDriveStore(unittest.TestCase):
         self.assertEqual(store.folder_id, self.mock_folder_id)
         self.assertEqual(store._service, mock_service)
         mock_credentials.assert_called_once_with(
-            self.mock_credentials_path, scopes=["https://www.googleapis.com/auth/drive"]
+            self.mock_credentials_path,
+            scopes=["https://www.googleapis.com/auth/drive.file"],
         )
 
     @patch("compute_forecast.pdf_storage.google_drive_store.build")
     @patch(
-        "compute_forecast.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+        "compute_forecast.pdf_storage.google_drive_store.Credentials.from_service_account_file"
     )
     def test_test_connection_success(self, mock_credentials, mock_build):
         """Test successful connection test."""
@@ -60,7 +61,7 @@ class TestGoogleDriveStore(unittest.TestCase):
 
     @patch("compute_forecast.pdf_storage.google_drive_store.build")
     @patch(
-        "compute_forecast.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+        "compute_forecast.pdf_storage.google_drive_store.Credentials.from_service_account_file"
     )
     def test_test_connection_failure(self, mock_credentials, mock_build):
         """Test connection test failure."""
@@ -78,7 +79,7 @@ class TestGoogleDriveStore(unittest.TestCase):
 
     @patch("compute_forecast.pdf_storage.google_drive_store.build")
     @patch(
-        "compute_forecast.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+        "compute_forecast.pdf_storage.google_drive_store.Credentials.from_service_account_file"
     )
     @patch("compute_forecast.pdf_storage.google_drive_store.MediaFileUpload")
     def test_upload_file_success(self, mock_media_upload, mock_credentials, mock_build):
@@ -109,7 +110,7 @@ class TestGoogleDriveStore(unittest.TestCase):
 
     @patch("compute_forecast.pdf_storage.google_drive_store.build")
     @patch(
-        "compute_forecast.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+        "compute_forecast.pdf_storage.google_drive_store.Credentials.from_service_account_file"
     )
     def test_upload_file_failure(self, mock_credentials, mock_build):
         """Test file upload failure."""
@@ -135,7 +136,7 @@ class TestGoogleDriveStore(unittest.TestCase):
 
     @patch("compute_forecast.pdf_storage.google_drive_store.build")
     @patch(
-        "compute_forecast.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+        "compute_forecast.pdf_storage.google_drive_store.Credentials.from_service_account_file"
     )
     def test_file_exists(self, mock_credentials, mock_build):
         """Test file existence check."""
@@ -155,7 +156,7 @@ class TestGoogleDriveStore(unittest.TestCase):
 
     @patch("compute_forecast.pdf_storage.google_drive_store.build")
     @patch(
-        "compute_forecast.pdf_storage.google_drive_store.service_account.Credentials.from_service_account_file"
+        "compute_forecast.pdf_storage.google_drive_store.Credentials.from_service_account_file"
     )
     def test_file_not_exists(self, mock_credentials, mock_build):
         """Test file not exists check."""

@@ -41,7 +41,9 @@ class TestMetricsCollector:
         api_managers = {"test_api": Mock()}
         data_processors = {"test_processor": Mock()}
 
-        collector.start_collection(venue_engine, state_manager, api_managers, data_processors)
+        collector.start_collection(
+            venue_engine, state_manager, api_managers, data_processors
+        )
 
         assert collector.is_collecting
         assert collector.venue_engine == venue_engine
@@ -96,30 +98,33 @@ class TestMetricsCollector:
                 consecutive_errors=0,
             )
         }
-        venue_engine.get_venue_progress.return_value = {
+        venue_engine.get_venue_statuses.return_value = {
             "NeurIPS_2024": {
+                "venue_name": "NeurIPS",
+                "year": 2024,
                 "status": "completed",
                 "papers_collected": 100,
                 "target_papers": 100,
-                "completion_percentage": 100.0,
                 "last_update_time": datetime.now(),
-                "duration_minutes": 60.0,
-                "estimated_remaining_minutes": 0.0,
+                "collection_duration_minutes": 60.0,
+                "retry_count": 0,
+                "error_count": 0,
+                "last_activity": None,
             }
         }
 
         # Mock state manager
         state_manager = Mock()
-        state_manager.get_checkpoint_statistics.return_value = {
+        state_manager.get_statistics.return_value = {
             "checkpoints_created": 5,
             "last_checkpoint_time": datetime.now(),
-            "rate_per_hour": 2.0,
+            "checkpoint_rate": 2.0,
             "recovery_possible": True,
             "recovery_success_rate": 1.0,
             "state_size_mb": 10.5,
             "checkpoint_size_mb": 5.2,
-            "creation_time_ms": 150.0,
-            "save_time_ms": 75.0,
+            "checkpoint_time_ms": 150.0,
+            "state_save_time_ms": 75.0,
         }
 
         # Mock data processors
@@ -152,6 +157,17 @@ class TestMetricsCollector:
         collector.data_processors = processors
         collector.session_start_time = datetime.now() - timedelta(minutes=30)
         collector.session_id = "test_session"
+
+        # Mock API managers
+        api_manager_mock = Mock()
+        api_manager_mock.get_statistics.return_value = {
+            "requests_made": 1000,
+            "successful_requests": 950,
+            "failed_requests": 50,
+            "avg_response_time_ms": 450.0,
+            "health_status": "healthy",
+        }
+        collector.api_managers = {"semantic_scholar": api_manager_mock}
 
         # Collect metrics
         metrics = collector.collect_current_metrics()
