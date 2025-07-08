@@ -31,6 +31,7 @@ class SessionState(Enum):
     COMPLETED = "completed"
     PAUSED = "paused"
     COLLECTING = "collecting"
+    RUNNING = "running"  # Added for test compatibility
 
 
 class RecoveryStrategy(Enum):
@@ -360,6 +361,15 @@ class InterruptionRecoverySystem:
                     if len(parts) >= 2:
                         venue = "_".join(parts[:-1])
                         year = int(parts[-1])
+                        venues_to_skip.append((venue, year))
+        elif hasattr(session, "venues") and hasattr(session, "years"):
+            # Handle SessionMetadata structure with separate venues and years
+            for venue in session.venues:
+                for year in session.years:
+                    # Check if venue (without year) is in completed_venues
+                    if venue not in completed_venues:
+                        venues_to_recover.append((venue, year))
+                    else:
                         venues_to_skip.append((venue, year))
 
         return venues_to_recover, venues_to_skip

@@ -36,6 +36,7 @@ class RateLimitManager:
         self.api_configs = api_configs
         self.request_windows: Dict[str, RollingWindow] = {}
         self.health_multipliers: Dict[str, float] = {}
+        self.consecutive_failures: Dict[str, int] = {}  # Track consecutive failures for exponential backoff
         self._locks: Dict[str, threading.RLock] = {}
         self._global_lock = threading.RLock()
 
@@ -46,6 +47,7 @@ class RateLimitManager:
                 max_requests=config.requests_per_window,
             )
             self.health_multipliers[api_name] = 1.0  # Start healthy
+            self.consecutive_failures[api_name] = 0  # Start with no failures
             self._locks[api_name] = threading.RLock()
 
     def can_make_request(self, api_name: str, request_size: int = 1) -> bool:
@@ -101,33 +103,25 @@ class RateLimitManager:
 
         with self._locks[api_name]:
             window = self.request_windows[api_name]
+            config = self.api_configs[api_name]
 
-            # Quick check: if we have capacity in the window
-            current_count = window.get_current_count()
-            available_capacity = window.max_requests - current_count
-
-            # Account for health degradation (degraded APIs get lower effective capacity)
-            health_multiplier = self.health_multipliers.get(api_name, 1.0)
-            can_make_request = False
-            if health_multiplier > 1.0:
-                # Degraded API - reduce effective capacity
-                effective_capacity = int(available_capacity / health_multiplier)
-                can_make_request = request_size <= effective_capacity
-            else:
-                can_make_request = request_size <= available_capacity
-
-            # If we can make the request now, no wait needed
-            if can_make_request:
-                return 0.0
-
-            self.api_configs[api_name]
+            # Check for exponential backoff due to consecutive failures
+            failures = self.consecutive_failures.get(api_name, 0)
+            exponential_wait = 0.0
+            if failures > 0:
+                # Exponential backoff: 2^failures * base_delay
+                exponential_wait = config.base_delay_seconds * (2 ** failures)
+                exponential_wait = min(exponential_wait, config.max_delay_seconds)
 
             # Calculate base wait time from rolling window
             base_wait = window.time_until_next_slot()
 
             # Apply health-based multiplier
             health_multiplier = self.health_multipliers.get(api_name, 1.0)
-            adjusted_wait = base_wait * health_multiplier
+            health_adjusted_wait = base_wait * health_multiplier
+
+            # Use the maximum of window-based wait, health-adjusted wait, and exponential backoff
+            adjusted_wait = max(health_adjusted_wait, exponential_wait)
 
             # Apply size multiplier for large requests
             if request_size > 1:
@@ -173,6 +167,12 @@ class RateLimitManager:
             timestamp = datetime.now()
             for _ in range(request_size):
                 window.add_request(timestamp)
+
+            # Update consecutive failures counter
+            if success:
+                self.consecutive_failures[api_name] = 0  # Reset on success
+            else:
+                self.consecutive_failures[api_name] += 1  # Increment on failure
 
             # Update health multiplier based on request success
             self._update_health_multiplier(api_name, success, response_time_ms)

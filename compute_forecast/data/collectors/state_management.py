@@ -186,8 +186,9 @@ class StateManager:
         self.base_state_dir.mkdir(parents=True, exist_ok=True)
         (self.base_state_dir / "sessions").mkdir(exist_ok=True)
 
-        # For backward compatibility with tests
-        self.persistence = None
+        # Initialize persistence manager for state storage
+        from .state_persistence import StatePersistence
+        self.persistence = StatePersistence(self.base_state_dir)
 
         logger.info(
             f"StateManager initialized with base_dir: {self.base_state_dir}, "
@@ -196,7 +197,7 @@ class StateManager:
         )
 
     def create_session(
-        self, session_config: CollectionConfig, session_id: Optional[str] = None
+        self, target_venues: List[VenueConfig], target_years: List[int], collection_config: Dict[str, Any], session_id: Optional[str] = None
     ) -> str:
         """
         Create a new collection session matching Issue #5 requirements.
@@ -209,7 +210,9 @@ class StateManager:
         - Must complete within 1 second
 
         Args:
-            session_config: CollectionConfig containing collection parameters
+            target_venues: List of venue configurations for collection
+            target_years: List of years to target
+            collection_config: Configuration dictionary for collection
             session_id: Optional session identifier
 
         Returns:
@@ -230,26 +233,8 @@ class StateManager:
         (session_dir / "venues").mkdir(exist_ok=True)
         (session_dir / "recovery").mkdir(exist_ok=True)
 
-        # Create default venue configurations for session
-        # Note: This is a simplified approach - in practice, venues would come from configuration
-        target_venues = [
-            VenueConfig(
-                venue_name="ICML",
-                target_years=[2020, 2021, 2022, 2023],
-                max_papers_per_year=session_config.papers_per_domain_year,
-            ),
-            VenueConfig(
-                venue_name="NeurIPS",
-                target_years=[2020, 2021, 2022, 2023],
-                max_papers_per_year=session_config.papers_per_domain_year,
-            ),
-            VenueConfig(
-                venue_name="ICLR",
-                target_years=[2020, 2021, 2022, 2023],
-                max_papers_per_year=session_config.papers_per_domain_year,
-            ),
-        ]
-        target_years = [2020, 2021, 2022, 2023]
+        # Use provided venue configurations and target years
+        # target_venues and target_years are already parameters now
 
         session = CollectionSession(
             session_id=session_id,
@@ -258,7 +243,7 @@ class StateManager:
             status="active",
             target_venues=target_venues,
             target_years=target_years,
-            collection_config=session_config.__dict__,  # Convert to dict for compatibility
+            collection_config=collection_config,
             venues_completed=[],
             venues_in_progress=[],
             venues_failed=[],
@@ -274,7 +259,7 @@ class StateManager:
             json.dump(
                 {
                     "session_id": session_id,
-                    "collection_config": session_config.__dict__,
+                    "collection_config": collection_config,
                     "target_venues": [v.__dict__ for v in target_venues],
                     "target_years": target_years,
                     "created_at": session.creation_time.isoformat(),
