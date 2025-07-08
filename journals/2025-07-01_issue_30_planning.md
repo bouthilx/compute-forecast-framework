@@ -18,11 +18,11 @@
 1. **Extraction Templates**: Found in `src/extraction/default_templates.py`
    - nlp_training_v1, cv_training_v1, rl_training_v1 templates exist
    - Template engine with comprehensive computational patterns
-   
+
 2. **Organization Classification**: Mila is configured
    - `config/organizations.yaml` and `organizations_enhanced.yaml` include Mila
    - Classification infrastructure exists in `src/analysis/classification/`
-   
+
 3. **Computational Extraction**: Well-developed
    - Regex patterns for GPU, training time, parameters, costs
    - Edge case handlers and pattern types

@@ -9,7 +9,7 @@
 Based on analysis of `mila_venue_statistics.json`:
 
 1. **NeurIPS**: 128 papers
-2. **ICML**: 116 papers  
+2. **ICML**: 116 papers
 3. **ICLR**: 94 papers
 4. **TMLR**: 54 papers
 5. **CVPR**: 16 papers
@@ -43,7 +43,7 @@ However, this is likely because the dataset is arXiv-focused. For comprehensive 
 3. **OpenAlex** - Broad academic coverage
 
 #### Venue-Specific Scrapers
-1. **OpenReview** - ICLR (94 papers), NeurIPS 2023+ 
+1. **OpenReview** - ICLR (94 papers), NeurIPS 2023+
 2. **PMLR** - ICML (116 papers), AISTATS (10 papers)
 3. **NeurIPS Proceedings** - Pre-2023 NeurIPS (older conferences)
 4. **ACL Anthology** - EMNLP (12 papers), ACL (7 papers)
@@ -91,7 +91,7 @@ However, this is likely because the dataset is arXiv-focused. For comprehensive 
 
 ### Critical Path (Tier 1)
 1. **#75**: PDF Discovery Framework (L, 6-8h)
-2. **#76**: arXiv Enhanced Miner (M, 4-6h) 
+2. **#76**: arXiv Enhanced Miner (M, 4-6h)
 3. **#77**: Semantic Scholar Collector (M, 4-6h)
 4. **#78**: OpenReview Scraper (M, 4-6h)
 5. **#79**: PMLR Scraper (M, 4-6h)

@@ -28,7 +28,7 @@ Based on deduplicated analysis:
 Based on typical publication patterns for these venues:
 
 ### Machine Learning Conferences (Top 8)
-1. **NeurIPS (152)**: 
+1. **NeurIPS (152)**:
    - OpenReview (2023-2024): ~134 papers
    - NeurIPS Proceedings: ~18 papers
    - arXiv preprints: ~120 papers
@@ -165,7 +165,7 @@ Based on typical publication patterns for these venues:
 - OpenReview API v2
 - Semantic Scholar API
 
-# Tier 2 APIs  
+# Tier 2 APIs
 - PubMed Central (E-utilities + OAI)
 - CrossRef/Unpaywall
 - OpenAlex API

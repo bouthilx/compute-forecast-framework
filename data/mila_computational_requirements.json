@@ -1,0 +1,4988 @@
+{
+  "extraction_date": "2025-07-01T18:16:52.914275",
+  "summary_statistics": {
+    "total_processed": 124,
+    "successful_extractions": 7,
+    "high_confidence": 0,
+    "with_suppression": 124,
+    "high_suppression": 1
+  },
+  "papers": [
+    {
+      "paper_id": "c81f0bbb04c7a1baa8dadf52f0d38a77",
+      "title": "EditNTS: An Neural Programmer-Interpreter Model for Sentence Simplification through Explicit Editing",
+      "year": 2019,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.873520"
+      }
+    },
+    {
+      "paper_id": "9320c1d4c6252e0f039bc4988b5cf955",
+      "title": "MelGAN: Generative Adversarial Networks for Conditional Waveform Synthesis",
+      "year": 2019,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.873741"
+      }
+    },
+    {
+      "paper_id": "9e873ad17efbfcc5b713ffa262f66ff0",
+      "title": "Saliency Based Deep Neural Network for Automatic Detection of Gadolinium-Enhancing Multiple Sclerosis Lesions in Brain MRI",
+      "year": 2019,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.873968"
+      }
+    },
+    {
+      "paper_id": "9cf41f36512aa437a8b30b8b2323c0c2",
+      "title": "Improving Pathological Structure Segmentation via Transfer Learning Across Diseases",
+      "year": 2019,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.874128"
+      }
+    },
+    {
+      "paper_id": "d3402e1b9d01b3d63cc8d65c4cf1a667",
+      "title": "A Geometric Perspective on Optimal Representations for Reinforcement Learning",
+      "year": 2019,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.874277"
+      }
+    },
+    {
+      "paper_id": "955f3e5284555e6193d3b303cc5eca2f",
+      "title": "Real-Time Reinforcement Learning",
+      "year": 2019,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.874358"
+      }
+    },
+    {
+      "paper_id": "8e6c4c239815db8a807fe08e517391db",
+      "title": "No Press Diplomacy: Modeling Multi-Agent Gameplay",
+      "year": 2019,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.874468"
+      }
+    },
+    {
+      "paper_id": "f365b00561590e25ef5a8fa2b3a42cc9",
+      "title": "Updates of Equilibrium Prop Match Gradients of Backprop Through Time in an RNN with Static Input",
+      "year": 2019,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.876815"
+      }
+    },
+    {
+      "paper_id": "f061e35996d6d07dfbd3b0b6320382c3",
+      "title": "Interpolation Consistency Training for Semi-Supervised Learning",
+      "year": 2019,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.877013"
+      }
+    },
+    {
+      "paper_id": "9e949ecf7c27b7799b1dbfdaf41529c2",
+      "title": "Forgetting at biologically realistic levels of neurogenesis in a large-scale hippocampal model",
+      "year": 2019,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.877258"
+      }
+    },
+    {
+      "paper_id": "e54a3691d575e7df6fe5309d1ee730b3",
+      "title": "A deep learning framework for neuroscience",
+      "year": 2019,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.877421"
+      }
+    },
+    {
+      "paper_id": "85f04b0157d36697de31d75501a7b744",
+      "title": "The effect of task and training on intermediate representations in convolutional neural networks revealed with modified RV similarity analysis",
+      "year": 2019,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.877741"
+      }
+    },
+    {
+      "paper_id": "84d26193212a4cd86d90014c5fc350b7",
+      "title": "Supervised Seeded Iterated Learning for Interactive Language Learning",
+      "year": 2020,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.877929"
+      }
+    },
+    {
+      "paper_id": "874621575f82bbfe9f173697336f400f",
+      "title": "Multi-XScience: A Large-scale Dataset for Extreme Multi-document Summarization of Scientific Articles",
+      "year": 2020,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.879551"
+      }
+    },
+    {
+      "paper_id": "d08c23d5a7750f0ad526f39797b1046e",
+      "title": "On the Systematicity of Probing Contextualized Word Representations: The Case of Hypernymy in BERT.",
+      "year": 2020,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.880086"
+      }
+    },
+    {
+      "paper_id": "b6cd60f568212820a069df1b617477cd",
+      "title": "DiVA: Diverse Visual Feature Aggregation for Deep Metric Learning",
+      "year": 2020,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.880247"
+      }
+    },
+    {
+      "paper_id": "8192522d720c528f2d024f8eee61e0fb",
+      "title": "Unsupervised Learning of Dense Visual Representations",
+      "year": 2020,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.880366"
+      }
+    },
+    {
+      "paper_id": "81e219ea39c1dfda9e16d09eda4a0c8a",
+      "title": "Laplacian Change Point Detection for Dynamic Graphs",
+      "year": 2020,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.880474"
+      }
+    },
+    {
+      "paper_id": "802a7c9e0317a5a215f9483a219f223f",
+      "title": "Joint Learning of Generative Translator and Classifier for Visually Similar Classes",
+      "year": 2020,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.882365"
+      }
+    },
+    {
+      "paper_id": "cf8feb2c058db1827d64d1bbe5920be4",
+      "title": "Models of Human Behavioral Agents in Bandits, Contextual Bandits and RL",
+      "year": 2020,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.882571"
+      }
+    },
+    {
+      "paper_id": "9bd01bf4a509f3230a27ca5d0d90855f",
+      "title": "Learning the Arrow of Time for Problems in Reinforcement Learning.",
+      "year": 2020,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.882783"
+      }
+    },
+    {
+      "paper_id": "843dfafaef54d98de96c97fc9b6c9133",
+      "title": "Autonomous navigation of stratospheric balloons using reinforcement learning",
+      "year": 2020,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.882989"
+      }
+    },
+    {
+      "paper_id": "cba8f89440f95c9d3abbcec9ac83cdc8",
+      "title": "COVI-AgentSim: an Agent-based Model for Evaluating Methods of Digital Contact Tracing",
+      "year": 2020,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.883211"
+      }
+    },
+    {
+      "paper_id": "c4d60c378db51aa9e9cce80f849acfa0",
+      "title": "Dark control: The default mode network as a reinforcement learning agent",
+      "year": 2020,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.883407"
+      }
+    },
+    {
+      "paper_id": "9434aa65534a76241a5c741b92f946be",
+      "title": "What can I do here? A Theory of Affordances in Reinforcement Learning",
+      "year": 2020,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.883617"
+      }
+    },
+    {
+      "paper_id": "85e7d1466c624350b5bdd5bd792af0ba",
+      "title": "Combating False Negatives in Adversarial Imitation Learning (Student Abstract)",
+      "year": 2020,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.883828"
+      }
+    },
+    {
+      "paper_id": "b667bf32169ec29a7c50d6225e6d43a4",
+      "title": "Hybrid Models for Learning to Branch",
+      "year": 2020,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.883995"
+      }
+    },
+    {
+      "paper_id": "9c0792986bc6ffe02ba041e0f6341411",
+      "title": "Extracting Weighted Automata for Approximate Minimization in Language Modelling",
+      "year": 2021,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.884201"
+      }
+    },
+    {
+      "paper_id": "9e790c2edf4d636b8edde85280e88491",
+      "title": "StructFormer: Joint Unsupervised Induction of Dependency and Constituency Structure from Masked Language Modeling",
+      "year": 2021,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.884447"
+      }
+    },
+    {
+      "paper_id": "9f70ef147d85413650bd1e664653edcd",
+      "title": "StereoSet: Measuring stereotypical bias in pretrained language models",
+      "year": 2021,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.886541"
+      }
+    },
+    {
+      "paper_id": "9d5a9c73f5d48b60d175a287eae190c7",
+      "title": "Your head is there to move you around: Goal-driven models of the primate dorsal pathway",
+      "year": 2021,
+      "domain": "CV",
+      "computational_requirements": {
+        "training_time_hours": 72.0
+      },
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.3666666666666667,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.889275"
+      }
+    },
+    {
+      "paper_id": "8727d222008125cc23f682783088f2e8",
+      "title": "A Novel Neural Network-Based Malware Severity Classification System",
+      "year": 2021,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.889504"
+      }
+    },
+    {
+      "paper_id": "908aae73b86ca119e7a47dc0234f2592",
+      "title": "From Generative Models to Generative Passages: A Computational Approach to (Neuro) Phenomenology",
+      "year": 2021,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.889763"
+      }
+    },
+    {
+      "paper_id": "8fdf0f3edf637f6f502fd4f9c8bd5117",
+      "title": "Faults in deep reinforcement learning programs: a taxonomy and a detection approach",
+      "year": 2021,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.890274"
+      }
+    },
+    {
+      "paper_id": "8861015b52aebb8cb095ad054c53efad",
+      "title": "Cohort Bias Adaptation in Aggregated Datasets for Lesion Segmentation",
+      "year": 2021,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.890503"
+      }
+    },
+    {
+      "paper_id": "b645e39bf911860e52876a7d6c18992f",
+      "title": "Action-Based Representation Learning for Autonomous Driving",
+      "year": 2021,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.891896"
+      }
+    },
+    {
+      "paper_id": "89a1cb2c4a9586aaf4622530c8891e99",
+      "title": "Metrics and continuity in reinforcement learning",
+      "year": 2021,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.892079"
+      }
+    },
+    {
+      "paper_id": "912c11ceaa84e1212245b89520e63bb1",
+      "title": "Pretraining Representations for Data-Efficient Reinforcement Learning",
+      "year": 2021,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.893549"
+      }
+    },
+    {
+      "paper_id": "ac611d35b23adf61cb7fb4ee1dfcb8d0",
+      "title": "Contrastive Behavioral Similarity Embeddings for Generalization in Reinforcement Learning",
+      "year": 2021,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.895137"
+      }
+    },
+    {
+      "paper_id": "d40985e308042d967fa5c1f044014158",
+      "title": "Randomized Exploration in Reinforcement Learning with General Value Function Approximation",
+      "year": 2021,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.895362"
+      }
+    },
+    {
+      "paper_id": "8e8a618dc4b364190fed9bee7e2ddc86",
+      "title": "Beyond variance reduction: Understanding the true impact of baselines on policy optimization",
+      "year": 2021,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.895537"
+      }
+    },
+    {
+      "paper_id": "e2061ee5e23dc592e22f409a5a6b650e",
+      "title": "Flexible Option Learning",
+      "year": 2021,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.895629"
+      }
+    },
+    {
+      "paper_id": "858804af0cad945157e9b4aa613acd8e",
+      "title": "Learning with Rejection for Abstractive Text Summarization",
+      "year": 2022,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.895753"
+      }
+    },
+    {
+      "paper_id": "8d05d893f24e9b197679a1b27005607b",
+      "title": "CLIP-Mesh: Generating textured meshes from text using pretrained image-text models",
+      "year": 2022,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.895932"
+      }
+    },
+    {
+      "paper_id": "a39f44e06e92f6ba3d978fbffba72e87",
+      "title": "PipeBERT: High-throughput BERT Inference for ARM Big.LITTLE Multi-core Processors",
+      "year": 2022,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.896090"
+      }
+    },
+    {
+      "paper_id": "ae43ef160c26905d8217d84a3a38e67e",
+      "title": "Does Pre-training Induce Systematic Inference? How Masked Language Models Acquire Commonsense Knowledge",
+      "year": 2022,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.896273"
+      }
+    },
+    {
+      "paper_id": "b9d5f747e24f4e68473b6f8dcf46f3ff",
+      "title": "Subgraph Retrieval Enhanced Model for Multi-hop Knowledge Base Question Answering",
+      "year": 2022,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.896432"
+      }
+    },
+    {
+      "paper_id": "9cbd98c642eded7041f0833784d02809",
+      "title": "MCVD: Masked Conditional Video Diffusion for Prediction, Generation, and Interpolation",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {
+        "training_time_hours": 48.0
+      },
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.3666666666666667,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.899304"
+      }
+    },
+    {
+      "paper_id": "9fc360124abf47725b084f0cc83aae59",
+      "title": "Temporal Latent Bottleneck: Synthesis of Fast and Slow Processing Mechanisms in Sequence Learning",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.899562"
+      }
+    },
+    {
+      "paper_id": "a364056b6458dd63fe4e3188b78a0ecf",
+      "title": "The Liver Tumor Segmentation Benchmark (LiTS)",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.900829"
+      }
+    },
+    {
+      "paper_id": "b1579eca4db7a79c683b4081ebc0af89",
+      "title": "Global Variations in Event-Based Surveillance for Disease Outbreak Detection: Time Series Analysis",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.901003"
+      }
+    },
+    {
+      "paper_id": "b14da7a87abca921c4f860ae47179378",
+      "title": "BioCaster in 2021: automatic disease outbreaks detection from global news media",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.901128"
+      }
+    },
+    {
+      "paper_id": "9a7e4951ebf53159809d5420d0b8f00b",
+      "title": "Generative Models of Brain Dynamics",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.901192"
+      }
+    },
+    {
+      "paper_id": "cc1e1b1f9da7d65356da93fc1338abf4",
+      "title": "A Strong Node Classification Baseline for Temporal Graphs",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.901273"
+      }
+    },
+    {
+      "paper_id": "a67ab763ca05c5f6e8303387ffa07c17",
+      "title": "Microscopy analysis neural network to solve detection, enumeration and segmentation from image-level annotations",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.901406"
+      }
+    },
+    {
+      "paper_id": "93665e141dc3af80488a6ca45e0dcf84",
+      "title": "Predicting Visual Improvement After Macular Hole Surgery: A Combined Model Using Deep Learning and Clinical Features",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.901534"
+      }
+    },
+    {
+      "paper_id": "8a6ef52a3a23d87e28dabb66c19b1efa",
+      "title": "Quantum-Inspired Interpertable AI-Empowered Decision Support System for Detection of Early-Stage Rheumatoid Arthritis in Primary Care Using Scarce Dataset",
+      "year": 2022,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.901776"
+      }
+    },
+    {
+      "paper_id": "97f28ecf1bc9ed21535a8bcf84fdee02",
+      "title": "Reincarnating Reinforcement Learning: Reusing Prior Computation to Accelerate Progress",
+      "year": 2022,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.901896"
+      }
+    },
+    {
+      "paper_id": "d174480f9b2cfe5d2e75095856ac3a59",
+      "title": "A general class of surrogate functions for stable and efficient reinforcement learning",
+      "year": 2022,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.901998"
+      }
+    },
+    {
+      "paper_id": "a1ae20296ee0c7e318fad6890dbaef00",
+      "title": "Deep learning, reinforcement learning, and world models",
+      "year": 2022,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.902071"
+      }
+    },
+    {
+      "paper_id": "ab598824d920a56dbfe566f9d42eaa75",
+      "title": "The Primacy Bias in Deep Reinforcement Learning",
+      "year": 2022,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.902135"
+      }
+    },
+    {
+      "paper_id": "9a49add63b76627a7845fc6fea1ea874",
+      "title": "Robustness of Whittle Index Policy to Model Approximation",
+      "year": 2022,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.902203"
+      }
+    },
+    {
+      "paper_id": "b7e362a8de8f36320ca8422b86ef1b26",
+      "title": "Vehicle Type Specific Waypoint Generation",
+      "year": 2022,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.902849"
+      }
+    },
+    {
+      "paper_id": "8dfbdcae0f5fae9800b5b5caa202474b",
+      "title": "Lifelong Topological Visual Navigation",
+      "year": 2022,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.903663"
+      }
+    },
+    {
+      "paper_id": "8dcb81fcab87903ecbbddfec7c4f85f9",
+      "title": "StarCoder: may the source be with you!",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {
+        "parameters_millions": 15500.0
+      },
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.3666666666666667,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.904944"
+      }
+    },
+    {
+      "paper_id": "c3fe786f784dbc571ed98a04b181996d",
+      "title": "lo-fi: distributed fine-tuning without communication",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {
+        "parameters_millions": 1300.0
+      },
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.3666666666666667,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.905691"
+      }
+    },
+    {
+      "paper_id": "f28cec1278179a605e0c282d6b393881",
+      "title": "Investigating the Effect of Pre-finetuning BERT Models on NLI Involving Presuppositions",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.905789"
+      }
+    },
+    {
+      "paper_id": "aef1de7081ebd77bbac95dc315c0f1a5",
+      "title": "MAGNIFICo: Evaluating the In-Context Learning Ability of Large Language Models to Generalize to Novel Interpretations",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.905899"
+      }
+    },
+    {
+      "paper_id": "ae6aed88c03704238d5548752b5881e5",
+      "title": "Using In-Context Learning to Improve Dialogue Safety",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.905963"
+      }
+    },
+    {
+      "paper_id": "9a8c8998e45d4d1f2c4afef7fbb01db9",
+      "title": "Measuring the Knowledge Acquisition-Utilization Gap in Pretrained Language Models",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906045"
+      }
+    },
+    {
+      "paper_id": "92eb61804c4fecaa584ae61b92564f4f",
+      "title": "HoneyBee: Progressive Instruction Finetuning of Large Language Models for Materials Science",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906132"
+      }
+    },
+    {
+      "paper_id": "872b5103e9e60b09eba44aab276004bc",
+      "title": "MAPO: Boosting Large Language Model Performance with Model-Adaptive Prompt Optimization",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906216"
+      }
+    },
+    {
+      "paper_id": "8674745f1cf9e89de6bff9e4d85a80ee",
+      "title": "Balaur: Language Model Pretraining with Lexical Semantic Relations",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906286"
+      }
+    },
+    {
+      "paper_id": "aae0a8b70d5d7b1779b6a7abfc22a139",
+      "title": "Hyena Hierarchy: Towards Larger Convolutional Language Models",
+      "year": 2023,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906351"
+      }
+    },
+    {
+      "paper_id": "8b874ccb9bfd938b74144b7ec8702420",
+      "title": "Efficient Classification of Long Documents via State-Space Models",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906421"
+      }
+    },
+    {
+      "paper_id": "af92fc04a739ed465a295a3950c328cd",
+      "title": "CADet: Fully Self-Supervised Anomaly Detection With Contrastive Learning",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906505"
+      }
+    },
+    {
+      "paper_id": "a872c75c358d09599963442dbb7b5b44",
+      "title": "Feature Likelihood Divergence: Evaluating the Generalization of Generative Models Using Samples",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906601"
+      }
+    },
+    {
+      "paper_id": "8a0a49059f48b7f9d7eb356ac1f59cb0",
+      "title": "Group Robust Classification Without Any Group Information",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906677"
+      }
+    },
+    {
+      "paper_id": "801b1948440f8d32e6a0f07f77a6244c",
+      "title": "A Halfspace-Mass Depth-Based Method for Adversarial Attack Detection",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.906756"
+      }
+    },
+    {
+      "paper_id": "9266c713b4223e2674bf33e0cc34e9d7",
+      "title": "Laughing Hyena Distillery: Extracting Compact Recurrences From Convolutions",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {
+        "parameters_millions": 1300.0
+      },
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": true,
+          "compute_saving_techniques": [
+            "distillation"
+          ],
+          "method_type": "compute_efficient"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 1.0,
+      "extraction_metadata": {
+        "confidence": 0.3666666666666667,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.907803"
+      }
+    },
+    {
+      "paper_id": "91e46625dafff4d825dd8daf3942ab95",
+      "title": "Simplicial Embeddings in Self-Supervised Learning and Downstream Classification",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.908461"
+      }
+    },
+    {
+      "paper_id": "8a5d220be6cd4a4158ced843986aaf0c",
+      "title": "CrossSplit: Mitigating Label Noise Memorization through Data Splitting",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.909364"
+      }
+    },
+    {
+      "paper_id": "a6a743de045fce4b2b5ba43142dc069b",
+      "title": "Explorable Mesh Deformation Subspaces from Unstructured 3D Generative Models",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {
+        "training_time_hours": 72.0
+      },
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.16666666666666666,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.909467"
+      }
+    },
+    {
+      "paper_id": "9246069abcfb02cc01cc0163415e60df",
+      "title": "Automatic Head and Neck Tumor segmentation and outcome prediction relying on FDG-PET/CT images: Findings from the second edition of the HECKTOR challenge",
+      "year": 2023,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.909631"
+      }
+    },
+    {
+      "paper_id": "b6e0575688886f683374fe13a1aa506a",
+      "title": "Open Problems and Fundamental Limitations of Reinforcement Learning from Human Feedback",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.909730"
+      }
+    },
+    {
+      "paper_id": "84c7970be0f338862ff22170071efaf8",
+      "title": "Stateful active facilitator: Coordination and Environmental Heterogeneity in Cooperative Multi-Agent Reinforcement Learning",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.909848"
+      }
+    },
+    {
+      "paper_id": "bf30cae70f3a68582a4c497b783276ef",
+      "title": "A Definition of Continual Reinforcement Learning",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.909902"
+      }
+    },
+    {
+      "paper_id": "8b0189a3272dc09f7707978a098e5208",
+      "title": "Double Gumbel Q-Learning.",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.909942"
+      }
+    },
+    {
+      "paper_id": "ada825ce6157a68e0cf6e7f61fd0bfcc",
+      "title": "Investigating Multi-task Pretraining and Generalization in Reinforcement Learning",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910018"
+      }
+    },
+    {
+      "paper_id": "81e9820574a3532ed12a03965c2c8dc9",
+      "title": "Prioritizing Samples in Reinforcement Learning with Reducible Loss",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910085"
+      }
+    },
+    {
+      "paper_id": "d1cf8e67c13035b3bc71a40b2148a080",
+      "title": "Multi-Environment Pretraining Enables Transfer to Action Limited Datasets",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910159"
+      }
+    },
+    {
+      "paper_id": "950758d68fd97078e161771685903c1b",
+      "title": "Temporal encoding in deep reinforcement learning agents",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910219"
+      }
+    },
+    {
+      "paper_id": "c49b0d81784d5fcf44cf4816da865ab7",
+      "title": "Dealing With Non-stationarity in Decentralized Cooperative Multi-Agent Deep Reinforcement Learning via Multi-Timescale Learning",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910323"
+      }
+    },
+    {
+      "paper_id": "bd3fd5a35e30d151d0564421a83a342f",
+      "title": "Deep reinforcement learning for option pricing and hedging under dynamic expectile risk measures",
+      "year": 2023,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910410"
+      }
+    },
+    {
+      "paper_id": "960b2a02faf977db1d900855c604a408",
+      "title": "Improving Text-to-Image Consistency via Automatic Prompt Optimization",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910480"
+      }
+    },
+    {
+      "paper_id": "d7c514b0cb5f463803d21059f88df00d",
+      "title": "RedPajama: an Open Dataset for Training Large Language Models",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910545"
+      }
+    },
+    {
+      "paper_id": "9901aa2adb0ee8756efb3c1b291d7ee1",
+      "title": "Interpreting Learned Feedback Patterns in Large Language Models",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910639"
+      }
+    },
+    {
+      "paper_id": "acf0db94478757a05b88535094506c96",
+      "title": "Foundational Challenges in Assuring Alignment and Safety of Large Language Models",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910723"
+      }
+    },
+    {
+      "paper_id": "967700d7aa6caa31058f3528051a0b2b",
+      "title": "A Picture is Worth More Than 77 Text Tokens: Evaluating CLIP-Style Models on Dense Captions",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910818"
+      }
+    },
+    {
+      "paper_id": "b1bb911a49e06d987530da4cddd1428a",
+      "title": "When is an Embedding Model  More Promising than Another?",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910882"
+      }
+    },
+    {
+      "paper_id": "ec14d0903f0c8a9c24ce69a20dc7895b",
+      "title": "Reproducibility Study on Adversarial Attacks Against Robust Transformer Trackers",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.910955"
+      }
+    },
+    {
+      "paper_id": "bf2bc6ea21ad2b2465e978ded00f38b0",
+      "title": "Language-guided Skill Learning with Temporal Variational Inference",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.911021"
+      }
+    },
+    {
+      "paper_id": "9ab40afcc21119edc0d74e0c5466652b",
+      "title": "Large Language Models as Generalizable Policies for Embodied Tasks",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.911085"
+      }
+    },
+    {
+      "paper_id": "d7514238d71f283b13d3dbd3d2c3c587",
+      "title": "Faithfulness Measurable Masked Language Models",
+      "year": 2024,
+      "domain": "NLP",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "nlp_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.911136"
+      }
+    },
+    {
+      "paper_id": "a919c28f3debfdc9685ebe9b887f2d51",
+      "title": "DINOv2: Learning Robust Visual Features without Supervision",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {
+        "parameters_millions": 1000.0
+      },
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.3666666666666667,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.911960"
+      }
+    },
+    {
+      "paper_id": "ec0ced93aa9b30909d8d4347d1ddec87",
+      "title": "Learning Action and Reasoning-Centric Image Editing from Videos and Simulation",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.912037"
+      }
+    },
+    {
+      "paper_id": "ba4b226f95788095453ab2dbbbee65fd",
+      "title": "Expecting The Unexpected: Towards Broad Out-Of-Distribution Detection",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.912106"
+      }
+    },
+    {
+      "paper_id": "9c12ec54cf2e8f22d057de218ad7bd89",
+      "title": "Harnessing small projectors and multiple views for efficient vision pretraining",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.912180"
+      }
+    },
+    {
+      "paper_id": "90b4378819b1a56f42a57d7152dcc934",
+      "title": "Revisiting Feature Prediction for Learning Visual Representations from Video",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.912250"
+      }
+    },
+    {
+      "paper_id": "a842c266eac8974cefd07edf68a6aec4",
+      "title": "Unsupervised Discovery of Steerable Factors When Graph Deep Generative Models Are Entangled",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.912337"
+      }
+    },
+    {
+      "paper_id": "a214c1bac561614482abdb8170fde1fc",
+      "title": "Diffusion Generative Flow Samplers: Improving learning signals through partial trajectory optimization",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.912421"
+      }
+    },
+    {
+      "paper_id": "a6388977087e1592a2ae8a73c96bad47",
+      "title": "SIB-200: A Simple, Inclusive, and Big Evaluation Dataset for Topic Classification in 200+ Languages and Dialects",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.912531"
+      }
+    },
+    {
+      "paper_id": "8d257274408f2da8213aeaf269d9c277",
+      "title": "A Data-Driven Measure of Relative Uncertainty for Misclassification Detection",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.912610"
+      }
+    },
+    {
+      "paper_id": "91a6e6ef22ef79d4322f58563df9633a",
+      "title": "On the Stability of Iterative Retraining of Generative Models on their own Data",
+      "year": 2024,
+      "domain": "CV",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.2,
+        "extraction_method": "automated",
+        "template_used": "cv_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.913554"
+      }
+    },
+    {
+      "paper_id": "f77b4e2aaafb419d6bc025568af4f234",
+      "title": "Balancing Context Length and Mixing Times for Reinforcement Learning at Scale",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.913642"
+      }
+    },
+    {
+      "paper_id": "eb96d7ee59d1a09502c9de687d0bcce4",
+      "title": "Normalization and effective learning rates in reinforcement learning",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.913711"
+      }
+    },
+    {
+      "paper_id": "e06ed18a14a7c1264103b1052f75deb5",
+      "title": "Parseval Regularization for Continual Reinforcement Learning",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.913771"
+      }
+    },
+    {
+      "paper_id": "b64049209839386bbe7d859614fbdff0",
+      "title": "Offline Multitask Representation Learning for Reinforcement Learning",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.913838"
+      }
+    },
+    {
+      "paper_id": "aa2299d2827f93783b4e55e96d179c04",
+      "title": "Action Gaps and Advantages in Continuous-Time Distributional Reinforcement Learning",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.913911"
+      }
+    },
+    {
+      "paper_id": "c2b939a9fc746de26ab0af7f13c9f9c8",
+      "title": "The Bifurcation Method: White-Box Observation Perturbation Attacks on Reinforcement Learning Agents on a Cyber Physical System",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.914016"
+      }
+    },
+    {
+      "paper_id": "c1c6fcfb6fb6ed11cae0672860d21cc0",
+      "title": "Simplifying Constraint Inference with Inverse Reinforcement Learning",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.914084"
+      }
+    },
+    {
+      "paper_id": "865488743d62ce33692d62f7fa3b8e2b",
+      "title": "Predicting Future Actions of Reinforcement Learning Agents",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.914144"
+      }
+    },
+    {
+      "paper_id": "9710cc45c1f80bc4ddfcd98f27a95fb9",
+      "title": "Periodic agent-state based Q-learning for POMDPs",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.914202"
+      }
+    },
+    {
+      "paper_id": "cd9b41c0a0772824081b126b85b08811",
+      "title": "Reasoning with Latent Diffusion in Offline Reinforcement Learning",
+      "year": 2024,
+      "domain": "RL",
+      "computational_requirements": {},
+      "suppression_indicators": {
+        "experimental_scope": {
+          "num_ablations": null,
+          "num_seeds": null,
+          "num_baselines": null,
+          "num_model_variants": null,
+          "standard_experiments_missing": []
+        },
+        "scale_analysis": {
+          "parameter_percentile": null,
+          "training_duration": null,
+          "dataset_usage": null,
+          "convergence_achieved": null,
+          "subsample_ratio": null
+        },
+        "method_classification": {
+          "efficiency_focused": false,
+          "compute_saving_techniques": [],
+          "method_type": "compute_intensive"
+        },
+        "explicit_constraints": {
+          "mentions_constraints": false,
+          "constraint_quotes": [],
+          "workarounds_described": []
+        }
+      },
+      "suppression_score": 0.0,
+      "extraction_metadata": {
+        "confidence": 0.0,
+        "extraction_method": "automated",
+        "template_used": "rl_training_suppression_v1",
+        "extraction_date": "2025-07-01T18:16:52.914264"
+      }
+    }
+  ]
+}

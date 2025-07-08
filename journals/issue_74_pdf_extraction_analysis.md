@@ -96,16 +96,16 @@ def extract_text_from_pdf(pdf_path: Path) -> dict:
         'methodology': '',
         'experiments': ''
     }
-    
+
     for page in doc:
         text = page.get_text()
         sections['full_text'] += text
-        
+
         # Basic section detection
         if 'abstract' in text.lower() and not sections['abstract']:
             sections['abstract'] = extract_section(text, 'abstract')
         # ... similar for other sections
-    
+
     return sections
 
 # 2. Enhanced affiliation extraction
@@ -123,18 +123,18 @@ def enhanced_extraction_pipeline(papers):
     for paper in papers:
         # 1. Try to get PDF URL
         pdf_url = get_pdf_url(paper)
-        
+
         if pdf_url:
             # 2. Download PDF
             pdf_path = download_pdf(pdf_url, paper.paper_id)
-            
+
             # 3. Extract full text
             full_content = extract_text_from_pdf(pdf_path)
-            
+
             # 4. Run extraction on full content
             paper.full_text = full_content['full_text']
             paper.extracted_affiliations = extract_affiliations_from_pdf(full_content)
-        
+
         # 5. Run existing extraction (now with more content)
         extraction_result = extractor.extract(paper)
 ```

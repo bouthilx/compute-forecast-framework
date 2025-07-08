@@ -7,7 +7,7 @@
 
 ### Test Results
 From our limited testing:
-- **Initial S2 test**: 40% PDF availability 
+- **Initial S2 test**: 40% PDF availability
 - **Real acquisition test**: 50% success rate (5/10 papers)
 - **Sources working**:
   - Semantic Scholar openAccessPdf: ~20-30%
@@ -83,7 +83,7 @@ Complete all PDF sources to achieve 95%+ coverage:
 The current 40-50% PDF coverage is insufficient. We need to either:
 
 1. **Invest in full PDF infrastructure** (2-3 days) to achieve 95%+ coverage
-2. **Accept hybrid automation + manual** (1 day) for 70-80% coverage  
+2. **Accept hybrid automation + manual** (1 day) for 70-80% coverage
 3. **Pivot to non-PDF strategy** and work with available metadata
 
 ### My Recommendation

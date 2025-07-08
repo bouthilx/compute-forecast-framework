@@ -88,10 +88,10 @@ def extract_identifiers_from_abstract(abstract):
     import re
     arxiv_pattern = r'arXiv:(\d+\.\d+)'
     doi_pattern = r'10\.\d+/[^\s]+'
-    
+
     arxiv_matches = re.findall(arxiv_pattern, abstract)
     doi_matches = re.findall(doi_pattern, abstract)
-    
+
     return {
         'arxiv': arxiv_matches,
         'doi': doi_matches

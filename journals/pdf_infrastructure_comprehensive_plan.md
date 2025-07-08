@@ -99,7 +99,7 @@ with sync_playwright() as p:
 import subprocess
 
 subprocess.run([
-    'wget', 
+    'wget',
     '--user-agent="Mozilla/5.0"',
     '--no-check-certificate',
     '--timeout=30',

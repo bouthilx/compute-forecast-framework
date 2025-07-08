@@ -1,0 +1,10 @@
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_1 from arxiv: No arXiv ID for paper_1
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_3 from arxiv: No arXiv ID for paper_3
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_5 from arxiv: No arXiv ID for paper_5
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_7 from arxiv: No arXiv ID for paper_7
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_9 from arxiv: No arXiv ID for paper_9
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_11 from arxiv: No arXiv ID for paper_11
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_13 from arxiv: No arXiv ID for paper_13
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_15 from arxiv: No arXiv ID for paper_15
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_17 from arxiv: No arXiv ID for paper_17
+ERROR    compute_forecast.pdf_discovery.core.collectors:collectors.py:93 Error discovering PDF for paper_19 from arxiv: No arXiv ID for paper_19

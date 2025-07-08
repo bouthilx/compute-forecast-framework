@@ -53,7 +53,7 @@ Successfully implemented the base PDF discovery framework that orchestrates mult
 
 Achieved 93% test coverage with:
 - 11 unit tests for BasePDFCollector
-- 14 unit tests for PDFDiscoveryFramework  
+- 14 unit tests for PDFDiscoveryFramework
 - 9 unit tests for models
 - 6 integration tests for end-to-end workflows
 - Additional tests for edge cases

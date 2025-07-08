@@ -9,7 +9,7 @@ All issues in the compute-forecast repository must be tagged with both a **Work 
 Each issue must have exactly **one** Work Type tag that describes the primary nature of the work:
 
 ### `work:implementation`
-**Description**: Building new code, infrastructure, modules, or systems  
+**Description**: Building new code, infrastructure, modules, or systems
 **Use when**:
 - Creating new Python modules or classes
 - Building infrastructure components
@@ -23,7 +23,7 @@ Each issue must have exactly **one** Work Type tag that describes the primary na
 - "Build API collection system"
 
 ### `work:design`
-**Description**: Planning, architecting, or designing systems/methodologies  
+**Description**: Planning, architecting, or designing systems/methodologies
 **Use when**:
 - Creating architectural plans
 - Designing system workflows
@@ -37,7 +37,7 @@ Each issue must have exactly **one** Work Type tag that describes the primary na
 - "Design report structure"
 
 ### `work:execution`
-**Description**: Running existing code to generate results, process data, or produce outputs  
+**Description**: Running existing code to generate results, process data, or produce outputs
 **Use when**:
 - Running analysis scripts
 - Executing data extraction
@@ -51,7 +51,7 @@ Each issue must have exactly **one** Work Type tag that describes the primary na
 - "Generate temporal evolution charts"
 
 ### `work:writing`
-**Description**: Creating documentation, reports, analysis writeups, or other text deliverables  
+**Description**: Creating documentation, reports, analysis writeups, or other text deliverables
 **Use when**:
 - Writing report sections
 - Creating documentation
@@ -69,7 +69,7 @@ Each issue must have exactly **one** Work Type tag that describes the primary na
 Each issue must have exactly **one** Domain tag that describes the primary area of focus:
 
 ### `domain:collection`
-**Description**: Gathering papers, datasets, or raw data from various sources  
+**Description**: Gathering papers, datasets, or raw data from various sources
 **Use when**:
 - Fetching papers from APIs
 - Collecting datasets
@@ -83,7 +83,7 @@ Each issue must have exactly **one** Domain tag that describes the primary area 
 - "Retrieve citation counts"
 
 ### `domain:extraction`
-**Description**: Extracting information from papers (computational requirements, metrics, classifications)  
+**Description**: Extracting information from papers (computational requirements, metrics, classifications)
 **Use when**:
 - Parsing computational requirements
 - Extracting GPU hours, parameters
@@ -97,7 +97,7 @@ Each issue must have exactly **one** Domain tag that describes the primary area 
 - "Extract NLP-specific metrics"
 
 ### `domain:analysis`
-**Description**: Analyzing extracted data for patterns, trends, insights, or comparisons  
+**Description**: Analyzing extracted data for patterns, trends, insights, or comparisons
 **Use when**:
 - Computing growth rates
 - Comparing trends
@@ -111,7 +111,7 @@ Each issue must have exactly **one** Domain tag that describes the primary area 
 - "Calculate suppression metrics"
 
 ### `domain:testing`
-**Description**: Validation, quality assurance, testing infrastructure, or verification activities  
+**Description**: Validation, quality assurance, testing infrastructure, or verification activities
 **Use when**:
 - Creating test suites
 - Validating data quality
@@ -125,7 +125,7 @@ Each issue must have exactly **one** Domain tag that describes the primary area 
 - "Create mock data framework"
 
 ### `domain:installation`
-**Description**: Core system architecture, frameworks, or foundational components  
+**Description**: Core system architecture, frameworks, or foundational components
 **Use when**:
 - Setting up project structure
 - Creating core infrastructure

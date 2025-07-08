@@ -1,0 +1,781 @@
+{
+  "primary_domains": [
+    {
+      "paper_id": "def5cb144365b784152d6db59e96330d",
+      "title": "Towards Enhancing the Reproducibility of Deep Learning Bugs: An Empirical Study",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Software Engineering",
+      "justification": "The main focus of the paper is on the empirical study of deep learning bug reproducibility, a topic primarily in the field of Software Engineering.",
+      "quote": "Towards Enhancing the Reproducibility of Deep Learning Bugs: An Empirical Study",
+      "aliases": []
+    },
+    {
+      "paper_id": "d5f73acf1d3717e9b02ee2077e4d39d5",
+      "title": "Reinforcement Learning for Versatile, Dynamic, and Robust Bipedal Locomotion Control",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Reinforcement Learning for Robotics",
+      "justification": "The primary research focus is on developing reinforcement learning algorithms for controlling bipedal robot locomotion.",
+      "quote": "This paper presents a comprehensive study on using\ndeep reinforcement learning (RL) to create dynamic locomotion controllers for bipedal robots.",
+      "aliases": [
+        "RL for Robotics"
+      ]
+    },
+    {
+      "paper_id": "b0d42dd21895be41779d5b20775cfac1",
+      "title": "Generalization Limits of Graph Neural Networks in Identity Effects Learning",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Deep Learning",
+      "justification": "The content discussed, such as Graph Neural Networks and their expressive power, falls squarely within the field of Deep Learning.",
+      "quote": "Graph Neural Networks (GNNs) have emerged as a powerful tool for data-driven learning on various graph domains.",
+      "aliases": []
+    },
+    {
+      "paper_id": "a0753c8524ebc0eeda182ac1880e77e7",
+      "title": "Pruning Sparse Tensor Neural Networks Enables Deep Learning for 3D Ultrasound Localization Microscopy",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Deep Learning",
+      "justification": "The focus of the paper is on the application of deep learning techniques to improve 3D Ultrasound Localization Microscopy.",
+      "quote": "Index Terms\u2014Deep Learning, 3D imaging, Ultrasound Localization Microscopy (ULM), Sparse Tensor Neural Networks",
+      "aliases": []
+    },
+    {
+      "paper_id": "9b938813f44875a003a10357861f8ca9",
+      "title": "Towards contrast-agnostic soft segmentation of the spinal cord",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Computer Vision",
+      "justification": "The research focuses on improving spinal cord segmentation in MRI images, which is a relevant problem in the field of computer vision, a subfield of artificial intelligence focused on training computers to interpret and understand the visual world.",
+      "quote": "Spinal cord segmentation is clinically relevant, notably to compute cross-sectional area (CSA) for the diagnosis and monitoring of atrophy in multiple sclerosis (MS), spinal cord injury (SCI), and in characterizing spinal cord compression.",
+      "aliases": []
+    },
+    {
+      "paper_id": "963ae27d710dd24347431e36743b2770",
+      "title": "Ex Post Conditions for the Exactness of Optimal Power Flow Conic Relaxations",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Optimization",
+      "justification": "The paper is focused on optimization problems related to power flow in electrical grids.",
+      "quote": "Convex relaxations of the optimal power flow (OPF) problem provide an efficient alternative to solving the intractable alternating current (AC) optimal power flow.",
+      "aliases": []
+    },
+    {
+      "paper_id": "87ab5d343e9e8fe30ff6b5b5601a275c",
+      "title": "Multimodal and Force-Matched Imitation Learning with a See-Through Visuotactile Sensor",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Robotic Manipulation",
+      "justification": "The paper is primarily focused on robotic manipulation and improving performance in contact-rich tasks through imitation learning and the use of a visuotactile sensor.",
+      "quote": "This paper aims to learn robot policies for door opening that are more in line with human manipulation, by leveraging high-resolution visual and tactile feedback to control the contact interactions between the robot end-effector and the handle.",
+      "aliases": [
+        "Robot Manipulation",
+        "Manipulation"
+      ]
+    },
+    {
+      "paper_id": "b96ebdf56345e35cfe1e0e1937252f13",
+      "title": "Harnessing Pre-trained Generalist Agents for Software Engineering Tasks",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Reinforcement Learning",
+      "justification": "The paper focuses on using reinforcement learning algorithms for software engineering tasks.",
+      "quote": "Recently, DRL has been increasingly leveraged in Software Engineering (SE) tasks, thanks to the availability of DRL algorithms such as Proximal Policy Optimization (PPO), Advantage Actor Critic (A2C), Deep Q-Networks (DQN) that can train agents to accomplish the task at hand.",
+      "aliases": [
+        "DRL"
+      ]
+    },
+    {
+      "paper_id": "d938ec977662ca08e840eb4b729b1231",
+      "title": "Combining supervised learning and local search for the multicommodity capacitated fixed-charge network design problem",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Optimization",
+      "justification": "The paper deals with designing solutions for an optimization problem, specifically in network design, using machine learning and local search algorithms.",
+      "quote": "explore how a data-driven approach can help improve upon the state of the art. By leveraging machine learning models, we attempt to reveal patterns hidden in the data...",
+      "aliases": [
+        "Combinatorial Optimization"
+      ]
+    },
+    {
+      "paper_id": "c12285d501082902f649ee0390a14dbb",
+      "title": "Evaluating the effectiveness of the Smart About Meds (SAM) mobile application among patients discharged from hospital: protocol of a randomised controlled trial",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Healthcare Informatics",
+      "justification": "The primary focus of the research is on using a mobile application for medication management post-hospital discharge, which falls under the domain of healthcare informatics.",
+      "quote": "This protocol, funded by the Canadian Institutes of Health Research (grant number 470182), describes our planned randomised controlled trial (RCT) to evaluate Smart About Meds (SAM), an innovative, patient-centred medication management mobile application.",
+      "aliases": [
+        "Health Informatics"
+      ]
+    },
+    {
+      "paper_id": "d11db8c5240b307128f832816e78f390",
+      "title": "Caustics: A Python Package for Accelerated Strong Gravitational Lensing Simulations",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Astrophysics and Machine Learning",
+      "justification": "The paper discusses a Python package for simulating strong gravitational lensing, which is a topic in astrophysics that also utilizes machine learning methods for data processing and analysis.",
+      "quote": "Gravitational lensing is the deflection of light rays due to the gravity of intervening\nmasses.",
+      "aliases": [
+        "Gravitational Lensing",
+        "Astrophysical Simulations"
+      ]
+    },
+    {
+      "paper_id": "e57c0cabfd462478c18616ab368dd2fb",
+      "title": "UTG: Towards a Unified View of Snapshot and Event Based Models for Temporal Graphs",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Graph Neural Networks",
+      "justification": "The research focuses on Graph Neural Networks (GNNs), evaluating their performance on temporal graphs, which indicates its primary placement in the field.",
+      "quote": "Recently, Graph Neural Networks (GNNs) and Graph Transformers have achieved remarkable success in various tasks for static graphs.",
+      "aliases": [
+        "GNNs"
+      ]
+    },
+    {
+      "paper_id": "94a1abcda4ae84576cca79d0fcedc40d",
+      "title": "Towards a General Recipe for Combinatorial Optimization with Multi-Filter GNNs",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Combinatorial Optimization",
+      "justification": "The paper focuses on solving combinatorial optimization problems using GNNs, which is a specific application area within the broader field of optimization in computer science and mathematics.",
+      "quote": "Here, we introduce GCON, a novel GNN architecture that leverages a complex filter bank and localized attention mechanisms to solve CO problems on graphs.",
+      "aliases": [
+        "CO"
+      ]
+    }
+  ],
+  "sub_domains": [
+    {
+      "paper_id": "def5cb144365b784152d6db59e96330d",
+      "title": "Towards Enhancing the Reproducibility of Deep Learning Bugs: An Empirical Study",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Deep Learning",
+      "justification": "The paper centers around the challenges in reproducing deep learning bugs, indicating Deep Learning as a relevant sub-field.",
+      "quote": "Deep learning has achieved remarkable progress in various domains. However, like any software system, deep learning systems contain bugs.",
+      "aliases": []
+    },
+    {
+      "paper_id": "def5cb144365b784152d6db59e96330d",
+      "title": "Towards Enhancing the Reproducibility of Deep Learning Bugs: An Empirical Study",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Bug Reproducibility",
+      "justification": "The paper specifically deals with the reproducibility of bugs within deep learning systems, indicating this as a sub-field.",
+      "quote": "Our research addresses the critical issue of deep learning bug reproducibility.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d5f73acf1d3717e9b02ee2077e4d39d5",
+      "title": "Reinforcement Learning for Versatile, Dynamic, and Robust Bipedal Locomotion Control",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Bipedal Locomotion",
+      "justification": "The primary application domain of the study is controlling bipedal locomotion in robots.",
+      "quote": "The goal of this framework is to enable a range of dynamic bipedal locomotion skills in the real world with a limited prescription on the resulting maneuvers.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d5f73acf1d3717e9b02ee2077e4d39d5",
+      "title": "Reinforcement Learning for Versatile, Dynamic, and Robust Bipedal Locomotion Control",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Robotics",
+      "justification": "The paper is based on the development and control of robots, specifically bipedal robots.",
+      "quote": "This work pushes the limits of agility for bipedal robots through extensive real-world experiments.",
+      "aliases": []
+    },
+    {
+      "paper_id": "b0d42dd21895be41779d5b20775cfac1",
+      "title": "Generalization Limits of Graph Neural Networks in Identity Effects Learning",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Graph Neural Networks",
+      "justification": "The paper deals with the capabilities and limitations of Graph Neural Networks specifically, including various models and their expressive power.",
+      "quote": "Graph Neural Networks (GNNs) have emerged as prominent models for handling structured data.",
+      "aliases": []
+    },
+    {
+      "paper_id": "a0753c8524ebc0eeda182ac1880e77e7",
+      "title": "Pruning Sparse Tensor Neural Networks Enables Deep Learning for 3D Ultrasound Localization Microscopy",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Medical Imaging",
+      "justification": "The paper applies deep learning models to medical imaging, specifically Ultrasound Localization Microscopy.",
+      "quote": "Ultrasound Localization Microscopy (ULM) is a non-invasive technique that allows for the imaging of microvessels in vivo.",
+      "aliases": []
+    },
+    {
+      "paper_id": "9b938813f44875a003a10357861f8ca9",
+      "title": "Towards contrast-agnostic soft segmentation of the spinal cord",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Medical Imaging",
+      "justification": "The paper specifically deals with segmented images from MRI scans and aims to improve clinical imaging techniques.",
+      "quote": "We present a deep learning-based method that produces soft segmentations of the spinal cord.",
+      "aliases": []
+    },
+    {
+      "paper_id": "963ae27d710dd24347431e36743b2770",
+      "title": "Ex Post Conditions for the Exactness of Optimal Power Flow Conic Relaxations",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Power Systems",
+      "justification": "The context of the paper is within electrical power systems, specifically focusing on optimal power flow.",
+      "quote": "The optimal power flow (OPF) problem consists of minimizing generation costs in an electric network while ensuring that all loads are adequately supplied and that the transmission physical constraints are met.",
+      "aliases": []
+    },
+    {
+      "paper_id": "87ab5d343e9e8fe30ff6b5b5601a275c",
+      "title": "Multimodal and Force-Matched Imitation Learning with a See-Through Visuotactile Sensor",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Imitation Learning",
+      "justification": "The paper discusses multiple contributions to improve imitation learning in robotics, specifically through kinesthetic teaching and learned mode switching.",
+      "quote": "In this paper, we investigate how to leverage visuotactile sensing for imitation learning (IL) on a real robotic platform for contact-rich manipulation tasks.",
+      "aliases": [
+        "IL"
+      ]
+    },
+    {
+      "paper_id": "87ab5d343e9e8fe30ff6b5b5601a275c",
+      "title": "Multimodal and Force-Matched Imitation Learning with a See-Through Visuotactile Sensor",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Tactile Sensing",
+      "justification": "The research leverages a see-through visuotactile sensor for contact feedback in robotic manipulation, making tactile sensing a significant aspect of the study.",
+      "quote": "A recently-introduced see-through-your-skin (STS) multimodal optical sensor variant combines visual sensing with tactile sensing by leveraging a transparent membrane and controllable lighting.",
+      "aliases": [
+        "Tactile Sensing",
+        "Visuotactile Sensing"
+      ]
+    },
+    {
+      "paper_id": "b96ebdf56345e35cfe1e0e1937252f13",
+      "title": "Harnessing Pre-trained Generalist Agents for Software Engineering Tasks",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Automated Game Testing",
+      "justification": "The paper applies reinforcement learning for the detection of bugs in games.",
+      "quote": "...assessing the performance of two generalist agents on two important SE tasks: the detection of bugs in games...",
+      "aliases": []
+    },
+    {
+      "paper_id": "b96ebdf56345e35cfe1e0e1937252f13",
+      "title": "Harnessing Pre-trained Generalist Agents for Software Engineering Tasks",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Job-Shop Scheduling",
+      "justification": "The paper uses reinforcement learning to minimize makespan in scheduling tasks.",
+      "quote": "...the minimization of makespan in a scheduling task, to solve the job-shop scheduling problem...",
+      "aliases": [
+        "JSSP"
+      ]
+    },
+    {
+      "paper_id": "d938ec977662ca08e840eb4b729b1231",
+      "title": "Combining supervised learning and local search for the multicommodity capacitated fixed-charge network design problem",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Machine Learning",
+      "justification": "The research heavily uses machine learning strategies, particularly supervised learning, to improve optimization heuristics.",
+      "quote": "Our method feeds a prediction from a machine learning (ML) model to a Local Search (LS) algorithm.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d938ec977662ca08e840eb4b729b1231",
+      "title": "Combining supervised learning and local search for the multicommodity capacitated fixed-charge network design problem",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Network Design",
+      "justification": "The paper focuses specifically on a network design problem, indicating it as a primary aspect of the study.",
+      "quote": "The multicommodity capacitated fixed-charge network design problem (MCFND) is an influential problem...",
+      "aliases": [
+        "MCFND"
+      ]
+    },
+    {
+      "paper_id": "c12285d501082902f649ee0390a14dbb",
+      "title": "Evaluating the effectiveness of the Smart About Meds (SAM) mobile application among patients discharged from hospital: protocol of a randomised controlled trial",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Mobile Health",
+      "justification": "The SAM application is a mobile health tool designed to enhance medication adherence, fitting within the mobile health research domain.",
+      "quote": "Smart About Meds (SAM) is a pilot-\u00adtested, patient-centred mobile application that leverages the Information\u2013Motivation\u2013Behavioural Skills Model to provide an array of features.",
+      "aliases": [
+        "mHealth"
+      ]
+    },
+    {
+      "paper_id": "c12285d501082902f649ee0390a14dbb",
+      "title": "Evaluating the effectiveness of the Smart About Meds (SAM) mobile application among patients discharged from hospital: protocol of a randomised controlled trial",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Pharmacoeconomics",
+      "justification": "The study aims to reduce potentially inappropriate medication use and improve medication adherence, impacting healthcare costs, which links to pharmacoeconomics.",
+      "quote": "Targeting non\u00adadherence while raising patient awareness to PIMs may have a synergistic effect because elimination of PIMs will reduce the number of drugs in a patient\u2019s regimen and associated costs.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d11db8c5240b307128f832816e78f390",
+      "title": "Caustics: A Python Package for Accelerated Strong Gravitational Lensing Simulations",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Gravitational Lensing",
+      "justification": "The focus of the paper is on simulating strong gravitational lensing systems.",
+      "quote": "Caustics is a gravitational lensing simulator.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d11db8c5240b307128f832816e78f390",
+      "title": "Caustics: A Python Package for Accelerated Strong Gravitational Lensing Simulations",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Machine Learning",
+      "justification": "The paper emphasizes the integration of deep learning and machine learning techniques in processing and analyzing lensing simulations.",
+      "quote": "Machine learning will be critical to achieve the necessary speed to process these\nlenses, it will also be needed to meet the complexity of strong lens modelling.",
+      "aliases": []
+    },
+    {
+      "paper_id": "e57c0cabfd462478c18616ab368dd2fb",
+      "title": "UTG: Towards a Unified View of Snapshot and Event Based Models for Temporal Graphs",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Temporal Graphs",
+      "justification": "The paper establishes a framework specifically for temporal graphs and conducts experiments on temporal datasets, reflecting this focus.",
+      "quote": "In this paper, we introduce Unified Temporal Graph (UTG), a framework that unifies snapshot-based and event-based machine learning models under a single umbrella.",
+      "aliases": []
+    },
+    {
+      "paper_id": "e57c0cabfd462478c18616ab368dd2fb",
+      "title": "UTG: Towards a Unified View of Snapshot and Event Based Models for Temporal Graphs",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Graph Transformers",
+      "justification": "Graph Transformers are mentioned as part of the successful models along with GNNs for tasks related to graphs.",
+      "quote": "Graph Neural Networks (GNNs) and Graph Transformers have achieved remarkable success in various tasks for static graphs.",
+      "aliases": []
+    },
+    {
+      "paper_id": "94a1abcda4ae84576cca79d0fcedc40d",
+      "title": "Towards a General Recipe for Combinatorial Optimization with Multi-Filter GNNs",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Graph Neural Networks",
+      "justification": "The GCON model is a specific type of graph neural network designed to handle combinatorial optimization problems.",
+      "quote": "Recent years have seen the rapid development of neural networks for graph-structured data.",
+      "aliases": [
+        "GNN",
+        "Graph NNs"
+      ]
+    },
+    {
+      "paper_id": "94a1abcda4ae84576cca79d0fcedc40d",
+      "title": "Towards a General Recipe for Combinatorial Optimization with Multi-Filter GNNs",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Graph Signal Processing",
+      "justification": "The paper leverages concepts from graph signal processing, such as low-pass filtering, to design GCON's architecture.",
+      "quote": "That can be interpreted, from the perspective of graph signal processing (GSP), as low-pass filtering.",
+      "aliases": [
+        "GSP"
+      ]
+    }
+  ],
+  "all_domains": [
+    {
+      "paper_id": "def5cb144365b784152d6db59e96330d",
+      "title": "Towards Enhancing the Reproducibility of Deep Learning Bugs: An Empirical Study",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Software Engineering",
+      "justification": "The main focus of the paper is on the empirical study of deep learning bug reproducibility, a topic primarily in the field of Software Engineering.",
+      "quote": "Towards Enhancing the Reproducibility of Deep Learning Bugs: An Empirical Study",
+      "aliases": []
+    },
+    {
+      "paper_id": "d5f73acf1d3717e9b02ee2077e4d39d5",
+      "title": "Reinforcement Learning for Versatile, Dynamic, and Robust Bipedal Locomotion Control",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Reinforcement Learning for Robotics",
+      "justification": "The primary research focus is on developing reinforcement learning algorithms for controlling bipedal robot locomotion.",
+      "quote": "This paper presents a comprehensive study on using\ndeep reinforcement learning (RL) to create dynamic locomotion controllers for bipedal robots.",
+      "aliases": [
+        "RL for Robotics"
+      ]
+    },
+    {
+      "paper_id": "b0d42dd21895be41779d5b20775cfac1",
+      "title": "Generalization Limits of Graph Neural Networks in Identity Effects Learning",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Deep Learning",
+      "justification": "The content discussed, such as Graph Neural Networks and their expressive power, falls squarely within the field of Deep Learning.",
+      "quote": "Graph Neural Networks (GNNs) have emerged as a powerful tool for data-driven learning on various graph domains.",
+      "aliases": []
+    },
+    {
+      "paper_id": "a0753c8524ebc0eeda182ac1880e77e7",
+      "title": "Pruning Sparse Tensor Neural Networks Enables Deep Learning for 3D Ultrasound Localization Microscopy",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Deep Learning",
+      "justification": "The focus of the paper is on the application of deep learning techniques to improve 3D Ultrasound Localization Microscopy.",
+      "quote": "Index Terms\u2014Deep Learning, 3D imaging, Ultrasound Localization Microscopy (ULM), Sparse Tensor Neural Networks",
+      "aliases": []
+    },
+    {
+      "paper_id": "9b938813f44875a003a10357861f8ca9",
+      "title": "Towards contrast-agnostic soft segmentation of the spinal cord",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Computer Vision",
+      "justification": "The research focuses on improving spinal cord segmentation in MRI images, which is a relevant problem in the field of computer vision, a subfield of artificial intelligence focused on training computers to interpret and understand the visual world.",
+      "quote": "Spinal cord segmentation is clinically relevant, notably to compute cross-sectional area (CSA) for the diagnosis and monitoring of atrophy in multiple sclerosis (MS), spinal cord injury (SCI), and in characterizing spinal cord compression.",
+      "aliases": []
+    },
+    {
+      "paper_id": "963ae27d710dd24347431e36743b2770",
+      "title": "Ex Post Conditions for the Exactness of Optimal Power Flow Conic Relaxations",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Optimization",
+      "justification": "The paper is focused on optimization problems related to power flow in electrical grids.",
+      "quote": "Convex relaxations of the optimal power flow (OPF) problem provide an efficient alternative to solving the intractable alternating current (AC) optimal power flow.",
+      "aliases": []
+    },
+    {
+      "paper_id": "87ab5d343e9e8fe30ff6b5b5601a275c",
+      "title": "Multimodal and Force-Matched Imitation Learning with a See-Through Visuotactile Sensor",
+      "year": "2025",
+      "domain_type": "primary",
+      "domain_name": "Robotic Manipulation",
+      "justification": "The paper is primarily focused on robotic manipulation and improving performance in contact-rich tasks through imitation learning and the use of a visuotactile sensor.",
+      "quote": "This paper aims to learn robot policies for door opening that are more in line with human manipulation, by leveraging high-resolution visual and tactile feedback to control the contact interactions between the robot end-effector and the handle.",
+      "aliases": [
+        "Robot Manipulation",
+        "Manipulation"
+      ]
+    },
+    {
+      "paper_id": "b96ebdf56345e35cfe1e0e1937252f13",
+      "title": "Harnessing Pre-trained Generalist Agents for Software Engineering Tasks",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Reinforcement Learning",
+      "justification": "The paper focuses on using reinforcement learning algorithms for software engineering tasks.",
+      "quote": "Recently, DRL has been increasingly leveraged in Software Engineering (SE) tasks, thanks to the availability of DRL algorithms such as Proximal Policy Optimization (PPO), Advantage Actor Critic (A2C), Deep Q-Networks (DQN) that can train agents to accomplish the task at hand.",
+      "aliases": [
+        "DRL"
+      ]
+    },
+    {
+      "paper_id": "d938ec977662ca08e840eb4b729b1231",
+      "title": "Combining supervised learning and local search for the multicommodity capacitated fixed-charge network design problem",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Optimization",
+      "justification": "The paper deals with designing solutions for an optimization problem, specifically in network design, using machine learning and local search algorithms.",
+      "quote": "explore how a data-driven approach can help improve upon the state of the art. By leveraging machine learning models, we attempt to reveal patterns hidden in the data...",
+      "aliases": [
+        "Combinatorial Optimization"
+      ]
+    },
+    {
+      "paper_id": "c12285d501082902f649ee0390a14dbb",
+      "title": "Evaluating the effectiveness of the Smart About Meds (SAM) mobile application among patients discharged from hospital: protocol of a randomised controlled trial",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Healthcare Informatics",
+      "justification": "The primary focus of the research is on using a mobile application for medication management post-hospital discharge, which falls under the domain of healthcare informatics.",
+      "quote": "This protocol, funded by the Canadian Institutes of Health Research (grant number 470182), describes our planned randomised controlled trial (RCT) to evaluate Smart About Meds (SAM), an innovative, patient-centred medication management mobile application.",
+      "aliases": [
+        "Health Informatics"
+      ]
+    },
+    {
+      "paper_id": "d11db8c5240b307128f832816e78f390",
+      "title": "Caustics: A Python Package for Accelerated Strong Gravitational Lensing Simulations",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Astrophysics and Machine Learning",
+      "justification": "The paper discusses a Python package for simulating strong gravitational lensing, which is a topic in astrophysics that also utilizes machine learning methods for data processing and analysis.",
+      "quote": "Gravitational lensing is the deflection of light rays due to the gravity of intervening\nmasses.",
+      "aliases": [
+        "Gravitational Lensing",
+        "Astrophysical Simulations"
+      ]
+    },
+    {
+      "paper_id": "e57c0cabfd462478c18616ab368dd2fb",
+      "title": "UTG: Towards a Unified View of Snapshot and Event Based Models for Temporal Graphs",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Graph Neural Networks",
+      "justification": "The research focuses on Graph Neural Networks (GNNs), evaluating their performance on temporal graphs, which indicates its primary placement in the field.",
+      "quote": "Recently, Graph Neural Networks (GNNs) and Graph Transformers have achieved remarkable success in various tasks for static graphs.",
+      "aliases": [
+        "GNNs"
+      ]
+    },
+    {
+      "paper_id": "94a1abcda4ae84576cca79d0fcedc40d",
+      "title": "Towards a General Recipe for Combinatorial Optimization with Multi-Filter GNNs",
+      "year": "2024",
+      "domain_type": "primary",
+      "domain_name": "Combinatorial Optimization",
+      "justification": "The paper focuses on solving combinatorial optimization problems using GNNs, which is a specific application area within the broader field of optimization in computer science and mathematics.",
+      "quote": "Here, we introduce GCON, a novel GNN architecture that leverages a complex filter bank and localized attention mechanisms to solve CO problems on graphs.",
+      "aliases": [
+        "CO"
+      ]
+    },
+    {
+      "paper_id": "def5cb144365b784152d6db59e96330d",
+      "title": "Towards Enhancing the Reproducibility of Deep Learning Bugs: An Empirical Study",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Deep Learning",
+      "justification": "The paper centers around the challenges in reproducing deep learning bugs, indicating Deep Learning as a relevant sub-field.",
+      "quote": "Deep learning has achieved remarkable progress in various domains. However, like any software system, deep learning systems contain bugs.",
+      "aliases": []
+    },
+    {
+      "paper_id": "def5cb144365b784152d6db59e96330d",
+      "title": "Towards Enhancing the Reproducibility of Deep Learning Bugs: An Empirical Study",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Bug Reproducibility",
+      "justification": "The paper specifically deals with the reproducibility of bugs within deep learning systems, indicating this as a sub-field.",
+      "quote": "Our research addresses the critical issue of deep learning bug reproducibility.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d5f73acf1d3717e9b02ee2077e4d39d5",
+      "title": "Reinforcement Learning for Versatile, Dynamic, and Robust Bipedal Locomotion Control",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Bipedal Locomotion",
+      "justification": "The primary application domain of the study is controlling bipedal locomotion in robots.",
+      "quote": "The goal of this framework is to enable a range of dynamic bipedal locomotion skills in the real world with a limited prescription on the resulting maneuvers.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d5f73acf1d3717e9b02ee2077e4d39d5",
+      "title": "Reinforcement Learning for Versatile, Dynamic, and Robust Bipedal Locomotion Control",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Robotics",
+      "justification": "The paper is based on the development and control of robots, specifically bipedal robots.",
+      "quote": "This work pushes the limits of agility for bipedal robots through extensive real-world experiments.",
+      "aliases": []
+    },
+    {
+      "paper_id": "b0d42dd21895be41779d5b20775cfac1",
+      "title": "Generalization Limits of Graph Neural Networks in Identity Effects Learning",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Graph Neural Networks",
+      "justification": "The paper deals with the capabilities and limitations of Graph Neural Networks specifically, including various models and their expressive power.",
+      "quote": "Graph Neural Networks (GNNs) have emerged as prominent models for handling structured data.",
+      "aliases": []
+    },
+    {
+      "paper_id": "a0753c8524ebc0eeda182ac1880e77e7",
+      "title": "Pruning Sparse Tensor Neural Networks Enables Deep Learning for 3D Ultrasound Localization Microscopy",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Medical Imaging",
+      "justification": "The paper applies deep learning models to medical imaging, specifically Ultrasound Localization Microscopy.",
+      "quote": "Ultrasound Localization Microscopy (ULM) is a non-invasive technique that allows for the imaging of microvessels in vivo.",
+      "aliases": []
+    },
+    {
+      "paper_id": "9b938813f44875a003a10357861f8ca9",
+      "title": "Towards contrast-agnostic soft segmentation of the spinal cord",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Medical Imaging",
+      "justification": "The paper specifically deals with segmented images from MRI scans and aims to improve clinical imaging techniques.",
+      "quote": "We present a deep learning-based method that produces soft segmentations of the spinal cord.",
+      "aliases": []
+    },
+    {
+      "paper_id": "963ae27d710dd24347431e36743b2770",
+      "title": "Ex Post Conditions for the Exactness of Optimal Power Flow Conic Relaxations",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Power Systems",
+      "justification": "The context of the paper is within electrical power systems, specifically focusing on optimal power flow.",
+      "quote": "The optimal power flow (OPF) problem consists of minimizing generation costs in an electric network while ensuring that all loads are adequately supplied and that the transmission physical constraints are met.",
+      "aliases": []
+    },
+    {
+      "paper_id": "87ab5d343e9e8fe30ff6b5b5601a275c",
+      "title": "Multimodal and Force-Matched Imitation Learning with a See-Through Visuotactile Sensor",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Imitation Learning",
+      "justification": "The paper discusses multiple contributions to improve imitation learning in robotics, specifically through kinesthetic teaching and learned mode switching.",
+      "quote": "In this paper, we investigate how to leverage visuotactile sensing for imitation learning (IL) on a real robotic platform for contact-rich manipulation tasks.",
+      "aliases": [
+        "IL"
+      ]
+    },
+    {
+      "paper_id": "87ab5d343e9e8fe30ff6b5b5601a275c",
+      "title": "Multimodal and Force-Matched Imitation Learning with a See-Through Visuotactile Sensor",
+      "year": "2025",
+      "domain_type": "sub",
+      "domain_name": "Tactile Sensing",
+      "justification": "The research leverages a see-through visuotactile sensor for contact feedback in robotic manipulation, making tactile sensing a significant aspect of the study.",
+      "quote": "A recently-introduced see-through-your-skin (STS) multimodal optical sensor variant combines visual sensing with tactile sensing by leveraging a transparent membrane and controllable lighting.",
+      "aliases": [
+        "Tactile Sensing",
+        "Visuotactile Sensing"
+      ]
+    },
+    {
+      "paper_id": "b96ebdf56345e35cfe1e0e1937252f13",
+      "title": "Harnessing Pre-trained Generalist Agents for Software Engineering Tasks",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Automated Game Testing",
+      "justification": "The paper applies reinforcement learning for the detection of bugs in games.",
+      "quote": "...assessing the performance of two generalist agents on two important SE tasks: the detection of bugs in games...",
+      "aliases": []
+    },
+    {
+      "paper_id": "b96ebdf56345e35cfe1e0e1937252f13",
+      "title": "Harnessing Pre-trained Generalist Agents for Software Engineering Tasks",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Job-Shop Scheduling",
+      "justification": "The paper uses reinforcement learning to minimize makespan in scheduling tasks.",
+      "quote": "...the minimization of makespan in a scheduling task, to solve the job-shop scheduling problem...",
+      "aliases": [
+        "JSSP"
+      ]
+    },
+    {
+      "paper_id": "d938ec977662ca08e840eb4b729b1231",
+      "title": "Combining supervised learning and local search for the multicommodity capacitated fixed-charge network design problem",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Machine Learning",
+      "justification": "The research heavily uses machine learning strategies, particularly supervised learning, to improve optimization heuristics.",
+      "quote": "Our method feeds a prediction from a machine learning (ML) model to a Local Search (LS) algorithm.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d938ec977662ca08e840eb4b729b1231",
+      "title": "Combining supervised learning and local search for the multicommodity capacitated fixed-charge network design problem",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Network Design",
+      "justification": "The paper focuses specifically on a network design problem, indicating it as a primary aspect of the study.",
+      "quote": "The multicommodity capacitated fixed-charge network design problem (MCFND) is an influential problem...",
+      "aliases": [
+        "MCFND"
+      ]
+    },
+    {
+      "paper_id": "c12285d501082902f649ee0390a14dbb",
+      "title": "Evaluating the effectiveness of the Smart About Meds (SAM) mobile application among patients discharged from hospital: protocol of a randomised controlled trial",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Mobile Health",
+      "justification": "The SAM application is a mobile health tool designed to enhance medication adherence, fitting within the mobile health research domain.",
+      "quote": "Smart About Meds (SAM) is a pilot-\u00adtested, patient-centred mobile application that leverages the Information\u2013Motivation\u2013Behavioural Skills Model to provide an array of features.",
+      "aliases": [
+        "mHealth"
+      ]
+    },
+    {
+      "paper_id": "c12285d501082902f649ee0390a14dbb",
+      "title": "Evaluating the effectiveness of the Smart About Meds (SAM) mobile application among patients discharged from hospital: protocol of a randomised controlled trial",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Pharmacoeconomics",
+      "justification": "The study aims to reduce potentially inappropriate medication use and improve medication adherence, impacting healthcare costs, which links to pharmacoeconomics.",
+      "quote": "Targeting non\u00adadherence while raising patient awareness to PIMs may have a synergistic effect because elimination of PIMs will reduce the number of drugs in a patient\u2019s regimen and associated costs.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d11db8c5240b307128f832816e78f390",
+      "title": "Caustics: A Python Package for Accelerated Strong Gravitational Lensing Simulations",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Gravitational Lensing",
+      "justification": "The focus of the paper is on simulating strong gravitational lensing systems.",
+      "quote": "Caustics is a gravitational lensing simulator.",
+      "aliases": []
+    },
+    {
+      "paper_id": "d11db8c5240b307128f832816e78f390",
+      "title": "Caustics: A Python Package for Accelerated Strong Gravitational Lensing Simulations",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Machine Learning",
+      "justification": "The paper emphasizes the integration of deep learning and machine learning techniques in processing and analyzing lensing simulations.",
+      "quote": "Machine learning will be critical to achieve the necessary speed to process these\nlenses, it will also be needed to meet the complexity of strong lens modelling.",
+      "aliases": []
+    },
+    {
+      "paper_id": "e57c0cabfd462478c18616ab368dd2fb",
+      "title": "UTG: Towards a Unified View of Snapshot and Event Based Models for Temporal Graphs",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Temporal Graphs",
+      "justification": "The paper establishes a framework specifically for temporal graphs and conducts experiments on temporal datasets, reflecting this focus.",
+      "quote": "In this paper, we introduce Unified Temporal Graph (UTG), a framework that unifies snapshot-based and event-based machine learning models under a single umbrella.",
+      "aliases": []
+    },
+    {
+      "paper_id": "e57c0cabfd462478c18616ab368dd2fb",
+      "title": "UTG: Towards a Unified View of Snapshot and Event Based Models for Temporal Graphs",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Graph Transformers",
+      "justification": "Graph Transformers are mentioned as part of the successful models along with GNNs for tasks related to graphs.",
+      "quote": "Graph Neural Networks (GNNs) and Graph Transformers have achieved remarkable success in various tasks for static graphs.",
+      "aliases": []
+    },
+    {
+      "paper_id": "94a1abcda4ae84576cca79d0fcedc40d",
+      "title": "Towards a General Recipe for Combinatorial Optimization with Multi-Filter GNNs",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Graph Neural Networks",
+      "justification": "The GCON model is a specific type of graph neural network designed to handle combinatorial optimization problems.",
+      "quote": "Recent years have seen the rapid development of neural networks for graph-structured data.",
+      "aliases": [
+        "GNN",
+        "Graph NNs"
+      ]
+    },
+    {
+      "paper_id": "94a1abcda4ae84576cca79d0fcedc40d",
+      "title": "Towards a General Recipe for Combinatorial Optimization with Multi-Filter GNNs",
+      "year": "2024",
+      "domain_type": "sub",
+      "domain_name": "Graph Signal Processing",
+      "justification": "The paper leverages concepts from graph signal processing, such as low-pass filtering, to design GCON's architecture.",
+      "quote": "That can be interpreted, from the perspective of graph signal processing (GSP), as low-pass filtering.",
+      "aliases": [
+        "GSP"
+      ]
+    }
+  ],
+  "stats": {
+    "papers_processed": 13,
+    "primary_domains_count": 13,
+    "sub_domains_count": 22
+  }
+}

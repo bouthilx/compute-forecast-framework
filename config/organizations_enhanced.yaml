@@ -1,0 +1,1281 @@
+# Enhanced organization database with 225+ institutions
+# Includes aliases, email domains, and keywords for improved matching
+
+academic:
+  # Top US Universities
+  - name: "Massachusetts Institute of Technology"
+    aliases: ["MIT", "M.I.T.", "Mass. Inst. of Tech.", "Mass Inst of Technology"]
+    domains: ["mit.edu", "csail.mit.edu", "media.mit.edu", "ll.mit.edu"]
+    keywords: ["Laboratory", "Department", "School of", "Center for"]
+
+  - name: "Stanford University"
+    aliases: ["Stanford", "Stanford U", "Leland Stanford Junior University"]
+    domains: ["stanford.edu", "cs.stanford.edu", "ai.stanford.edu"]
+    keywords: ["Department", "Institute", "Laboratory", "School of"]
+
+  - name: "Harvard University"
+    aliases: ["Harvard", "Harvard U"]
+    domains: ["harvard.edu", "seas.harvard.edu", "hms.harvard.edu"]
+    keywords: ["School", "Department", "Institute", "Center"]
+
+  - name: "University of California, Berkeley"
+    aliases: ["UC Berkeley", "Berkeley", "Cal", "UCB"]
+    domains: ["berkeley.edu", "eecs.berkeley.edu", "cs.berkeley.edu"]
+    keywords: ["Department", "Laboratory", "Institute", "Division"]
+
+  - name: "Carnegie Mellon University"
+    aliases: ["CMU", "Carnegie Mellon", "Carnegie-Mellon"]
+    domains: ["cmu.edu", "cs.cmu.edu", "ri.cmu.edu", "ml.cmu.edu"]
+    keywords: ["School", "Department", "Institute", "Robotics"]
+
+  - name: "Princeton University"
+    aliases: ["Princeton", "Princeton U"]
+    domains: ["princeton.edu", "cs.princeton.edu"]
+    keywords: ["Department", "Institute", "Laboratory", "Program"]
+
+  - name: "California Institute of Technology"
+    aliases: ["Caltech", "Cal Tech", "CIT"]
+    domains: ["caltech.edu", "cms.caltech.edu"]
+    keywords: ["Division", "Department", "Laboratory", "Institute"]
+
+  - name: "Yale University"
+    aliases: ["Yale", "Yale U"]
+    domains: ["yale.edu", "cs.yale.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Columbia University"
+    aliases: ["Columbia", "Columbia U"]
+    domains: ["columbia.edu", "cs.columbia.edu", "engineering.columbia.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "University of Pennsylvania"
+    aliases: ["Penn", "UPenn", "U Penn"]
+    domains: ["upenn.edu", "seas.upenn.edu", "cis.upenn.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Cornell University"
+    aliases: ["Cornell", "Cornell U"]
+    domains: ["cornell.edu", "cs.cornell.edu", "tech.cornell.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "University of Chicago"
+    aliases: ["UChicago", "U Chicago", "Chicago"]
+    domains: ["uchicago.edu", "cs.uchicago.edu"]
+    keywords: ["Department", "Institute", "Laboratory", "Center"]
+
+  - name: "University of Washington"
+    aliases: ["UW", "U Washington", "UDub"]
+    domains: ["washington.edu", "cs.washington.edu", "uw.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "New York University"
+    aliases: ["NYU", "N.Y.U."]
+    domains: ["nyu.edu", "cs.nyu.edu", "cims.nyu.edu"]
+    keywords: ["Department", "Institute", "Center", "School"]
+
+  - name: "University of California, Los Angeles"
+    aliases: ["UCLA", "UC Los Angeles"]
+    domains: ["ucla.edu", "cs.ucla.edu", "engineering.ucla.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "University of Michigan"
+    aliases: ["Michigan", "UMich", "U Michigan", "UM"]
+    domains: ["umich.edu", "eecs.umich.edu", "cse.umich.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "University of Illinois at Urbana-Champaign"
+    aliases: ["UIUC", "Illinois", "U Illinois"]
+    domains: ["illinois.edu", "cs.illinois.edu", "ece.illinois.edu"]
+    keywords: ["Department", "Institute", "Laboratory", "Center"]
+
+  - name: "Georgia Institute of Technology"
+    aliases: ["Georgia Tech", "GT", "GaTech"]
+    domains: ["gatech.edu", "cc.gatech.edu", "ic.gatech.edu"]
+    keywords: ["School", "College", "Institute", "Laboratory"]
+
+  - name: "University of Texas at Austin"
+    aliases: ["UT Austin", "Texas", "UT"]
+    domains: ["utexas.edu", "cs.utexas.edu", "ece.utexas.edu"]
+    keywords: ["Department", "Institute", "Laboratory", "Center"]
+
+  - name: "University of California, San Diego"
+    aliases: ["UCSD", "UC San Diego"]
+    domains: ["ucsd.edu", "cs.ucsd.edu", "ece.ucsd.edu"]
+    keywords: ["Department", "Institute", "Laboratory", "Division"]
+
+  # International Universities
+  - name: "University of Oxford"
+    aliases: ["Oxford", "Oxford University"]
+    domains: ["ox.ac.uk", "cs.ox.ac.uk", "robots.ox.ac.uk"]
+    keywords: ["Department", "Institute", "Laboratory", "College"]
+
+  - name: "University of Cambridge"
+    aliases: ["Cambridge", "Cambridge University", "Cam"]
+    domains: ["cam.ac.uk", "cl.cam.ac.uk", "eng.cam.ac.uk"]
+    keywords: ["Department", "Laboratory", "Institute", "College"]
+
+  - name: "ETH Zurich"
+    aliases: ["ETH", "ETHZ", "Swiss Federal Institute of Technology"]
+    domains: ["ethz.ch", "inf.ethz.ch", "ee.ethz.ch"]
+    keywords: ["Department", "Institute", "Laboratory", "Group"]
+
+  - name: "EPFL"
+    aliases: ["École Polytechnique Fédérale de Lausanne", "Swiss Federal Institute of Technology Lausanne"]
+    domains: ["epfl.ch", "ic.epfl.ch"]
+    keywords: ["Laboratory", "Institute", "School", "Center"]
+
+  - name: "University of Toronto"
+    aliases: ["Toronto", "UofT", "U of T", "Toronto University", "UToronto"]
+    domains: ["utoronto.ca", "cs.toronto.edu", "ece.utoronto.ca"]
+    keywords: ["Department", "Institute", "Faculty", "Centre"]
+
+  - name: "McGill University"
+    aliases: ["McGill", "McGill U"]
+    domains: ["mcgill.ca", "cs.mcgill.ca", "cim.mcgill.ca"]
+    keywords: ["Department", "School", "Institute", "Centre"]
+
+  - name: "University of British Columbia"
+    aliases: ["UBC", "British Columbia"]
+    domains: ["ubc.ca", "cs.ubc.ca", "ece.ubc.ca"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "University of Montreal"
+    aliases: ["UdeM", "Université de Montréal", "Montreal"]
+    domains: ["umontreal.ca", "iro.umontreal.ca", "mila.quebec"]
+    keywords: ["Department", "Institute", "Laboratory", "Centre"]
+
+  - name: "University of Waterloo"
+    aliases: ["Waterloo", "UW", "UWaterloo"]
+    domains: ["uwaterloo.ca", "cs.uwaterloo.ca", "ece.uwaterloo.ca"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Technical University of Munich"
+    aliases: ["TUM", "TU Munich", "Technische Universität München"]
+    domains: ["tum.de", "in.tum.de", "ei.tum.de"]
+    keywords: ["Department", "Institute", "Chair", "Laboratory"]
+
+  - name: "Imperial College London"
+    aliases: ["Imperial", "Imperial College", "ICL"]
+    domains: ["imperial.ac.uk", "doc.ic.ac.uk"]
+    keywords: ["Department", "Institute", "Centre", "Laboratory"]
+
+  - name: "University College London"
+    aliases: ["UCL", "University of London"]
+    domains: ["ucl.ac.uk", "cs.ucl.ac.uk"]
+    keywords: ["Department", "Institute", "Centre", "Laboratory"]
+
+  - name: "University of Edinburgh"
+    aliases: ["Edinburgh", "Edinburgh University"]
+    domains: ["ed.ac.uk", "inf.ed.ac.uk"]
+    keywords: ["School", "Institute", "Centre", "Laboratory"]
+
+  - name: "École Normale Supérieure"
+    aliases: ["ENS", "ENS Paris"]
+    domains: ["ens.fr", "di.ens.fr"]
+    keywords: ["Department", "Laboratory", "Institute", "Centre"]
+
+  - name: "University of Amsterdam"
+    aliases: ["UvA", "Amsterdam"]
+    domains: ["uva.nl", "science.uva.nl"]
+    keywords: ["Institute", "Department", "Laboratory", "Faculty"]
+
+  - name: "TU Delft"
+    aliases: ["Delft University of Technology", "Technische Universiteit Delft"]
+    domains: ["tudelft.nl", "ewi.tudelft.nl"]
+    keywords: ["Department", "Faculty", "Institute", "Laboratory"]
+
+  - name: "KU Leuven"
+    aliases: ["Catholic University of Leuven", "Leuven"]
+    domains: ["kuleuven.be", "cs.kuleuven.be"]
+    keywords: ["Department", "Institute", "Laboratory", "Centre"]
+
+  - name: "National University of Singapore"
+    aliases: ["NUS", "Singapore"]
+    domains: ["nus.edu.sg", "comp.nus.edu.sg"]
+    keywords: ["School", "Department", "Institute", "Centre"]
+
+  - name: "Chinese University of Hong Kong"
+    aliases: ["CUHK", "Hong Kong"]
+    domains: ["cuhk.edu.hk", "cse.cuhk.edu.hk"]
+    keywords: ["Department", "Institute", "Laboratory", "School"]
+
+  - name: "Tsinghua University"
+    aliases: ["Tsinghua", "THU"]
+    domains: ["tsinghua.edu.cn", "cs.tsinghua.edu.cn"]
+    keywords: ["Department", "Institute", "Laboratory", "School"]
+
+  - name: "Peking University"
+    aliases: ["PKU", "Beida", "Beijing University"]
+    domains: ["pku.edu.cn", "cs.pku.edu.cn"]
+    keywords: ["School", "Department", "Institute", "Laboratory"]
+
+  - name: "University of Tokyo"
+    aliases: ["UTokyo", "Todai", "Tokyo"]
+    domains: ["u-tokyo.ac.jp", "i.u-tokyo.ac.jp"]
+    keywords: ["Department", "Institute", "Laboratory", "Graduate School"]
+
+  - name: "Kyoto University"
+    aliases: ["Kyodai", "Kyoto"]
+    domains: ["kyoto-u.ac.jp", "i.kyoto-u.ac.jp"]
+    keywords: ["Department", "Institute", "Laboratory", "Graduate School"]
+
+  - name: "KAIST"
+    aliases: ["Korea Advanced Institute of Science and Technology"]
+    domains: ["kaist.ac.kr", "cs.kaist.ac.kr"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Seoul National University"
+    aliases: ["SNU", "Seoul"]
+    domains: ["snu.ac.kr", "cse.snu.ac.kr"]
+    keywords: ["Department", "College", "Institute", "Laboratory"]
+
+  - name: "Indian Institute of Technology"
+    aliases: ["IIT"]
+    domains: ["iitb.ac.in", "iitd.ac.in", "iitkgp.ac.in"]
+    keywords: ["Department", "School", "Centre", "Laboratory"]
+
+  - name: "Technion"
+    aliases: ["Israel Institute of Technology", "Technion - IIT"]
+    domains: ["technion.ac.il", "cs.technion.ac.il"]
+    keywords: ["Faculty", "Department", "Laboratory", "Center"]
+
+  - name: "Tel Aviv University"
+    aliases: ["TAU", "Tel Aviv"]
+    domains: ["tau.ac.il", "cs.tau.ac.il"]
+    keywords: ["School", "Department", "Laboratory", "Institute"]
+
+  - name: "Hebrew University of Jerusalem"
+    aliases: ["HUJI", "Hebrew University"]
+    domains: ["huji.ac.il", "cs.huji.ac.il"]
+    keywords: ["School", "Department", "Institute", "Center"]
+
+  # Research Institutes
+  - name: "Max Planck Institute"
+    aliases: ["MPI", "Max Planck"]
+    domains: ["mpg.de", "mpi-inf.mpg.de", "mpi-sws.org"]
+    keywords: ["Institute", "Department", "Group", "Laboratory"]
+
+  - name: "INRIA"
+    aliases: ["French National Institute for Research in Computer Science and Automation"]
+    domains: ["inria.fr"]
+    keywords: ["Research", "Team", "Laboratory", "Centre"]
+
+  - name: "CNRS"
+    aliases: ["French National Centre for Scientific Research"]
+    domains: ["cnrs.fr"]
+    keywords: ["Laboratory", "Institute", "Research", "Centre"]
+
+  # Allen Institute moved to non_profit section
+
+  - name: "Vector Institute"
+    aliases: ["Vector Institute for AI"]
+    domains: ["vectorinstitute.ai"]
+    keywords: ["Institute", "Research", "Laboratory"]
+
+  - name: "Mila"
+    aliases: ["Montreal Institute for Learning Algorithms", "Quebec AI Institute"]
+    domains: ["mila.quebec"]
+    keywords: ["Institute", "Laboratory", "Research"]
+
+  - name: "RIKEN"
+    aliases: ["Institute of Physical and Chemical Research"]
+    domains: ["riken.jp", "aip.riken.jp"]
+    keywords: ["Center", "Laboratory", "Research", "Institute"]
+
+  - name: "CSIRO"
+    aliases: ["Commonwealth Scientific and Industrial Research Organisation"]
+    domains: ["csiro.au", "data61.csiro.au"]
+    keywords: ["Research", "Laboratory", "Division", "Unit"]
+
+  - name: "Alan Turing Institute"
+    aliases: ["Turing Institute", "ATI"]
+    domains: ["turing.ac.uk"]
+    keywords: ["Institute", "Research", "Programme", "Laboratory"]
+
+  - name: "Fraunhofer Society"
+    aliases: ["Fraunhofer"]
+    domains: ["fraunhofer.de"]
+    keywords: ["Institute", "Research", "Laboratory", "Center"]
+
+  # More US Universities
+  - name: "Brown University"
+    aliases: ["Brown"]
+    domains: ["brown.edu", "cs.brown.edu"]
+    keywords: ["Department", "Institute", "Laboratory", "Center"]
+
+  - name: "Duke University"
+    aliases: ["Duke"]
+    domains: ["duke.edu", "cs.duke.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Northwestern University"
+    aliases: ["Northwestern", "NU"]
+    domains: ["northwestern.edu", "eecs.northwestern.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Johns Hopkins University"
+    aliases: ["JHU", "Johns Hopkins", "Hopkins"]
+    domains: ["jhu.edu", "cs.jhu.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Rice University"
+    aliases: ["Rice"]
+    domains: ["rice.edu", "cs.rice.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "University of Southern California"
+    aliases: ["USC", "Southern California"]
+    domains: ["usc.edu", "cs.usc.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Boston University"
+    aliases: ["BU", "Boston U"]
+    domains: ["bu.edu", "cs.bu.edu"]
+    keywords: ["Department", "College", "Institute", "Laboratory"]
+
+  - name: "University of Massachusetts Amherst"
+    aliases: ["UMass", "UMass Amherst"]
+    domains: ["umass.edu", "cs.umass.edu"]
+    keywords: ["Department", "College", "Institute", "Laboratory"]
+
+  - name: "University of Maryland"
+    aliases: ["UMD", "Maryland"]
+    domains: ["umd.edu", "cs.umd.edu"]
+    keywords: ["Department", "Institute", "Laboratory", "Center"]
+
+  - name: "University of Wisconsin-Madison"
+    aliases: ["Wisconsin", "UW-Madison"]
+    domains: ["wisc.edu", "cs.wisc.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "University of Minnesota"
+    aliases: ["Minnesota", "UMN"]
+    domains: ["umn.edu", "cs.umn.edu"]
+    keywords: ["Department", "College", "Institute", "Laboratory"]
+
+  - name: "Ohio State University"
+    aliases: ["OSU", "Ohio State"]
+    domains: ["osu.edu", "cse.osu.edu"]
+    keywords: ["Department", "College", "Institute", "Laboratory"]
+
+  - name: "Pennsylvania State University"
+    aliases: ["Penn State", "PSU"]
+    domains: ["psu.edu", "cse.psu.edu"]
+    keywords: ["Department", "College", "Institute", "Laboratory"]
+
+  - name: "University of Virginia"
+    aliases: ["UVA", "Virginia"]
+    domains: ["virginia.edu", "cs.virginia.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Vanderbilt University"
+    aliases: ["Vanderbilt", "Vandy"]
+    domains: ["vanderbilt.edu", "eecs.vanderbilt.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "University of North Carolina at Chapel Hill"
+    aliases: ["UNC", "UNC Chapel Hill"]
+    domains: ["unc.edu", "cs.unc.edu"]
+    keywords: ["Department", "School", "Institute", "Laboratory"]
+
+  - name: "Arizona State University"
+    aliases: ["ASU", "Arizona State"]
+    domains: ["asu.edu", "cidse.asu.edu"]
+    keywords: ["School", "Department", "Institute", "Laboratory"]
+
+  - name: "University of Arizona"
+    aliases: ["Arizona", "UA"]
+    domains: ["arizona.edu", "cs.arizona.edu"]
+    keywords: ["Department", "College", "Institute", "Laboratory"]
+
+  - name: "University of Colorado Boulder"
+    aliases: ["CU Boulder", "Colorado"]
+    domains: ["colorado.edu", "cs.colorado.edu"]
+    keywords: ["Department", "College", "Institute", "Laboratory"]
+
+  - name: "University of Utah"
+    aliases: ["Utah", "U of U"]
+    domains: ["utah.edu", "cs.utah.edu"]
+    keywords: ["School", "Department", "Institute", "Laboratory"]
+
+  # More International Universities
+  - name: "Australian National University"
+    aliases: ["ANU"]
+    domains: ["anu.edu.au", "cs.anu.edu.au"]
+    keywords: ["School", "College", "Research", "Centre"]
+
+  - name: "University of Melbourne"
+    aliases: ["Melbourne", "UniMelb"]
+    domains: ["unimelb.edu.au", "cis.unimelb.edu.au"]
+    keywords: ["School", "Department", "Institute", "Centre"]
+
+  - name: "University of Sydney"
+    aliases: ["Sydney", "USYD"]
+    domains: ["sydney.edu.au", "it.sydney.edu.au"]
+    keywords: ["School", "Faculty", "Institute", "Centre"]
+
+  - name: "Trinity College Dublin"
+    aliases: ["TCD", "Trinity Dublin"]
+    domains: ["tcd.ie", "scss.tcd.ie"]
+    keywords: ["School", "Department", "Institute", "Centre"]
+
+  - name: "University of Copenhagen"
+    aliases: ["UCPH", "Copenhagen"]
+    domains: ["ku.dk", "di.ku.dk"]
+    keywords: ["Department", "Institute", "Centre", "Faculty"]
+
+  - name: "Uppsala University"
+    aliases: ["Uppsala"]
+    domains: ["uu.se", "it.uu.se"]
+    keywords: ["Department", "Division", "Centre", "Laboratory"]
+
+  - name: "University of Oslo"
+    aliases: ["UiO", "Oslo"]
+    domains: ["uio.no", "ifi.uio.no"]
+    keywords: ["Department", "Institute", "Centre", "Research"]
+
+  - name: "University of Helsinki"
+    aliases: ["Helsinki"]
+    domains: ["helsinki.fi", "cs.helsinki.fi"]
+    keywords: ["Department", "Faculty", "Institute", "Laboratory"]
+
+  - name: "Aalto University"
+    aliases: ["Aalto"]
+    domains: ["aalto.fi", "cs.aalto.fi"]
+    keywords: ["School", "Department", "Laboratory", "Centre"]
+
+  - name: "Politecnico di Milano"
+    aliases: ["PoliMi", "Milan Polytechnic"]
+    domains: ["polimi.it", "deib.polimi.it"]
+    keywords: ["Department", "Laboratory", "Research", "Centre"]
+
+  # Additional European Universities
+  - name: "Technical University of Berlin"
+    aliases: ["TU Berlin", "Technische Universität Berlin"]
+    domains: ["tu-berlin.de", "cs.tu-berlin.de"]
+    keywords: ["Institute", "Department", "Laboratory", "Chair"]
+
+  - name: "University of Vienna"
+    aliases: ["Universität Wien", "Vienna"]
+    domains: ["univie.ac.at", "cs.univie.ac.at"]
+    keywords: ["Faculty", "Institute", "Department", "Research"]
+
+  - name: "University of Zurich"
+    aliases: ["UZH", "Universität Zürich"]
+    domains: ["uzh.ch", "ifi.uzh.ch"]
+    keywords: ["Institute", "Department", "Laboratory", "Faculty"]
+
+  - name: "Sorbonne University"
+    aliases: ["Sorbonne", "Université Sorbonne"]
+    domains: ["sorbonne-universite.fr", "lip6.fr"]
+    keywords: ["Laboratory", "Institute", "Faculty", "Research"]
+
+  - name: "University of Barcelona"
+    aliases: ["UB", "Universitat de Barcelona"]
+    domains: ["ub.edu", "cs.ub.edu"]
+    keywords: ["Faculty", "Department", "Institute", "Research"]
+
+  - name: "University of Bologna"
+    aliases: ["UniBo", "Università di Bologna"]
+    domains: ["unibo.it", "cs.unibo.it"]
+    keywords: ["Department", "Laboratory", "Institute", "Research"]
+
+  - name: "Humboldt University of Berlin"
+    aliases: ["HU Berlin", "Humboldt-Universität"]
+    domains: ["hu-berlin.de", "informatik.hu-berlin.de"]
+    keywords: ["Institute", "Department", "Laboratory", "Faculty"]
+
+  - name: "University of Stuttgart"
+    aliases: ["Universität Stuttgart"]
+    domains: ["uni-stuttgart.de", "vis.uni-stuttgart.de"]
+    keywords: ["Institute", "Department", "Laboratory", "Faculty"]
+
+  - name: "Karlsruhe Institute of Technology"
+    aliases: ["KIT", "Karlsruhe"]
+    domains: ["kit.edu", "cs.kit.edu"]
+    keywords: ["Institute", "Department", "Laboratory", "Research"]
+
+  - name: "RWTH Aachen University"
+    aliases: ["RWTH", "Aachen"]
+    domains: ["rwth-aachen.de", "cs.rwth-aachen.de"]
+    keywords: ["Institute", "Department", "Laboratory", "Chair"]
+
+  # Additional Asian Universities
+  - name: "Tokyo Institute of Technology"
+    aliases: ["Tokyo Tech", "TIT"]
+    domains: ["titech.ac.jp", "cs.titech.ac.jp"]
+    keywords: ["School", "Department", "Laboratory", "Institute"]
+
+  - name: "Osaka University"
+    aliases: ["Osaka", "Handai"]
+    domains: ["osaka-u.ac.jp", "ist.osaka-u.ac.jp"]
+    keywords: ["Graduate School", "Department", "Laboratory", "Institute"]
+
+  - name: "Tohoku University"
+    aliases: ["Tohoku", "Tohokudai"]
+    domains: ["tohoku.ac.jp", "ecei.tohoku.ac.jp"]
+    keywords: ["Graduate School", "Department", "Laboratory", "Institute"]
+
+  - name: "Nanyang Technological University"
+    aliases: ["NTU", "NTU Singapore"]
+    domains: ["ntu.edu.sg", "ntu.edu.sg"]
+    keywords: ["School", "Department", "Laboratory", "Centre"]
+
+  - name: "Hong Kong University of Science and Technology"
+    aliases: ["HKUST", "UST"]
+    domains: ["ust.hk", "cse.ust.hk"]
+    keywords: ["Department", "Laboratory", "Institute", "Centre"]
+
+  - name: "Shanghai Jiao Tong University"
+    aliases: ["SJTU", "Jiao Tong"]
+    domains: ["sjtu.edu.cn", "cs.sjtu.edu.cn"]
+    keywords: ["School", "Department", "Laboratory", "Institute"]
+
+  - name: "Zhejiang University"
+    aliases: ["ZJU", "Zheda"]
+    domains: ["zju.edu.cn", "cs.zju.edu.cn"]
+    keywords: ["College", "Department", "Laboratory", "Institute"]
+
+  - name: "Fudan University"
+    aliases: ["Fudan"]
+    domains: ["fudan.edu.cn", "cs.fudan.edu.cn"]
+    keywords: ["School", "Department", "Laboratory", "Institute"]
+
+  - name: "University of Science and Technology of China"
+    aliases: ["USTC", "Zhongkeda"]
+    domains: ["ustc.edu.cn", "cs.ustc.edu.cn"]
+    keywords: ["School", "Department", "Laboratory", "Institute"]
+
+  - name: "Indian Institute of Science"
+    aliases: ["IISc", "IISc Bangalore"]
+    domains: ["iisc.ac.in", "csa.iisc.ac.in"]
+    keywords: ["Department", "Centre", "Laboratory", "Division"]
+
+  # Additional US Universities
+  - name: "Purdue University"
+    aliases: ["Purdue"]
+    domains: ["purdue.edu", "cs.purdue.edu"]
+    keywords: ["Department", "School", "Laboratory", "Center"]
+
+  - name: "University of Florida"
+    aliases: ["UF", "Florida"]
+    domains: ["ufl.edu", "cise.ufl.edu"]
+    keywords: ["Department", "College", "Laboratory", "Center"]
+
+  - name: "University of Pittsburgh"
+    aliases: ["Pitt", "Pittsburgh"]
+    domains: ["pitt.edu", "cs.pitt.edu"]
+    keywords: ["Department", "School", "Laboratory", "Center"]
+
+  - name: "Rutgers University"
+    aliases: ["Rutgers", "RU"]
+    domains: ["rutgers.edu", "cs.rutgers.edu"]
+    keywords: ["Department", "School", "Laboratory", "Center"]
+
+  - name: "Indiana University"
+    aliases: ["IU", "Indiana"]
+    domains: ["indiana.edu", "cs.indiana.edu"]
+    keywords: ["School", "Department", "Laboratory", "Center"]
+
+  - name: "University of Oregon"
+    aliases: ["UO", "Oregon"]
+    domains: ["uoregon.edu", "cs.uoregon.edu"]
+    keywords: ["Department", "College", "Laboratory", "Center"]
+
+  - name: "University of Kansas"
+    aliases: ["KU", "Kansas"]
+    domains: ["ku.edu", "eecs.ku.edu"]
+    keywords: ["Department", "School", "Laboratory", "Center"]
+
+  - name: "University of Iowa"
+    aliases: ["UI", "Iowa"]
+    domains: ["uiowa.edu", "cs.uiowa.edu"]
+    keywords: ["Department", "College", "Laboratory", "Center"]
+
+  - name: "Michigan State University"
+    aliases: ["MSU", "Michigan State"]
+    domains: ["msu.edu", "cse.msu.edu"]
+    keywords: ["Department", "College", "Laboratory", "Center"]
+
+  - name: "Washington University in St. Louis"
+    aliases: ["WashU", "WUSTL"]
+    domains: ["wustl.edu", "cse.wustl.edu"]
+    keywords: ["Department", "School", "Laboratory", "Center"]
+
+  # Additional Canadian Universities
+  - name: "University of Alberta"
+    aliases: ["UAlberta", "U of A"]
+    domains: ["ualberta.ca", "cs.ualberta.ca"]
+    keywords: ["Department", "Faculty", "Laboratory", "Centre"]
+
+  - name: "Simon Fraser University"
+    aliases: ["SFU"]
+    domains: ["sfu.ca", "cs.sfu.ca"]
+    keywords: ["School", "Department", "Laboratory", "Centre"]
+
+  - name: "Queen's University"
+    aliases: ["Queen's"]
+    domains: ["queensu.ca", "cs.queensu.ca"]
+    keywords: ["School", "Department", "Laboratory", "Centre"]
+
+  - name: "Western University"
+    aliases: ["Western", "UWO"]
+    domains: ["uwo.ca", "csd.uwo.ca"]
+    keywords: ["Department", "Faculty", "Laboratory", "Centre"]
+
+  - name: "McMaster University"
+    aliases: ["McMaster", "Mac"]
+    domains: ["mcmaster.ca", "cas.mcmaster.ca"]
+    keywords: ["Department", "Faculty", "Laboratory", "Centre"]
+
+  # Additional Australian Universities
+  - name: "Monash University"
+    aliases: ["Monash"]
+    domains: ["monash.edu", "it.monash.edu"]
+    keywords: ["Faculty", "Department", "Laboratory", "Centre"]
+
+  - name: "University of Queensland"
+    aliases: ["UQ", "Queensland"]
+    domains: ["uq.edu.au", "itee.uq.edu.au"]
+    keywords: ["School", "Faculty", "Laboratory", "Centre"]
+
+  - name: "University of New South Wales"
+    aliases: ["UNSW", "New South Wales"]
+    domains: ["unsw.edu.au", "cse.unsw.edu.au"]
+    keywords: ["School", "Faculty", "Laboratory", "Centre"]
+
+  - name: "University of Adelaide"
+    aliases: ["Adelaide"]
+    domains: ["adelaide.edu.au", "cs.adelaide.edu.au"]
+    keywords: ["School", "Faculty", "Laboratory", "Centre"]
+
+  - name: "University of Western Australia"
+    aliases: ["UWA"]
+    domains: ["uwa.edu.au", "csse.uwa.edu.au"]
+    keywords: ["School", "Faculty", "Laboratory", "Centre"]
+
+  # Additional Research Institutes
+  - name: "Helmholtz Association"
+    aliases: ["Helmholtz"]
+    domains: ["helmholtz.de"]
+    keywords: ["Center", "Institute", "Research", "Laboratory"]
+
+  - name: "Leibniz Association"
+    aliases: ["Leibniz"]
+    domains: ["leibniz-gemeinschaft.de"]
+    keywords: ["Institute", "Research", "Center", "Laboratory"]
+
+  - name: "European Molecular Biology Laboratory"
+    aliases: ["EMBL"]
+    domains: ["embl.org", "embl.de"]
+    keywords: ["Laboratory", "Research", "Unit", "Group"]
+
+  - name: "CERN"
+    aliases: ["European Organization for Nuclear Research"]
+    domains: ["cern.ch"]
+    keywords: ["Laboratory", "Research", "Division", "Group"]
+
+  - name: "Joint Research Centre"
+    aliases: ["JRC", "EU JRC"]
+    domains: ["ec.europa.eu"]
+    keywords: ["Centre", "Research", "Unit", "Laboratory"]
+
+  - name: "Sapienza University of Rome"
+    aliases: ["Sapienza", "Rome"]
+    domains: ["uniroma1.it", "di.uniroma1.it"]
+    keywords: ["Department", "Faculty", "Laboratory", "Institute"]
+
+  - name: "University of Warsaw"
+    aliases: ["UW", "Warsaw"]
+    domains: ["uw.edu.pl", "mimuw.edu.pl"]
+    keywords: ["Faculty", "Institute", "Department", "Laboratory"]
+
+  - name: "Charles University"
+    aliases: ["Charles University Prague"]
+    domains: ["cuni.cz", "mff.cuni.cz"]
+    keywords: ["Faculty", "Department", "Institute", "Centre"]
+
+industry:
+  # Major Tech Companies
+  - name: "Google Research"
+    aliases: ["Google", "Google AI", "Google Brain", "Google X"]
+    domains: ["google.com", "research.google.com", "ai.google"]
+    keywords: ["Research", "Labs", "AI", "Engineering"]
+
+  - name: "DeepMind"
+    aliases: ["Google DeepMind", "DeepMind Technologies"]
+    domains: ["deepmind.com", "deepmind.google"]
+    keywords: ["Research", "AI", "Laboratory", "Science"]
+
+  - name: "Microsoft Research"
+    aliases: ["Microsoft", "MSR", "Microsoft AI"]
+    domains: ["microsoft.com", "research.microsoft.com"]
+    keywords: ["Research", "Labs", "AI", "Azure"]
+
+  - name: "Meta AI"
+    aliases: ["Facebook AI Research", "FAIR", "Meta", "Facebook"]
+    domains: ["meta.com", "fb.com", "facebook.com"]
+    keywords: ["Research", "AI", "Laboratory", "Engineering"]
+
+  - name: "OpenAI"
+    aliases: ["Open AI"]
+    domains: ["openai.com"]
+    keywords: ["Research", "AI", "Laboratory", "GPT"]
+
+  - name: "Anthropic"
+    aliases: ["Anthropic AI"]
+    domains: ["anthropic.com"]
+    keywords: ["Research", "AI", "Safety", "Claude"]
+
+  - name: "Apple"
+    aliases: ["Apple Inc.", "Apple Research"]
+    domains: ["apple.com"]
+    keywords: ["Research", "Machine Learning", "AI", "Engineering"]
+
+  - name: "Amazon"
+    aliases: ["Amazon Research", "Amazon Science", "AWS AI"]
+    domains: ["amazon.com", "amazon.science", "aws.amazon.com"]
+    keywords: ["Research", "Science", "AI", "AWS"]
+
+  - name: "NVIDIA"
+    aliases: ["NVIDIA Research", "NVIDIA AI"]
+    domains: ["nvidia.com", "research.nvidia.com"]
+    keywords: ["Research", "AI", "GPU", "Deep Learning"]
+
+  - name: "Intel Labs"
+    aliases: ["Intel", "Intel Research", "Intel AI"]
+    domains: ["intel.com", "intel.ai"]
+    keywords: ["Labs", "Research", "AI", "Hardware"]
+
+  - name: "IBM Research"
+    aliases: ["IBM", "IBM Watson", "IBM AI"]
+    domains: ["ibm.com", "research.ibm.com"]
+    keywords: ["Research", "Watson", "AI", "Quantum"]
+
+  - name: "Adobe Research"
+    aliases: ["Adobe", "Adobe Systems"]
+    domains: ["adobe.com", "research.adobe.com"]
+    keywords: ["Research", "Creative", "AI", "Graphics"]
+
+  - name: "Salesforce Research"
+    aliases: ["Salesforce", "Salesforce AI"]
+    domains: ["salesforce.com", "einstein.ai"]
+    keywords: ["Research", "Einstein", "AI", "CRM"]
+
+  - name: "Oracle Labs"
+    aliases: ["Oracle", "Oracle Research"]
+    domains: ["oracle.com", "labs.oracle.com"]
+    keywords: ["Labs", "Research", "Database", "Cloud"]
+
+  - name: "Samsung Research"
+    aliases: ["Samsung", "Samsung AI", "SAIT"]
+    domains: ["samsung.com", "research.samsung.com"]
+    keywords: ["Research", "AI", "Electronics", "Innovation"]
+
+  - name: "Baidu Research"
+    aliases: ["Baidu", "Baidu AI"]
+    domains: ["baidu.com", "research.baidu.com"]
+    keywords: ["Research", "AI", "Deep Learning", "NLP"]
+
+  - name: "Alibaba"
+    aliases: ["Alibaba Group", "Alibaba DAMO Academy", "Alibaba AI"]
+    domains: ["alibaba.com", "alibabagroup.com"]
+    keywords: ["Research", "DAMO", "AI", "Cloud"]
+
+  - name: "Tencent"
+    aliases: ["Tencent AI Lab", "Tencent Research"]
+    domains: ["tencent.com", "ai.tencent.com"]
+    keywords: ["AI Lab", "Research", "Games", "WeChat"]
+
+  - name: "ByteDance"
+    aliases: ["ByteDance AI Lab", "TikTok"]
+    domains: ["bytedance.com", "tiktok.com"]
+    keywords: ["AI Lab", "Research", "Algorithm", "ML"]
+
+  - name: "Huawei"
+    aliases: ["Huawei Research", "Huawei AI"]
+    domains: ["huawei.com", "research.huawei.com"]
+    keywords: ["Research", "AI", "5G", "Cloud"]
+
+  # AI Startups and Companies
+  - name: "Cohere"
+    aliases: ["Cohere AI"]
+    domains: ["cohere.ai", "cohere.com"]
+    keywords: ["AI", "NLP", "Language", "API"]
+
+  - name: "Hugging Face"
+    aliases: ["HuggingFace", "HF"]
+    domains: ["huggingface.co"]
+    keywords: ["AI", "NLP", "Transformers", "Models"]
+
+  - name: "Stability AI"
+    aliases: ["Stability.AI"]
+    domains: ["stability.ai"]
+    keywords: ["AI", "Diffusion", "Generation", "Open Source"]
+
+  - name: "Character.AI"
+    aliases: ["Character AI", "c.ai"]
+    domains: ["character.ai"]
+    keywords: ["AI", "Chatbots", "Language", "Characters"]
+
+  - name: "Adept"
+    aliases: ["Adept AI Labs"]
+    domains: ["adept.ai"]
+    keywords: ["AI", "Agents", "Automation", "ACT"]
+
+  - name: "Inflection AI"
+    aliases: ["Inflection"]
+    domains: ["inflection.ai"]
+    keywords: ["AI", "Pi", "Personal", "Intelligence"]
+
+  - name: "Midjourney"
+    aliases: ["Midjourney Inc"]
+    domains: ["midjourney.com"]
+    keywords: ["AI", "Art", "Generation", "Discord"]
+
+  - name: "Runway"
+    aliases: ["Runway ML", "RunwayML"]
+    domains: ["runwayml.com"]
+    keywords: ["AI", "Video", "Creative", "Generation"]
+
+  - name: "Scale AI"
+    aliases: ["Scale"]
+    domains: ["scale.com", "scale.ai"]
+    keywords: ["AI", "Data", "Labeling", "Platform"]
+
+  - name: "Databricks"
+    aliases: ["Databricks AI"]
+    domains: ["databricks.com"]
+    keywords: ["Data", "AI", "MLflow", "Lakehouse"]
+
+  - name: "Weights & Biases"
+    aliases: ["W&B", "WandB"]
+    domains: ["wandb.ai", "wandb.com"]
+    keywords: ["MLOps", "Tracking", "AI", "Platform"]
+
+  # Traditional Tech Companies with AI Research
+  - name: "Cisco Research"
+    aliases: ["Cisco", "Cisco Systems"]
+    domains: ["cisco.com", "research.cisco.com"]
+    keywords: ["Research", "Networking", "AI", "Security"]
+
+  - name: "VMware Research"
+    aliases: ["VMware"]
+    domains: ["vmware.com", "research.vmware.com"]
+    keywords: ["Research", "Virtualization", "Cloud", "AI"]
+
+  - name: "Qualcomm AI Research"
+    aliases: ["Qualcomm", "Qualcomm Research"]
+    domains: ["qualcomm.com"]
+    keywords: ["Research", "AI", "Mobile", "5G"]
+
+  - name: "Bosch Research"
+    aliases: ["Bosch", "Robert Bosch"]
+    domains: ["bosch.com", "bosch.ai"]
+    keywords: ["Research", "AI", "IoT", "Automotive"]
+
+  - name: "Siemens Research"
+    aliases: ["Siemens", "Siemens AI"]
+    domains: ["siemens.com", "siemens.ai"]
+    keywords: ["Research", "AI", "Industrial", "Digital"]
+
+  - name: "Sony AI"
+    aliases: ["Sony", "Sony Research"]
+    domains: ["sony.com", "ai.sony"]
+    keywords: ["AI", "Research", "Gaming", "Imaging"]
+
+  - name: "LG AI Research"
+    aliases: ["LG", "LG Electronics"]
+    domains: ["lg.com", "lgresearch.ai"]
+    keywords: ["AI", "Research", "Electronics", "ThinQ"]
+
+  - name: "Panasonic AI"
+    aliases: ["Panasonic", "Panasonic Research"]
+    domains: ["panasonic.com"]
+    keywords: ["AI", "Research", "Electronics", "IoT"]
+
+  # Additional AI Companies
+  - name: "Jasper AI"
+    aliases: ["Jasper"]
+    domains: ["jasper.ai"]
+    keywords: ["AI", "Content", "Generation", "Marketing"]
+
+  - name: "Synthesia"
+    aliases: ["Synthesia AI"]
+    domains: ["synthesia.io"]
+    keywords: ["AI", "Video", "Generation", "Synthetic"]
+
+  - name: "Replika"
+    aliases: ["Replika AI"]
+    domains: ["replika.ai"]
+    keywords: ["AI", "Chatbot", "Companion", "NLP"]
+
+  - name: "Notion AI"
+    aliases: ["Notion"]
+    domains: ["notion.so"]
+    keywords: ["AI", "Productivity", "Writing", "Assistant"]
+
+  - name: "Copy.ai"
+    aliases: ["Copy AI"]
+    domains: ["copy.ai"]
+    keywords: ["AI", "Copywriting", "Content", "Marketing"]
+
+  - name: "Grammarly"
+    aliases: ["Grammarly AI"]
+    domains: ["grammarly.com"]
+    keywords: ["AI", "Writing", "Grammar", "Assistant"]
+
+  - name: "DataRobot"
+    aliases: ["DataRobot AI"]
+    domains: ["datarobot.com"]
+    keywords: ["AI", "AutoML", "Platform", "Enterprise"]
+
+  - name: "H2O.ai"
+    aliases: ["H2O"]
+    domains: ["h2o.ai"]
+    keywords: ["AI", "Machine Learning", "AutoML", "Platform"]
+
+  - name: "C3.ai"
+    aliases: ["C3 AI"]
+    domains: ["c3.ai"]
+    keywords: ["AI", "Enterprise", "Platform", "IoT"]
+
+  - name: "Palantir Technologies"
+    aliases: ["Palantir"]
+    domains: ["palantir.com"]
+    keywords: ["Data", "Analytics", "AI", "Platform"]
+
+  - name: "Graphcore"
+    aliases: ["Graphcore AI"]
+    domains: ["graphcore.ai"]
+    keywords: ["AI", "Hardware", "IPU", "Processors"]
+
+  - name: "Cerebras Systems"
+    aliases: ["Cerebras"]
+    domains: ["cerebras.net"]
+    keywords: ["AI", "Hardware", "Chips", "Computing"]
+
+  - name: "SambaNova Systems"
+    aliases: ["SambaNova"]
+    domains: ["sambanova.ai"]
+    keywords: ["AI", "Hardware", "Platform", "Computing"]
+
+  - name: "Groq"
+    aliases: ["Groq Inc"]
+    domains: ["groq.com"]
+    keywords: ["AI", "Hardware", "LPU", "Inference"]
+
+  - name: "Together AI"
+    aliases: ["Together"]
+    domains: ["together.ai"]
+    keywords: ["AI", "Cloud", "Infrastructure", "Models"]
+
+  - name: "Perplexity AI"
+    aliases: ["Perplexity"]
+    domains: ["perplexity.ai"]
+    keywords: ["AI", "Search", "Assistant", "Answer"]
+
+  - name: "You.com"
+    aliases: ["You AI"]
+    domains: ["you.com"]
+    keywords: ["AI", "Search", "Assistant", "Privacy"]
+
+  - name: "Anthropic PBC"
+    aliases: ["Anthropic Public Benefit Corporation"]
+    domains: ["anthropic.com"]
+    keywords: ["AI", "Safety", "Research", "Claude"]
+
+  - name: "DeepL"
+    aliases: ["DeepL Translator"]
+    domains: ["deepl.com"]
+    keywords: ["AI", "Translation", "Language", "NLP"]
+
+government:
+  - name: "National Science Foundation"
+    aliases: ["NSF"]
+    domains: ["nsf.gov"]
+    keywords: ["Foundation", "National", "Science", "Grant"]
+
+  - name: "DARPA"
+    aliases: ["Defense Advanced Research Projects Agency"]
+    domains: ["darpa.mil"]
+    keywords: ["Defense", "Research", "Advanced", "Military"]
+
+  - name: "National Institutes of Health"
+    aliases: ["NIH"]
+    domains: ["nih.gov"]
+    keywords: ["Health", "Medical", "Research", "Institute"]
+
+  - name: "Department of Energy"
+    aliases: ["DOE", "US DOE"]
+    domains: ["energy.gov", "doe.gov"]
+    keywords: ["Energy", "National Lab", "Research", "Science"]
+
+  - name: "NASA"
+    aliases: ["National Aeronautics and Space Administration"]
+    domains: ["nasa.gov"]
+    keywords: ["Space", "Aeronautics", "Research", "Science"]
+
+  - name: "National Institute of Standards and Technology"
+    aliases: ["NIST"]
+    domains: ["nist.gov"]
+    keywords: ["Standards", "Technology", "Measurement", "Research"]
+
+  - name: "Lawrence Livermore National Laboratory"
+    aliases: ["LLNL", "Livermore"]
+    domains: ["llnl.gov"]
+    keywords: ["National Lab", "Computing", "Science", "Security"]
+
+  - name: "Los Alamos National Laboratory"
+    aliases: ["LANL", "Los Alamos"]
+    domains: ["lanl.gov"]
+    keywords: ["National Lab", "Nuclear", "Science", "Computing"]
+
+  - name: "Oak Ridge National Laboratory"
+    aliases: ["ORNL", "Oak Ridge"]
+    domains: ["ornl.gov"]
+    keywords: ["National Lab", "Computing", "Energy", "Science"]
+
+  - name: "Argonne National Laboratory"
+    aliases: ["ANL", "Argonne"]
+    domains: ["anl.gov"]
+    keywords: ["National Lab", "Computing", "Science", "Energy"]
+
+  - name: "European Research Council"
+    aliases: ["ERC"]
+    domains: ["erc.europa.eu"]
+    keywords: ["European", "Research", "Council", "Grant"]
+
+  - name: "UK Research and Innovation"
+    aliases: ["UKRI"]
+    domains: ["ukri.org"]
+    keywords: ["UK", "Research", "Innovation", "Council"]
+
+  - name: "Canadian Institute for Advanced Research"
+    aliases: ["CIFAR"]
+    domains: ["cifar.ca"]
+    keywords: ["Canadian", "Research", "AI", "Institute"]
+
+  - name: "National Research Council Canada"
+    aliases: ["NRC", "CNRC"]
+    domains: ["nrc-cnrc.gc.ca"]
+    keywords: ["Canadian", "National", "Research", "Council"]
+
+  # Additional Government Organizations
+  - name: "Sandia National Laboratories"
+    aliases: ["Sandia", "SNL"]
+    domains: ["sandia.gov"]
+    keywords: ["National Lab", "Security", "Research", "Energy"]
+
+  - name: "Brookhaven National Laboratory"
+    aliases: ["BNL", "Brookhaven"]
+    domains: ["bnl.gov"]
+    keywords: ["National Lab", "Physics", "Research", "Energy"]
+
+  - name: "Fermilab"
+    aliases: ["Fermi National Accelerator Laboratory", "FNAL"]
+    domains: ["fnal.gov"]
+    keywords: ["National Lab", "Physics", "Research", "Accelerator"]
+
+  - name: "Pacific Northwest National Laboratory"
+    aliases: ["PNNL"]
+    domains: ["pnnl.gov"]
+    keywords: ["National Lab", "Research", "Energy", "Science"]
+
+  - name: "Berkeley Lab"
+    aliases: ["Lawrence Berkeley National Laboratory", "LBNL"]
+    domains: ["lbl.gov"]
+    keywords: ["National Lab", "Research", "Energy", "Science"]
+
+  - name: "SLAC National Accelerator Laboratory"
+    aliases: ["SLAC", "Stanford Linear Accelerator"]
+    domains: ["slac.stanford.edu"]
+    keywords: ["National Lab", "Accelerator", "Physics", "Research"]
+
+  - name: "National Renewable Energy Laboratory"
+    aliases: ["NREL"]
+    domains: ["nrel.gov"]
+    keywords: ["National Lab", "Renewable", "Energy", "Research"]
+
+  - name: "Air Force Research Laboratory"
+    aliases: ["AFRL"]
+    domains: ["afrl.af.mil"]
+    keywords: ["Military", "Research", "Laboratory", "Defense"]
+
+  - name: "Naval Research Laboratory"
+    aliases: ["NRL"]
+    domains: ["nrl.navy.mil"]
+    keywords: ["Navy", "Research", "Laboratory", "Defense"]
+
+  - name: "Army Research Laboratory"
+    aliases: ["ARL"]
+    domains: ["arl.army.mil"]
+    keywords: ["Army", "Research", "Laboratory", "Defense"]
+
+  - name: "National Oceanographic and Atmospheric Administration"
+    aliases: ["NOAA"]
+    domains: ["noaa.gov"]
+    keywords: ["Ocean", "Atmosphere", "Climate", "Research"]
+
+  - name: "United States Geological Survey"
+    aliases: ["USGS"]
+    domains: ["usgs.gov"]
+    keywords: ["Geological", "Survey", "Earth", "Science"]
+
+  - name: "Centers for Disease Control and Prevention"
+    aliases: ["CDC"]
+    domains: ["cdc.gov"]
+    keywords: ["Disease", "Health", "Prevention", "Research"]
+
+  - name: "Food and Drug Administration"
+    aliases: ["FDA"]
+    domains: ["fda.gov"]
+    keywords: ["Food", "Drug", "Medical", "Regulation"]
+
+  - name: "National Security Agency"
+    aliases: ["NSA"]
+    domains: ["nsa.gov"]
+    keywords: ["Security", "Intelligence", "Cryptography", "Defense"]
+
+  - name: "Central Intelligence Agency"
+    aliases: ["CIA"]
+    domains: ["cia.gov"]
+    keywords: ["Intelligence", "Security", "Analysis", "Defense"]
+
+  - name: "Department of Homeland Security"
+    aliases: ["DHS"]
+    domains: ["dhs.gov"]
+    keywords: ["Homeland", "Security", "Defense", "Protection"]
+
+  - name: "Environmental Protection Agency"
+    aliases: ["EPA"]
+    domains: ["epa.gov"]
+    keywords: ["Environment", "Protection", "Research", "Regulation"]
+
+
+non_profit:
+  - name: "Allen Institute for AI"
+    aliases: ["AI2", "AllenAI"]
+    domains: ["allenai.org"]
+    keywords: ["Institute", "AI", "Research", "Non-profit"]
+
+  - name: "Chan Zuckerberg Initiative"
+    aliases: ["CZI", "Chan Zuckerberg"]
+    domains: ["chanzuckerberg.com", "czbiohub.org"]
+    keywords: ["Initiative", "Biohub", "Science", "Technology"]
+
+  - name: "Partnership on AI"
+    aliases: ["PAI"]
+    domains: ["partnershiponai.org"]
+    keywords: ["Partnership", "AI", "Ethics", "Collaboration"]
+
+  - name: "Future of Humanity Institute"
+    aliases: ["FHI"]
+    domains: ["fhi.ox.ac.uk"]
+    keywords: ["Future", "Humanity", "AI Safety", "Research"]
+
+  - name: "Machine Intelligence Research Institute"
+    aliases: ["MIRI"]
+    domains: ["intelligence.org"]
+    keywords: ["Machine Intelligence", "AI Safety", "Research"]
+
+  - name: "Center for AI Safety"
+    aliases: ["CAIS"]
+    domains: ["safe.ai"]
+    keywords: ["AI Safety", "Research", "Policy", "Center"]
+
+  - name: "Mozilla Foundation"
+    aliases: ["Mozilla"]
+    domains: ["mozilla.org", "mozilla.ai"]
+    keywords: ["Foundation", "Open Source", "AI", "Web"]
+
+  - name: "Electronic Frontier Foundation"
+    aliases: ["EFF"]
+    domains: ["eff.org"]
+    keywords: ["Digital Rights", "Privacy", "Technology", "Foundation"]
+
+  - name: "Wikimedia Foundation"
+    aliases: ["Wikimedia", "Wikipedia Foundation"]
+    domains: ["wikimedia.org", "wikipedia.org"]
+    keywords: ["Wiki", "Knowledge", "Open", "Foundation"]
+
+  - name: "Linux Foundation"
+    aliases: ["LF"]
+    domains: ["linuxfoundation.org"]
+    keywords: ["Linux", "Open Source", "Foundation", "Technology"]
+
+  # Additional Non-Profit Organizations
+  - name: "OpenAI Foundation"
+    aliases: ["OpenAI Non-Profit"]
+    domains: ["openai.org"]
+    keywords: ["AI", "Research", "Foundation", "Safety"]
+
+  - name: "AI Now Institute"
+    aliases: ["AI Now"]
+    domains: ["ainowinstitute.org"]
+    keywords: ["AI", "Policy", "Research", "Ethics"]
+
+  - name: "Data & Society"
+    aliases: ["Data and Society"]
+    domains: ["datasociety.net"]
+    keywords: ["Data", "Society", "Research", "Ethics"]
+
+  - name: "AI4ALL"
+    aliases: ["AI for All"]
+    domains: ["ai-4-all.org"]
+    keywords: ["AI", "Education", "Diversity", "Non-profit"]
+
+  - name: "Black in AI"
+    aliases: ["BAI"]
+    domains: ["blackinai.org"]
+    keywords: ["AI", "Diversity", "Community", "Research"]
+
+  - name: "Women in Machine Learning"
+    aliases: ["WiML"]
+    domains: ["wimlworkshop.org"]
+    keywords: ["ML", "Women", "Diversity", "Community"]
+
+  - name: "NumFOCUS"
+    aliases: ["NumFOCUS Foundation"]
+    domains: ["numfocus.org"]
+    keywords: ["Scientific", "Computing", "Open Source", "Foundation"]
+
+  - name: "Apache Software Foundation"
+    aliases: ["ASF", "Apache"]
+    domains: ["apache.org"]
+    keywords: ["Software", "Open Source", "Foundation", "Apache"]
+
+  - name: "Python Software Foundation"
+    aliases: ["PSF"]
+    domains: ["python.org"]
+    keywords: ["Python", "Software", "Foundation", "Programming"]
+
+  - name: "R Foundation"
+    aliases: ["R Foundation for Statistical Computing"]
+    domains: ["r-project.org"]
+    keywords: ["R", "Statistics", "Foundation", "Computing"]
+
+  - name: "Free Software Foundation"
+    aliases: ["FSF"]
+    domains: ["fsf.org"]
+    keywords: ["Free Software", "GNU", "Foundation", "Open Source"]
+
+  - name: "Open Source Initiative"
+    aliases: ["OSI"]
+    domains: ["opensource.org"]
+    keywords: ["Open Source", "Initiative", "License", "Standards"]
+
+  - name: "Creative Commons"
+    aliases: ["CC"]
+    domains: ["creativecommons.org"]
+    keywords: ["Creative", "Commons", "License", "Open"]
+
+  - name: "Internet Archive"
+    aliases: ["Archive.org"]
+    domains: ["archive.org"]
+    keywords: ["Archive", "Internet", "Preservation", "Digital"]
+
+  - name: "Tor Project"
+    aliases: ["Tor"]
+    domains: ["torproject.org"]
+    keywords: ["Privacy", "Anonymity", "Network", "Security"]

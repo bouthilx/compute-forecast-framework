@@ -15,7 +15,7 @@ Create the foundational framework for PDF discovery that all collectors will use
 
 **Acceptance Criteria**:
 - [ ] Define PDFRecord data model with all necessary fields
-- [ ] Implement paper deduplication by DOI, arXiv ID, and fuzzy title matching  
+- [ ] Implement paper deduplication by DOI, arXiv ID, and fuzzy title matching
 - [ ] Create version tracking system for preprints vs published papers
 - [ ] Build confidence scoring mechanism for PDF-paper matches
 - [ ] Implement URL validation and normalization

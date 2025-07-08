@@ -3,8 +3,10 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from src.data.models import Paper, Author
-from src.pdf_discovery.sources.openreview_collector import OpenReviewPDFCollector
+from compute_forecast.data.models import Paper, Author
+from compute_forecast.pdf_discovery.sources.openreview_collector import (
+    OpenReviewPDFCollector,
+)
 
 
 class TestOpenReviewPDFCollector:
@@ -59,7 +61,9 @@ class TestOpenReviewPDFCollector:
             assert collector.venue_mapping[venue] is not None
 
     @patch("openreview.api.OpenReviewClient")
-    def test_discover_single_paper_success(self, mock_client_class, collector, sample_paper):
+    def test_discover_single_paper_success(
+        self, mock_client_class, collector, sample_paper
+    ):
         """Test successful PDF discovery for single paper."""
         # Mock OpenReview client and API response
         mock_client = Mock()
@@ -90,7 +94,9 @@ class TestOpenReviewPDFCollector:
         assert pdf_record.validation_status == "valid"
 
     @patch("openreview.api.OpenReviewClient")
-    def test_discover_with_title_variation(self, mock_client_class, collector, sample_paper):
+    def test_discover_with_title_variation(
+        self, mock_client_class, collector, sample_paper
+    ):
         """Test PDF discovery with slight title variations."""
         mock_client = Mock()
         mock_client_class.return_value = mock_client
@@ -162,7 +168,10 @@ class TestOpenReviewPDFCollector:
         assert pdf_record is not None
         assert "neurips_forum_id" in pdf_record.pdf_url
         # Verify correct venue mapping was used
-        assert mock_client.get_all_notes.call_args[1]["invitation"] == "NeurIPS.cc/2023/Conference/-/Submission"
+        assert (
+            mock_client.get_all_notes.call_args[1]["invitation"]
+            == "NeurIPS.cc/2023/Conference/-/Submission"
+        )
 
     @patch("openreview.api.OpenReviewClient")
     def test_pdf_not_found(self, mock_client_class, collector, sample_paper):

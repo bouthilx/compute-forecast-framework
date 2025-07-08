@@ -1,6 +1,6 @@
 # Issue #28: Extraction Template Development Analysis
 
-**Date**: 2025-07-01  
+**Date**: 2025-07-01
 **Title**: Planning M2-1 Extraction Template Development
 
 ## Analysis Requested
@@ -52,13 +52,13 @@ Found critical comment on issue showing scope adjustment:
 Based on findings, the implementation should:
 
 1. **Create new extraction module** at `package/src/extraction/`
-   
+
 2. **Build on existing analyzer** rather than replacing it:
    ```python
    class ExtractionTemplateEngine:
        def __init__(self):
            self.analyzer = ComputationalAnalyzer()
-       
+
        def extract_to_template(self, paper: Paper) -> Dict:
            # Use existing analysis
            analysis = self.analyzer.analyze(paper)

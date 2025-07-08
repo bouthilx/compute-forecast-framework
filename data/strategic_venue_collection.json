@@ -1,0 +1,841 @@
+{
+  "metadata": {
+    "generated_at": "2025-06-27T10:15:51.504360",
+    "worker": "worker3",
+    "data_source": "venue_analysis_fallback",
+    "total_venues_analyzed": 575,
+    "selection_weights": {
+      "mila_usage_weight": 0.25,
+      "computational_weight": 0.3,
+      "citation_weight": 0.2,
+      "coverage_weight": 0.15,
+      "venue_tier_weight": 0.1
+    }
+  },
+  "primary_venues": [
+    {
+      "venue": "ICML",
+      "priority": 1,
+      "collection_params": {
+        "papers_per_year": 45,
+        "citation_threshold": 15,
+        "domains": [
+          "Time Series Forecasting",
+          "Multi-Task Learning",
+          "Policy Recommendations",
+          "Network Expressivity"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.95,
+        "mila_papers": 62,
+        "avg_citations": 42.0,
+        "venue_type": "conference",
+        "domain_breadth": 49,
+        "priority_score": 0.6965
+      }
+    },
+    {
+      "venue": "NeurIPS",
+      "priority": 2,
+      "collection_params": {
+        "papers_per_year": 45,
+        "citation_threshold": 15,
+        "domains": [
+          "Machine Learning Theory",
+          "Machine Learning",
+          "Quantum Chemistry",
+          "Neuroscience"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.95,
+        "mila_papers": 18,
+        "avg_citations": 45.0,
+        "venue_type": "conference",
+        "domain_breadth": 17,
+        "priority_score": 0.6475
+      }
+    },
+    {
+      "venue": "ICLR",
+      "priority": 3,
+      "collection_params": {
+        "papers_per_year": 45,
+        "citation_threshold": 10,
+        "domains": [
+          "Distributed Learning",
+          "Causal Inference",
+          "Communication Efficiency",
+          "Mathematical Modeling"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.9,
+        "mila_papers": 34,
+        "avg_citations": 38.0,
+        "venue_type": "conference",
+        "domain_breadth": 29,
+        "priority_score": 0.6385
+      }
+    },
+    {
+      "venue": "TMLR",
+      "priority": 4,
+      "collection_params": {
+        "papers_per_year": 45,
+        "citation_threshold": 7,
+        "domains": [
+          "Logical Reasoning",
+          "Question Answering",
+          "Density Estimation",
+          "Online Learning"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 170,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 108,
+        "priority_score": 0.5925
+      }
+    },
+    {
+      "venue": "NeurIPS.cc/2024/Conference",
+      "priority": 5,
+      "collection_params": {
+        "papers_per_year": 45,
+        "citation_threshold": 7,
+        "domains": [
+          "Multi-Scale Learning",
+          "Unsupervised Learning",
+          "Reinforcement Learning",
+          "Drug Discovery"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 155,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 97,
+        "priority_score": 0.5737500000000001
+      }
+    },
+    {
+      "venue": "NeurIPS.cc/2023/Conference",
+      "priority": 6,
+      "collection_params": {
+        "papers_per_year": 36,
+        "citation_threshold": 7,
+        "domains": [
+          "Privacy-Preserving Graph Data",
+          "Robustness in Machine Learning",
+          "Molecular Machine Learning",
+          "Reinforcement Learning"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 147,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 99,
+        "priority_score": 0.5637500000000001
+      }
+    },
+    {
+      "venue": "ICLR.cc/2024/Conference",
+      "priority": 7,
+      "collection_params": {
+        "papers_per_year": 36,
+        "citation_threshold": 7,
+        "domains": [
+          "Optimal Control",
+          "Quantum Chemistry",
+          "Copula Models",
+          "Molecular Machine Learning"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 140,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 90,
+        "priority_score": 0.555
+      }
+    },
+    {
+      "venue": "EMNLP",
+      "priority": 8,
+      "collection_params": {
+        "papers_per_year": 36,
+        "citation_threshold": 7,
+        "domains": [
+          "Visual Question Answering",
+          "Speech-to-Text Translation",
+          "Reinforcement Learning",
+          "In-Context Learning"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.7,
+        "mila_papers": 35,
+        "avg_citations": 22.0,
+        "venue_type": "conference",
+        "domain_breadth": 26,
+        "priority_score": 0.54775
+      }
+    },
+    {
+      "venue": "Proceedings of the 41st International Conference on Machine Learning",
+      "priority": 9,
+      "collection_params": {
+        "papers_per_year": 36,
+        "citation_threshold": 7,
+        "domains": [
+          "Unsupervised Learning",
+          "Efficient Deep Learning",
+          "Reinforcement Learning",
+          "Diffusion Models"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 126,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 94,
+        "priority_score": 0.5375000000000001
+      }
+    },
+    {
+      "venue": "AAMAS",
+      "priority": 10,
+      "collection_params": {
+        "papers_per_year": 36,
+        "citation_threshold": 10,
+        "domains": [
+          "Demand Response",
+          "Proximal Policy Optimization",
+          "Power Systems",
+          "Deep Reinforcement Learning"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.8,
+        "mila_papers": 11,
+        "avg_citations": 18.0,
+        "venue_type": "conference",
+        "domain_breadth": 9,
+        "priority_score": 0.5147499999999999
+      }
+    },
+    {
+      "venue": "ICLR.cc/2023/Conference",
+      "priority": 11,
+      "collection_params": {
+        "papers_per_year": 30,
+        "citation_threshold": 7,
+        "domains": [
+          "Theory of Deep Learning",
+          "Multi-Task Learning",
+          "Graph Learning",
+          "Unsupervised Learning"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 107,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 71,
+        "priority_score": 0.51375
+      }
+    },
+    {
+      "venue": "Proceedings of the 40th International Conference on Machine Learning",
+      "priority": 12,
+      "collection_params": {
+        "papers_per_year": 30,
+        "citation_threshold": 7,
+        "domains": [
+          "Semi-Supervised Learning",
+          "Communication Efficiency",
+          "Software Engineering",
+          "Theoretical Machine Learning"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 94,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 69,
+        "priority_score": 0.4975
+      }
+    },
+    {
+      "venue": "ICRA",
+      "priority": 13,
+      "collection_params": {
+        "papers_per_year": 30,
+        "citation_threshold": 10,
+        "domains": [
+          "Robotics",
+          "Transformers",
+          "Model Predictive Control",
+          "Reinforcement Learning"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.85,
+        "mila_papers": 7,
+        "avg_citations": 24.0,
+        "venue_type": "conference",
+        "domain_breadth": 5,
+        "priority_score": 0.47175
+      }
+    },
+    {
+      "venue": "AAAI",
+      "priority": 14,
+      "collection_params": {
+        "papers_per_year": 30,
+        "citation_threshold": 7,
+        "domains": [
+          "Adversarial Learning",
+          "Dataset Bias",
+          "Named Entity Recognition",
+          "Cellular Network Optimization"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 14,
+        "avg_citations": 28.0,
+        "venue_type": "conference",
+        "domain_breadth": 14,
+        "priority_score": 0.46349999999999997
+      }
+    },
+    {
+      "venue": "CVPR",
+      "priority": 15,
+      "collection_params": {
+        "papers_per_year": 30,
+        "citation_threshold": 10,
+        "domains": [
+          "Computer Vision"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.9,
+        "mila_papers": 0,
+        "avg_citations": 35.0,
+        "venue_type": "conference",
+        "domain_breadth": 1,
+        "priority_score": 0.45500000000000007
+      }
+    },
+    {
+      "venue": "ICCV",
+      "priority": 16,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 10,
+        "domains": [
+          "Computer Vision"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.9,
+        "mila_papers": 0,
+        "avg_citations": 32.0,
+        "venue_type": "conference",
+        "domain_breadth": 1,
+        "priority_score": 0.44900000000000007
+      }
+    },
+    {
+      "venue": "Journal of Pediatric Surgery",
+      "priority": 17,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 7,
+        "domains": [
+          "Medical Ethics",
+          "Patient Experience",
+          "Medical Education with Simulation",
+          "Simulation Training"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 52,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 36,
+        "priority_score": 0.445
+      }
+    },
+    {
+      "venue": "Radiotherapy and Oncology",
+      "priority": 18,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 7,
+        "domains": [
+          "Radiation Science",
+          "Immunotherapy",
+          "Pre-clinical Imaging",
+          "Adaptive Radiation Therapy"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 51,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 27,
+        "priority_score": 0.44375
+      }
+    },
+    {
+      "venue": "AISTATS",
+      "priority": 19,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 7,
+        "domains": [
+          "Policy Gradient Methods",
+          "Reinforcement Learning",
+          "3D Object Representation",
+          "Information Theory"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 23,
+        "avg_citations": 15.0,
+        "venue_type": "conference",
+        "domain_breadth": 19,
+        "priority_score": 0.43875000000000003
+      }
+    },
+    {
+      "venue": "UAI",
+      "priority": 20,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 7,
+        "domains": [
+          "Federated Learning",
+          "Bayesian Inference",
+          "Differential Privacy",
+          "Probabilistic Modeling"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 20,
+        "avg_citations": 15.0,
+        "venue_type": "conference",
+        "domain_breadth": 18,
+        "priority_score": 0.435
+      }
+    },
+    {
+      "venue": "Nature Communications",
+      "priority": 21,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 7,
+        "domains": [
+          "Connectomics",
+          "Causal Inference",
+          "Gene Regulatory Networks (GRN)",
+          "Biodiversity Informatics"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 44,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 40,
+        "priority_score": 0.435
+      }
+    },
+    {
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "priority": 22,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 7,
+        "domains": [
+          "Graph Learning",
+          "Visual Question Answering",
+          "Graph Signal Processing",
+          "Contextual Reinforcement Learning"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 42,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 33,
+        "priority_score": 0.43249999999999994
+      }
+    },
+    {
+      "venue": "ECCV",
+      "priority": 23,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 10,
+        "domains": [
+          "Computer Vision"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.85,
+        "mila_papers": 0,
+        "avg_citations": 30.0,
+        "venue_type": "conference",
+        "domain_breadth": 1,
+        "priority_score": 0.43000000000000005
+      }
+    },
+    {
+      "venue": "Advances in Neural Information Processing Systems 35  (NeurIPS 2022)",
+      "priority": 24,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 7,
+        "domains": [
+          "Graph Transformers",
+          "Video Synthesis",
+          "Node Classification",
+          "Multilingual Datasets and Large Language Models"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 39,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 33,
+        "priority_score": 0.42874999999999996
+      }
+    },
+    {
+      "venue": "ICML.cc/2024/Conference",
+      "priority": 25,
+      "collection_params": {
+        "papers_per_year": 24,
+        "citation_threshold": 7,
+        "domains": [
+          "Methods-driven Machine Learning",
+          "Reinforcement Learning with Skill Discovery",
+          "Reinforcement Learning",
+          "Vision-Language Models"
+        ]
+      },
+      "metadata": {
+        "computational_score": 0.5,
+        "mila_papers": 39,
+        "avg_citations": 15.0,
+        "venue_type": "unknown",
+        "domain_breadth": 25,
+        "priority_score": 0.42874999999999996
+      }
+    }
+  ],
+  "domain_specific": {
+    "Computer Vision": [
+      {
+        "venue": "CVPR",
+        "priority": 1,
+        "papers_per_year": 10,
+        "computational_score": 0.9,
+        "priority_score": 0.45500000000000007
+      },
+      {
+        "venue": "ICCV",
+        "priority": 2,
+        "papers_per_year": 10,
+        "computational_score": 0.9,
+        "priority_score": 0.44900000000000007
+      },
+      {
+        "venue": "ECCV",
+        "priority": 3,
+        "papers_per_year": 10,
+        "computational_score": 0.85,
+        "priority_score": 0.43000000000000005
+      },
+      {
+        "venue": "MICCAI",
+        "priority": 7,
+        "papers_per_year": 10,
+        "computational_score": 0.8,
+        "priority_score": 0.37000000000000005
+      },
+      {
+        "venue": "3DV",
+        "priority": 10,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28500000000000003
+      },
+      {
+        "venue": "ICCV Workshops",
+        "priority": 11,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28500000000000003
+      },
+      {
+        "venue": "IPMI",
+        "priority": 8,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28
+      },
+      {
+        "venue": "ISBI",
+        "priority": 9,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28
+      }
+    ],
+    "Natural Language Processing": [
+      {
+        "venue": "EMNLP",
+        "priority": 2,
+        "papers_per_year": 10,
+        "computational_score": 0.7,
+        "priority_score": 0.54775
+      },
+      {
+        "venue": "ACL",
+        "priority": 1,
+        "papers_per_year": 10,
+        "computational_score": 0.7,
+        "priority_score": 0.375
+      },
+      {
+        "venue": "NAACL",
+        "priority": 3,
+        "papers_per_year": 10,
+        "computational_score": 0.7,
+        "priority_score": 0.365
+      },
+      {
+        "venue": "EACL",
+        "priority": 5,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.30875
+      },
+      {
+        "venue": "WMT",
+        "priority": 7,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28500000000000003
+      },
+      {
+        "venue": "SemEval",
+        "priority": 8,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28500000000000003
+      },
+      {
+        "venue": "COLING",
+        "priority": 4,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.275
+      },
+      {
+        "venue": "CoNLL",
+        "priority": 6,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.275
+      }
+    ],
+    "Machine Learning": [
+      {
+        "venue": "ICML",
+        "priority": 2,
+        "papers_per_year": 10,
+        "computational_score": 0.95,
+        "priority_score": 0.6965
+      },
+      {
+        "venue": "NeurIPS",
+        "priority": 1,
+        "papers_per_year": 10,
+        "computational_score": 0.95,
+        "priority_score": 0.6475
+      },
+      {
+        "venue": "ICLR",
+        "priority": 3,
+        "papers_per_year": 10,
+        "computational_score": 0.9,
+        "priority_score": 0.6385
+      },
+      {
+        "venue": "AISTATS",
+        "priority": 4,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.43875000000000003
+      },
+      {
+        "venue": "UAI",
+        "priority": 5,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.435
+      },
+      {
+        "venue": "COLT",
+        "priority": 6,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.30875
+      }
+    ],
+    "Reinforcement Learning": [
+      {
+        "venue": "AAMAS",
+        "priority": 1,
+        "papers_per_year": 10,
+        "computational_score": 0.8,
+        "priority_score": 0.5147499999999999
+      },
+      {
+        "venue": "ICRA",
+        "priority": 4,
+        "papers_per_year": 10,
+        "computational_score": 0.85,
+        "priority_score": 0.47175
+      },
+      {
+        "venue": "AAAI",
+        "priority": 2,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.46349999999999997
+      },
+      {
+        "venue": "IROS",
+        "priority": 5,
+        "papers_per_year": 10,
+        "computational_score": 0.85,
+        "priority_score": 0.3950000000000001
+      },
+      {
+        "venue": "IJCAI",
+        "priority": 3,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.30700000000000005
+      },
+      {
+        "venue": "RSS",
+        "priority": 6,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.29400000000000004
+      }
+    ],
+    "Data Science": [
+      {
+        "venue": "CIKM",
+        "priority": 9,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.3675
+      },
+      {
+        "venue": "ICDE",
+        "priority": 3,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.32875
+      },
+      {
+        "venue": "SIGMOD",
+        "priority": 1,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.29500000000000004
+      },
+      {
+        "venue": "VLDB",
+        "priority": 2,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.29500000000000004
+      },
+      {
+        "venue": "ICDM",
+        "priority": 6,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28500000000000003
+      },
+      {
+        "venue": "SDM",
+        "priority": 7,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28500000000000003
+      },
+      {
+        "venue": "PKDD",
+        "priority": 8,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28500000000000003
+      },
+      {
+        "venue": "RecSys",
+        "priority": 10,
+        "papers_per_year": 10,
+        "computational_score": 0.5,
+        "priority_score": 0.28500000000000003
+      }
+    ]
+  },
+  "collection_strategy": {
+    "total_target_papers": 800,
+    "venue_coverage_target": 25,
+    "papers_per_venue_year": 8,
+    "citation_thresholds": {
+      "2024": 5,
+      "2023": 8,
+      "2022": 12,
+      "2021": 15,
+      "2020": 20
+    },
+    "backup_venues": [
+      "ICLR",
+      "ICML",
+      "AAAI",
+      "IJCAI",
+      "AISTATS"
+    ]
+  }
+}

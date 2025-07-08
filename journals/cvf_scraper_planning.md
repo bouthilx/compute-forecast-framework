@@ -7,7 +7,7 @@ Plan implementation of issue #87 (CVF Open Access Scraper) and verify codebase r
 
 ### Investigation Process
 
-1. **Issue Details**: 
+1. **Issue Details**:
    - Implement scraper for CVF Open Access (CVPR, ICCV, ECCV conferences)
    - URL Pattern: `https://openaccess.thecvf.com/{venue}{year}/papers/{paper}.pdf`
    - Dependencies: #77 (PDF Framework) and #78 (Deduplication) - both CLOSED

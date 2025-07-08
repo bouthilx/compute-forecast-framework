@@ -52,7 +52,7 @@ All prerequisite components are fully implemented and production-ready:
 
 ### API Contracts to Implement:
 - `EnhancedOrganizationClassifier` (extends existing OrganizationClassifier)
-- `EnhancedAffiliationParser` (extends existing AffiliationParser)  
+- `EnhancedAffiliationParser` (extends existing AffiliationParser)
 - `ClassificationResult` dataclass with detailed evidence
 - `OrganizationRecord` dataclass for expanded organization data
 - `ClassifierValidator` for accuracy testing
@@ -108,7 +108,7 @@ After deeper codebase analysis, confirmed the implementation approach:
 #### Current Implementation Details
 - `OrganizationDatabase` loads YAML and provides basic string matching methods
 - `AffiliationParser` has keyword-based classification with confidence scoring
-- `PaperClassifier` implements the 25% threshold rule correctly  
+- `PaperClassifier` implements the 25% threshold rule correctly
 - `ClassificationValidator` provides validation framework but needs expansion
 - Current organization count: ~65 (35 academic, 30 industry)
 

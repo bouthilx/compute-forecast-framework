@@ -118,7 +118,7 @@ Issue #29 successfully implemented the **infrastructure** for Academic Benchmark
 # test_extraction_execution.py
 def test_known_papers():
     """Test with papers having known computational requirements"""
-    
+
     test_cases = {
         'NLP': [
             {'paper': 'BERT_paper', 'expected_gpu_hours': 2560},
@@ -136,7 +136,7 @@ def test_known_papers():
             {'paper': 'AlphaGo_paper', 'expected_gpu_hours': 50000}
         ]
     }
-    
+
     accuracy_results = validate_against_ground_truth(test_cases)
     return accuracy_results
 ```
@@ -160,7 +160,7 @@ def test_known_papers():
 ```python
 class ExtractionQualityMetrics:
     """Comprehensive quality measurement system"""
-    
+
     def __init__(self):
         self.metrics = {
             'extraction_success_rate': self.measure_success_rate,
@@ -170,7 +170,7 @@ class ExtractionQualityMetrics:
             'temporal_coverage': self.measure_year_coverage,
             'computational_accuracy': self.measure_compute_accuracy
         }
-    
+
     def generate_quality_report(self, results):
         return {
             'overall_score': self.calculate_weighted_score(),
@@ -201,7 +201,7 @@ class ExtractionQualityMetrics:
 ```python
 def collect_benchmark_papers():
     """Systematic collection of 300+ benchmark papers"""
-    
+
     collection_strategy = {
         'academic': {
             'venues': ['NeurIPS', 'ICML', 'ICLR', 'CVPR', 'ACL'],
@@ -221,7 +221,7 @@ def collect_benchmark_papers():
             'target_count': 150
         }
     }
-    
+
     return execute_collection(collection_strategy)
 ```
 
@@ -244,7 +244,7 @@ def collect_benchmark_papers():
 ```python
 def analyze_extraction_results():
     """Comprehensive analysis of computational trends"""
-    
+
     analyses = {
         'scaling_trends': {
             'parameter_growth': analyze_parameter_scaling_by_year(),
@@ -267,7 +267,7 @@ def analyze_extraction_results():
             'venue_differences': compare_venue_reporting_quality()
         }
     }
-    
+
     return generate_insights_report(analyses)
 ```
 

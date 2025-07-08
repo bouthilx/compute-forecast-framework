@@ -263,3 +263,62 @@ Plan issues for executing the suppressed demand analysis and writing the LaTeX r
 - Execution issues depend on suppression framework development (M4-2, M4-3, etc.)
 - Report issues can proceed in parallel once execution data is available
 - Final compilation (R5) depends on all other report issues
+
+## 2025-07-02 - PDF Storage Design - Google Drive Integration
+
+### Analysis Request
+User requested simple options for storing PDFs without repository bloat, noting their organization has Google Suite available.
+
+### Approach
+Designed and implemented Google Drive storage solution with three core components:
+1. **GoogleDriveStore**: Google Drive API integration for PDF upload/download
+2. **PDFManager**: Local caching layer with Drive backend
+3. **PDFDiscoveryStorage**: Integration with existing PDF discovery framework
+
+### Key Design Decisions
+
+**Storage Architecture**:
+- PDFs stored in Google Drive shared folder
+- Local JSON metadata tracks Drive IDs and paper info
+- Temporary local cache for active processing
+- All PDFs excluded from git repository
+
+**Implementation Simplicity**:
+- Single service account for authentication
+- Minimal dependencies (google-api-python-client)
+- Simple store/retrieve API
+- Automatic cache management
+
+### Delivered Components
+
+1. **Core Module** (`src/pdf_storage/`):
+   - Complete Google Drive integration
+   - Caching with automatic cleanup
+   - Discovery framework integration
+   - Batch processing support
+
+2. **Setup & Migration**:
+   - Interactive setup wizard
+   - Migration script for existing PDFs
+   - Environment configuration
+
+3. **Documentation**:
+   - Architecture design document
+   - Quick start README
+   - Integration examples
+
+### Benefits
+- **Zero repository bloat**: External PDF storage
+- **Team collaboration**: Built-in Google Drive sharing
+- **Simple setup**: ~30 minute configuration
+- **Sufficient capacity**: 15GB free (3000+ PDFs)
+- **Time-boxed**: 2-3 hour implementation
+
+### Alternative Options Evaluated
+- Git LFS: Still uses repository quota
+- Reference-only: No actual PDF access
+- AWS S3: Overly complex for research project
+- Local NAS: Requires infrastructure
+
+### Outcome
+Google Drive provides optimal balance of simplicity, capacity, and collaboration features for this research project's PDF storage needs. Implementation follows project principles of pragmatic, time-boxed solutions focused on the report deliverable.

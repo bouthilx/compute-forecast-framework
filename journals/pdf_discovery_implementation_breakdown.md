@@ -68,7 +68,7 @@ class PDFDiscoveryFramework:
         self.discovered_papers = {}  # paper_id -> PDFRecord
         self.url_to_papers = {}      # url -> [paper_ids]
         self.title_index = {}        # normalized_title -> [paper_ids]
-        
+
     def add_discovery(self, paper: Paper, pdf_url: str, source: str):
         # Handle deduplication
         # Track multiple versions
@@ -87,7 +87,7 @@ class PDFDiscoveryFramework:
 **Effort**: M (4-6h) per API
 **Sub-issues**:
 - 2a: Semantic Scholar PDF Collector
-- 2b: OpenAlex PDF Collector  
+- 2b: OpenAlex PDF Collector
 - 2c: CORE API PDF Collector
 - 2d: BASE API PDF Collector
 - 2e: CrossRef/Unpaywall Collector
@@ -140,13 +140,13 @@ class PaperDeduplicator:
     def __init__(self):
         self.similarity_threshold = 0.95
         self.version_patterns = [...]
-        
+
     def find_duplicates(self, paper: Paper) -> List[DuplicateMatch]:
         # Check DOI exact match
         # Check arXiv ID match
         # Fuzzy title + author match
         # Return confidence scores
-        
+
     def resolve_versions(self, duplicates: List[DuplicateMatch]) -> PDFRecord:
         # Prefer: Published > Preprint
         # Prefer: Latest version
@@ -171,7 +171,7 @@ class PDFValidator:
         # Verify HTTP headers
         # Check content-type
         # Estimate file size
-        
+
     def validate_match(self, paper: Paper, pdf_url: str) -> float:
         # Download first page
         # Extract title/authors

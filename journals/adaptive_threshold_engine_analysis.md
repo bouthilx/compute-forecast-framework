@@ -59,7 +59,7 @@ elif slope > 0:
 # PROBLEM: Ignores interaction between precision and recall
 if precision_gap > 0.05:  # Magic number
     # Increases threshold (reduces recall further)
-elif recall_gap > 0.05:  # Magic number 
+elif recall_gap > 0.05:  # Magic number
     # Decreases threshold (reduces precision further)
 # MISSING: Balanced adjustment for precision-recall tradeoff
 ```
@@ -84,18 +84,18 @@ def _validate_inputs(self, data: Any, min_samples: int = 10) -> None:
     """Comprehensive input validation"""
     if not data or len(data) < min_samples:
         raise ValidationError(f"Insufficient data: {len(data) if data else 0} < {min_samples}")
-    
+
 def _safe_statistical_analysis(self, values: np.ndarray) -> Dict[str, float]:
     """Safe statistical analysis with error handling"""
     try:
         if len(values) < 10:
             raise ValidationError("Insufficient samples for statistical analysis")
-        
+
         std_dev = np.std(values)
         if std_dev == 0:
             logger.warning("Zero standard deviation detected")
             return {'slope': 0.0, 'confidence': 0.0}
-            
+
         # ... robust calculations
     except Exception as e:
         logger.error(f"Statistical analysis failed: {e}")
@@ -106,22 +106,22 @@ def _safe_statistical_analysis(self, values: np.ndarray) -> Dict[str, float]:
 ```python
 def _advanced_trend_analysis(self, quality_history: List[Tuple[datetime, float]]) -> QualityTrend:
     """Advanced trend analysis with multiple methods"""
-    
+
     # Multiple trend detection methods
     linear_trend = self._linear_trend_analysis(quality_history)
     seasonal_trend = self._seasonal_decomposition(quality_history)
     change_point_detection = self._detect_change_points(quality_history)
-    
+
     # Ensemble approach for robust trend detection
     trend_confidence = self._calculate_ensemble_confidence([
         linear_trend, seasonal_trend, change_point_detection
     ])
-    
+
     # Statistical significance testing
     significance_test = self._test_trend_significance(
         linear_trend.slope, linear_trend.p_value, alpha=0.05
     )
-    
+
     return QualityTrend(
         trend_confidence=trend_confidence,
         statistical_significance=significance_test,
@@ -134,28 +134,28 @@ def _advanced_trend_analysis(self, quality_history: List[Tuple[datetime, float]]
 def _intelligent_threshold_adjustment(self, current_thresholds: QualityThresholds,
                                     performance_data: QualityPerformanceMetrics) -> Dict[str, float]:
     """Intelligent threshold adjustment using optimization"""
-    
+
     # Multi-objective optimization for precision-recall balance
     current_state = self._encode_performance_state(performance_data)
     target_state = self._encode_target_state()
-    
+
     # Use gradient-based optimization
     optimizer = ThresholdOptimizer(
         objective_function=self._multi_objective_loss,
         constraints=self._get_safety_constraints(),
         learning_rate=self._adaptive_learning_rate(performance_data)
     )
-    
+
     optimal_adjustments = optimizer.optimize(
         current_thresholds=current_thresholds,
         performance_gap=current_state - target_state
     )
-    
+
     # Validate adjustments won't cause instability
     stability_check = self._check_adaptation_stability(optimal_adjustments)
     if not stability_check.is_stable:
         return self._fallback_conservative_adjustment(current_thresholds, performance_data)
-    
+
     return optimal_adjustments
 ```
 
@@ -163,13 +163,13 @@ def _intelligent_threshold_adjustment(self, current_thresholds: QualityThreshold
 ```python
 class ExtractionValidationThresholds(QualityThresholds):
     """Enhanced thresholds for extraction validation"""
-    
+
     # Extraction-specific thresholds
     min_completeness_score: float = 0.8
     min_consistency_score: float = 0.7
     max_outlier_z_score: float = 3.0
     min_cross_validation_agreement: float = 0.85
-    
+
     # Confidence-based thresholds
     confidence_weighted_scoring: bool = True
     min_confidence_for_auto_accept: float = 0.9
@@ -177,28 +177,28 @@ class ExtractionValidationThresholds(QualityThresholds):
 
 class AdaptiveExtractionValidator(AdaptiveThresholdEngine):
     """Extended adaptive engine for extraction validation"""
-    
-    def adapt_extraction_thresholds(self, 
+
+    def adapt_extraction_thresholds(self,
                                   extraction_results: List[ExtractionValidation],
                                   validation_feedback: Dict[str, Any]) -> None:
         """Adapt thresholds based on extraction validation results"""
-        
+
         # Calculate extraction-specific performance metrics
         completeness_performance = self._analyze_completeness_performance(extraction_results)
         consistency_performance = self._analyze_consistency_performance(extraction_results)
         outlier_detection_performance = self._analyze_outlier_performance(extraction_results)
-        
+
         # Multi-dimensional threshold adaptation
         threshold_adjustments = self._calculate_multi_dimensional_adjustments(
             completeness_performance,
-            consistency_performance, 
+            consistency_performance,
             outlier_detection_performance,
             validation_feedback
         )
-        
+
         # Apply extraction-specific safety constraints
         safe_adjustments = self._apply_extraction_safety_limits(threshold_adjustments)
-        
+
         # Update with validation-specific logic
         self._update_extraction_thresholds(safe_adjustments)
 ```
@@ -207,33 +207,33 @@ class AdaptiveExtractionValidator(AdaptiveThresholdEngine):
 ```python
 class ThresholdAdaptationMonitor:
     """Monitor and track threshold adaptation effectiveness"""
-    
+
     def __init__(self):
         self.adaptation_metrics = AdaptationMetricsCollector()
         self.performance_tracker = PerformanceTracker()
         self.alert_manager = AlertManager()
-    
+
     def track_adaptation_cycle(self, adaptation_result: AdaptationResult) -> None:
         """Track complete adaptation cycle"""
-        
+
         # Performance impact tracking
         self.performance_tracker.record_adaptation_impact(
             before_performance=adaptation_result.before_metrics,
             after_performance=adaptation_result.after_metrics,
             adaptation_magnitude=adaptation_result.adjustment_magnitude
         )
-        
+
         # Effectiveness monitoring
         effectiveness_score = self._calculate_adaptation_effectiveness(adaptation_result)
         self.adaptation_metrics.record_effectiveness(effectiveness_score)
-        
+
         # Alert on poor adaptations
         if effectiveness_score < 0.3:
             self.alert_manager.trigger_alert(
                 AlertType.POOR_ADAPTATION_EFFECTIVENESS,
                 details=adaptation_result
             )
-    
+
     def get_adaptation_health_report(self) -> Dict[str, Any]:
         """Generate comprehensive adaptation health report"""
         return {

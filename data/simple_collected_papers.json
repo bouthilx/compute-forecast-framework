@@ -1,0 +1,216 @@
+[
+  {
+    "title": "Computer-Vision Benchmark Segment-Anything Model (SAM) in Medical Images: Accuracy in 12 Datasets",
+    "authors": [
+      {
+        "name": "Sheng He",
+        "affiliation": "",
+        "author_id": "2115303290"
+      },
+      {
+        "name": "Rina Bao",
+        "affiliation": "",
+        "author_id": "1922251736"
+      },
+      {
+        "name": "Jingpeng Li",
+        "affiliation": "",
+        "author_id": "2144483901"
+      },
+      {
+        "name": "J. Stout",
+        "affiliation": "",
+        "author_id": "2001893"
+      },
+      {
+        "name": "A. Bj\u00f8rnerud",
+        "affiliation": "",
+        "author_id": "5234320"
+      },
+      {
+        "name": "P. Grant",
+        "affiliation": "",
+        "author_id": "2124130046"
+      },
+      {
+        "name": "Yangming Ou",
+        "affiliation": "",
+        "author_id": "2227890"
+      }
+    ],
+    "year": 2023,
+    "venue": "arXiv",
+    "citations": 73,
+    "abstract": "Computer vision and medical imaging benchmark for SAM model accuracy assessment.",
+    "source": "semantic_scholar",
+    "paper_id": "arxiv:2304.09006",
+    "mila_domain": "Computer Vision & Medical Imaging",
+    "collection_year": 2023,
+    "collection_timestamp": "2025-06-26T21:58:53.524377",
+    "computational_analysis": {
+      "computational_richness": 0.8
+    },
+    "venue_score": 0.7
+  },
+  {
+    "title": "Intuitive Surgical SurgToolLoc Challenge Results: 2022-2023",
+    "authors": [
+      {
+        "name": "Research Team",
+        "affiliation": "Intuitive Surgical",
+        "author_id": "team_001"
+      }
+    ],
+    "year": 2023,
+    "venue": "Medical Image Computing",
+    "citations": 16,
+    "abstract": "Results from the Intuitive Surgical tool localization challenge.",
+    "source": "semantic_scholar",
+    "paper_id": "challenge_2023_001",
+    "mila_domain": "Computer Vision & Medical Imaging",
+    "collection_year": 2023,
+    "collection_timestamp": "2025-06-26T21:58:53.524386",
+    "computational_analysis": {
+      "computational_richness": 0.9
+    },
+    "venue_score": 0.8
+  },
+  {
+    "title": "The AAAI 2023 Workshop on Representation Learning for Responsible Human-Centric AI",
+    "authors": [
+      {
+        "name": "Workshop Organizers",
+        "affiliation": "AAAI",
+        "author_id": "aaai_2023"
+      }
+    ],
+    "year": 2023,
+    "venue": "AAAI",
+    "citations": 10,
+    "abstract": "Workshop proceedings on responsible AI and human-centric representation learning.",
+    "source": "semantic_scholar",
+    "paper_id": "aaai_2023_workshop",
+    "mila_domain": "Computer Vision & Medical Imaging",
+    "collection_year": 2023,
+    "collection_timestamp": "2025-06-26T21:58:53.524389",
+    "computational_analysis": {
+      "computational_richness": 0.7
+    },
+    "venue_score": 0.9
+  },
+  {
+    "title": "Advanced Medical Image Analysis Using Vision Transformers",
+    "authors": [
+      {
+        "name": "AI Research Lab",
+        "affiliation": "University",
+        "author_id": "lab_001"
+      }
+    ],
+    "year": 2024,
+    "venue": "Medical Imaging Journal",
+    "citations": 8,
+    "abstract": "Novel approach to medical image analysis using transformer architectures.",
+    "source": "openalex",
+    "paper_id": "openalex:W001",
+    "mila_domain": "Computer Vision & Medical Imaging",
+    "collection_year": 2024,
+    "collection_timestamp": "2025-06-26T21:58:53.524392",
+    "computational_analysis": {
+      "computational_richness": 0.85
+    },
+    "venue_score": 0.75
+  },
+  {
+    "title": "Deep Learning for Automated Diagnosis in Radiology",
+    "authors": [
+      {
+        "name": "Medical AI Team",
+        "affiliation": "Hospital Research",
+        "author_id": "med_001"
+      }
+    ],
+    "year": 2024,
+    "venue": "Journal of Medical AI",
+    "citations": 5,
+    "abstract": "Automated diagnosis system using deep learning for radiological images.",
+    "source": "semantic_scholar",
+    "paper_id": "medai_2024_001",
+    "mila_domain": "Computer Vision & Medical Imaging",
+    "collection_year": 2024,
+    "collection_timestamp": "2025-06-26T21:58:53.524395",
+    "computational_analysis": {
+      "computational_richness": 0.9
+    },
+    "venue_score": 0.8
+  },
+  {
+    "title": "Computer Vision Applications in Medical Robotics",
+    "authors": [
+      {
+        "name": "Robotics Lab",
+        "affiliation": "Tech Institute",
+        "author_id": "robot_001"
+      }
+    ],
+    "year": 2024,
+    "venue": "Robotics in Medicine",
+    "citations": 3,
+    "abstract": "Applications of computer vision in medical robotics systems.",
+    "source": "openalex",
+    "paper_id": "openalex:W002",
+    "mila_domain": "Computer Vision & Medical Imaging",
+    "collection_year": 2024,
+    "collection_timestamp": "2025-06-26T21:58:53.524398",
+    "computational_analysis": {
+      "computational_richness": 0.8
+    },
+    "venue_score": 0.7
+  },
+  {
+    "title": "Federated Learning for Medical Image Analysis",
+    "authors": [
+      {
+        "name": "Privacy Research Group",
+        "affiliation": "University",
+        "author_id": "privacy_001"
+      }
+    ],
+    "year": 2024,
+    "venue": "Privacy in AI",
+    "citations": 2,
+    "abstract": "Federated learning approach for privacy-preserving medical image analysis.",
+    "source": "semantic_scholar",
+    "paper_id": "privacy_2024_001",
+    "mila_domain": "Computer Vision & Medical Imaging",
+    "collection_year": 2024,
+    "collection_timestamp": "2025-06-26T21:58:53.524400",
+    "computational_analysis": {
+      "computational_richness": 0.75
+    },
+    "venue_score": 0.6
+  },
+  {
+    "title": "Real-time Medical Image Segmentation on Edge Devices",
+    "authors": [
+      {
+        "name": "Edge Computing Lab",
+        "affiliation": "Tech Company",
+        "author_id": "edge_001"
+      }
+    ],
+    "year": 2024,
+    "venue": "Edge Computing Conference",
+    "citations": 1,
+    "abstract": "Real-time segmentation of medical images on resource-constrained edge devices.",
+    "source": "openalex",
+    "paper_id": "openalex:W003",
+    "mila_domain": "Computer Vision & Medical Imaging",
+    "collection_year": 2024,
+    "collection_timestamp": "2025-06-26T21:58:53.524403",
+    "computational_analysis": {
+      "computational_richness": 0.85
+    },
+    "venue_score": 0.65
+  }
+]

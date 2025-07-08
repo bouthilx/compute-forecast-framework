@@ -1,0 +1,228 @@
+{
+  "years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "categories": [
+    "WITHOUT AI analysis",
+    "NO domain classification",
+    "Computer Vision & Medical Imaging",
+    "Natural Language Processing",
+    "Reinforcement Learning & Robotics",
+    "Graph Learning & Network Analysis",
+    "Other research domains"
+  ],
+  "all_research_categories": [
+    "Computer Vision & Medical Imaging",
+    "Natural Language Processing",
+    "Reinforcement Learning & Robotics",
+    "Graph Learning & Network Analysis",
+    "Other research domains"
+  ],
+  "main_research_categories": [
+    "Computer Vision & Medical Imaging",
+    "Natural Language Processing",
+    "Reinforcement Learning & Robotics",
+    "Graph Learning & Network Analysis"
+  ],
+  "year_data": {
+    "2019": {
+      "WITHOUT AI analysis": 13,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 30,
+      "Natural Language Processing": 39,
+      "Reinforcement Learning & Robotics": 36,
+      "Graph Learning & Network Analysis": 26,
+      "Other research domains": 11
+    },
+    "2020": {
+      "WITHOUT AI analysis": 46,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 47,
+      "Natural Language Processing": 60,
+      "Reinforcement Learning & Robotics": 60,
+      "Graph Learning & Network Analysis": 22,
+      "Other research domains": 21
+    },
+    "2021": {
+      "WITHOUT AI analysis": 56,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 63,
+      "Natural Language Processing": 68,
+      "Reinforcement Learning & Robotics": 69,
+      "Graph Learning & Network Analysis": 46,
+      "Other research domains": 38
+    },
+    "2022": {
+      "WITHOUT AI analysis": 85,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 130,
+      "Natural Language Processing": 129,
+      "Reinforcement Learning & Robotics": 108,
+      "Graph Learning & Network Analysis": 55,
+      "Other research domains": 43
+    },
+    "2023": {
+      "WITHOUT AI analysis": 141,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 250,
+      "Natural Language Processing": 216,
+      "Reinforcement Learning & Robotics": 197,
+      "Graph Learning & Network Analysis": 106,
+      "Other research domains": 52
+    },
+    "2024": {
+      "WITHOUT AI analysis": 143,
+      "NO domain classification": 0,
+      "Computer Vision & Medical Imaging": 235,
+      "Natural Language Processing": 255,
+      "Reinforcement Learning & Robotics": 225,
+      "Graph Learning & Network Analysis": 127,
+      "Other research domains": 94
+    }
+  },
+  "multi_label_stats": {
+    "2019": {
+      "1": 63,
+      "other_only": 11,
+      "2": 29,
+      "3": 2,
+      "4": 1
+    },
+    "2020": {
+      "1": 108,
+      "2": 33,
+      "other_only": 21,
+      "3": 5
+    },
+    "2021": {
+      "1": 130,
+      "other_only": 38,
+      "2": 49,
+      "3": 6
+    },
+    "2022": {
+      "1": 189,
+      "other_only": 43,
+      "2": 97,
+      "3": 13
+    },
+    "2023": {
+      "1": 320,
+      "2": 182,
+      "3": 27,
+      "other_only": 52,
+      "4": 1
+    },
+    "2024": {
+      "2": 173,
+      "1": 418,
+      "other_only": 94,
+      "3": 26
+    }
+  },
+  "total_papers_by_year": {
+    "2019": 119,
+    "2020": 213,
+    "2021": 279,
+    "2022": 427,
+    "2023": 723,
+    "2024": 854
+  },
+  "other_only_papers": {
+    "2019": 11,
+    "2020": 21,
+    "2021": 38,
+    "2022": 43,
+    "2023": 52,
+    "2024": 94
+  },
+  "main_data_matrix": [
+    [
+      30.0,
+      47.0,
+      63.0,
+      130.0,
+      250.0,
+      235.0
+    ],
+    [
+      39.0,
+      60.0,
+      68.0,
+      129.0,
+      216.0,
+      255.0
+    ],
+    [
+      36.0,
+      60.0,
+      69.0,
+      108.0,
+      197.0,
+      225.0
+    ],
+    [
+      26.0,
+      22.0,
+      46.0,
+      55.0,
+      106.0,
+      127.0
+    ],
+    [
+      11.0,
+      21.0,
+      38.0,
+      43.0,
+      52.0,
+      94.0
+    ]
+  ],
+  "main_prop_matrix": [
+    [
+      21.12676056338028,
+      22.380952380952383,
+      22.183098591549296,
+      27.956989247311824,
+      30.45066991473813,
+      25.10683760683761
+    ],
+    [
+      27.464788732394368,
+      28.57142857142857,
+      23.943661971830984,
+      27.741935483870968,
+      26.30937880633374,
+      27.24358974358974
+    ],
+    [
+      25.352112676056336,
+      28.57142857142857,
+      24.295774647887324,
+      23.225806451612904,
+      23.995127892813642,
+      24.03846153846154
+    ],
+    [
+      18.30985915492958,
+      10.476190476190476,
+      16.19718309859155,
+      11.827956989247312,
+      12.911084043848964,
+      13.568376068376068
+    ],
+    [
+      7.746478873239436,
+      10.0,
+      13.380281690140844,
+      9.247311827956988,
+      6.333739342265529,
+      10.042735042735043
+    ]
+  ]
+}

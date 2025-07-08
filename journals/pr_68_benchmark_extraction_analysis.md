@@ -33,13 +33,13 @@ All specified API contract classes and methods were implemented:
   - Vocabulary size detection
   - Sequence length parsing
   - Pre-training/fine-tuning detection
-  
+
 - `CVBenchmarkExtractor` with:
   - Image resolution extraction
   - Throughput (FPS) detection
   - Augmentation compute tracking
   - Multi-scale training detection
-  
+
 - `RLBenchmarkExtractor` with:
   - Environment steps extraction
   - Simulation time tracking

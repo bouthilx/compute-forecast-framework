@@ -1,0 +1,43 @@
+{
+  "original_stats": {
+    "Natural Language Processing": 803,
+    "Graph Learning & Network Analysis": 317,
+    "Software Engineering & Systems": 166,
+    "Reinforcement Learning & Robotics": 747,
+    "Computer Vision & Medical Imaging": 874,
+    "Deep Learning & Neural Architectures": 746,
+    "Scientific Computing & Applications": 66,
+    "Machine Learning Theory & Methods": 162,
+    "Social & Economic Applications": 32,
+    "Optimization & Operations Research": 69
+  },
+  "corrected_method1": {
+    "Computer Vision & Medical Imaging": 622.554,
+    "Natural Language Processing": 537.9072507552869,
+    "Reinforcement Learning & Robotics": 300.22992957746476,
+    "Graph Learning & Network Analysis": 189.81,
+    "Scientific Computing & Applications": 68.76410256410257
+  },
+  "corrected_method2": {
+    "Computer Vision & Medical Imaging": 593.2190730138461,
+    "Natural Language Processing": 488.9368953069545,
+    "Reinforcement Learning & Robotics": 125.32600235477625,
+    "Graph Learning & Network Analysis": 155.9127369340742,
+    "Scientific Computing & Applications": 80.60529239034896
+  },
+  "dataset_stats": {
+    "Machine Learning Benchmarks": 61,
+    "Natural Language Processing": 267,
+    "Computer Vision & Medical Imaging": 327,
+    "Graph Learning & Network Analysis": 99,
+    "Scientific Computing & Applications": 44,
+    "Reinforcement Learning & Robotics": 67,
+    "Speech & Audio": 16
+  },
+  "comparison_summary": {
+    "original_total": 3982,
+    "method1_total": 1719.2652828968542,
+    "method2_total": 1444.0,
+    "dataset_total": 881
+  }
+}

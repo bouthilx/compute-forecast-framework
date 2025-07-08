@@ -1,0 +1,125 @@
+paper_id,title,year,domain,gpu_type,gpu_count,training_hours,parameters_millions,estimated_gpu_hours,confidence,suppression_score,num_ablations,num_seeds,constraints_mentioned
+c81f0bbb04c7a1baa8dadf52f0d38a77,EditNTS: An Neural Programmer-Interpreter Model for Sentence Simplification through Explicit Editing,2019,NLP,,,,,,0.2,0.0,,,False
+9320c1d4c6252e0f039bc4988b5cf955,MelGAN: Generative Adversarial Networks for Conditional Waveform Synthesis,2019,CV,,,,,,0.0,0.0,,,False
+9e873ad17efbfcc5b713ffa262f66ff0,Saliency Based Deep Neural Network for Automatic Detection of Gadolinium-Enhancing Multiple Sclerosi,2019,CV,,,,,,0.0,0.0,,,False
+9cf41f36512aa437a8b30b8b2323c0c2,Improving Pathological Structure Segmentation via Transfer Learning Across Diseases,2019,CV,,,,,,0.0,0.0,,,False
+d3402e1b9d01b3d63cc8d65c4cf1a667,A Geometric Perspective on Optimal Representations for Reinforcement Learning,2019,RL,,,,,,0.0,0.0,,,False
+955f3e5284555e6193d3b303cc5eca2f,Real-Time Reinforcement Learning,2019,RL,,,,,,0.0,0.0,,,False
+8e6c4c239815db8a807fe08e517391db,No Press Diplomacy: Modeling Multi-Agent Gameplay,2019,RL,,,,,,0.0,0.0,,,False
+f365b00561590e25ef5a8fa2b3a42cc9,Updates of Equilibrium Prop Match Gradients of Backprop Through Time in an RNN with Static Input,2019,NLP,,,,,,0.2,0.0,,,False
+f061e35996d6d07dfbd3b0b6320382c3,Interpolation Consistency Training for Semi-Supervised Learning,2019,NLP,,,,,,0.0,0.0,,,False
+9e949ecf7c27b7799b1dbfdaf41529c2,Forgetting at biologically realistic levels of neurogenesis in a large-scale hippocampal model,2019,NLP,,,,,,0.0,0.0,,,False
+e54a3691d575e7df6fe5309d1ee730b3,A deep learning framework for neuroscience,2019,NLP,,,,,,0.0,0.0,,,False
+85f04b0157d36697de31d75501a7b744,The effect of task and training on intermediate representations in convolutional neural networks rev,2019,NLP,,,,,,0.0,0.0,,,False
+84d26193212a4cd86d90014c5fc350b7,Supervised Seeded Iterated Learning for Interactive Language Learning,2020,NLP,,,,,,0.0,0.0,,,False
+874621575f82bbfe9f173697336f400f,Multi-XScience: A Large-scale Dataset for Extreme Multi-document Summarization of Scientific Article,2020,NLP,,,,,,0.2,0.0,,,False
+d08c23d5a7750f0ad526f39797b1046e,On the Systematicity of Probing Contextualized Word Representations: The Case of Hypernymy in BERT.,2020,NLP,,,,,,0.0,0.0,,,False
+b6cd60f568212820a069df1b617477cd,DiVA: Diverse Visual Feature Aggregation for Deep Metric Learning,2020,CV,,,,,,0.0,0.0,,,False
+8192522d720c528f2d024f8eee61e0fb,Unsupervised Learning of Dense Visual Representations,2020,CV,,,,,,0.0,0.0,,,False
+81e219ea39c1dfda9e16d09eda4a0c8a,Laplacian Change Point Detection for Dynamic Graphs,2020,CV,,,,,,0.0,0.0,,,False
+802a7c9e0317a5a215f9483a219f223f,Joint Learning of Generative Translator and Classifier for Visually Similar Classes,2020,CV,,,,,,0.2,0.0,,,False
+cf8feb2c058db1827d64d1bbe5920be4,"Models of Human Behavioral Agents in Bandits, Contextual Bandits and RL",2020,RL,,,,,,0.0,0.0,,,False
+9bd01bf4a509f3230a27ca5d0d90855f,Learning the Arrow of Time for Problems in Reinforcement Learning.,2020,RL,,,,,,0.0,0.0,,,False
+843dfafaef54d98de96c97fc9b6c9133,Autonomous navigation of stratospheric balloons using reinforcement learning,2020,RL,,,,,,0.0,0.0,,,False
+cba8f89440f95c9d3abbcec9ac83cdc8,COVI-AgentSim: an Agent-based Model for Evaluating Methods of Digital Contact Tracing,2020,RL,,,,,,0.0,0.0,,,False
+c4d60c378db51aa9e9cce80f849acfa0,Dark control: The default mode network as a reinforcement learning agent,2020,RL,,,,,,0.0,0.0,,,False
+9434aa65534a76241a5c741b92f946be,What can I do here? A Theory of Affordances in Reinforcement Learning,2020,RL,,,,,,0.0,0.0,,,False
+85e7d1466c624350b5bdd5bd792af0ba,Combating False Negatives in Adversarial Imitation Learning (Student Abstract),2020,NLP,,,,,,0.0,0.0,,,False
+b667bf32169ec29a7c50d6225e6d43a4,Hybrid Models for Learning to Branch,2020,NLP,,,,,,0.0,0.0,,,False
+9c0792986bc6ffe02ba041e0f6341411,Extracting Weighted Automata for Approximate Minimization in Language Modelling,2021,NLP,,,,,,0.0,0.0,,,False
+9e790c2edf4d636b8edde85280e88491,StructFormer: Joint Unsupervised Induction of Dependency and Constituency Structure from Masked Lang,2021,NLP,,,,,,0.0,0.0,,,False
+9f70ef147d85413650bd1e664653edcd,StereoSet: Measuring stereotypical bias in pretrained language models,2021,NLP,,,,,,0.2,0.0,,,False
+9d5a9c73f5d48b60d175a287eae190c7,Your head is there to move you around: Goal-driven models of the primate dorsal pathway,2021,CV,,,72.0,,,0.3666666666666667,0.0,,,False
+8727d222008125cc23f682783088f2e8,A Novel Neural Network-Based Malware Severity Classification System,2021,CV,,,,,,0.0,0.0,,,False
+908aae73b86ca119e7a47dc0234f2592,From Generative Models to Generative Passages: A Computational Approach to (Neuro) Phenomenology,2021,CV,,,,,,0.0,0.0,,,False
+8fdf0f3edf637f6f502fd4f9c8bd5117,Faults in deep reinforcement learning programs: a taxonomy and a detection approach,2021,CV,,,,,,0.0,0.0,,,False
+8861015b52aebb8cb095ad054c53efad,Cohort Bias Adaptation in Aggregated Datasets for Lesion Segmentation,2021,CV,,,,,,0.0,0.0,,,False
+b645e39bf911860e52876a7d6c18992f,Action-Based Representation Learning for Autonomous Driving,2021,CV,,,,,,0.2,0.0,,,False
+89a1cb2c4a9586aaf4622530c8891e99,Metrics and continuity in reinforcement learning,2021,RL,,,,,,0.0,0.0,,,False
+912c11ceaa84e1212245b89520e63bb1,Pretraining Representations for Data-Efficient Reinforcement Learning,2021,RL,,,,,,0.2,0.0,,,False
+ac611d35b23adf61cb7fb4ee1dfcb8d0,Contrastive Behavioral Similarity Embeddings for Generalization in Reinforcement Learning,2021,RL,,,,,,0.2,0.0,,,False
+d40985e308042d967fa5c1f044014158,Randomized Exploration in Reinforcement Learning with General Value Function Approximation,2021,RL,,,,,,0.0,0.0,,,False
+8e8a618dc4b364190fed9bee7e2ddc86,Beyond variance reduction: Understanding the true impact of baselines on policy optimization,2021,RL,,,,,,0.0,0.0,,,False
+e2061ee5e23dc592e22f409a5a6b650e,Flexible Option Learning,2021,NLP,,,,,,0.0,0.0,,,False
+858804af0cad945157e9b4aa613acd8e,Learning with Rejection for Abstractive Text Summarization,2022,NLP,,,,,,0.0,0.0,,,False
+8d05d893f24e9b197679a1b27005607b,CLIP-Mesh: Generating textured meshes from text using pretrained image-text models,2022,NLP,,,,,,0.0,0.0,,,False
+a39f44e06e92f6ba3d978fbffba72e87,PipeBERT: High-throughput BERT Inference for ARM Big.LITTLE Multi-core Processors,2022,NLP,,,,,,0.0,0.0,,,False
+ae43ef160c26905d8217d84a3a38e67e,Does Pre-training Induce Systematic Inference? How Masked Language Models Acquire Commonsense Knowle,2022,NLP,,,,,,0.0,0.0,,,False
+b9d5f747e24f4e68473b6f8dcf46f3ff,Subgraph Retrieval Enhanced Model for Multi-hop Knowledge Base Question Answering,2022,NLP,,,,,,0.0,0.0,,,False
+9cbd98c642eded7041f0833784d02809,"MCVD: Masked Conditional Video Diffusion for Prediction, Generation, and Interpolation",2022,CV,,,48.0,,,0.3666666666666667,0.0,,,False
+9fc360124abf47725b084f0cc83aae59,Temporal Latent Bottleneck: Synthesis of Fast and Slow Processing Mechanisms in Sequence Learning,2022,CV,,,,,,0.0,0.0,,,False
+a364056b6458dd63fe4e3188b78a0ecf,The Liver Tumor Segmentation Benchmark (LiTS),2022,CV,,,,,,0.0,0.0,,,False
+b1579eca4db7a79c683b4081ebc0af89,Global Variations in Event-Based Surveillance for Disease Outbreak Detection: Time Series Analysis,2022,CV,,,,,,0.0,0.0,,,False
+b14da7a87abca921c4f860ae47179378,BioCaster in 2021: automatic disease outbreaks detection from global news media,2022,CV,,,,,,0.0,0.0,,,False
+9a7e4951ebf53159809d5420d0b8f00b,Generative Models of Brain Dynamics,2022,CV,,,,,,0.0,0.0,,,False
+cc1e1b1f9da7d65356da93fc1338abf4,A Strong Node Classification Baseline for Temporal Graphs,2022,CV,,,,,,0.0,0.0,,,False
+a67ab763ca05c5f6e8303387ffa07c17,"Microscopy analysis neural network to solve detection, enumeration and segmentation from image-level",2022,CV,,,,,,0.0,0.0,,,False
+93665e141dc3af80488a6ca45e0dcf84,Predicting Visual Improvement After Macular Hole Surgery: A Combined Model Using Deep Learning and C,2022,CV,,,,,,0.0,0.0,,,False
+8a6ef52a3a23d87e28dabb66c19b1efa,Quantum-Inspired Interpertable AI-Empowered Decision Support System for Detection of Early-Stage Rhe,2022,CV,,,,,,0.0,0.0,,,False
+97f28ecf1bc9ed21535a8bcf84fdee02,Reincarnating Reinforcement Learning: Reusing Prior Computation to Accelerate Progress,2022,RL,,,,,,0.0,0.0,,,False
+d174480f9b2cfe5d2e75095856ac3a59,A general class of surrogate functions for stable and efficient reinforcement learning,2022,RL,,,,,,0.0,0.0,,,False
+a1ae20296ee0c7e318fad6890dbaef00,"Deep learning, reinforcement learning, and world models",2022,RL,,,,,,0.0,0.0,,,False
+ab598824d920a56dbfe566f9d42eaa75,The Primacy Bias in Deep Reinforcement Learning,2022,RL,,,,,,0.0,0.0,,,False
+9a49add63b76627a7845fc6fea1ea874,Robustness of Whittle Index Policy to Model Approximation,2022,RL,,,,,,0.0,0.0,,,False
+b7e362a8de8f36320ca8422b86ef1b26,Vehicle Type Specific Waypoint Generation,2022,RL,,,,,,0.2,0.0,,,False
+8dfbdcae0f5fae9800b5b5caa202474b,Lifelong Topological Visual Navigation,2022,RL,,,,,,0.2,0.0,,,False
+8dcb81fcab87903ecbbddfec7c4f85f9,StarCoder: may the source be with you!,2023,NLP,,,,15500.0,,0.3666666666666667,0.0,,,False
+c3fe786f784dbc571ed98a04b181996d,lo-fi: distributed fine-tuning without communication,2023,NLP,,,,1300.0,,0.3666666666666667,0.0,,,False
+f28cec1278179a605e0c282d6b393881,Investigating the Effect of Pre-finetuning BERT Models on NLI Involving Presuppositions,2023,NLP,,,,,,0.0,0.0,,,False
+aef1de7081ebd77bbac95dc315c0f1a5,MAGNIFICo: Evaluating the In-Context Learning Ability of Large Language Models to Generalize to Nove,2023,NLP,,,,,,0.0,0.0,,,False
+ae6aed88c03704238d5548752b5881e5,Using In-Context Learning to Improve Dialogue Safety,2023,NLP,,,,,,0.0,0.0,,,False
+9a8c8998e45d4d1f2c4afef7fbb01db9,Measuring the Knowledge Acquisition-Utilization Gap in Pretrained Language Models,2023,NLP,,,,,,0.0,0.0,,,False
+92eb61804c4fecaa584ae61b92564f4f,HoneyBee: Progressive Instruction Finetuning of Large Language Models for Materials Science,2023,NLP,,,,,,0.0,0.0,,,False
+872b5103e9e60b09eba44aab276004bc,MAPO: Boosting Large Language Model Performance with Model-Adaptive Prompt Optimization,2023,NLP,,,,,,0.0,0.0,,,False
+8674745f1cf9e89de6bff9e4d85a80ee,Balaur: Language Model Pretraining with Lexical Semantic Relations,2023,NLP,,,,,,0.0,0.0,,,False
+aae0a8b70d5d7b1779b6a7abfc22a139,Hyena Hierarchy: Towards Larger Convolutional Language Models,2023,NLP,,,,,,0.0,0.0,,,False
+8b874ccb9bfd938b74144b7ec8702420,Efficient Classification of Long Documents via State-Space Models,2023,CV,,,,,,0.0,0.0,,,False
+af92fc04a739ed465a295a3950c328cd,CADet: Fully Self-Supervised Anomaly Detection With Contrastive Learning,2023,CV,,,,,,0.0,0.0,,,False
+a872c75c358d09599963442dbb7b5b44,Feature Likelihood Divergence: Evaluating the Generalization of Generative Models Using Samples,2023,CV,,,,,,0.0,0.0,,,False
+8a0a49059f48b7f9d7eb356ac1f59cb0,Group Robust Classification Without Any Group Information,2023,CV,,,,,,0.0,0.0,,,False
+801b1948440f8d32e6a0f07f77a6244c,A Halfspace-Mass Depth-Based Method for Adversarial Attack Detection,2023,CV,,,,,,0.0,0.0,,,False
+9266c713b4223e2674bf33e0cc34e9d7,Laughing Hyena Distillery: Extracting Compact Recurrences From Convolutions,2023,CV,,,,1300.0,,0.3666666666666667,1.0,,,False
+91e46625dafff4d825dd8daf3942ab95,Simplicial Embeddings in Self-Supervised Learning and Downstream Classification,2023,CV,,,,,,0.2,0.0,,,False
+8a5d220be6cd4a4158ced843986aaf0c,CrossSplit: Mitigating Label Noise Memorization through Data Splitting,2023,CV,,,,,,0.2,0.0,,,False
+a6a743de045fce4b2b5ba43142dc069b,Explorable Mesh Deformation Subspaces from Unstructured 3D Generative Models,2023,CV,,,72.0,,,0.16666666666666666,0.0,,,False
+9246069abcfb02cc01cc0163415e60df,Automatic Head and Neck Tumor segmentation and outcome prediction relying on FDG-PET/CT images: Find,2023,CV,,,,,,0.0,0.0,,,False
+b6e0575688886f683374fe13a1aa506a,Open Problems and Fundamental Limitations of Reinforcement Learning from Human Feedback,2023,RL,,,,,,0.0,0.0,,,False
+84c7970be0f338862ff22170071efaf8,Stateful active facilitator: Coordination and Environmental Heterogeneity in Cooperative Multi-Agent,2023,RL,,,,,,0.0,0.0,,,False
+bf30cae70f3a68582a4c497b783276ef,A Definition of Continual Reinforcement Learning,2023,RL,,,,,,0.0,0.0,,,False
+8b0189a3272dc09f7707978a098e5208,Double Gumbel Q-Learning.,2023,RL,,,,,,0.0,0.0,,,False
+ada825ce6157a68e0cf6e7f61fd0bfcc,Investigating Multi-task Pretraining and Generalization in Reinforcement Learning,2023,RL,,,,,,0.0,0.0,,,False
+81e9820574a3532ed12a03965c2c8dc9,Prioritizing Samples in Reinforcement Learning with Reducible Loss,2023,RL,,,,,,0.0,0.0,,,False
+d1cf8e67c13035b3bc71a40b2148a080,Multi-Environment Pretraining Enables Transfer to Action Limited Datasets,2023,RL,,,,,,0.0,0.0,,,False
+950758d68fd97078e161771685903c1b,Temporal encoding in deep reinforcement learning agents,2023,RL,,,,,,0.0,0.0,,,False
+c49b0d81784d5fcf44cf4816da865ab7,Dealing With Non-stationarity in Decentralized Cooperative Multi-Agent Deep Reinforcement Learning v,2023,RL,,,,,,0.0,0.0,,,False
+bd3fd5a35e30d151d0564421a83a342f,Deep reinforcement learning for option pricing and hedging under dynamic expectile risk measures,2023,RL,,,,,,0.0,0.0,,,False
+960b2a02faf977db1d900855c604a408,Improving Text-to-Image Consistency via Automatic Prompt Optimization,2024,NLP,,,,,,0.0,0.0,,,False
+d7c514b0cb5f463803d21059f88df00d,RedPajama: an Open Dataset for Training Large Language Models,2024,NLP,,,,,,0.0,0.0,,,False
+9901aa2adb0ee8756efb3c1b291d7ee1,Interpreting Learned Feedback Patterns in Large Language Models,2024,NLP,,,,,,0.0,0.0,,,False
+acf0db94478757a05b88535094506c96,Foundational Challenges in Assuring Alignment and Safety of Large Language Models,2024,NLP,,,,,,0.0,0.0,,,False
+967700d7aa6caa31058f3528051a0b2b,A Picture is Worth More Than 77 Text Tokens: Evaluating CLIP-Style Models on Dense Captions,2024,NLP,,,,,,0.0,0.0,,,False
+b1bb911a49e06d987530da4cddd1428a,When is an Embedding Model  More Promising than Another?,2024,NLP,,,,,,0.0,0.0,,,False
+ec14d0903f0c8a9c24ce69a20dc7895b,Reproducibility Study on Adversarial Attacks Against Robust Transformer Trackers,2024,NLP,,,,,,0.0,0.0,,,False
+bf2bc6ea21ad2b2465e978ded00f38b0,Language-guided Skill Learning with Temporal Variational Inference,2024,NLP,,,,,,0.0,0.0,,,False
+9ab40afcc21119edc0d74e0c5466652b,Large Language Models as Generalizable Policies for Embodied Tasks,2024,NLP,,,,,,0.0,0.0,,,False
+d7514238d71f283b13d3dbd3d2c3c587,Faithfulness Measurable Masked Language Models,2024,NLP,,,,,,0.0,0.0,,,False
+a919c28f3debfdc9685ebe9b887f2d51,DINOv2: Learning Robust Visual Features without Supervision,2024,CV,,,,1000.0,,0.3666666666666667,0.0,,,False
+ec0ced93aa9b30909d8d4347d1ddec87,Learning Action and Reasoning-Centric Image Editing from Videos and Simulation,2024,CV,,,,,,0.0,0.0,,,False
+ba4b226f95788095453ab2dbbbee65fd,Expecting The Unexpected: Towards Broad Out-Of-Distribution Detection,2024,CV,,,,,,0.0,0.0,,,False
+9c12ec54cf2e8f22d057de218ad7bd89,Harnessing small projectors and multiple views for efficient vision pretraining,2024,CV,,,,,,0.0,0.0,,,False
+90b4378819b1a56f42a57d7152dcc934,Revisiting Feature Prediction for Learning Visual Representations from Video,2024,CV,,,,,,0.0,0.0,,,False
+a842c266eac8974cefd07edf68a6aec4,Unsupervised Discovery of Steerable Factors When Graph Deep Generative Models Are Entangled,2024,CV,,,,,,0.0,0.0,,,False
+a214c1bac561614482abdb8170fde1fc,Diffusion Generative Flow Samplers: Improving learning signals through partial trajectory optimizati,2024,CV,,,,,,0.0,0.0,,,False
+a6388977087e1592a2ae8a73c96bad47,"SIB-200: A Simple, Inclusive, and Big Evaluation Dataset for Topic Classification in 200+ Languages ",2024,CV,,,,,,0.0,0.0,,,False
+8d257274408f2da8213aeaf269d9c277,A Data-Driven Measure of Relative Uncertainty for Misclassification Detection,2024,CV,,,,,,0.0,0.0,,,False
+91a6e6ef22ef79d4322f58563df9633a,On the Stability of Iterative Retraining of Generative Models on their own Data,2024,CV,,,,,,0.2,0.0,,,False
+f77b4e2aaafb419d6bc025568af4f234,Balancing Context Length and Mixing Times for Reinforcement Learning at Scale,2024,RL,,,,,,0.0,0.0,,,False
+eb96d7ee59d1a09502c9de687d0bcce4,Normalization and effective learning rates in reinforcement learning,2024,RL,,,,,,0.0,0.0,,,False
+e06ed18a14a7c1264103b1052f75deb5,Parseval Regularization for Continual Reinforcement Learning,2024,RL,,,,,,0.0,0.0,,,False
+b64049209839386bbe7d859614fbdff0,Offline Multitask Representation Learning for Reinforcement Learning,2024,RL,,,,,,0.0,0.0,,,False
+aa2299d2827f93783b4e55e96d179c04,Action Gaps and Advantages in Continuous-Time Distributional Reinforcement Learning,2024,RL,,,,,,0.0,0.0,,,False
+c2b939a9fc746de26ab0af7f13c9f9c8,The Bifurcation Method: White-Box Observation Perturbation Attacks on Reinforcement Learning Agents ,2024,RL,,,,,,0.0,0.0,,,False
+c1c6fcfb6fb6ed11cae0672860d21cc0,Simplifying Constraint Inference with Inverse Reinforcement Learning,2024,RL,,,,,,0.0,0.0,,,False
+865488743d62ce33692d62f7fa3b8e2b,Predicting Future Actions of Reinforcement Learning Agents,2024,RL,,,,,,0.0,0.0,,,False
+9710cc45c1f80bc4ddfcd98f27a95fb9,Periodic agent-state based Q-learning for POMDPs,2024,RL,,,,,,0.0,0.0,,,False
+cd9b41c0a0772824081b126b85b08811,Reasoning with Latent Diffusion in Offline Reinforcement Learning,2024,RL,,,,,,0.0,0.0,,,False

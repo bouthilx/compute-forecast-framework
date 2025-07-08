@@ -55,18 +55,18 @@ class PDFDiscoveryFramework:
         self.discovered_papers = {}  # paper_id -> PDFRecord
         self.url_to_papers = {}      # url -> [paper_ids]
         self.deduplicator = PaperDeduplicator()
-        
+
     def discover_pdfs(self, papers: List[Paper]) -> Dict[str, PDFRecord]:
         """Main discovery orchestration"""
         # Parallel discovery from all sources
         with ThreadPoolExecutor(max_workers=10) as executor:
             futures = []
-            
+
             # Submit all discovery tasks
             for collector in self.collectors:
                 future = executor.submit(collector.collect_pdfs, papers)
                 futures.append((collector.name, future))
-            
+
             # Collect results
             for source_name, future in futures:
                 try:
@@ -74,7 +74,7 @@ class PDFDiscoveryFramework:
                     self._merge_records(records, source_name)
                 except Exception as e:
                     logger.error(f"{source_name} failed: {e}")
-        
+
         # Deduplicate and select best URLs
         return self.deduplicator.deduplicate_records(self.discovered_papers)
 ```
@@ -84,17 +84,17 @@ class PDFDiscoveryFramework:
 class PaperDeduplicator:
     def deduplicate_records(self, all_records: Dict) -> Dict[str, PDFRecord]:
         """Select best PDF for each paper"""
-        
+
         # Group by paper identity
         paper_groups = self._group_by_identity(all_records)
-        
+
         # Select best version for each paper
         best_records = {}
         for paper_id, versions in paper_groups.items():
             best_records[paper_id] = self._select_best_version(versions)
-            
+
         return best_records
-    
+
     def _select_best_version(self, versions: List[PDFRecord]) -> PDFRecord:
         """Priority: Published > Preprint, Direct > Repository"""
         # Source priority ranking
@@ -105,7 +105,7 @@ class PaperDeduplicator:
             'arxiv': 5,
             'repository': 3
         }
-        
+
         return max(versions, key=lambda r: (
             priority.get(r.source, 0),
             r.confidence_score,
@@ -125,53 +125,53 @@ class SimplePDFDownloader:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (compatible; Academic PDF Collector)'
         })
-    
+
     def download_pdf(self, url: str, paper_id: str) -> Path:
         """Download PDF with caching and retry logic"""
         # Check cache
         pdf_path = self.cache_dir / f"{paper_id}.pdf"
         if pdf_path.exists() and pdf_path.stat().st_size > 10000:
             return pdf_path
-        
+
         # Download with retries
         for attempt in range(3):
             try:
                 response = self.session.get(url, timeout=30, stream=True)
                 response.raise_for_status()
-                
+
                 # Verify content type
                 content_type = response.headers.get('content-type', '')
                 if 'application/pdf' not in content_type:
                     raise ValueError(f"Not a PDF: {content_type}")
-                
+
                 # Stream to file
                 with open(pdf_path, 'wb') as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
-                
+
                 # Verify file
                 if pdf_path.stat().st_size < 10000:
                     pdf_path.unlink()
                     raise ValueError("PDF too small")
-                
+
                 return pdf_path
-                
+
             except Exception as e:
                 if attempt == 2:
                     raise PDFDownloadError(f"Failed to download {url}: {e}")
                 time.sleep(2 ** attempt)
-        
-    def download_batch(self, pdf_records: Dict[str, PDFRecord], 
+
+    def download_batch(self, pdf_records: Dict[str, PDFRecord],
                       max_workers: int = 5) -> Dict[str, Path]:
         """Parallel batch download"""
         results = {}
-        
+
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = {
                 executor.submit(self.download_pdf, record.pdf_url, paper_id): paper_id
                 for paper_id, record in pdf_records.items()
             }
-            
+
             for future in as_completed(futures):
                 paper_id = futures[future]
                 try:
@@ -179,7 +179,7 @@ class SimplePDFDownloader:
                     results[paper_id] = pdf_path
                 except Exception as e:
                     logger.error(f"Failed to download {paper_id}: {e}")
-                    
+
         return results
 ```
 
@@ -195,66 +195,66 @@ class OptimizedPDFProcessor:
     def __init__(self, config: Dict[str, Any]):
         # Basic extractor (always available)
         self.basic_extractor = PyMuPDFExtractor()
-        
+
         # Advanced extractors (for first pages only)
         self.ocr_reader = easyocr.Reader(['en'], gpu=True)
         self.grobid_client = GROBIDClient(config.get('grobid_url'))
-        
+
         # Cloud services (fallback)
         self.google_vision = GoogleVisionClient(config.get('google_key'))
         self.claude_vision = ClaudeVisionClient(config.get('anthropic_key'))
-        
+
     def process_pdf(self, pdf_path: Path, paper_metadata: Dict) -> Dict[str, Any]:
         """Main processing pipeline"""
-        
+
         # Step 1: Process first 2 pages for affiliations
         affiliation_data = self._extract_affiliations(pdf_path, paper_metadata)
-        
+
         # Step 2: Extract full text for computational specs
         full_text = self.basic_extractor.extract_full_text(pdf_path)
-        
+
         # Step 3: Extract computational requirements
         comp_specs = self._extract_computational_specs(full_text)
-        
+
         return {
             **affiliation_data,
             'full_text': full_text,
             'computational_specs': comp_specs,
             'extraction_timestamp': datetime.now()
         }
-    
+
     def _extract_affiliations(self, pdf_path: Path, metadata: Dict) -> Dict:
         """Multi-level extraction for first 2 pages only"""
-        
+
         # Level 1: Try basic extraction
         first_pages_text = self.basic_extractor.extract_pages(pdf_path, [0, 1])
         affiliations = self._parse_affiliations(first_pages_text)
-        
+
         if self._affiliations_complete(affiliations, metadata):
             return {'affiliations': affiliations, 'method': 'basic'}
-        
+
         # Level 2: Try EasyOCR
         if self.ocr_reader:
             ocr_text = self._ocr_first_pages(pdf_path)
             affiliations = self._parse_affiliations(ocr_text)
-            
+
             if self._affiliations_complete(affiliations, metadata):
                 return {'affiliations': affiliations, 'method': 'ocr'}
-        
+
         # Level 3: Try GROBID
         if self.grobid_client:
             grobid_data = self.grobid_client.process_header(pdf_path)
             if grobid_data.get('affiliations'):
                 return {'affiliations': grobid_data['affiliations'], 'method': 'grobid'}
-        
+
         # Level 4: Cloud services (last resort)
         if self.claude_vision and len(affiliations) < len(metadata.get('authors', [])) * 0.5:
             cloud_data = self._extract_with_claude(pdf_path, metadata)
             if cloud_data:
                 return {'affiliations': cloud_data, 'method': 'claude'}
-        
+
         return {'affiliations': affiliations, 'method': 'partial'}
-    
+
     def _extract_computational_specs(self, full_text: str) -> Dict[str, Any]:
         """Extract computational requirements from full text"""
         specs = {
@@ -264,13 +264,13 @@ class OptimizedPDFProcessor:
             'dataset_info': self._extract_dataset_info(full_text),
             'computational_budget': self._extract_computational_budget(full_text)
         }
-        
+
         # Find relevant sections
         comp_sections = self._find_computational_sections(full_text)
         specs['relevant_sections'] = comp_sections
-        
+
         return specs
-    
+
     def _extract_gpu_info(self, text: str) -> Dict[str, Any]:
         """Extract GPU/TPU information"""
         gpu_patterns = [
@@ -278,14 +278,14 @@ class OptimizedPDFProcessor:
             r'(V100|A100|A6000|RTX\s*\d+|TPU).*?(\d+)\s*(?:GPUs?|cards?|devices?)',
             r'trained on\s*(\d+)\s*(V100|A100|A6000|RTX\s*\d+|TPU|GPU)'
         ]
-        
+
         results = {}
         for pattern in gpu_patterns:
             matches = re.findall(pattern, text, re.IGNORECASE)
             if matches:
                 results['devices'] = matches
                 break
-                
+
         return results
 ```
 
