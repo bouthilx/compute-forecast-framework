@@ -7,6 +7,7 @@ from datetime import datetime
 from compute_forecast.data.models import Paper, Author
 from compute_forecast.pdf_discovery.core.models import PDFRecord
 from compute_forecast.pdf_discovery.sources.arxiv_collector import ArXivPDFCollector
+from compute_forecast.pdf_discovery.utils.exceptions import SourceNotApplicableError
 
 
 class TestArXivPDFCollector:
@@ -207,7 +208,7 @@ class TestArXivPDFCollector:
         mock_extract.return_value = None
         mock_search.return_value = None
 
-        with pytest.raises(Exception, match="No arXiv version found"):
+        with pytest.raises(SourceNotApplicableError, match="No arXiv ID for"):
             collector._discover_single(sample_paper)
 
     def test_rate_limiting(self, collector):

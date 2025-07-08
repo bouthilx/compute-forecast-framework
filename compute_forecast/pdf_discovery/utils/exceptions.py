@@ -70,3 +70,17 @@ class RateLimitError(PDFDiscoveryError):
         """
         super().__init__(message)
         self.retry_after = retry_after
+
+
+class SourceNotApplicableError(PDFDiscoveryError):
+    """Exception raised when a source is not applicable to a paper."""
+
+    def __init__(self, message: str, source: Optional[str] = None):
+        """Initialize source not applicable error.
+
+        Args:
+            message: Error message
+            source: Source name that is not applicable
+        """
+        super().__init__(message)
+        self.source = source

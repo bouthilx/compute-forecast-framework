@@ -11,6 +11,7 @@ from compute_forecast.pdf_discovery import (
     PDFDiscoveryFramework,
 )
 from compute_forecast.data.models import Paper
+from compute_forecast.pdf_discovery.utils.exceptions import SourceNotApplicableError
 
 
 class ArxivCollector(BasePDFCollector):
@@ -26,7 +27,9 @@ class ArxivCollector(BasePDFCollector):
 
         # Only succeed for papers with arxiv_id
         if not paper.arxiv_id:
-            raise ValueError(f"No arXiv ID for {paper.paper_id}")
+            raise SourceNotApplicableError(
+                f"No arXiv ID for {paper.paper_id}", source="arxiv"
+            )
 
         return PDFRecord(
             paper_id=paper.paper_id,
