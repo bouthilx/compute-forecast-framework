@@ -115,7 +115,9 @@ class ExtractionConsistencyChecker:
                     # Fall back to linear trend if log doesn't work
                     coeffs = np.polyfit(years - years[0], values, 1)
                     # Use linear growth rate approximation
-                    growth_rate = coeffs[0] / np.mean(values) if np.mean(values) > 0 else 0
+                    growth_rate = (
+                        coeffs[0] / np.mean(values) if np.mean(values) > 0 else 0
+                    )
                 else:
                     coeffs = np.polyfit(years - years[0], log_values, 1)
                     growth_rate = np.exp(coeffs[0]) - 1
@@ -124,7 +126,12 @@ class ExtractionConsistencyChecker:
                 try:
                     # Simple linear growth rate
                     if len(values) >= 2:
-                        growth_rate = (values[-1] - values[0]) / (values[0] * (years[-1] - years[0])) if values[0] > 0 else 0
+                        growth_rate = (
+                            (values[-1] - values[0])
+                            / (values[0] * (years[-1] - years[0]))
+                            if values[0] > 0
+                            else 0
+                        )
                     else:
                         growth_rate = 0
                 except (ZeroDivisionError, ValueError):
@@ -146,7 +153,10 @@ class ExtractionConsistencyChecker:
                     "growth_rate": growth_rate,
                     "expected_positive": True,
                 }
-            elif expected_growth != 0 and abs(growth_rate - expected_growth) / expected_growth > tolerance:
+            elif (
+                expected_growth != 0
+                and abs(growth_rate - expected_growth) / expected_growth > tolerance
+            ):
                 passed = True  # Pass but note deviation
                 confidence = 0.7
                 details = {

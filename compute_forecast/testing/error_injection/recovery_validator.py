@@ -347,7 +347,7 @@ class RecoveryValidator:
                         else:
                             primary_score = 100.0 if actual_val == 0 else 0.0
                         break
-                        
+
             # Consider structural preservation (status, error info, etc.)
             structural_score = 0.0
             total_keys = len(expected)
@@ -355,10 +355,10 @@ class RecoveryValidator:
             for key in expected:
                 if key in actual:
                     preserved_keys += 1
-                    
+
             if total_keys > 0:
                 structural_score = (preserved_keys / total_keys) * 100
-                
+
             # Weighted average: 50% primary data, 50% structural preservation
             return (primary_score * 0.5) + (structural_score * 0.5)
 

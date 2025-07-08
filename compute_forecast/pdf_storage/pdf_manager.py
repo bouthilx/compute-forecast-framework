@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Dict, Optional, Any
 from datetime import datetime, timedelta
 import shutil
-import requests
 
 from .google_drive_store import GoogleDriveStore
 from compute_forecast.pdf_download.cache_manager import PDFCacheManager
@@ -168,7 +167,7 @@ class PDFManager:
             cached_at_str = info.get("cached_at") or info.get("last_accessed")
             if not cached_at_str:
                 continue
-                
+
             try:
                 last_accessed = datetime.fromisoformat(cached_at_str)
             except ValueError:
@@ -184,7 +183,7 @@ class PDFManager:
 
         # Check cache size and remove oldest if needed
         self._enforce_cache_size_limit()
-        
+
         return removed_count
 
     def _enforce_cache_size_limit(self):

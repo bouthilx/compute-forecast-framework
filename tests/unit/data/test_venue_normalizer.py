@@ -29,7 +29,10 @@ class TestFuzzyVenueMatcher:
         """Test venue name normalization"""
         # Test basic normalization
         assert self.matcher.normalize_venue_name("ICML 2024") == "ICML"
-        assert self.matcher.normalize_venue_name("NeurIPS'23") == "NEURAL INFORMATION PROCESSING SYSTEMS"
+        assert (
+            self.matcher.normalize_venue_name("NeurIPS'23")
+            == "NEURAL INFORMATION PROCESSING SYSTEMS"
+        )
         assert self.matcher.normalize_venue_name("Proceedings of ICLR") == "ICLR"
 
         # Test abbreviation expansion

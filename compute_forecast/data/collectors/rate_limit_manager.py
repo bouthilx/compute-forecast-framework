@@ -36,7 +36,9 @@ class RateLimitManager:
         self.api_configs = api_configs
         self.request_windows: Dict[str, RollingWindow] = {}
         self.health_multipliers: Dict[str, float] = {}
-        self.consecutive_failures: Dict[str, int] = {}  # Track consecutive failures for exponential backoff
+        self.consecutive_failures: Dict[
+            str, int
+        ] = {}  # Track consecutive failures for exponential backoff
         self._locks: Dict[str, threading.RLock] = {}
         self._global_lock = threading.RLock()
 
@@ -110,7 +112,7 @@ class RateLimitManager:
             exponential_wait = 0.0
             if failures > 0:
                 # Exponential backoff: 2^failures * base_delay
-                exponential_wait = config.base_delay_seconds * (2 ** failures)
+                exponential_wait = config.base_delay_seconds * (2**failures)
                 exponential_wait = min(exponential_wait, config.max_delay_seconds)
 
             # Calculate base wait time from rolling window

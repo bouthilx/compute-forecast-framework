@@ -451,7 +451,9 @@ class TestRateLimitManagerIntegration:
         # Should not have been blocked too often for reasonable request rates
         # With 180 total attempts and 100 window limit, expect some blocking
         block_rate = blocked_requests / (total_requests + blocked_requests)
-        assert block_rate < 0.5, f"Block rate {block_rate:.2%} too high - should allow reasonable throughput"
+        assert block_rate < 0.5, (
+            f"Block rate {block_rate:.2%} too high - should allow reasonable throughput"
+        )
 
 
 class TestRateLimitManagerPerformance:

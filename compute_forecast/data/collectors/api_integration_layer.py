@@ -80,12 +80,14 @@ class VenueCollectionEngine:
 
         # Determine which APIs to use
         available_apis = working_apis or self.config.api_priority
-        
+
         # If working_apis provided but all fail, fallback to config.api_priority
         fallback_apis = []
         if working_apis and self.config.api_priority:
             # Add APIs from config that aren't in working_apis
-            fallback_apis = [api for api in self.config.api_priority if api not in working_apis]
+            fallback_apis = [
+                api for api in self.config.api_priority if api not in working_apis
+            ]
 
         # Try each API until one succeeds
         apis_to_try = list(available_apis) + fallback_apis
@@ -337,7 +339,7 @@ class VenueCollectionEngine:
 
         # Calculate batches needed
         venues_per_batch = min(self.config.max_venues_per_batch, len(venues))
-        
+
         # For better API call reduction, we can batch across years too
         # If we have multiple years, we can combine venue-year pairs more efficiently
         if len(years) > 1:
@@ -346,7 +348,10 @@ class VenueCollectionEngine:
             total_combinations = len(venues) * len(years)
             # Estimate we can handle ~2x venues_per_batch when combining years
             effective_batch_size = venues_per_batch * min(2, len(years))
-            total_batches = max(1, (total_combinations + effective_batch_size - 1) // effective_batch_size)
+            total_batches = max(
+                1,
+                (total_combinations + effective_batch_size - 1) // effective_batch_size,
+            )
         else:
             batches_per_year = max(
                 1, (len(venues) + venues_per_batch - 1) // venues_per_batch

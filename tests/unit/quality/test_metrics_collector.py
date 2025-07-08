@@ -41,7 +41,9 @@ class TestMetricsCollector:
         api_managers = {"test_api": Mock()}
         data_processors = {"test_processor": Mock()}
 
-        collector.start_collection(venue_engine, state_manager, api_managers, data_processors)
+        collector.start_collection(
+            venue_engine, state_manager, api_managers, data_processors
+        )
 
         assert collector.is_collecting
         assert collector.venue_engine == venue_engine
@@ -155,7 +157,7 @@ class TestMetricsCollector:
         collector.data_processors = processors
         collector.session_start_time = datetime.now() - timedelta(minutes=30)
         collector.session_id = "test_session"
-        
+
         # Mock API managers
         api_manager_mock = Mock()
         api_manager_mock.get_statistics.return_value = {

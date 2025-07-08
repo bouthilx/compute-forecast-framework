@@ -113,21 +113,23 @@ class TestDashboardMetrics(unittest.TestCase):
                 estimated_completion_time=None,
                 venues_remaining=2,
             ),
-            api_metrics={"test_api": APIMetrics(
-                api_name="test_api",
-                health_status="healthy",
-                requests_made=10,
-                successful_requests=9,
-                failed_requests=1,
-                success_rate=0.9,
-                avg_response_time_ms=500.0,
-                min_response_time_ms=100.0,
-                max_response_time_ms=1000.0,
-                rate_limit_status={},
-                requests_throttled=0,
-                papers_collected=8,
-                papers_per_request=0.8,
-            )},
+            api_metrics={
+                "test_api": APIMetrics(
+                    api_name="test_api",
+                    health_status="healthy",
+                    requests_made=10,
+                    successful_requests=9,
+                    failed_requests=1,
+                    success_rate=0.9,
+                    avg_response_time_ms=500.0,
+                    min_response_time_ms=100.0,
+                    max_response_time_ms=1000.0,
+                    rate_limit_status={},
+                    requests_throttled=0,
+                    papers_collected=8,
+                    papers_per_request=0.8,
+                )
+            },
             processing_metrics=ProcessingMetrics(
                 venues_normalized=10,
                 normalization_accuracy=0.9,
@@ -182,9 +184,7 @@ class TestDashboardMetrics(unittest.TestCase):
         self.assertEqual(metrics_dict["timestamp"], timestamp.isoformat())
 
         # Check nested structure serialization
-        self.assertEqual(
-            metrics_dict["collection_progress"]["papers_collected"], 100
-        )
+        self.assertEqual(metrics_dict["collection_progress"]["papers_collected"], 100)
 
 
 class TestMetricsBuffer(unittest.TestCase):

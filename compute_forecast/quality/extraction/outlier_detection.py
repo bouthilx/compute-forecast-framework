@@ -208,7 +208,9 @@ class OutlierDetector:
 
         # Always check corroborating evidence for extreme values
         if field in ["parameters", "gpu_hours", "batch_size"]:
-            has_evidence = self._check_corroborating_evidence(paper, extraction, field, value)
+            has_evidence = self._check_corroborating_evidence(
+                paper, extraction, field, value
+            )
             if not has_evidence:
                 return False  # Reject outlier without corroborating evidence
 

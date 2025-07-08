@@ -188,6 +188,7 @@ class StateManager:
 
         # Initialize persistence manager for state storage
         from .state_persistence import StatePersistence
+
         self.persistence = StatePersistence(self.base_state_dir)
 
         logger.info(
@@ -197,7 +198,11 @@ class StateManager:
         )
 
     def create_session(
-        self, target_venues: List[VenueConfig], target_years: List[int], collection_config: Dict[str, Any], session_id: Optional[str] = None
+        self,
+        target_venues: List[VenueConfig],
+        target_years: List[int],
+        collection_config: Dict[str, Any],
+        session_id: Optional[str] = None,
     ) -> str:
         """
         Create a new collection session matching Issue #5 requirements.
@@ -642,39 +647,47 @@ class StateManager:
         # First check active sessions
         if session_id in self._active_sessions:
             return self._active_sessions[session_id]
-        
+
         # If not in active sessions, try to load from disk
         session_dir = self._get_session_dir(session_id)
         session_file = session_dir / "session.json"
-        
+
         if session_file.exists():
             try:
-                with open(session_file, 'r') as f:
+                with open(session_file, "r") as f:
                     session_data = json.load(f)
-                
+
                 # Reconstruct VenueConfig objects from dictionaries
-                if 'target_venues' in session_data:
+                if "target_venues" in session_data:
                     venue_configs = []
-                    for venue_dict in session_data['target_venues']:
+                    for venue_dict in session_data["target_venues"]:
                         if isinstance(venue_dict, dict):
                             venue_config = VenueConfig(**venue_dict)
                             venue_configs.append(venue_config)
                         else:
                             venue_configs.append(venue_dict)
-                    session_data['target_venues'] = venue_configs
-                
+                    session_data["target_venues"] = venue_configs
+
                 # Convert datetime strings back to datetime objects
-                if 'creation_time' in session_data and isinstance(session_data['creation_time'], str):
-                    session_data['creation_time'] = datetime.fromisoformat(session_data['creation_time'])
-                if 'last_activity_time' in session_data and isinstance(session_data['last_activity_time'], str):
-                    session_data['last_activity_time'] = datetime.fromisoformat(session_data['last_activity_time'])
-                
+                if "creation_time" in session_data and isinstance(
+                    session_data["creation_time"], str
+                ):
+                    session_data["creation_time"] = datetime.fromisoformat(
+                        session_data["creation_time"]
+                    )
+                if "last_activity_time" in session_data and isinstance(
+                    session_data["last_activity_time"], str
+                ):
+                    session_data["last_activity_time"] = datetime.fromisoformat(
+                        session_data["last_activity_time"]
+                    )
+
                 # Reconstruct session from saved data
                 session = CollectionSession(**session_data)
                 return session
             except (json.JSONDecodeError, TypeError) as e:
                 logger.warning(f"Failed to load session {session_id} from disk: {e}")
-        
+
         return None
 
     def _validate_session_state(
@@ -800,41 +813,42 @@ class StateManager:
         """Clean up sessions older than max_age_days"""
         cutoff_time = datetime.now() - timedelta(days=max_age_days)
         cleaned_count = 0
-        
+
         sessions_dir = self.base_state_dir / "sessions"
         if not sessions_dir.exists():
             return cleaned_count
-            
+
         for session_dir in sessions_dir.iterdir():
             if not session_dir.is_dir():
                 continue
-                
+
             session_file = session_dir / "session.json"
             if not session_file.exists():
                 continue
-                
+
             try:
-                with open(session_file, 'r') as f:
+                with open(session_file, "r") as f:
                     session_data = json.load(f)
-                
+
                 # Check last activity time
-                last_activity_str = session_data.get('last_activity_time')
+                last_activity_str = session_data.get("last_activity_time")
                 if last_activity_str:
                     last_activity = datetime.fromisoformat(last_activity_str)
                     if last_activity < cutoff_time:
                         # Remove session directory
                         import shutil
+
                         shutil.rmtree(session_dir)
                         cleaned_count += 1
-                        
+
                         # Remove from active sessions if present
-                        session_id = session_data.get('session_id')
+                        session_id = session_data.get("session_id")
                         if session_id in self._active_sessions:
                             del self._active_sessions[session_id]
-                            
+
             except (json.JSONDecodeError, ValueError) as e:
                 logger.warning(f"Failed to process session {session_dir.name}: {e}")
-                
+
         return cleaned_count
 
 

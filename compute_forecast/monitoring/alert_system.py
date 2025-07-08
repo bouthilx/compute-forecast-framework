@@ -64,37 +64,41 @@ class AlertRuleEvaluator:
             logger.error(f"Error evaluating rule {rule.rule_id}: {e}")
             return False
 
-    def get_metric_context(self, rule: AlertRule, context: EvaluationContext) -> Dict[str, Any]:
+    def get_metric_context(
+        self, rule: AlertRule, context: EvaluationContext
+    ) -> Dict[str, Any]:
         """
         Extract relevant metric values for alert context.
         Parses the rule condition to identify which metrics are referenced.
         """
         metric_context = {}
-        
+
         # Simple approach: extract metric references from the condition string
         # Look for patterns like metrics.field or metrics.field.subfield
         import re
-        
+
         # Find all metrics references in the condition
-        pattern = r'metrics\.(\w+(?:\.\w+)*)'
+        pattern = r"metrics\.(\w+(?:\.\w+)*)"
         matches = re.findall(pattern, rule.condition)
-        
+
         for match in matches:
             # Navigate through nested attributes
             try:
                 value = context.metrics
-                for attr in match.split('.'):
+                for attr in match.split("."):
                     value = getattr(value, attr)
-                metric_context[match.replace('.', '_')] = value
+                metric_context[match.replace(".", "_")] = value
             except AttributeError:
                 # Skip if attribute doesn't exist
                 pass
-        
+
         # Also check for specific known patterns
-        if 'papers_per_minute' in rule.condition:
-            if hasattr(context.metrics, 'collection_progress'):
-                metric_context['papers_per_minute'] = context.metrics.collection_progress.papers_per_minute
-        
+        if "papers_per_minute" in rule.condition:
+            if hasattr(context.metrics, "collection_progress"):
+                metric_context["papers_per_minute"] = (
+                    context.metrics.collection_progress.papers_per_minute
+                )
+
         return metric_context
 
 
@@ -576,12 +580,16 @@ class IntelligentAlertSystem:
     def get_performance_stats(self) -> Dict[str, Any]:
         """Get performance statistics for alert system"""
         return {
-            "avg_evaluation_time_ms": sum(self._evaluation_times) / len(self._evaluation_times)
+            "avg_evaluation_time_ms": sum(self._evaluation_times)
+            / len(self._evaluation_times)
             if self._evaluation_times
             else 0.0,
-            "max_evaluation_time_ms": max(self._evaluation_times) if self._evaluation_times else 0.0,
+            "max_evaluation_time_ms": max(self._evaluation_times)
+            if self._evaluation_times
+            else 0.0,
             "evaluation_count": len(self._evaluation_times),
-            "avg_notification_time_ms": sum(self._notification_times) / len(self._notification_times)
+            "avg_notification_time_ms": sum(self._notification_times)
+            / len(self._notification_times)
             if self._notification_times
             else 0.0,
             "active_alerts_count": len(self.active_alerts),

@@ -9,7 +9,12 @@ from compute_forecast.monitoring.alert_suppression import (
     AlertSuppressionManager,
     SuppressionRuleManager,
 )
-from compute_forecast.monitoring.alert_structures import Alert, SuppressionRule, AlertSeverity, AlertStatus
+from compute_forecast.monitoring.alert_structures import (
+    Alert,
+    SuppressionRule,
+    AlertSeverity,
+    AlertStatus,
+)
 
 
 @pytest.mark.skip(reason="refactor: alert_suppression module not found")
