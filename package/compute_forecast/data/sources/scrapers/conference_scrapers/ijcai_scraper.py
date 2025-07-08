@@ -1,9 +1,8 @@
 """Scraper for IJCAI conference proceedings"""
 
 import re
-import requests
 from bs4 import BeautifulSoup
-from typing import List, Dict, Optional
+from typing import List, Optional
 from urllib.parse import urljoin
 from datetime import datetime
 
@@ -46,8 +45,11 @@ class IJCAIScraper(ConferenceProceedingsScraper):
             
         except Exception as e:
             self.logger.error(f"Failed to get IJCAI years: {e}")
-            # Fallback to known years
-            return list(range(2024, 2018, -1))
+            # Fallback to dynamic year range (current year back to 2018)
+            current_year = datetime.now().year
+            # Always include at least from 2018 to current year
+            start_year = min(2018, current_year - 10)
+            return list(range(current_year, start_year - 1, -1))
     
     def get_proceedings_url(self, venue: str, year: int) -> str:
         """Construct IJCAI proceedings URL"""
@@ -123,6 +125,11 @@ class IJCAIScraper(ConferenceProceedingsScraper):
         # Make URL absolute
         if not pdf_url.startswith('http'):
             pdf_url = urljoin(self.base_url, pdf_url)
+        
+        # Validate URL - must be a valid URL AND end with .pdf
+        if not self._is_valid_url(pdf_url) or not pdf_url.lower().endswith('.pdf'):
+            self.logger.warning(f"Invalid PDF URL: {pdf_url}")
+            return None
             
         # Extract paper ID from PDF filename
         pdf_filename = pdf_url.split('/')[-1]
@@ -163,23 +170,33 @@ class IJCAIScraper(ConferenceProceedingsScraper):
         
         # Look for author information in specific patterns
         if element.parent:
-            # Look for next sibling that might contain authors
-            next_sibling = element.parent.find_next_sibling()
-            if next_sibling:
-                # Check if it's a paragraph or similar element with author names
-                text = next_sibling.get_text(strip=True) if hasattr(next_sibling, 'get_text') else str(next_sibling)
-                
-                # Pattern for author names (First Last, First Last, ...)
-                # This pattern looks for comma-separated names
-                if ',' in text and not re.search(r'\d{4}', text):  # Has commas but no years
-                    # Split by comma and check each part
-                    parts = text.split(',')
-                    for part in parts:
-                        part = part.strip()
-                        # Check if it looks like a name (2-3 words, each starting with capital)
-                        words = part.split()
-                        if 2 <= len(words) <= 3 and all(word[0].isupper() for word in words if word):
-                            if part not in seen_authors:
+            # Check parent and its siblings for author information
+            search_elements = []
+            
+            # Add next sibling if exists
+            if element.parent.find_next_sibling():
+                search_elements.append(element.parent.find_next_sibling())
+            
+            # Also check parent's parent children for p, span, div tags
+            if element.parent.parent:
+                for tag in element.parent.parent.find_all(['p', 'span', 'div']):
+                    if tag != element.parent:
+                        search_elements.append(tag)
+            
+            # Process each element for author names
+            for elem in search_elements:
+                if hasattr(elem, 'get_text'):
+                    text = elem.get_text(strip=True)
+                    
+                    # Pattern for author names (First Last, First Last, ...)
+                    # This pattern looks for comma-separated names
+                    if ',' in text and not re.search(r'\d{4}', text):  # Has commas but no years
+                        # Split by comma and check each part
+                        parts = text.split(',')
+                        for part in parts:
+                            part = part.strip()
+                            # Enhanced validation to accept names with initials, hyphens, apostrophes
+                            if self._is_valid_author_name(part) and part not in seen_authors:
                                 authors.append(part)
                                 seen_authors.add(part)
             
@@ -193,17 +210,60 @@ class IJCAIScraper(ConferenceProceedingsScraper):
                 idx = parent_text.find(title_text) + len(title_text)
                 remaining_text = parent_text[idx:].strip()
                 
-                # Check if it starts with author-like pattern
-                author_match = re.match(r'^([A-Z][a-z]+ [A-Z][a-z]+(?:, [A-Z][a-z]+ [A-Z][a-z]+)*)', remaining_text)
+                # Enhanced pattern for author names with initials, hyphens, apostrophes
+                # Matches patterns like: John Smith, J. A. Smith, Mary-Jane O'Brien, etc.
+                author_pattern = r"^([A-Z][a-z\-']+ (?:[A-Z]\. )*[A-Z][a-z\-']+(?:, [A-Z][a-z\-']+ (?:[A-Z]\. )*[A-Z][a-z\-']+)*)"
+                author_match = re.match(author_pattern, remaining_text)
                 if author_match:
                     author_string = author_match.group(1)
                     for name in author_string.split(','):
                         name = name.strip()
-                        if len(name.split()) >= 2 and name not in seen_authors:
+                        if self._is_valid_author_name(name) and name not in seen_authors:
                             authors.append(name)
                             seen_authors.add(name)
                         
         return authors[:10]  # Limit to reasonable number
+    
+    def _is_valid_author_name(self, name: str) -> bool:
+        """Validate if a string looks like a valid author name"""
+        if not name or len(name) < 3:
+            return False
+        
+        # Split into words
+        words = name.split()
+        if len(words) < 2:
+            return False
+        
+        # Check each word/initial
+        for word in words:
+            # Accept single letter initials with dots (e.g., "J.")
+            if len(word) == 2 and word[1] == '.' and word[0].isupper():
+                continue
+            # Accept capitalized words with hyphens/apostrophes
+            elif word and (word[0].isupper() or word[0] in ["'", "-"]):
+                # Ensure it contains at least one letter
+                if any(c.isalpha() for c in word):
+                    continue
+            else:
+                return False
+        
+        return True
+    
+    def _is_valid_url(self, url: str) -> bool:
+        """Validate if URL is well-formed"""
+        if not url:
+            return False
+        
+        # Basic URL validation
+        url_pattern = re.compile(
+            r'^https?://'  # http:// or https://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain...
+            r'localhost|'  # localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+            r'(?::\d+)?'  # optional port
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+        
+        return bool(url_pattern.match(url))
         
     def _calculate_completeness(self, title: str, authors: List[str]) -> float:
         """Calculate metadata completeness score"""

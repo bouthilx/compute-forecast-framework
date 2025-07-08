@@ -96,6 +96,52 @@ class TestIJCAIScraper:
         years = scraper.get_available_years("NEURIPS")
         assert years == []
     
+    def test_dynamic_year_fallback(self, scraper):
+        """Test dynamic year range in fallback"""
+        from datetime import datetime
+        with patch('requests.Session.get') as mock_get:
+            mock_get.side_effect = requests.RequestException("Network error")
+            
+            years = scraper.get_available_years("IJCAI")
+            current_year = datetime.now().year
+            
+            # Should include current year and go back to at least 2018
+            assert current_year in years
+            assert 2018 in years
+            assert len(years) >= (current_year - 2018 + 1)
+    
+    def test_is_valid_author_name(self, scraper):
+        """Test author name validation"""
+        # Valid names
+        assert scraper._is_valid_author_name("John Smith")
+        assert scraper._is_valid_author_name("J. Smith")
+        assert scraper._is_valid_author_name("John A. Smith")
+        assert scraper._is_valid_author_name("Mary-Jane Smith")
+        assert scraper._is_valid_author_name("O'Brien Smith")
+        assert scraper._is_valid_author_name("Jean-Pierre Dubois")
+        
+        # Invalid names
+        assert not scraper._is_valid_author_name("")
+        assert not scraper._is_valid_author_name("John")
+        assert not scraper._is_valid_author_name("J")
+        assert not scraper._is_valid_author_name("123 456")
+        assert not scraper._is_valid_author_name("john smith")  # No capitals
+    
+    def test_is_valid_url(self, scraper):
+        """Test URL validation"""
+        # Valid URLs
+        assert scraper._is_valid_url("https://www.ijcai.org/proceedings/2024/paper.pdf")
+        assert scraper._is_valid_url("http://example.com/file.pdf")
+        assert scraper._is_valid_url("https://localhost:8080/paper.pdf")
+        assert scraper._is_valid_url("http://192.168.1.1/paper.pdf")
+        
+        # Invalid URLs
+        assert not scraper._is_valid_url("")
+        assert not scraper._is_valid_url("not_a_url")
+        assert not scraper._is_valid_url("ftp://example.com/file.pdf")
+        assert not scraper._is_valid_url("//example.com/file.pdf")
+        assert not scraper._is_valid_url("example.com/file.pdf")
+    
     def test_scrape_venue_year_wrong_venue(self, scraper):
         """Test scraping unsupported venue"""
         result = scraper.scrape_venue_year("NEURIPS", 2024)
@@ -186,6 +232,39 @@ class TestIJCAIScraper:
         assert len(authors) == 2
         assert authors[0] == "John Doe"
         assert authors[1] == "Jane Smith"
+    
+    def test_extract_authors_complex_names(self, scraper):
+        """Test extracting authors with complex names"""
+        html = """
+        <div>
+            <a href="paper.pdf">Title</a>
+            <p>J. A. Smith, Mary-Jane O'Brien, Jean-Pierre Dubois</p>
+        </div>
+        """
+        soup = BeautifulSoup(html, 'html.parser')
+        pdf_link = soup.find('a')
+        
+        authors = scraper._extract_authors_near_element(pdf_link)
+        
+        assert len(authors) == 3
+        assert "J. A. Smith" in authors
+        assert "Mary-Jane O'Brien" in authors
+        assert "Jean-Pierre Dubois" in authors
+    
+    def test_extract_paper_with_invalid_url(self, scraper):
+        """Test extraction with invalid URL gets rejected"""
+        soup = BeautifulSoup(
+            '<a href="not_a_valid_url">Test Paper</a>',
+            'html.parser'
+        )
+        pdf_link = soup.find('a')
+        
+        with patch.object(scraper.logger, 'warning') as mock_warning:
+            paper = scraper._extract_paper_from_pdf_link(pdf_link, "IJCAI", 2024)
+            
+            assert paper is None
+            mock_warning.assert_called_once()
+            assert "Invalid PDF URL" in mock_warning.call_args[0][0]
     
     def test_calculate_completeness(self, scraper):
         """Test metadata completeness calculation"""
