@@ -26,30 +26,42 @@ class TestDashboardMetrics(unittest.TestCase):
     def test_collection_progress_metrics(self):
         """Test CollectionProgressMetrics data structure"""
         metrics = CollectionProgressMetrics(
-            total_papers_collected=1500,
-            papers_per_minute=25.5,
-            venues_completed=3,
-            venues_in_progress=2,
-            venues_remaining=5,
+            session_id="test_session_metrics",
             total_venues=10,
+            completed_venues=3,
+            in_progress_venues=2,
+            failed_venues=0,
+            papers_collected=1500,
+            papers_per_minute=25.5,
+            estimated_total_papers=2000,
+            completion_percentage=75.0,
             session_duration_minutes=60.0,
+            estimated_remaining_minutes=15.0,
+            estimated_completion_time=None,
+            venues_remaining=5,
         )
 
-        self.assertEqual(metrics.total_papers_collected, 1500)
+        self.assertEqual(metrics.papers_collected, 1500)
         self.assertEqual(metrics.papers_per_minute, 25.5)
-        self.assertEqual(metrics.venues_completed, 3)
+        self.assertEqual(metrics.completed_venues, 3)
         self.assertEqual(metrics.total_venues, 10)
 
     def test_api_metrics(self):
         """Test APIMetrics data structure"""
         metrics = APIMetrics(
             api_name="semantic_scholar",
-            total_requests=100,
+            health_status="healthy",
+            requests_made=100,
             successful_requests=95,
             failed_requests=5,
             success_rate=0.95,
             avg_response_time_ms=750.0,
-            health_status="healthy",
+            min_response_time_ms=200.0,
+            max_response_time_ms=1500.0,
+            rate_limit_status={},
+            requests_throttled=0,
+            papers_collected=80,
+            papers_per_request=0.8,
         )
 
         self.assertEqual(metrics.api_name, "semantic_scholar")
@@ -65,6 +77,10 @@ class TestDashboardMetrics(unittest.TestCase):
             status="in_progress",
             papers_collected=25,
             target_papers=50,
+            completion_percentage=50.0,
+            last_update_time=start_time,
+            collection_duration_minutes=30.0,
+            estimated_remaining_minutes=30.0,
             progress_percent=50.0,
             start_time=start_time,
             api_source="semantic_scholar",
@@ -82,11 +98,76 @@ class TestDashboardMetrics(unittest.TestCase):
 
         system_metrics = SystemMetrics(
             timestamp=timestamp,
-            collection_progress=CollectionProgressMetrics(total_papers_collected=100),
-            api_metrics={"test_api": APIMetrics(api_name="test_api")},
-            processing_metrics=ProcessingMetrics(),
-            system_metrics=SystemResourceMetrics(),
-            state_metrics=StateManagementMetrics(),
+            collection_progress=CollectionProgressMetrics(
+                session_id="test_dict_session",
+                total_venues=5,
+                completed_venues=2,
+                in_progress_venues=1,
+                failed_venues=0,
+                papers_collected=100,
+                papers_per_minute=10.0,
+                estimated_total_papers=200,
+                completion_percentage=50.0,
+                session_duration_minutes=10.0,
+                estimated_remaining_minutes=10.0,
+                estimated_completion_time=None,
+                venues_remaining=2,
+            ),
+            api_metrics={"test_api": APIMetrics(
+                api_name="test_api",
+                health_status="healthy",
+                requests_made=10,
+                successful_requests=9,
+                failed_requests=1,
+                success_rate=0.9,
+                avg_response_time_ms=500.0,
+                min_response_time_ms=100.0,
+                max_response_time_ms=1000.0,
+                rate_limit_status={},
+                requests_throttled=0,
+                papers_collected=8,
+                papers_per_request=0.8,
+            )},
+            processing_metrics=ProcessingMetrics(
+                venues_normalized=10,
+                normalization_accuracy=0.9,
+                normalization_rate_per_second=2.0,
+                papers_deduplicated=90,
+                duplicates_removed=5,
+                deduplication_rate=0.95,
+                deduplication_confidence=0.9,
+                papers_analyzed=100,
+                papers_above_threshold=80,
+                breakthrough_papers_found=3,
+                filtering_rate_per_second=1.5,
+            ),
+            system_metrics=SystemResourceMetrics(
+                memory_usage_percentage=70.0,
+                memory_used_mb=1400.0,
+                memory_available_mb=600.0,
+                cpu_usage_percentage=40.0,
+                cpu_count=4,
+                network_bytes_sent=300000,
+                network_bytes_received=600000,
+                network_connections=5,
+                disk_usage_percentage=50.0,
+                disk_free_gb=120.0,
+                process_memory_mb=200.0,
+                process_cpu_percentage=20.0,
+                thread_count=4,
+            ),
+            state_metrics=StateManagementMetrics(
+                checkpoints_created=3,
+                last_checkpoint_time=datetime.now(),
+                checkpoint_creation_rate_per_hour=0.5,
+                recovery_possible=True,
+                last_recovery_time=None,
+                recovery_success_rate=1.0,
+                state_size_mb=10.0,
+                checkpoint_size_mb=5.0,
+                checkpoint_creation_time_ms=50.0,
+                state_save_time_ms=25.0,
+            ),
             venue_progress={},
         )
 
@@ -102,7 +183,7 @@ class TestDashboardMetrics(unittest.TestCase):
 
         # Check nested structure serialization
         self.assertEqual(
-            metrics_dict["collection_progress"]["total_papers_collected"], 100
+            metrics_dict["collection_progress"]["papers_collected"], 100
         )
 
 
@@ -119,12 +200,61 @@ class TestMetricsBuffer(unittest.TestCase):
         return SystemMetrics(
             timestamp=datetime.now(),
             collection_progress=CollectionProgressMetrics(
-                total_papers_collected=papers_count
+                session_id="test_buffer_session",
+                total_venues=8,
+                completed_venues=3,
+                in_progress_venues=2,
+                failed_venues=1,
+                papers_collected=papers_count,
+                papers_per_minute=15.0,
+                estimated_total_papers=papers_count + 50,
+                completion_percentage=60.0,
+                session_duration_minutes=25.0,
+                estimated_remaining_minutes=15.0,
+                estimated_completion_time=None,
+                venues_remaining=2,
             ),
             api_metrics={},
-            processing_metrics=ProcessingMetrics(),
-            system_metrics=SystemResourceMetrics(),
-            state_metrics=StateManagementMetrics(),
+            processing_metrics=ProcessingMetrics(
+                venues_normalized=15,
+                normalization_accuracy=0.88,
+                normalization_rate_per_second=1.8,
+                papers_deduplicated=papers_count,
+                duplicates_removed=8,
+                deduplication_rate=0.92,
+                deduplication_confidence=0.85,
+                papers_analyzed=papers_count,
+                papers_above_threshold=papers_count - 20,
+                breakthrough_papers_found=2,
+                filtering_rate_per_second=1.3,
+            ),
+            system_metrics=SystemResourceMetrics(
+                memory_usage_percentage=65.0,
+                memory_used_mb=1300.0,
+                memory_available_mb=700.0,
+                cpu_usage_percentage=35.0,
+                cpu_count=4,
+                network_bytes_sent=250000,
+                network_bytes_received=500000,
+                network_connections=3,
+                disk_usage_percentage=45.0,
+                disk_free_gb=130.0,
+                process_memory_mb=180.0,
+                process_cpu_percentage=18.0,
+                thread_count=5,
+            ),
+            state_metrics=StateManagementMetrics(
+                checkpoints_created=6,
+                last_checkpoint_time=datetime.now(),
+                checkpoint_creation_rate_per_hour=1.2,
+                recovery_possible=True,
+                last_recovery_time=None,
+                recovery_success_rate=0.95,
+                state_size_mb=15.0,
+                checkpoint_size_mb=8.0,
+                checkpoint_creation_time_ms=80.0,
+                state_save_time_ms=40.0,
+            ),
             venue_progress={},
         )
 
