@@ -18,7 +18,7 @@ class TestCVFScraper:
     
     def test_get_supported_venues(self):
         """Test that CVF scraper supports correct venues."""
-        expected_venues = ["CVPR", "ICCV", "ECCV", "WACV"]
+        expected_venues = ["CVPR", "ICCV", "ECCV", "WACV", "cvpr", "iccv", "eccv", "wacv"]
         assert self.scraper.get_supported_venues() == expected_venues
     
     def test_get_available_years_cvpr_annual(self):
@@ -75,6 +75,18 @@ class TestCVFScraper:
         """Test that unsupported venue returns empty list."""
         years = self.scraper.get_available_years("INVALID")
         assert years == []
+    
+    def test_case_insensitive_venue_support(self):
+        """Test that venue names are handled case-insensitively."""
+        # Test lowercase venue
+        years_lower = self.scraper.get_available_years("cvpr")
+        years_upper = self.scraper.get_available_years("CVPR")
+        assert years_lower == years_upper
+        
+        # Test URL generation is case-insensitive
+        url_lower = self.scraper.get_proceedings_url("cvpr", 2024)
+        url_upper = self.scraper.get_proceedings_url("CVPR", 2024)
+        assert url_lower == url_upper
     
     def test_get_proceedings_url(self):
         """Test proceedings URL construction."""
