@@ -101,30 +101,105 @@ class IJCAIScraper(ConferenceProceedingsScraper):
         soup = BeautifulSoup(html, 'html.parser')
         papers = []
         
-        # IJCAI pattern: PDF links with adjacent title/author info
-        pdf_links = soup.find_all('a', href=lambda x: x and '.pdf' in x)
+        # IJCAI uses paper_wrapper divs to contain each paper
+        paper_wrappers = soup.find_all('div', class_='paper_wrapper')
         
-        for pdf_link in pdf_links:
-            try:
-                paper = self._extract_paper_from_pdf_link(pdf_link, venue, year)
-                if paper:
-                    papers.append(paper)
-            except Exception as e:
-                self.logger.warning(f"Failed to extract paper from link {pdf_link}: {e}")
-                continue
+        if paper_wrappers:
+            # Modern structure with paper_wrapper
+            for wrapper in paper_wrappers:
+                try:
+                    paper = self._extract_paper_from_wrapper(wrapper, venue, year)
+                    if paper:
+                        papers.append(paper)
+                except Exception as e:
+                    self.logger.warning(f"Failed to extract paper from wrapper: {e}")
+                    continue
+        else:
+            # Fallback to old method if no paper_wrapper found
+            pdf_links = soup.find_all('a', href=lambda x: x and '.pdf' in x)
+            
+            for pdf_link in pdf_links:
+                try:
+                    paper = self._extract_paper_from_pdf_link(pdf_link, venue, year)
+                    if paper:
+                        papers.append(paper)
+                except Exception as e:
+                    self.logger.warning(f"Failed to extract paper from link {pdf_link}: {e}")
+                    continue
                 
         self.logger.info(f"Extracted {len(papers)} papers from {venue} {year}")
         return papers
         
+    def _extract_paper_from_wrapper(self, wrapper, venue: str, year: int) -> Optional[SimplePaper]:
+        """Extract paper metadata from a paper_wrapper div"""
+        # Extract title
+        title_div = wrapper.find('div', class_='title')
+        title = title_div.get_text(strip=True) if title_div else ""
+        
+        # Extract authors
+        authors_div = wrapper.find('div', class_='authors')
+        authors = []
+        if authors_div:
+            # Authors are comma-separated
+            author_text = authors_div.get_text(strip=True)
+            # Split by comma and clean up each author name
+            authors = [author.strip() for author in author_text.split(',') if author.strip()]
+        
+        # Extract PDF URL
+        pdf_link = wrapper.find('a', href=lambda x: x and '.pdf' in x)
+        if not pdf_link:
+            return None
+            
+        pdf_url = pdf_link.get('href', '')
+        if not pdf_url:
+            return None
+            
+        # Make URL absolute - construct proper proceedings URL
+        if not pdf_url.startswith('http'):
+            base_proceedings_url = f"{self.base_url}proceedings/{year}/"
+            pdf_url = urljoin(base_proceedings_url, pdf_url)
+        
+        # Validate URL
+        if not self._is_valid_url(pdf_url) or not pdf_url.lower().endswith('.pdf'):
+            self.logger.warning(f"Invalid PDF URL: {pdf_url}")
+            return None
+        
+        # Extract paper ID from wrapper id or PDF filename
+        paper_id = wrapper.get('id', '')
+        if paper_id.startswith('paper'):
+            paper_id = paper_id[5:]  # Remove 'paper' prefix
+        else:
+            # Fallback to extracting from PDF filename
+            pdf_filename = pdf_url.split('/')[-1]
+            paper_id = re.sub(r'\.pdf$', '', pdf_filename)
+        
+        # Generate full paper ID
+        full_paper_id = f"ijcai_{year}_{paper_id}"
+        
+        return SimplePaper(
+            paper_id=full_paper_id,
+            title=title,
+            authors=authors,
+            venue=venue,
+            year=year,
+            pdf_urls=[pdf_url],
+            source_scraper="ijcai",
+            source_url=pdf_url,
+            metadata_completeness=self._calculate_completeness(title, authors),
+            extraction_confidence=0.95  # High confidence for structured extraction
+        )
+    
     def _extract_paper_from_pdf_link(self, pdf_link, venue: str, year: int) -> Optional[SimplePaper]:
         """Extract paper metadata from PDF link and surrounding elements"""
         pdf_url = pdf_link.get('href', '')
         if not pdf_url:
             return None
             
-        # Make URL absolute
+        # Make URL absolute - construct proper proceedings URL
         if not pdf_url.startswith('http'):
-            pdf_url = urljoin(self.base_url, pdf_url)
+            # For IJCAI, PDFs are under /proceedings/YEAR/
+            base_proceedings_url = f"{self.base_url}proceedings/{year}/"
+            pdf_url = urljoin(base_proceedings_url, pdf_url)
         
         # Validate URL - must be a valid URL AND end with .pdf
         if not self._is_valid_url(pdf_url) or not pdf_url.lower().endswith('.pdf'):
@@ -133,7 +208,7 @@ class IJCAIScraper(ConferenceProceedingsScraper):
             
         # Extract paper ID from PDF filename
         pdf_filename = pdf_url.split('/')[-1]
-        paper_id = re.sub(r'\.pdf$', '', pdf_filename)
+        paper_number = re.sub(r'\.pdf$', '', pdf_filename)
         
         # Get title - usually the link text or nearby text
         title = pdf_link.get_text(strip=True)
@@ -147,8 +222,12 @@ class IJCAIScraper(ConferenceProceedingsScraper):
         # Extract authors - look for patterns near the PDF link
         authors = self._extract_authors_near_element(pdf_link)
         
-        # Generate paper ID
-        full_paper_id = f"ijcai_{year}_{paper_id}"
+        # For paper ID, check if there's an actual ID in the parent element
+        # Otherwise use the PDF number
+        actual_paper_id = self._extract_paper_id_from_container(pdf_link.parent, paper_number)
+        
+        # Generate paper ID - use actual ID if found, otherwise use paper number
+        full_paper_id = f"ijcai_{year}_{actual_paper_id}"
         
         return SimplePaper(
             paper_id=full_paper_id,
@@ -223,6 +302,30 @@ class IJCAIScraper(ConferenceProceedingsScraper):
                             seen_authors.add(name)
                         
         return authors[:10]  # Limit to reasonable number
+    
+    def _extract_paper_id_from_container(self, container, default_id: str) -> str:
+        """Try to extract actual paper ID from the container element"""
+        if not container:
+            return default_id
+            
+        # Look for patterns like "Paper ID: 6581" or "#6581" in the container
+        container_text = container.get_text() if hasattr(container, 'get_text') else str(container)
+        
+        # Try various ID patterns
+        id_patterns = [
+            r'Paper\s*ID[:\s]*(\d{4,5})',
+            r'ID[:\s]*(\d{4,5})',
+            r'#(\d{4,5})',
+            r'\b(\d{4,5})\b',  # Any 4-5 digit number
+        ]
+        
+        for pattern in id_patterns:
+            match = re.search(pattern, container_text, re.IGNORECASE)
+            if match:
+                return match.group(1)
+        
+        # If no ID found, return the default (paper number from filename)
+        return default_id
     
     def _is_valid_author_name(self, name: str) -> bool:
         """Validate if a string looks like a valid author name"""
