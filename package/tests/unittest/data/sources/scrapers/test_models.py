@@ -31,11 +31,14 @@ class TestSimplePaper:
         
         # Check defaults
         assert paper.abstract is None
-        assert paper.pdf_url is None
+        assert paper.pdf_urls == []
         assert paper.doi is None
         assert paper.source_scraper == ""
         assert paper.source_url == ""
         assert paper.extraction_confidence == 1.0
+        assert paper.metadata_completeness == 0.0
+        assert paper.paper_id is None
+        assert paper.arxiv_id is None
         assert isinstance(paper.scraped_at, datetime)
 
     def test_simple_paper_creation_with_all_fields(self):
@@ -47,7 +50,7 @@ class TestSimplePaper:
             venue="ICML",
             year=2023,
             abstract="This paper presents a novel approach...",
-            pdf_url="https://example.com/paper.pdf",
+            pdf_urls=["https://example.com/paper.pdf"],
             doi="10.1234/example.doi",
             source_scraper="custom_scraper",
             source_url="https://example.com/proceedings",
@@ -56,7 +59,7 @@ class TestSimplePaper:
         )
         
         assert paper.abstract == "This paper presents a novel approach..."
-        assert paper.pdf_url == "https://example.com/paper.pdf"
+        assert paper.pdf_urls == ["https://example.com/paper.pdf"]
         assert paper.doi == "10.1234/example.doi"
         assert paper.source_scraper == "custom_scraper"
         assert paper.source_url == "https://example.com/proceedings"
@@ -71,7 +74,7 @@ class TestSimplePaper:
             venue="IJCAI",
             year=2024,
             abstract="Test abstract",
-            pdf_url="https://example.com/test.pdf",
+            pdf_urls=["https://example.com/test.pdf"],
             doi="10.5678/test",
             source_scraper="test_scraper",
             scraped_at=datetime(2024, 1, 15, 10, 30, 0),
@@ -164,7 +167,7 @@ class TestPaperoniAdapter:
         assert simple_paper.venue == "Test Conference"
         assert simple_paper.year == 2024
         assert simple_paper.abstract == "Test abstract content"
-        assert simple_paper.pdf_url == "https://example.com/paper.pdf"
+        assert simple_paper.pdf_urls == ["https://example.com/paper.pdf"]
         assert simple_paper.doi == "10.1234/test.doi"
         assert simple_paper.source_scraper == "paperoni"
         assert simple_paper.extraction_confidence == 0.95
@@ -202,7 +205,7 @@ class TestPaperoniAdapter:
         adapter = PaperoniAdapter()
         simple_paper = adapter.convert(mock_paper)
         
-        assert simple_paper.pdf_url is None
+        assert simple_paper.pdf_urls == []
 
     def test_paperoni_adapter_missing_fields(self):
         """Test conversion with missing/empty fields"""
@@ -223,7 +226,7 @@ class TestPaperoniAdapter:
         assert simple_paper.venue == ""
         assert simple_paper.year == datetime.now().year  # Should default to current year
         assert simple_paper.abstract is None
-        assert simple_paper.pdf_url is None
+        assert simple_paper.pdf_urls == []
         assert simple_paper.doi is None
 
     def test_paperoni_adapter_pdf_link_case_insensitive(self):
@@ -237,7 +240,7 @@ class TestPaperoniAdapter:
         adapter = PaperoniAdapter()
         simple_paper = adapter.convert(mock_paper)
         
-        assert simple_paper.pdf_url == "https://example.com/paper.pdf"
+        assert simple_paper.pdf_urls == ["https://example.com/paper.pdf"]
 
 
 class TestScrapingBatch:

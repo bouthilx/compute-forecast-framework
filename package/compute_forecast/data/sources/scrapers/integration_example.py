@@ -4,12 +4,12 @@ from typing import List, Dict, Any
 import logging
 from datetime import datetime
 
-from .base import BaseScaper, ScrapingConfig, ScrapingResult
+from .base import BaseScraper, ScrapingConfig, ScrapingResult
 from .error_handling import ScrapingMonitor, retry_on_error, RateLimiter, ErrorType, ScrapingError
 from ..models import Paper
 
 
-class EnhancedScaper(BaseScaper):
+class EnhancedScraper(BaseScraper):
     """Enhanced scraper with integrated error handling and monitoring"""
     
     def __init__(self, source_name: str, config: ScrapingConfig = None):
