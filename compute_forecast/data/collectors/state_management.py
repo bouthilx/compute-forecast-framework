@@ -199,10 +199,11 @@ class StateManager:
 
     def create_session(
         self,
-        target_venues: List[VenueConfig],
-        target_years: List[int],
-        collection_config: Dict[str, Any],
+        target_venues: Optional[List[VenueConfig]] = None,
+        target_years: Optional[List[int]] = None,
+        collection_config: Optional[Dict[str, Any]] = None,
         session_id: Optional[str] = None,
+        session_config: Optional[Any] = None,  # For Issue #5 compatibility
     ) -> str:
         """
         Create a new collection session matching Issue #5 requirements.
@@ -219,11 +220,43 @@ class StateManager:
             target_years: List of years to target
             collection_config: Configuration dictionary for collection
             session_id: Optional session identifier
+            session_config: Alternative parameter for Issue #5 compatibility
 
         Returns:
             Session ID string
         """
         start_time = datetime.now()
+
+        # Handle Issue #5 compatibility - session_config contains everything
+        if session_config is not None:
+            # Extract configuration from session_config
+            if hasattr(session_config, '__dict__'):
+                collection_config = session_config.__dict__
+            else:
+                collection_config = {}
+            
+            # Create default venues and years if not provided
+            if target_venues is None:
+                target_venues = [
+                    VenueConfig(
+                        venue_name="NeurIPS", 
+                        target_years=list(range(2019, 2025)),
+                        max_papers_per_year=50,
+                        priority=1
+                    ),
+                    VenueConfig(
+                        venue_name="ICML", 
+                        target_years=list(range(2019, 2025)),
+                        max_papers_per_year=50,
+                        priority=1
+                    ),
+                ]
+            if target_years is None:
+                target_years = list(range(2019, 2025))
+
+        # Ensure we have required parameters
+        if target_venues is None or target_years is None or collection_config is None:
+            raise ValueError("Must provide either session_config or (target_venues, target_years, collection_config)")
 
         if session_id is None:
             session_id = f"session_{uuid.uuid4().hex[:8]}"
