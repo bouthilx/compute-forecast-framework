@@ -478,10 +478,18 @@ class TestIntegrationScenarios(unittest.TestCase):
         api_metrics = {
             "semantic_scholar": APIMetrics(
                 api_name="semantic_scholar",
+                health_status="degraded",
+                requests_made=100,
+                successful_requests=75,
+                failed_requests=25,
                 success_rate=0.75,  # Below 80% threshold
                 avg_response_time_ms=6000,  # High response time
-                health_status="degraded",
-                last_request_time=datetime.now(),
+                min_response_time_ms=1000,
+                max_response_time_ms=10000,
+                rate_limit_status={},
+                requests_throttled=0,
+                papers_collected=50,
+                papers_per_request=0.5,
             )
         }
 
@@ -502,7 +510,7 @@ class TestIntegrationScenarios(unittest.TestCase):
         """Test system resource alert scenario"""
 
         system_metrics = SystemResourceMetrics(
-            memory_usage_mb=8192,
+            memory_used_mb=8192,
             memory_usage_percent=95.0,  # Critical memory usage
             cpu_usage_percent=88.0,  # High CPU usage
             disk_usage_mb=450000,

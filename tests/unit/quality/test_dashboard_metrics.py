@@ -267,7 +267,7 @@ class TestMetricsBuffer(unittest.TestCase):
 
         latest = self.buffer.get_latest_metrics()
         self.assertIsNotNone(latest)
-        self.assertEqual(latest.collection_progress.total_papers_collected, 100)
+        self.assertEqual(latest.collection_progress.papers_collected, 100)
 
     def test_buffer_max_size(self):
         """Test buffer respects maximum size"""
@@ -281,7 +281,7 @@ class TestMetricsBuffer(unittest.TestCase):
 
         # Latest should be the last added (papers_count=14)
         latest = self.buffer.get_latest_metrics()
-        self.assertEqual(latest.collection_progress.total_papers_collected, 14)
+        self.assertEqual(latest.collection_progress.papers_collected, 14)
 
     def test_get_metrics_history(self):
         """Test retrieving metrics history"""
@@ -299,9 +299,9 @@ class TestMetricsBuffer(unittest.TestCase):
         self.assertEqual(len(recent), 3)
 
         # Should be the most recent 3
-        self.assertEqual(recent[-1].collection_progress.total_papers_collected, 4)
-        self.assertEqual(recent[-2].collection_progress.total_papers_collected, 3)
-        self.assertEqual(recent[-3].collection_progress.total_papers_collected, 2)
+        self.assertEqual(recent[-1].collection_progress.papers_collected, 4)
+        self.assertEqual(recent[-2].collection_progress.papers_collected, 3)
+        self.assertEqual(recent[-3].collection_progress.papers_collected, 2)
 
     def test_get_metrics_since(self):
         """Test retrieving metrics since specific time"""
