@@ -38,13 +38,15 @@ class TestMetricsCollector:
         # Mock components
         venue_engine = Mock()
         state_manager = Mock()
+        api_managers = {"test_api": Mock()}
         data_processors = {"test_processor": Mock()}
 
-        collector.start_collection(venue_engine, state_manager, data_processors)
+        collector.start_collection(venue_engine, state_manager, api_managers, data_processors)
 
         assert collector.is_collecting
         assert collector.venue_engine == venue_engine
         assert collector.state_manager == state_manager
+        assert collector.api_managers == api_managers
         assert collector.data_processors == data_processors
         assert collector.session_id is not None
         assert collector.collection_thread is not None
@@ -59,7 +61,7 @@ class TestMetricsCollector:
 
         # Start collection
         venue_engine = Mock()
-        collector.start_collection(venue_engine, Mock(), {})
+        collector.start_collection(venue_engine, Mock(), {}, {})
 
         assert collector.is_collecting
 
@@ -227,9 +229,9 @@ class TestMetricsCollector:
         collector.session_start_time = datetime.now()
 
         # Simulate some collection activity
-        collector.collection_stats["metrics_collected"] = 10
-        collector.collection_stats["collection_errors"] = 2
-        collector.collection_stats["last_collection_time"] = datetime.now()
+        collector._collection_count = 10
+        collector._collection_errors = 2
+        collector._last_collection_time = time.time()
 
         stats = collector.get_collection_statistics()
 
@@ -255,7 +257,7 @@ class TestMetricsCollector:
         venue_engine.get_venue_progress.return_value = {}
 
         # Start collection
-        collector.start_collection(venue_engine, Mock(), {})
+        collector.start_collection(venue_engine, Mock(), {}, {})
 
         # Let it run briefly
         time.sleep(0.5)

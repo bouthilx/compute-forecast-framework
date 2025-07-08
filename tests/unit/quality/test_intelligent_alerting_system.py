@@ -164,7 +164,7 @@ class TestNotificationChannels(unittest.TestCase):
 
     def test_console_notification_channel(self):
         """Test console notification channel"""
-        channel = ConsoleNotificationChannel("test_console")
+        channel = ConsoleNotificationChannel(name="test_console")
 
         # Create test alert
         alert = Alert(
@@ -185,7 +185,7 @@ class TestNotificationChannels(unittest.TestCase):
 
     def test_dashboard_notification_channel(self):
         """Test dashboard notification channel"""
-        channel = DashboardNotificationChannel("test_dashboard")
+        channel = DashboardNotificationChannel(name="test_dashboard")
 
         # Create test alert
         alert = Alert(
@@ -419,7 +419,7 @@ class TestAlertEscalation(unittest.TestCase):
 
     def test_escalation_rule_creation(self):
         """Test creation of escalation rules"""
-        from monitoring.alerting_engine import EscalationRule
+        from compute_forecast.monitoring.alerting_engine import EscalationRule
 
         escalation_rule = EscalationRule(
             escalation_delay_minutes=5,
@@ -478,10 +478,18 @@ class TestIntegrationScenarios(unittest.TestCase):
         api_metrics = {
             "semantic_scholar": APIMetrics(
                 api_name="semantic_scholar",
+                health_status="degraded",
+                requests_made=100,
+                successful_requests=75,
+                failed_requests=25,
                 success_rate=0.75,  # Below 80% threshold
                 avg_response_time_ms=6000,  # High response time
-                health_status="degraded",
-                last_request_time=datetime.now(),
+                min_response_time_ms=1000,
+                max_response_time_ms=10000,
+                rate_limit_status={},
+                requests_throttled=0,
+                papers_collected=50,
+                papers_per_request=0.5,
             )
         }
 
@@ -502,13 +510,21 @@ class TestIntegrationScenarios(unittest.TestCase):
         """Test system resource alert scenario"""
 
         system_metrics = SystemResourceMetrics(
-            memory_usage_mb=8192,
-            memory_usage_percent=95.0,  # Critical memory usage
-            cpu_usage_percent=88.0,  # High CPU usage
-            disk_usage_mb=450000,
-            disk_free_mb=512,  # Low disk space
+            memory_usage_percentage=95.0,  # Critical memory usage
+            memory_used_mb=8192,
+            memory_available_mb=400,
+            cpu_usage_percentage=88.0,  # High CPU usage
+            cpu_count=8,
             network_bytes_sent=1000000,
             network_bytes_received=2000000,
+            network_connections=100,
+            disk_usage_percentage=90.0,
+            disk_free_gb=0.5,  # Low disk space
+            process_memory_mb=8192,
+            process_cpu_percentage=88.0,
+            thread_count=20,
+            disk_usage_mb=450000,
+            disk_free_mb=512,
             active_threads=25,
             open_file_descriptors=150,
         )

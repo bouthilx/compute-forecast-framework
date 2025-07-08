@@ -19,6 +19,7 @@ from .dashboard_metrics import (
     StateManagementMetrics,
     VenueProgressMetrics,
     MetricsBuffer,
+    MetricsSummary,
 )
 
 logger = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ class MetricsCollector:
         self.venue_engine = None
         self.state_manager = None
         self.api_managers: Dict[str, Any] = {}
-        self.data_processors: Dict[str, Any] = {}
+        self.data_processors = None
 
         # Collection control
         self._running = False
@@ -54,10 +55,41 @@ class MetricsCollector:
         self._last_collection_time = 0.0
         self._collection_count = 0
         self._collection_errors = 0
+        self._session_id = None
+        self.session_start_time = None
 
         logger.info(
             f"MetricsCollector initialized with {collection_interval_seconds}s interval"
         )
+
+    @property
+    def is_collecting(self) -> bool:
+        """Check if metrics collection is currently running"""
+        return self._running
+
+    @property
+    def collection_thread(self) -> Optional[threading.Thread]:
+        """Get the collection thread instance"""
+        return self._collection_thread
+
+    @property
+    def collection_stats(self) -> Dict[str, Any]:
+        """Get collection statistics"""
+        with self._lock:
+            return {
+                "metrics_collected": self._collection_count,
+                "collection_errors": self._collection_errors,
+            }
+
+    @property
+    def session_id(self) -> Optional[str]:
+        """Get current session ID"""
+        return self._session_id
+
+    @session_id.setter
+    def session_id(self, value: Optional[str]):
+        """Set session ID"""
+        self._session_id = value
 
     def start_collection(
         self,
@@ -86,6 +118,11 @@ class MetricsCollector:
             self.api_managers = api_managers
             self.data_processors = data_processors
 
+            # Generate session ID and start time
+            import uuid
+            self._session_id = str(uuid.uuid4())
+            self.session_start_time = datetime.now()
+
             # Start collection thread
             self._running = True
             self._collection_thread = threading.Thread(
@@ -113,6 +150,90 @@ class MetricsCollector:
         """Get most recent collected metrics"""
         with self._lock:
             return self._current_metrics
+
+    def collect_current_metrics(self) -> SystemMetrics:
+        """Collect fresh metrics from all system components"""
+        return self.collect_metrics()
+
+    def get_metrics_summary(self, time_window_minutes: int = 60) -> MetricsSummary:
+        """Get aggregated metrics summary over time window"""
+        end_time = datetime.now()
+        start_time = end_time - timedelta(minutes=time_window_minutes)
+        
+        # Get metrics from buffer within time window
+        metrics_history = self.metrics_buffer.get_metrics_since(start_time)
+        
+        if not metrics_history:
+            # Return empty summary if no metrics
+            return MetricsSummary(
+                time_period_minutes=time_window_minutes,
+                start_time=start_time,
+                end_time=end_time,
+                avg_collection_rate=0.0,
+                peak_collection_rate=0.0,
+                total_papers_collected=0,
+                api_success_rates={},
+                api_avg_response_times={},
+                avg_memory_usage=0.0,
+                peak_memory_usage=0.0,
+                avg_cpu_usage=0.0,
+                peak_cpu_usage=0.0,
+                total_venues_completed=0,
+                total_processing_time_minutes=time_window_minutes,
+                processing_throughput=0.0,
+            )
+        
+        # Calculate collection rates
+        collection_rates = [m.collection_progress.papers_per_minute for m in metrics_history]
+        avg_collection_rate = sum(collection_rates) / len(collection_rates)
+        peak_collection_rate = max(collection_rates)
+        
+        # Get total papers from latest metrics
+        total_papers_collected = metrics_history[-1].collection_progress.papers_collected
+        
+        # Calculate API metrics
+        api_success_rates = {}
+        api_avg_response_times = {}
+        
+        for metrics in metrics_history:
+            for api_name, api_metrics in metrics.api_metrics.items():
+                if api_name not in api_success_rates:
+                    api_success_rates[api_name] = []
+                    api_avg_response_times[api_name] = []
+                api_success_rates[api_name].append(api_metrics.success_rate)
+                api_avg_response_times[api_name].append(api_metrics.avg_response_time_ms)
+        
+        # Average the API metrics
+        for api_name in api_success_rates:
+            api_success_rates[api_name] = sum(api_success_rates[api_name]) / len(api_success_rates[api_name])
+            api_avg_response_times[api_name] = sum(api_avg_response_times[api_name]) / len(api_avg_response_times[api_name])
+        
+        # Calculate system metrics
+        memory_usage = [m.system_metrics.memory_usage_percentage for m in metrics_history]
+        cpu_usage = [m.system_metrics.cpu_usage_percentage for m in metrics_history]
+        
+        avg_memory_usage = sum(memory_usage) / len(memory_usage)
+        peak_memory_usage = max(memory_usage)
+        avg_cpu_usage = sum(cpu_usage) / len(cpu_usage)
+        peak_cpu_usage = max(cpu_usage)
+        
+        return MetricsSummary(
+            time_period_minutes=time_window_minutes,
+            start_time=start_time,
+            end_time=end_time,
+            avg_collection_rate=avg_collection_rate,
+            peak_collection_rate=peak_collection_rate,
+            total_papers_collected=total_papers_collected,
+            api_success_rates=api_success_rates,
+            api_avg_response_times=api_avg_response_times,
+            avg_memory_usage=avg_memory_usage,
+            peak_memory_usage=peak_memory_usage,
+            avg_cpu_usage=avg_cpu_usage,
+            peak_cpu_usage=peak_cpu_usage,
+            total_venues_completed=0,  # TODO: Calculate from metrics
+            total_processing_time_minutes=time_window_minutes,
+            processing_throughput=avg_collection_rate,
+        )
 
     def collect_metrics(self) -> SystemMetrics:
         """
@@ -212,7 +333,7 @@ class MetricsCollector:
             estimated_remaining = venues_remaining * avg_time_per_venue
 
             return CollectionProgressMetrics(
-                session_id=progress.get("session_id"),
+                session_id=self._session_id,
                 total_venues=total_venues,
                 completed_venues=completed,
                 in_progress_venues=in_progress,
@@ -451,11 +572,14 @@ class MetricsCollector:
         """Get metrics collector statistics"""
         with self._lock:
             return {
-                "collection_count": self._collection_count,
+                "session_id": self._session_id,
+                "metrics_collected": self._collection_count,
                 "collection_errors": self._collection_errors,
                 "last_collection_time_seconds": self._last_collection_time,
                 "buffer_size": len(self.metrics_buffer),
                 "is_collecting": self._running,
+                "session_start_time": self.session_start_time,
+                "collection_interval_seconds": self.collection_interval,
             }
 
     # Empty metric factory methods for error cases

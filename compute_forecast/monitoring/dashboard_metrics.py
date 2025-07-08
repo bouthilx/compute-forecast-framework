@@ -332,6 +332,12 @@ class MetricsBuffer:
         with self._lock:
             self._buffer.append(metrics)
 
+    @property
+    def metrics(self) -> List[SystemMetrics]:
+        """Get all metrics in buffer"""
+        with self._lock:
+            return list(self._buffer)
+
     def get_recent_metrics(self, count: int = 10) -> List[SystemMetrics]:
         """Get most recent metrics"""
         with self._lock:
