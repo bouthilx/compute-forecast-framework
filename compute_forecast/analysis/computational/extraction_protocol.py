@@ -11,6 +11,7 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 import yaml
 import logging
+import math
 
 logger = logging.getLogger(__name__)
 
@@ -325,7 +326,7 @@ class ExtractionProtocol:
 
         # Update metadata
         phase_duration = (datetime.now() - phase_start).total_seconds() / 60
-        self.extraction_result.metadata.time_spent_minutes += int(phase_duration)
+        self.extraction_result.metadata.time_spent_minutes += max(1, math.ceil(phase_duration))
         self.extraction_result.metadata.phase_completed = ExtractionPhase.PREPARATION
 
         logger.info(f"Phase 1 completed in {phase_duration:.1f} minutes")
@@ -341,8 +342,13 @@ class ExtractionProtocol:
         automated_results = analyzer.analyze(self.paper_content)
 
         # Store results
+        # Carefully handle Mock objects to avoid returning Mock instead of default value
+        confidence_score = 0.0
+        if hasattr(automated_results, "confidence") and not callable(getattr(automated_results, "confidence")):
+            confidence_score = getattr(automated_results, "confidence", 0.0)
+        
         self.extraction_result.automated_extraction = {
-            "confidence_score": getattr(automated_results, "confidence", 0.0),
+            "confidence_score": confidence_score,
             "fields_found": list(automated_results.__dict__.keys())
             if hasattr(automated_results, "__dict__")
             else [],
@@ -352,7 +358,7 @@ class ExtractionProtocol:
 
         # Update timing
         phase_duration = (datetime.now() - phase_start).total_seconds() / 60
-        self.extraction_result.metadata.time_spent_minutes += int(phase_duration)
+        self.extraction_result.metadata.time_spent_minutes += max(1, math.ceil(phase_duration))
         self.extraction_result.metadata.phase_completed = ExtractionPhase.AUTOMATED
 
         logger.info(f"Phase 2 completed in {phase_duration:.1f} minutes")
@@ -392,7 +398,7 @@ class ExtractionProtocol:
 
         # Update timing
         phase_duration = (datetime.now() - phase_start).total_seconds() / 60
-        self.extraction_result.metadata.time_spent_minutes += int(phase_duration)
+        self.extraction_result.metadata.time_spent_minutes += max(1, math.ceil(phase_duration))
         self.extraction_result.metadata.phase_completed = ExtractionPhase.MANUAL
 
         logger.info(f"Phase 3 completed in {phase_duration:.1f} minutes")
@@ -426,7 +432,7 @@ class ExtractionProtocol:
 
         # Update timing
         phase_duration = (datetime.now() - phase_start).total_seconds() / 60
-        self.extraction_result.metadata.time_spent_minutes += int(phase_duration)
+        self.extraction_result.metadata.time_spent_minutes += max(1, math.ceil(phase_duration))
         self.extraction_result.metadata.phase_completed = ExtractionPhase.VALIDATION
 
         logger.info(f"Phase 4 completed in {phase_duration:.1f} minutes")
@@ -448,7 +454,7 @@ class ExtractionProtocol:
 
         # Update timing
         phase_duration = (datetime.now() - phase_start).total_seconds() / 60
-        self.extraction_result.metadata.time_spent_minutes += int(phase_duration)
+        self.extraction_result.metadata.time_spent_minutes += max(1, math.ceil(phase_duration))
         self.extraction_result.metadata.phase_completed = ExtractionPhase.DOCUMENTATION
 
         logger.info(f"Phase 5 completed in {phase_duration:.1f} minutes")
@@ -699,6 +705,12 @@ class ExtractionProtocol:
         total_fields = 0
         filled_fields = 0
 
+        # Default values that should not count as filled
+        default_values = {
+            "parameters_unit": "millions",
+            "number_of_runs": 1,
+        }
+
         for spec_category in [
             self.extraction_result.hardware,
             self.extraction_result.training,
@@ -706,9 +718,12 @@ class ExtractionProtocol:
             self.extraction_result.dataset,
             self.extraction_result.computation,
         ]:
-            for value in spec_category.__dict__.values():
+            for field_name, value in spec_category.__dict__.items():
                 total_fields += 1
                 if value is not None:
+                    # Check if it's a default value that shouldn't count
+                    if field_name in default_values and value == default_values[field_name]:
+                        continue
                     filled_fields += 1
 
         return filled_fields / total_fields if total_fields > 0 else 0.0
