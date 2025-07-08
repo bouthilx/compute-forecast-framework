@@ -164,7 +164,7 @@ class TestNotificationChannels(unittest.TestCase):
 
     def test_console_notification_channel(self):
         """Test console notification channel"""
-        channel = ConsoleNotificationChannel("test_console")
+        channel = ConsoleNotificationChannel(name="test_console")
 
         # Create test alert
         alert = Alert(
@@ -185,7 +185,7 @@ class TestNotificationChannels(unittest.TestCase):
 
     def test_dashboard_notification_channel(self):
         """Test dashboard notification channel"""
-        channel = DashboardNotificationChannel("test_dashboard")
+        channel = DashboardNotificationChannel(name="test_dashboard")
 
         # Create test alert
         alert = Alert(
@@ -419,7 +419,7 @@ class TestAlertEscalation(unittest.TestCase):
 
     def test_escalation_rule_creation(self):
         """Test creation of escalation rules"""
-        from monitoring.alerting_engine import EscalationRule
+        from compute_forecast.monitoring.alerting_engine import EscalationRule
 
         escalation_rule = EscalationRule(
             escalation_delay_minutes=5,

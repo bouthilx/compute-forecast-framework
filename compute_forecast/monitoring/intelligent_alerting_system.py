@@ -247,12 +247,12 @@ class IntelligentAlertingSystem:
         """Setup default notification channels"""
         # Always add console channel for development
         if self.enable_console_alerts:
-            console_channel = ConsoleNotificationChannel("console", "WARNING")
+            console_channel = ConsoleNotificationChannel(verbose=True)
             self.alerting_engine.add_notification_channel("console", console_channel)
 
         # Add dashboard channel if enabled
         if self.enable_dashboard_alerts:
-            dashboard_channel = DashboardNotificationChannel("dashboard")
+            dashboard_channel = DashboardNotificationChannel()
             self.alerting_engine.add_notification_channel(
                 "dashboard", dashboard_channel
             )
