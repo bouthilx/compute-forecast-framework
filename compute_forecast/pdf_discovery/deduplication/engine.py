@@ -125,8 +125,13 @@ class PaperDeduplicator:
         Returns:
             Dict mapping group_id to list of records in that group
         """
-        # Create a mapping from record_id to record
-        record_map = {record.paper_id: record for record in all_records}
+        # Create a mapping from paper_id to list of records
+        # This allows us to handle multiple records with the same paper_id
+        paper_id_to_records = {}
+        for record in all_records:
+            if record.paper_id not in paper_id_to_records:
+                paper_id_to_records[record.paper_id] = []
+            paper_id_to_records[record.paper_id].append(record)
 
         # Track which records have been grouped
         grouped_records = set()
@@ -143,9 +148,12 @@ class PaperDeduplicator:
 
             group_records = []
             for record_id in match.record_ids:
-                if record_id in record_map:
-                    group_records.append(record_map[record_id])
-                    grouped_records.add(record_id)
+                if record_id in paper_id_to_records:
+                    # Add all records with this paper_id to the group
+                    for record in paper_id_to_records[record_id]:
+                        if record not in grouped_records:
+                            group_records.append(record)
+                            grouped_records.add(record)
 
             if group_records:
                 groups[group_id] = group_records
@@ -165,9 +173,12 @@ class PaperDeduplicator:
 
             group_records = []
             for record_id in match.record_ids:
-                if record_id in record_map:
-                    group_records.append(record_map[record_id])
-                    grouped_records.add(record_id)
+                if record_id in paper_id_to_records:
+                    # Add all records with this paper_id to the group
+                    for record in paper_id_to_records[record_id]:
+                        if record not in grouped_records:
+                            group_records.append(record)
+                            grouped_records.add(record)
 
             if group_records:
                 groups[group_id] = group_records
@@ -179,8 +190,8 @@ class PaperDeduplicator:
 
         # Add remaining ungrouped records as individual groups
         for record in all_records:
-            if record.paper_id not in grouped_records:
-                group_id = f"individual_{record.paper_id}"
+            if record not in grouped_records:
+                group_id = f"individual_{record.paper_id}_{record.source}"
                 groups[group_id] = [record]
 
         return groups
