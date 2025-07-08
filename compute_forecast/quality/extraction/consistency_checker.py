@@ -109,18 +109,35 @@ class ExtractionConsistencyChecker:
         if metric in ["parameters", "gpu_hours"]:
             # Fit exponential trend
             try:
-                log_values = np.log(values)
-                # Check for invalid values (NaN or inf)
-                if not np.all(np.isfinite(log_values)):
-                    # Fall back to linear trend if log doesn't work
-                    coeffs = np.polyfit(years - years[0], values, 1)
-                    # Use linear growth rate approximation
-                    growth_rate = (
-                        coeffs[0] / np.mean(values) if np.mean(values) > 0 else 0
-                    )
+                # Check if we have enough unique years for fitting
+                if len(np.unique(years)) < 2:
+                    # All years are the same, can't compute trend
+                    growth_rate = 0
+                # Check if values are suitable for polynomial fitting
+                elif len(np.unique(values)) < 2 or np.std(values) < 1e-10:
+                    # Data is constant or nearly constant
+                    growth_rate = 0
+                elif np.any(values <= 0):
+                    # Can't take log of non-positive values, use linear fit
+                    # But first check if data has enough variation
+                    if np.std(values) / np.mean(np.abs(values)) < 1e-10:
+                        growth_rate = 0
+                    else:
+                        coeffs = np.polyfit(years - years[0], values, 1)
+                        growth_rate = coeffs[0] / np.mean(values) if np.mean(values) > 0 else 0
                 else:
-                    coeffs = np.polyfit(years - years[0], log_values, 1)
-                    growth_rate = np.exp(coeffs[0]) - 1
+                    log_values = np.log(values)
+                    # Check for invalid values (NaN or inf)
+                    if not np.all(np.isfinite(log_values)):
+                        # Fall back to linear trend if log doesn't work
+                        coeffs = np.polyfit(years - years[0], values, 1)
+                        # Use linear growth rate approximation
+                        growth_rate = (
+                            coeffs[0] / np.mean(values) if np.mean(values) > 0 else 0
+                        )
+                    else:
+                        coeffs = np.polyfit(years - years[0], log_values, 1)
+                        growth_rate = np.exp(coeffs[0]) - 1
             except (np.linalg.LinAlgError, ValueError, RuntimeWarning):
                 # If polynomial fitting fails, use simple linear trend
                 try:
