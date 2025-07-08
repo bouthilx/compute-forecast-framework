@@ -125,6 +125,10 @@ class PDFManager:
         try:
             # Upload to Drive
             file_id = self.drive_store.upload_pdf(paper_id, pdf_path, metadata)
+            
+            if not file_id:
+                logger.error(f"Failed to get file ID for {paper_id}")
+                return False
 
             # Update metadata
             self.metadata[paper_id] = {
