@@ -7,7 +7,7 @@ This example demonstrates how to use the `ACLAnthologyScraper` to collect papers
 The `scrape_acl_papers.py` script shows how to:
 - Initialize the ACL Anthology scraper with proper configuration
 - Check available years for a venue
-- Scrape papers from a specific conference year
+- Scrape papers from a specific conference year (with optional limits)
 - Extract and display paper metadata
 - Save results to a JSON file
 - Generate statistics about the scraped data
@@ -15,12 +15,27 @@ The `scrape_acl_papers.py` script shows how to:
 ## Usage
 
 ```bash
-# Scrape papers from ACL 2023
+# Scrape all papers from ACL 2023
 python examples/scrape_acl_papers.py 2023
+
+# Scrape only first 50 papers from ACL 2023
+python examples/scrape_acl_papers.py 2023 --limit 50
+
+# Scrape 100 papers but display only first 10 in terminal
+python examples/scrape_acl_papers.py 2023 --limit 100 --display 10
 
 # Scrape papers from the previous year (default)
 python examples/scrape_acl_papers.py
+
+# Show help
+python examples/scrape_acl_papers.py --help
 ```
+
+## Command Line Options
+
+- `year` (optional): Year to scrape papers from (default: previous year)
+- `--limit N`: Maximum number of papers to scrape (default: all papers)
+- `--display N`: Maximum number of papers to display in terminal (default: 10)
 
 ## Output
 
@@ -29,33 +44,50 @@ The script will:
 2. Save all scraped papers to `acl_YEAR_papers.json`
 3. Show statistics about the collection
 
-### Example Output
+### Example Output (Limited Scraping)
 
 ```
 🔍 Initializing ACL Anthology scraper...
 📅 Checking available years for ACL...
 
-📚 Scraping ACL 2023 papers...
-✅ Successfully scraped 684 papers from ACL 2023
+📚 Scraping up to 50 papers from ACL 2023...
+   📖 Scraping main volume... (0/50 papers)
+   ✅ Reached limit of 50 papers
+✅ Successfully scraped 50 papers from ACL 2023
 
 📄 Showing first 10 papers:
 
 1. Tweetorial: Detecting Hateful Memes Using Contrastive Learning
    Authors: Alice Chen, Bob Smith, Carol Jones
-   Paper ID: acl_2023.acl-main.1
-   PDF: https://aclanthology.org/2023.acl-main.1.pdf
+   Paper ID: acl_2023.acl-long.1
+   Source URL: https://aclanthology.org/2023.acl-long.1/
+   PDF URL: https://aclanthology.org/2023.acl-long.1.pdf
    Metadata completeness: 100%
 
 ...
 
-💾 Saving all 684 papers to acl_2023_papers.json...
+💾 Saving all 50 papers to acl_2023_papers.json...
 ✅ Results saved to acl_2023_papers.json
 
 📊 Statistics:
-   Total papers: 684
-   Papers with PDF: 684 (100.0%)
+   Total papers: 50
+   Papers with PDF: 50 (100.0%)
    Average metadata completeness: 95%
-   Papers with authors: 684 (100.0%)
+   Papers with authors: 50 (100.0%)
+```
+
+### Example Output (All Papers)
+
+```
+🔍 Initializing ACL Anthology scraper...
+📅 Checking available years for ACL...
+
+📚 Scraping all papers from ACL 2023...
+✅ Successfully scraped 684 papers from ACL 2023
+
+📄 Showing first 10 papers:
+...
+(Same format but with all 684 papers saved)
 ```
 
 ## JSON Output Format
