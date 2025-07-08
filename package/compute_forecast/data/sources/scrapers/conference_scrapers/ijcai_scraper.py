@@ -20,11 +20,11 @@ class IJCAIScraper(ConferenceProceedingsScraper):
         self.proceedings_pattern = "proceedings/{year}/"
         
     def get_supported_venues(self) -> List[str]:
-        return ["IJCAI"]
+        return ["IJCAI", "ijcai"]
         
     def get_available_years(self, venue: str) -> List[int]:
         """Get available IJCAI years by checking proceedings index"""
-        if venue != "IJCAI":
+        if venue.upper() != "IJCAI":
             return []
             
         try:
@@ -54,11 +54,31 @@ class IJCAIScraper(ConferenceProceedingsScraper):
     def get_proceedings_url(self, venue: str, year: int) -> str:
         """Construct IJCAI proceedings URL"""
         return urljoin(self.base_url, self.proceedings_pattern.format(year=year))
+    
+    def estimate_paper_count(self, venue: str, year: int) -> Optional[int]:
+        """Estimate the number of papers for IJCAI year."""
+        try:
+            url = self.get_proceedings_url(venue, year)
+            response = self._make_request(url)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Count paper_wrapper divs
+            paper_wrappers = soup.find_all('div', class_='paper_wrapper')
+            if paper_wrappers:
+                return len(paper_wrappers)
+            
+            # Fallback: count PDF links
+            pdf_links = soup.find_all('a', href=lambda x: x and '.pdf' in x)
+            return len(pdf_links)
+            
+        except Exception as e:
+            self.logger.warning(f"Could not estimate paper count for IJCAI {year}: {e}")
+            return None
         
     @retry_on_error(max_retries=3, delay=1.0)
     def scrape_venue_year(self, venue: str, year: int) -> ScrapingResult:
         """Scrape IJCAI papers for a specific year"""
-        if venue != "IJCAI":
+        if venue.upper() != "IJCAI":
             return ScrapingResult(
                 success=False, 
                 papers_collected=0, 
