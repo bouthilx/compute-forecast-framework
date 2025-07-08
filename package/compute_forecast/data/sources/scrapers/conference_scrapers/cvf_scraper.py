@@ -26,18 +26,19 @@ class CVFScraper(ConferenceProceedingsScraper):
         
     def get_supported_venues(self) -> List[str]:
         """Return supported CVF venues"""
-        return ["CVPR", "ICCV", "ECCV", "WACV"]
+        return ["CVPR", "ICCV", "ECCV", "WACV", "cvpr", "iccv", "eccv", "wacv"]
         
     def get_available_years(self, venue: str) -> List[int]:
         """Get years available for venue respecting conference schedules"""
-        if venue not in self.venue_schedules:
+        venue_upper = venue.upper()
+        if venue_upper not in self.venue_schedules:
             return []
             
         # Generate recent years based on conference schedule
         current_year = datetime.now().year
         base_years = list(range(current_year, 2012, -1))  # CVF started around 2013
         
-        schedule = self.venue_schedules[venue]
+        schedule = self.venue_schedules[venue_upper]
         if schedule == "odd_years":
             return [year for year in base_years if year % 2 == 1]
         elif schedule == "even_years":
@@ -47,7 +48,7 @@ class CVFScraper(ConferenceProceedingsScraper):
     
     def get_proceedings_url(self, venue: str, year: int) -> str:
         """Construct CVF proceedings URL"""
-        return urljoin(self.base_url, f"{venue}{year}?day=all")
+        return urljoin(self.base_url, f"{venue.upper()}{year}?day=all")
         
     @retry_on_error(max_retries=3, delay=1.0)
     def scrape_venue_year(self, venue: str, year: int) -> ScrapingResult:

@@ -40,14 +40,21 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
         }
         
     def get_supported_venues(self) -> List[str]:
-        return list(self.venue_mappings.keys())
+        # Return both uppercase and lowercase versions for case-insensitive matching
+        venues = list(self.venue_mappings.keys())
+        all_venues = venues + [v.lower() for v in venues]
+        return list(set(all_venues))  # Remove duplicates
         
     def get_available_years(self, venue: str) -> List[int]:
         """Get years available for a venue from ACL Anthology"""
-        if venue not in self.venue_mappings:
+        # Handle case-insensitive venue lookup
+        venue_code = None
+        if venue in self.venue_mappings:
+            venue_code = self.venue_mappings[venue]
+        elif venue.upper() in self.venue_mappings:
+            venue_code = self.venue_mappings[venue.upper()]
+        else:
             return []
-            
-        venue_code = self.venue_mappings[venue]
         # Try venues page first
         venue_url = urljoin(self.base_url, f"venues/{venue_code}/")
         
@@ -87,14 +94,23 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
     
     def get_proceedings_url(self, venue: str, year: int) -> str:
         """Construct ACL Anthology event URL"""
-        venue_code = self.venue_mappings.get(venue, venue.lower())
+        # Handle case-insensitive venue lookup
+        venue_code = None
+        if venue in self.venue_mappings:
+            venue_code = self.venue_mappings[venue]
+        elif venue.upper() in self.venue_mappings:
+            venue_code = self.venue_mappings[venue.upper()]
+        else:
+            venue_code = venue.lower()  # Fallback
+            
         # Primary pattern is events page
         return urljoin(self.base_url, f"events/{venue_code}-{year}/")
         
     @retry_on_error(max_retries=3, delay=1.0)
     def scrape_venue_year(self, venue: str, year: int) -> ScrapingResult:
         """Scrape ACL Anthology papers for venue/year"""
-        if venue not in self.venue_mappings:
+        # Handle case-insensitive venue lookup
+        if venue not in self.venue_mappings and venue.upper() not in self.venue_mappings:
             return ScrapingResult.failure_result(
                 errors=[f"Venue {venue} not supported"],
                 metadata={"venue": venue, "year": year}

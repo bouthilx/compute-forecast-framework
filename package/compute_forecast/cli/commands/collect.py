@@ -166,11 +166,15 @@ def main(
     no_progress: bool = typer.Option(False, "--no-progress", help="Disable progress bars"),
     parallel: int = typer.Option(1, "--parallel", help="Number of parallel workers (currently not implemented)"),
     rate_limit: float = typer.Option(1.0, "--rate-limit", help="API rate limit (requests/second)"),
+    list_venues: bool = typer.Option(False, "--list-venues", help="List available venues and their scrapers"),
 ):
     """
     Collect research papers from various venues and years.
     
     Examples:
+        
+        # List available venues
+        cf collect --list-venues
         
         # Collect single venue/year
         cf collect --venue neurips --year 2024
@@ -187,6 +191,55 @@ def main(
         # Resume interrupted collection
         cf collect --venue neurips --year 2024 --resume
     """
+    
+    # Handle --list-venues option
+    if list_venues:
+        registry = get_registry()
+        
+        # Get all venue mappings from registry
+        venue_mappings = registry._venue_mapping
+        
+        # Group venues by scraper for better display
+        scraper_venues = {}
+        for venue, scraper in venue_mappings.items():
+            if venue == "*":  # Skip the fallback entry
+                continue
+            if scraper not in scraper_venues:
+                scraper_venues[scraper] = []
+            scraper_venues[scraper].append(venue)
+        
+        # Sort venues within each scraper
+        for scraper in scraper_venues:
+            scraper_venues[scraper].sort()
+        
+        # Create table
+        table = Table(title="Available Venues and Scrapers")
+        table.add_column("Scraper", style="cyan", width=25)
+        table.add_column("Supported Venues", style="green")
+        table.add_column("Description", style="yellow")
+        
+        # Add scraper descriptions
+        scraper_descriptions = {
+            "NeurIPSScraper": "Neural Information Processing Systems",
+            "IJCAIScraper": "International Joint Conference on AI",
+            "ACLAnthologyScraper": "ACL Anthology (NLP conferences)",
+            "MLRScraper": "PMLR venues (ICML, AISTATS, UAI)", 
+            "OpenReviewScraper": "OpenReview-hosted conferences",
+            "SemanticScholarScraper": "API-based fallback for other venues"
+        }
+        
+        # Add rows to table
+        for scraper in sorted(scraper_venues.keys()):
+            venues_str = ", ".join(scraper_venues[scraper])
+            description = scraper_descriptions.get(scraper, "")
+            table.add_row(scraper, venues_str, description)
+        
+        console.print(table)
+        console.print()
+        console.print("[cyan]Usage:[/cyan] cf collect --venue <venue_name> --year <year>")
+        console.print("[cyan]Example:[/cyan] cf collect --venue neurips --year 2023")
+        
+        return
     
     # Parse venue/year specifications
     venue_years = {}
