@@ -1,0 +1,5 @@
+16.70s call     tests/unit/data/test_venue_collection_engine.py::TestVenueCollectionEngine::test_collect_venue_batch_with_api_failures
+16.56s call     tests/unit/data/test_venue_collection_engine.py::TestVenueCollectionEngine::test_collect_venue_batch_respects_rate_limits
+11.12s call     tests/unit/data/test_venue_collection_engine.py::TestVenueCollectionEngine::test_collect_venue_batch_basic_functionality
+9.12s call     tests/unit/data/test_venue_collection_engine.py::TestVenueCollectionEngine::test_collect_venue_batch_deduplication
+4.57s call     tests/unit/data/test_venue_collection_engine.py::TestVenueCollectionEngine::test_collect_venue_batch_timeout_handling
