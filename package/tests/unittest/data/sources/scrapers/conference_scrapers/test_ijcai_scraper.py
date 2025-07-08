@@ -342,3 +342,241 @@ class TestIJCAIScraper:
         """Test that retry decorator is properly applied"""
         # The scrape_venue_year method should have retry decorator
         assert hasattr(scraper.scrape_venue_year, '__wrapped__')
+    
+    def test_parse_proceedings_page_with_paper_wrappers(self, scraper):
+        """Test parsing proceedings page with modern paper_wrapper structure"""
+        html = """
+        <html>
+            <body>
+                <div class="paper_wrapper" id="paper001">
+                    <div class="title">Neural Networks for NLP</div>
+                    <div class="authors">John Doe, Jane Smith, Bob Wilson</div>
+                    <a href="001.pdf">PDF</a>
+                </div>
+                <div class="paper_wrapper" id="paper002">
+                    <div class="title">Deep Learning Applications</div>
+                    <div class="authors">Alice Johnson</div>
+                    <a href="002.pdf">PDF</a>
+                </div>
+            </body>
+        </html>
+        """
+        
+        papers = scraper.parse_proceedings_page(html, "IJCAI", 2024)
+        
+        assert len(papers) == 2
+        
+        # Check first paper
+        paper1 = papers[0]
+        assert paper1.paper_id == "ijcai_2024_001"
+        assert paper1.title == "Neural Networks for NLP"
+        assert paper1.authors == ["John Doe", "Jane Smith", "Bob Wilson"]
+        assert paper1.venue == "IJCAI"
+        assert paper1.year == 2024
+        assert paper1.pdf_urls[0] == "https://www.ijcai.org/proceedings/2024/001.pdf"
+        assert paper1.extraction_confidence == 0.95
+        
+        # Check second paper
+        paper2 = papers[1]
+        assert paper2.paper_id == "ijcai_2024_002"
+        assert paper2.title == "Deep Learning Applications"
+        assert paper2.authors == ["Alice Johnson"]
+    
+    def test_extract_paper_from_wrapper_no_pdf_link(self, scraper):
+        """Test extracting paper from wrapper without PDF link"""
+        html = """<div class="paper_wrapper">
+            <div class="title">Test Paper</div>
+            <div class="authors">Author Name</div>
+        </div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        wrapper = soup.find('div', class_='paper_wrapper')
+        
+        paper = scraper._extract_paper_from_wrapper(wrapper, "IJCAI", 2024)
+        assert paper is None
+    
+    def test_extract_paper_from_wrapper_empty_pdf_href(self, scraper):
+        """Test extracting paper from wrapper with empty PDF href"""
+        html = """<div class="paper_wrapper">
+            <div class="title">Test Paper</div>
+            <div class="authors">Author Name</div>
+            <a href="">PDF</a>
+        </div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        wrapper = soup.find('div', class_='paper_wrapper')
+        
+        paper = scraper._extract_paper_from_wrapper(wrapper, "IJCAI", 2024)
+        assert paper is None
+    
+    def test_extract_paper_from_wrapper_non_pdf_url(self, scraper):
+        """Test extracting paper from wrapper with non-PDF URL"""
+        html = """<div class="paper_wrapper">
+            <div class="title">Test Paper</div>
+            <div class="authors">Author Name</div>
+            <a href="paper.html">PDF</a>
+        </div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        wrapper = soup.find('div', class_='paper_wrapper')
+        
+        # Debug the actual behavior
+        paper = scraper._extract_paper_from_wrapper(wrapper, "IJCAI", 2024)
+        
+        # The URL will be made absolute to https://www.ijcai.org/proceedings/2024/paper.html
+        # which is valid but doesn't end with .pdf, so it should return None
+        assert paper is None
+    
+    def test_extract_paper_from_wrapper_no_title_div(self, scraper):
+        """Test extracting paper from wrapper without title div"""
+        html = """<div class="paper_wrapper">
+            <div class="authors">Author Name</div>
+            <a href="test.pdf">PDF</a>
+        </div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        wrapper = soup.find('div', class_='paper_wrapper')
+        
+        paper = scraper._extract_paper_from_wrapper(wrapper, "IJCAI", 2024)
+        assert paper is not None
+        assert paper.title == ""
+    
+    def test_extract_paper_from_wrapper_no_authors_div(self, scraper):
+        """Test extracting paper from wrapper without authors div"""
+        html = """<div class="paper_wrapper">
+            <div class="title">Test Paper Title</div>
+            <a href="test.pdf">PDF</a>
+        </div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        wrapper = soup.find('div', class_='paper_wrapper')
+        
+        paper = scraper._extract_paper_from_wrapper(wrapper, "IJCAI", 2024)
+        assert paper is not None
+        assert paper.authors == []
+    
+    def test_extract_paper_from_wrapper_with_paper_id_prefix(self, scraper):
+        """Test extracting paper ID from wrapper with 'paper' prefix"""
+        html = """<div class="paper_wrapper" id="paper1234">
+            <div class="title">Test Paper</div>
+            <div class="authors">Author Name</div>
+            <a href="test.pdf">PDF</a>
+        </div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        wrapper = soup.find('div', class_='paper_wrapper')
+        
+        paper = scraper._extract_paper_from_wrapper(wrapper, "IJCAI", 2024)
+        assert paper is not None
+        assert paper.paper_id == "ijcai_2024_1234"
+    
+    def test_parse_proceedings_page_with_exception_in_wrapper(self, scraper):
+        """Test exception handling when extracting from wrapper"""
+        html = """
+        <html>
+            <body>
+                <div class="paper_wrapper">
+                    <div class="title">Good Paper</div>
+                    <a href="good.pdf">PDF</a>
+                </div>
+            </body>
+        </html>
+        """
+        
+        # Mock _extract_paper_from_wrapper to raise an exception
+        original_method = scraper._extract_paper_from_wrapper
+        
+        def mock_extract_wrapper(wrapper, venue, year):
+            raise ValueError("Test exception")
+        
+        scraper._extract_paper_from_wrapper = mock_extract_wrapper
+        
+        with patch.object(scraper.logger, 'warning') as mock_warning:
+            papers = scraper.parse_proceedings_page(html, "IJCAI", 2024)
+            
+            assert len(papers) == 0
+            mock_warning.assert_called_once()
+            assert "Failed to extract paper from wrapper" in mock_warning.call_args[0][0]
+        
+        # Restore original method
+        scraper._extract_paper_from_wrapper = original_method
+    
+    def test_parse_proceedings_page_with_exception_in_pdf_link(self, scraper):
+        """Test exception handling when extracting from PDF link"""
+        html = """
+        <html>
+            <body>
+                <a href="test.pdf">Test Paper</a>
+            </body>
+        </html>
+        """
+        
+        # Mock _extract_paper_from_pdf_link to raise an exception
+        original_method = scraper._extract_paper_from_pdf_link
+        
+        def mock_extract_pdf(pdf_link, venue, year):
+            raise ValueError("Test exception")
+        
+        scraper._extract_paper_from_pdf_link = mock_extract_pdf
+        
+        with patch.object(scraper.logger, 'warning') as mock_warning:
+            papers = scraper.parse_proceedings_page(html, "IJCAI", 2024)
+            
+            assert len(papers) == 0
+            mock_warning.assert_called_once()
+            assert "Failed to extract paper from link" in mock_warning.call_args[0][0]
+        
+        # Restore original method
+        scraper._extract_paper_from_pdf_link = original_method
+    
+    def test_extract_paper_id_from_container_no_container(self, scraper):
+        """Test extracting paper ID when container is None"""
+        paper_id = scraper._extract_paper_id_from_container(None, "default123")
+        assert paper_id == "default123"
+    
+    def test_extract_paper_id_from_container_with_paper_id_pattern(self, scraper):
+        """Test extracting paper ID from container with Paper ID pattern"""
+        html = """<div>Paper ID: 6581 - Some other text</div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        container = soup.find('div')
+        
+        paper_id = scraper._extract_paper_id_from_container(container, "default")
+        assert paper_id == "6581"
+    
+    def test_extract_paper_id_from_container_with_hash_pattern(self, scraper):
+        """Test extracting paper ID from container with hash pattern"""
+        html = """<div>Paper #1234: Test Title</div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        container = soup.find('div')
+        
+        paper_id = scraper._extract_paper_id_from_container(container, "default")
+        assert paper_id == "1234"
+    
+    def test_extract_paper_id_from_container_with_id_pattern(self, scraper):
+        """Test extracting paper ID from container with ID pattern"""
+        html = """<div>ID: 98765 - Research Paper</div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        container = soup.find('div')
+        
+        paper_id = scraper._extract_paper_id_from_container(container, "default")
+        assert paper_id == "98765"
+    
+    def test_extract_paper_id_from_container_with_bare_number(self, scraper):
+        """Test extracting paper ID from container with bare number"""
+        html = """<div>This is paper 5432 in the proceedings</div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        container = soup.find('div')
+        
+        paper_id = scraper._extract_paper_id_from_container(container, "default")
+        assert paper_id == "5432"
+    
+    def test_extract_paper_from_wrapper_with_invalid_url_warning(self, scraper):
+        """Test that warning is logged for truly invalid PDF URL"""
+        html = """<div class="paper_wrapper">
+            <div class="title">Test Paper</div>
+            <div class="authors">Author Name</div>
+            <a href="http://[invalid-url].pdf">PDF</a>
+        </div>"""
+        soup = BeautifulSoup(html, 'html.parser')
+        wrapper = soup.find('div', class_='paper_wrapper')
+        
+        with patch.object(scraper.logger, 'warning') as mock_warning:
+            paper = scraper._extract_paper_from_wrapper(wrapper, "IJCAI", 2024)
+            
+            assert paper is None
+            mock_warning.assert_called_once()
+            assert "Invalid PDF URL" in mock_warning.call_args[0][0]
