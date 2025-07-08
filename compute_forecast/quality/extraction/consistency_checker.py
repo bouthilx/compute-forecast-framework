@@ -27,7 +27,7 @@ class ExtractionConsistencyChecker:
     def __init__(self):
         """Initialize with thresholds."""
         self.similarity_threshold = 0.8
-        self.outlier_z_score = 3.0
+        self.outlier_z_score = 2.0
 
         # Expected scaling laws
         self.scaling_laws = {
@@ -219,7 +219,7 @@ class ExtractionConsistencyChecker:
         outliers = np.where(z_scores > self.outlier_z_score)[0]
 
         # Determine if consistency is acceptable
-        if cv > 2.0:  # Very high variation
+        if cv > 1.0:  # High variation
             passed = False
             confidence = 0.4
             details = {
@@ -387,24 +387,7 @@ class ExtractionConsistencyChecker:
 
         title_lower = paper.title.lower()
 
-        # NLP indicators
-        nlp_terms = [
-            "language",
-            "text",
-            "nlp",
-            "transformer",
-            "bert",
-            "gpt",
-            "translation",
-            "summarization",
-            "question answering",
-            "dialogue",
-            "chatbot",
-        ]
-        if any(term in title_lower for term in nlp_terms):
-            return "nlp"
-
-        # Computer Vision indicators
+        # Computer Vision indicators (check first for specificity)
         cv_terms = [
             "image",
             "vision",
@@ -438,6 +421,23 @@ class ExtractionConsistencyChecker:
         if any(term in title_lower for term in rl_terms):
             return "rl"
 
+        # NLP indicators
+        nlp_terms = [
+            "language",
+            "text",
+            "nlp",
+            "transformer",
+            "bert",
+            "gpt",
+            "translation",
+            "summarization",
+            "question answering",
+            "dialogue",
+            "chatbot",
+        ]
+        if any(term in title_lower for term in nlp_terms):
+            return "nlp"
+
         return "general"
 
     def check_scaling_consistency(
@@ -469,8 +469,8 @@ class ExtractionConsistencyChecker:
         ratio = gpu_hours / expected_gpu_hours
         log_ratio = np.log10(ratio) if ratio > 0 else 0
 
-        # Check if within reasonable bounds (1-2 orders of magnitude)
-        if abs(log_ratio) > 2:
+        # Check if within reasonable bounds (less than 0.7 order of magnitude)
+        if abs(log_ratio) > 0.7:
             passed = False
             confidence = 0.4
             details = {

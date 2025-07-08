@@ -510,13 +510,21 @@ class TestIntegrationScenarios(unittest.TestCase):
         """Test system resource alert scenario"""
 
         system_metrics = SystemResourceMetrics(
+            memory_usage_percentage=95.0,  # Critical memory usage
             memory_used_mb=8192,
-            memory_usage_percent=95.0,  # Critical memory usage
-            cpu_usage_percent=88.0,  # High CPU usage
-            disk_usage_mb=450000,
-            disk_free_mb=512,  # Low disk space
+            memory_available_mb=400,
+            cpu_usage_percentage=88.0,  # High CPU usage
+            cpu_count=8,
             network_bytes_sent=1000000,
             network_bytes_received=2000000,
+            network_connections=100,
+            disk_usage_percentage=90.0,
+            disk_free_gb=0.5,  # Low disk space
+            process_memory_mb=8192,
+            process_cpu_percentage=88.0,
+            thread_count=20,
+            disk_usage_mb=450000,
+            disk_free_mb=512,
             active_threads=25,
             open_file_descriptors=150,
         )
