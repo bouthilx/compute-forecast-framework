@@ -90,16 +90,16 @@ class TestEnhancedOrchestratorEnvironment:
             # Mock the source clients to avoid actual initialization
             with (
                 patch(
-                    "compute_forecast.data.sources.enhanced_semantic_scholar.EnhancedSemanticScholarClient"
+                    "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
                 ) as mock_ss,
                 patch(
-                    "compute_forecast.data.sources.enhanced_openalex.EnhancedOpenAlexClient"
+                    "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
                 ) as mock_oa,
                 patch(
-                    "compute_forecast.data.sources.enhanced_crossref.EnhancedCrossrefClient"
+                    "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
                 ) as mock_cr,
                 patch(
-                    "compute_forecast.data.sources.google_scholar.GoogleScholarClient"
+                    "compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"
                 ),
             ):
                 EnhancedCollectionOrchestrator(api_keys=init_keys)
@@ -125,16 +125,16 @@ class TestEnhancedOrchestratorEnvironment:
         with patch.dict(os.environ, env_vars):
             with (
                 patch(
-                    "compute_forecast.data.sources.enhanced_semantic_scholar.EnhancedSemanticScholarClient"
+                    "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
                 ) as mock_ss,
                 patch(
-                    "compute_forecast.data.sources.enhanced_openalex.EnhancedOpenAlexClient"
+                    "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
                 ) as mock_oa,
                 patch(
-                    "compute_forecast.data.sources.enhanced_crossref.EnhancedCrossrefClient"
+                    "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
                 ) as mock_cr,
                 patch(
-                    "compute_forecast.data.sources.google_scholar.GoogleScholarClient"
+                    "compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"
                 ) as mock_gs,
             ):
                 EnhancedCollectionOrchestrator()

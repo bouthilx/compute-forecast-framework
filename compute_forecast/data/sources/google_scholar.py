@@ -26,11 +26,12 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 class GoogleScholarSource(BaseCitationSource):
     """Google Scholar citation data source implementation with browser automation"""
 
-    def __init__(self):
+    def __init__(self, use_proxy: bool = False):
         config_manager = ConfigManager()
         config = config_manager.get_citation_config("google_scholar")
         super().__init__(config.__dict__)
         self.logger = setup_logging()
+        self.use_proxy = use_proxy
 
         # Browser automation settings
         self.use_browser = getattr(config, "use_browser_automation", True)
