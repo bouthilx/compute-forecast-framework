@@ -13,6 +13,13 @@ from .models import (
     PaperoniAdapter,
     ScrapingBatch,
 )
+from .error_handling import (
+    ErrorType,
+    ScrapingError,
+    ScrapingMonitor,
+    retry_on_error,
+    RateLimiter,
+)
 
 __all__ = [
     # Base classes
@@ -26,4 +33,10 @@ __all__ = [
     "SimplePaper",
     "PaperoniAdapter",
     "ScrapingBatch",
+    # Error handling
+    "ErrorType",
+    "ScrapingError",
+    "ScrapingMonitor",
+    "retry_on_error",
+    "RateLimiter",
 ]
