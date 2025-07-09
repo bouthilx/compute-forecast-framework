@@ -183,7 +183,11 @@ class InterruptionRecoverySystem:
             checkpoint_data = self.state_manager.load_checkpoint(checkpoint_id)
 
         # Determine recovery strategy based on interruption type
-        checkpoint_dict = asdict(checkpoint_data) if checkpoint_data else None
+        if checkpoint_data:
+            # Handle both dataclass instances and dict inputs (e.g., from mocks)
+            checkpoint_dict = asdict(checkpoint_data) if hasattr(checkpoint_data, '__dataclass_fields__') else checkpoint_data
+        else:
+            checkpoint_dict = None
         strategy = self._determine_recovery_strategy(
             interruption_type, session, checkpoint_dict
         )

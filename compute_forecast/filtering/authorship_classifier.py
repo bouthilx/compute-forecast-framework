@@ -238,10 +238,8 @@ class AuthorshipClassifier:
                     "name": author.name,
                     "affiliation": author.affiliation,
                     "classification": classification,
-                    "confidence": str(
-                        self._get_classification_confidence(
-                            author.affiliation, classification
-                        )
+                    "confidence": self._get_classification_confidence(
+                        author.affiliation, classification
                     ),
                 }
             )
