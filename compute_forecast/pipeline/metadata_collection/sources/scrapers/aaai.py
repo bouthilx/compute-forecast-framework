@@ -361,11 +361,16 @@ class AAAIScraper(BaseScraper):
         Uses ListIdentifiers verb with a sample month to estimate total papers.
         Falls back to reasonable defaults if API fails.
         """
+        import time as timer
+        start_time = timer.time()
+        
         venue_lower = venue.lower()
         journal_name = self._get_journal_name(venue_lower)
         
         if not journal_name:
             return None
+        
+        self.logger.info(f"Starting paper count estimation for {venue} {year}")
         
         try:
             # OAI-PMH endpoint URL
@@ -390,8 +395,12 @@ class AAAIScraper(BaseScraper):
             }
             
             self.logger.debug(f"Estimating papers for {venue} {year} using sample month {start_month}")
+            self.logger.debug(f"Request URL: {oai_url} with params: {params}")
             
-            response = self.session.get(oai_url, params=params, timeout=10)
+            request_start = timer.time()
+            response = self.session.get(oai_url, params=params, timeout=3)  # Very short timeout for estimation
+            request_time = timer.time() - request_start
+            self.logger.debug(f"OAI-PMH request took {request_time:.2f}s, status: {response.status_code}")
             
             if response.status_code == 503:
                 # Rate limited, fall back to defaults
@@ -401,7 +410,10 @@ class AAAIScraper(BaseScraper):
                 raise Exception(f"HTTP {response.status_code}")
             
             # Parse XML response
+            parse_start = timer.time()
             root = ET.fromstring(response.text)
+            parse_time = timer.time() - parse_start
+            self.logger.debug(f"XML parsing took {parse_time:.2f}s")
             
             # Check for OAI-PMH errors
             error_elem = root.find('.//oai:error', self.namespaces)
@@ -444,11 +456,13 @@ class AAAIScraper(BaseScraper):
                 # Other venues are smaller, mostly single track
                 estimated_total = int(sample_count * 1.1)
             
-            self.logger.info(f"Estimated {estimated_total} papers for {venue} {year} (sample: {sample_count})")
+            total_time = timer.time() - start_time
+            self.logger.info(f"Estimated {estimated_total} papers for {venue} {year} (sample: {sample_count}) in {total_time:.2f}s")
             return estimated_total
             
         except Exception as e:
-            self.logger.debug(f"Failed to estimate count for {venue} {year}: {e}")
+            total_time = timer.time() - start_time
+            self.logger.debug(f"Failed to estimate count for {venue} {year} after {total_time:.2f}s: {e}")
             
             # Return reasonable defaults based on historical conference sizes
             venue_defaults = {
