@@ -8,12 +8,22 @@ from .base import (
     ScrapingConfig,
     ScrapingResult,
 )
+from .models import (
+    SimplePaper,
+    PaperoniAdapter,
+    ScrapingBatch,
+)
 
 __all__ = [
+    # Base classes
     "BaseScaper",
     "ConferenceProceedingsScaper",
     "JournalPublisherScaper",
     "APIEnhancedScaper",
     "ScrapingConfig",
     "ScrapingResult",
+    # Models
+    "SimplePaper",
+    "PaperoniAdapter",
+    "ScrapingBatch",
 ]

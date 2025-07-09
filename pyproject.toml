@@ -41,6 +41,7 @@ dependencies = [
     "google-auth>=2.20.0",
     "python-dotenv>=1.0.0",
     "pymupdf>=1.24.0",
+    "paperoni>=0.1.8",
 ]
 
 [project.urls]
