@@ -48,6 +48,19 @@ class AAAIScraper(BaseScraper):
             self.logger.warning(f"Reducing batch size from {self.config.batch_size} to 50 for AAAI to avoid timeouts")
             self.config.batch_size = 50
         
+        # Enable debug logging if environment variable is set
+        import os
+        if os.environ.get('CF_DEBUG') or os.environ.get('CF_VERBOSE'):
+            import logging
+            self.logger.setLevel(logging.DEBUG)
+            # Also add console handler to see debug output
+            if not self.logger.handlers:
+                handler = logging.StreamHandler()
+                handler.setLevel(logging.DEBUG)
+                formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                handler.setFormatter(formatter)
+                self.logger.addHandler(handler)
+        
     def get_supported_venues(self) -> List[str]:
         """Return all supported AAAI venues."""
         return list(self.VENUE_TO_JOURNAL.keys())
