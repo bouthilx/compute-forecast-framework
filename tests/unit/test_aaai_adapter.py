@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 import xml.etree.ElementTree as ET
+import time
 
 from compute_forecast.data.sources.scrapers.paperoni_adapters.aaai import AAAIAdapter
 from compute_forecast.data.sources.scrapers.models import SimplePaper
@@ -115,6 +116,9 @@ class TestAAAIAdapter:
     
     def test_call_paperoni_scraper_success(self, adapter):
         """Test successful paper collection from OAI-PMH."""
+        # Set batch size to 1 so we stop after first paper
+        adapter.config.batch_size = 1
+        
         # Mock XML response
         xml_response = """<?xml version="1.0"?>
         <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
@@ -144,9 +148,11 @@ class TestAAAIAdapter:
         mock_response.status_code = 200
         mock_response.text = xml_response
         
+        # Mock only needs to handle first quarter since batch_size=1
         with patch.object(adapter.session, 'get', return_value=mock_response):
             papers = adapter._call_paperoni_scraper(None, "aaai", 2024)
         
+        # Should get exactly 1 paper
         assert len(papers) == 1
         paper = papers[0]
         
@@ -157,7 +163,7 @@ class TestAAAIAdapter:
         assert paper.year == 2024
     
     def test_call_paperoni_scraper_with_date_filtering(self, adapter):
-        """Test that date filtering is applied correctly."""
+        """Test that date filtering is applied correctly with quarterly ranges."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.text = """<?xml version="1.0"?>
@@ -168,13 +174,13 @@ class TestAAAIAdapter:
         with patch.object(adapter.session, 'get', return_value=mock_response) as mock_get:
             adapter._call_paperoni_scraper(None, "aaai", 2023)
             
-            # Check that the request included date filtering
-            args, kwargs = mock_get.call_args
+            # Check that the first request included Q1 date filtering
+            args, kwargs = mock_get.call_args_list[0]
             assert 'params' in kwargs
             assert 'from' in kwargs['params']
             assert 'until' in kwargs['params']
             assert kwargs['params']['from'] == '2023-01-01'
-            assert kwargs['params']['until'] == '2023-12-31'
+            assert kwargs['params']['until'] == '2023-03-31'
     
     def test_call_paperoni_scraper_empty_results(self, adapter):
         """Test handling of empty results."""
@@ -257,7 +263,19 @@ class TestAAAIAdapter:
             Mock(status_code=200, text=xml_response_2)
         ]
         
-        with patch.object(adapter.session, 'get', side_effect=mock_responses):
+        # Need to add empty responses for the other quarters
+        empty_response = Mock(status_code=200, text="""<?xml version="1.0"?>
+        <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
+            <ListRecords></ListRecords>
+        </OAI-PMH>""")
+        
+        with patch.object(adapter.session, 'get', side_effect=[
+            mock_responses[0],  # Q1 page 1
+            mock_responses[1],  # Q1 page 2
+            empty_response,     # Q2
+            empty_response,     # Q3
+            empty_response      # Q4
+        ]):
             papers = adapter._call_paperoni_scraper(None, "aaai", 2024)
         
         assert len(papers) == 2
@@ -269,3 +287,50 @@ class TestAAAIAdapter:
         assert adapter._extract_article_id("oai:ojs.aaai.org:article/32043") == "32043"
         assert adapter._extract_article_id("oai:ojs.aaai.org:article/1234") == "1234"
         assert adapter._extract_article_id("invalid-format") is None
+    
+    def test_503_retry_logic(self, adapter):
+        """Test that adapter retries on 503 errors."""
+        # First response: 503 error with Retry-After
+        mock_response_503 = Mock()
+        mock_response_503.status_code = 503
+        mock_response_503.headers = {'Retry-After': '1'}
+        
+        # Second response: Success
+        mock_response_200 = Mock()
+        mock_response_200.status_code = 200
+        mock_response_200.text = """<?xml version="1.0"?>
+        <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
+            <ListRecords>
+                <record>
+                    <metadata>
+                        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+                                   xmlns:dc="http://purl.org/dc/elements/1.1/">
+                            <dc:title>Test Paper</dc:title>
+                            <dc:creator>Author</dc:creator>
+                            <dc:date>2024-01-01</dc:date>
+                            <dc:identifier>https://ojs.aaai.org/index.php/AAAI/article/view/1</dc:identifier>
+                        </oai_dc:dc>
+                    </metadata>
+                </record>
+            </ListRecords>
+        </OAI-PMH>"""
+        
+        # Need 4 sets of responses for 4 quarters - Q1 has retry, others are empty
+        empty_response = Mock()
+        empty_response.status_code = 200
+        empty_response.text = """<?xml version="1.0"?>
+        <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
+            <ListRecords></ListRecords>
+        </OAI-PMH>"""
+        
+        with patch.object(adapter.session, 'get', side_effect=[
+            mock_response_503, mock_response_200,  # Q1: retry then success
+            empty_response,  # Q2: empty
+            empty_response,  # Q3: empty  
+            empty_response   # Q4: empty
+        ]):
+            with patch('time.sleep'):  # Mock sleep to speed up test
+                papers = adapter._call_paperoni_scraper(None, "aaai", 2024)
+        
+        assert len(papers) == 1
+        assert papers[0].title == "Test Paper"

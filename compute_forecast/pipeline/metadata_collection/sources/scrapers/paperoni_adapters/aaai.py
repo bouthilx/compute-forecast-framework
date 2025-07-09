@@ -38,6 +38,10 @@ class AAAIAdapter(BasePaperoniAdapter):
             'oai_dc': 'http://www.openarchives.org/OAI/2.0/oai_dc/',
             'dc': 'http://purl.org/dc/elements/1.1/'
         }
+        # Limit batch size for AAAI to avoid timeouts
+        if self.config.batch_size > 50:
+            self.logger.warning(f"Reducing batch size from {self.config.batch_size} to 50 for AAAI to avoid timeouts")
+            self.config.batch_size = 50
         
     def get_supported_venues(self) -> List[str]:
         """Return all supported AAAI venues."""
@@ -86,70 +90,111 @@ class AAAIAdapter(BasePaperoniAdapter):
             # OAI-PMH endpoint URL
             oai_url = f"{self.base_url}/{journal_name}/oai"
             
-            # Initial request parameters
-            params = {
-                'verb': 'ListRecords',
-                'metadataPrefix': 'oai_dc',
-                'from': f'{year}-01-01',
-                'until': f'{year}-12-31'
-            }
+            # For AAAI, use smaller date ranges to avoid timeouts
+            # Split year into quarters
+            date_ranges = [
+                (f'{year}-01-01', f'{year}-03-31'),
+                (f'{year}-04-01', f'{year}-06-30'),
+                (f'{year}-07-01', f'{year}-09-30'),
+                (f'{year}-10-01', f'{year}-12-31')
+            ]
             
-            papers_collected = 0
-            resumption_token = None
-            
-            while papers_collected < self.config.batch_size:
-                # Use resumption token if available
-                if resumption_token:
-                    params = {
-                        'verb': 'ListRecords',
-                        'resumptionToken': resumption_token
-                    }
-                
-                self.logger.info(f"Querying OAI-PMH for {venue} papers from {year}")
-                response = self.session.get(oai_url, params=params, timeout=30)
-                
-                if response.status_code != 200:
-                    raise Exception(f"OAI-PMH error: {response.status_code} - {response.text}")
-                
-                # Parse XML response
-                root = ET.fromstring(response.text)
-                
-                # Check for OAI-PMH errors
-                error_elem = root.find('.//oai:error', self.namespaces)
-                if error_elem is not None:
-                    error_code = error_elem.get('code', 'unknown')
-                    error_msg = error_elem.text or 'Unknown error'
-                    raise Exception(f"OAI-PMH error {error_code}: {error_msg}")
-                
-                # Extract records
-                records = root.findall('.//oai:record', self.namespaces)
-                
-                if not records:
-                    self.logger.info(f"No records found for {venue} {year}")
+            for from_date, until_date in date_ranges:
+                if len(papers) >= self.config.batch_size:
                     break
+                    
+                # Initial request parameters for this date range
+                params = {
+                    'verb': 'ListRecords',
+                    'metadataPrefix': 'oai_dc',
+                    'from': from_date,
+                    'until': until_date
+                }
                 
-                for record in records:
-                    if papers_collected >= self.config.batch_size:
+                resumption_token = None
+                
+                while len(papers) < self.config.batch_size:
+                    # Use resumption token if available
+                    if resumption_token:
+                        params = {
+                            'verb': 'ListRecords',
+                            'resumptionToken': resumption_token
+                        }
+                    
+                    self.logger.info(f"Querying OAI-PMH for {venue} papers from {from_date} to {until_date}")
+                    
+                    # Add retry logic for 503 errors
+                    max_retries = 3
+                    retry_count = 0
+                    
+                    while retry_count < max_retries:
+                        try:
+                            response = self.session.get(oai_url, params=params, timeout=60)
+                            if response.status_code == 503:
+                                # Check for Retry-After header
+                                retry_after = response.headers.get('Retry-After', 30)
+                                try:
+                                    retry_after = int(retry_after)
+                                except (ValueError, TypeError):
+                                    retry_after = 30
+                                
+                                self.logger.warning(f"Got 503 error, retrying after {retry_after} seconds")
+                                time.sleep(retry_after)
+                                retry_count += 1
+                                continue
+                            elif response.status_code != 200:
+                                raise Exception(f"OAI-PMH error: {response.status_code} - {response.text}")
+                            break
+                        except Exception as e:
+                            if retry_count < max_retries - 1:
+                                self.logger.warning(f"Request failed, retrying: {e}")
+                                time.sleep(10 * (retry_count + 1))  # Exponential backoff
+                                retry_count += 1
+                            else:
+                                raise
+                    
+                    # Parse XML response
+                    root = ET.fromstring(response.text)
+                    
+                    # Check for OAI-PMH errors
+                    error_elem = root.find('.//oai:error', self.namespaces)
+                    if error_elem is not None:
+                        error_code = error_elem.get('code', 'unknown')
+                        error_msg = error_elem.text or 'Unknown error'
+                        if error_code == 'noRecordsMatch':
+                            self.logger.info(f"No records found for {venue} from {from_date} to {until_date}")
+                            break
+                        else:
+                            raise Exception(f"OAI-PMH error {error_code}: {error_msg}")
+                    
+                    # Extract records
+                    records = root.findall('.//oai:record', self.namespaces)
+                    
+                    if not records:
+                        self.logger.info(f"No records found for {venue} from {from_date} to {until_date}")
                         break
-                        
-                    try:
-                        paper = self._parse_oai_record(record, venue_lower, year)
-                        if paper:
-                            papers.append(paper)
-                            papers_collected += 1
-                    except Exception as e:
-                        self.logger.warning(f"Failed to parse OAI record: {e}")
-                        continue
-                
-                # Check for resumption token
-                resumption_elem = root.find('.//oai:resumptionToken', self.namespaces)
-                if resumption_elem is not None and resumption_elem.text:
-                    resumption_token = resumption_elem.text
-                    # Add small delay before next request
-                    time.sleep(1)
-                else:
-                    # No more records
-                    break
+                    
+                    for record in records:
+                        if len(papers) >= self.config.batch_size:
+                            break
+                            
+                        try:
+                            paper = self._parse_oai_record(record, venue_lower, year)
+                            if paper:
+                                papers.append(paper)
+                        except Exception as e:
+                            self.logger.warning(f"Failed to parse OAI record: {e}")
+                            continue
+                    
+                    # Check for resumption token
+                    resumption_elem = root.find('.//oai:resumptionToken', self.namespaces)
+                    if resumption_elem is not None and resumption_elem.text:
+                        resumption_token = resumption_elem.text
+                        # Add small delay before next request
+                        time.sleep(2)  # Increased delay to be more polite
+                    else:
+                        # No more records for this date range
+                        break
                     
             self.logger.info(f"Collected {len(papers)} papers for {venue} {year}")
             
