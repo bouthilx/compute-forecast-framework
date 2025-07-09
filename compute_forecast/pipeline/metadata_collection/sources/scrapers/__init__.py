@@ -20,7 +20,7 @@ from .error_handling import (
     retry_on_error,
     RateLimiter,
 )
-from .conference_scrapers import IJCAIScraper
+from .conference_scrapers import IJCAIScraper, ACLAnthologyScraper
 
 __all__ = [
     # Base classes
@@ -42,4 +42,5 @@ __all__ = [
     "RateLimiter",
     # Scrapers
     "IJCAIScraper",
+    "ACLAnthologyScraper",
 ]
