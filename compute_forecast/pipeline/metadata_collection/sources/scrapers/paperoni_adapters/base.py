@@ -4,8 +4,8 @@ import logging
 from typing import List, Dict, Optional, Any
 from datetime import datetime
 
-from ..base import BaseScraper, ScrapingConfig, ScrapingResult
-from ..models import SimplePaper, ScrapingBatch
+from compute_forecast.pipeline.metadata_collection.sources.base import BaseScraper, ScrapingConfig, ScrapingResult
+from compute_forecast.pipeline.metadata_collection.sources.models import SimplePaper, ScrapingBatch
 
 
 class BasePaperoniAdapter(BaseScraper):

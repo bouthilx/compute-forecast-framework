@@ -15,9 +15,10 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from ...data.sources.scrapers.registry import get_registry
-from ...data.sources.scrapers.base import ScrapingConfig
-from ...data.sources.scrapers.models import SimplePaper
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import get_registry
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import ScrapingConfig
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import SimplePaper
+
 
 console = Console()
 

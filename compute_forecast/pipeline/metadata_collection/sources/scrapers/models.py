@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
 
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 @dataclass
