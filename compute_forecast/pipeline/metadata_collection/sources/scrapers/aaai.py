@@ -1,4 +1,4 @@
-"""AAAI adapter using OAI-PMH protocol."""
+"""AAAI scraper using OAI-PMH protocol."""
 
 import re
 import time
@@ -6,12 +6,12 @@ import xml.etree.ElementTree as ET
 from typing import List, Any, Optional
 from datetime import datetime
 
-from .base import BasePaperoniAdapter
-from ..models import SimplePaper
+from .base import BaseScraper, ScrapingResult, ScrapingConfig
+from .models import SimplePaper
 
 
-class AAAIAdapter(BasePaperoniAdapter):
-    """Adapter for AAAI proceedings using OAI-PMH protocol."""
+class AAAIScraper(BaseScraper):
+    """Scraper for AAAI proceedings using OAI-PMH protocol."""
     
     # Venue to OJS journal name mapping
     VENUE_TO_JOURNAL = {
@@ -29,7 +29,7 @@ class AAAIAdapter(BasePaperoniAdapter):
         "icwsm": 2007,  # International AAAI Conference on Web and Social Media
     }
     
-    def __init__(self, config=None):
+    def __init__(self, config: Optional[ScrapingConfig] = None):
         super().__init__("aaai", config)
         self.base_url = "https://ojs.aaai.org/index.php"
         # XML namespaces for OAI-PMH
@@ -38,6 +38,11 @@ class AAAIAdapter(BasePaperoniAdapter):
             'oai_dc': 'http://www.openarchives.org/OAI/2.0/oai_dc/',
             'dc': 'http://purl.org/dc/elements/1.1/'
         }
+        # Configure session headers
+        self.session.headers.update({
+            'User-Agent': 'ComputeForecast/1.0 (mailto:research@institution.edu)',
+            'Accept': 'application/xml'
+        })
         # Limit batch size for AAAI to avoid timeouts
         if self.config.batch_size > 50:
             self.logger.warning(f"Reducing batch size from {self.config.batch_size} to 50 for AAAI to avoid timeouts")
@@ -63,30 +68,26 @@ class AAAIAdapter(BasePaperoniAdapter):
         """Get OJS journal name for a given venue."""
         return self.VENUE_TO_JOURNAL.get(venue.lower())
         
-    def _create_paperoni_scraper(self):
-        """Create HTTP session for OAI-PMH requests."""
-        # Use the session from base class
-        self.session.headers.update({
-            'User-Agent': 'ComputeForecast/1.0 (mailto:research@institution.edu)',
-            'Accept': 'application/xml'
-        })
-        return self.session
-        
-    def _call_paperoni_scraper(self, scraper: Any, venue: str, year: int) -> List[SimplePaper]:
-        """Use OAI-PMH protocol to get papers."""
+    def scrape_venue_year(self, venue: str, year: int) -> ScrapingResult:
+        """Scrape papers for a specific venue and year using OAI-PMH."""
         papers = []
+        errors = []
         
         venue_lower = venue.lower()
         journal_name = self._get_journal_name(venue_lower)
         
         if not journal_name:
-            self.logger.error(f"Unsupported venue for AAAI: {venue}")
-            return []
+            error_msg = f"Unsupported venue for AAAI: {venue}"
+            self.logger.error(error_msg)
+            return ScrapingResult(
+                success=False,
+                papers_collected=0,
+                errors=[error_msg],
+                metadata={},
+                timestamp=datetime.now()
+            )
             
         try:
-            # Ensure session is configured
-            self._create_paperoni_scraper()
-            
             # OAI-PMH endpoint URL
             oai_url = f"{self.base_url}/{journal_name}/oai"
             
@@ -198,11 +199,24 @@ class AAAIAdapter(BasePaperoniAdapter):
                     
             self.logger.info(f"Collected {len(papers)} papers for {venue} {year}")
             
-        except Exception as e:
-            self.logger.error(f"Error fetching AAAI papers for {venue} {year}: {e}")
-            raise
+            return ScrapingResult(
+                success=True,
+                papers_collected=len(papers),
+                errors=[],
+                metadata={"papers": papers},
+                timestamp=datetime.now()
+            )
             
-        return papers
+        except Exception as e:
+            error_msg = f"Error fetching AAAI papers for {venue} {year}: {str(e)}"
+            self.logger.error(error_msg)
+            return ScrapingResult(
+                success=False,
+                papers_collected=len(papers),
+                errors=[error_msg],
+                metadata={"papers": papers} if papers else {},
+                timestamp=datetime.now()
+            )
     
     def _parse_oai_record(self, record: ET.Element, venue: str, year: int) -> Optional[SimplePaper]:
         """Parse OAI-PMH record into SimplePaper."""
@@ -289,3 +303,110 @@ class AAAIAdapter(BasePaperoniAdapter):
         """
         match = re.search(r'article/(\d+)', oai_identifier)
         return match.group(1) if match else None
+    
+    def estimate_paper_count(self, venue: str, year: int) -> Optional[int]:
+        """Estimate number of papers for a venue/year using fast OAI-PMH queries.
+        
+        Uses ListIdentifiers verb with a sample month to estimate total papers.
+        Falls back to reasonable defaults if API fails.
+        """
+        venue_lower = venue.lower()
+        journal_name = self._get_journal_name(venue_lower)
+        
+        if not journal_name:
+            return None
+        
+        try:
+            # OAI-PMH endpoint URL
+            oai_url = f"{self.base_url}/{journal_name}/oai"
+            
+            # Sample just January to estimate (or first month of conference)
+            # For conferences that don't run all year, sample their typical month
+            sample_months = {
+                'aaai': ('02', '02'),  # AAAI is usually in February
+                'aies': ('01', '01'),  # AIES varies
+                'hcomp': ('10', '10'),  # HCOMP is usually in October
+                'icwsm': ('06', '06'),  # ICWSM is usually in June
+            }
+            
+            start_month, end_month = sample_months.get(venue_lower, ('01', '01'))
+            
+            params = {
+                'verb': 'ListIdentifiers',
+                'metadataPrefix': 'oai_dc',
+                'from': f'{year}-{start_month}-01',
+                'until': f'{year}-{end_month}-28'  # Use 28 to avoid month-end issues
+            }
+            
+            self.logger.debug(f"Estimating papers for {venue} {year} using sample month {start_month}")
+            
+            response = self.session.get(oai_url, params=params, timeout=10)
+            
+            if response.status_code == 503:
+                # Rate limited, fall back to defaults
+                self.logger.debug("Got 503 during estimation, using defaults")
+                raise Exception("Rate limited")
+            elif response.status_code != 200:
+                raise Exception(f"HTTP {response.status_code}")
+            
+            # Parse XML response
+            root = ET.fromstring(response.text)
+            
+            # Check for OAI-PMH errors
+            error_elem = root.find('.//oai:error', self.namespaces)
+            if error_elem is not None:
+                error_code = error_elem.get('code', 'unknown')
+                if error_code == 'noRecordsMatch':
+                    # No papers in this year
+                    return 0
+                else:
+                    raise Exception(f"OAI error: {error_code}")
+            
+            # Count identifiers in this page
+            identifiers = root.findall('.//oai:header/oai:identifier', self.namespaces)
+            sample_count = len(identifiers)
+            
+            # Check if there's a resumption token with total count
+            resumption = root.find('.//oai:resumptionToken', self.namespaces)
+            if resumption is not None:
+                # Some OAI-PMH implementations provide completeListSize
+                complete_size = resumption.get('completeListSize')
+                if complete_size:
+                    try:
+                        sample_count = int(complete_size)
+                        self.logger.debug(f"Got completeListSize from OAI-PMH: {sample_count}")
+                    except (ValueError, TypeError):
+                        pass
+                elif resumption.text:
+                    # There are more pages, estimate based on typical page size
+                    # OJS typically returns 100 records per page
+                    self.logger.debug("Has resumption token, estimating multiple pages")
+                    sample_count = max(sample_count * 2, 100)  # Conservative estimate
+            
+            # Extrapolate to full year
+            # Most conferences publish once a year, so sample month ≈ total
+            # Add small buffer for workshops/late additions
+            if venue_lower == 'aaai':
+                # AAAI has main track + workshops, can be larger
+                estimated_total = int(sample_count * 1.2)
+            else:
+                # Other venues are smaller, mostly single track
+                estimated_total = int(sample_count * 1.1)
+            
+            self.logger.info(f"Estimated {estimated_total} papers for {venue} {year} (sample: {sample_count})")
+            return estimated_total
+            
+        except Exception as e:
+            self.logger.debug(f"Failed to estimate count for {venue} {year}: {e}")
+            
+            # Return reasonable defaults based on historical conference sizes
+            venue_defaults = {
+                'aaai': 1500,   # Large conference with workshops
+                'aies': 100,    # Smaller specialized conference  
+                'hcomp': 150,   # Medium workshop
+                'icwsm': 300,   # Medium conference
+            }
+            
+            default_count = venue_defaults.get(venue_lower, 500)
+            self.logger.debug(f"Using default estimate: {default_count}")
+            return default_count

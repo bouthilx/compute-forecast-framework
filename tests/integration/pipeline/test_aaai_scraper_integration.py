@@ -5,7 +5,7 @@ from compute_forecast.data.sources.scrapers.registry import get_registry
 from compute_forecast.data.sources.scrapers.base import ScrapingConfig
 
 
-class TestAAAIIntegration:
+class TestAAAIScraperIntegration:
     """Integration tests for AAAI scraper."""
     
     @pytest.fixture
@@ -34,7 +34,7 @@ class TestAAAIIntegration:
         # Check scraper can be instantiated
         scraper = registry.get_scraper_for_venue("aaai", config=ScrapingConfig())
         assert scraper is not None
-        assert scraper.__class__.__name__ == "AAAIAdapter"
+        assert scraper.__class__.__name__ == "AAAIScraper"
     
     @pytest.mark.integration
     @pytest.mark.slow
