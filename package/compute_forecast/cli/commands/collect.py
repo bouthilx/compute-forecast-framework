@@ -225,6 +225,9 @@ def main(
             "ACLAnthologyScraper": "ACL Anthology (NLP conferences)",
             "MLRScraper": "PMLR venues (ICML, AISTATS, UAI)", 
             "OpenReviewScraper": "OpenReview-hosted conferences",
+            "NaturePortfolioScraper": "Nature Portfolio journals via Crossref",
+            "CVFScraper": "Computer Vision Foundation conferences",
+            "PMLRScraper": "Proceedings of Machine Learning Research",
             "SemanticScholarScraper": "API-based fallback for other venues"
         }
         
