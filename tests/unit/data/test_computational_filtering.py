@@ -4,15 +4,23 @@ Unit tests for Computational Research Filtering System (Issue #8).
 
 import pytest
 
-from compute_forecast.data.models import Paper, Author
-from compute_forecast.filtering.computational_analyzer import ComputationalAnalyzer
-from compute_forecast.filtering.authorship_classifier import AuthorshipClassifier
-from compute_forecast.filtering.venue_relevance_scorer import VenueRelevanceScorer
-from compute_forecast.filtering.computational_filter import (
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.paper_filtering.selectors.computational_analyzer import (
+    ComputationalAnalyzer,
+)
+from compute_forecast.pipeline.paper_filtering.selectors.authorship_classifier import (
+    AuthorshipClassifier,
+)
+from compute_forecast.pipeline.paper_filtering.selectors.venue_relevance_scorer import (
+    VenueRelevanceScorer,
+)
+from compute_forecast.pipeline.paper_filtering.selectors.computational_filter import (
     ComputationalResearchFilter,
     FilteringConfig,
 )
-from compute_forecast.filtering.pipeline_integration import FilteringPipelineIntegration
+from compute_forecast.pipeline.paper_filtering.selectors.pipeline_integration import (
+    FilteringPipelineIntegration,
+)
 
 
 class TestComputationalAnalyzer:

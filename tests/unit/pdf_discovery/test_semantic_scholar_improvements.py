@@ -2,14 +2,14 @@
 
 from unittest.mock import Mock, patch
 
-from compute_forecast.pdf_discovery.sources.semantic_scholar_collector import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector import (
     SemanticScholarPDFCollector,
     SEMANTIC_SCHOLAR_MAX_BATCH_SIZE,
     DEFAULT_MAX_RETRIES,
     CONFIDENCE_SCORE_WITH_IDENTIFIER,
     CONFIDENCE_SCORE_TITLE_SEARCH,
 )
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class TestSemanticScholarImprovements:

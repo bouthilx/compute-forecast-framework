@@ -1,0 +1,80 @@
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...............................................................Passed
+check toml...............................................................Passed
+check json...............................................................Passed
+check for added large files..............................................Passed
+check for case conflicts.................................................Passed
+check for merge conflicts................................................Passed
+detect private key.......................................................Passed
+mixed line ending........................................................Passed
+ruff (legacy alias)......................................................Passed
+ruff format..............................................................Passed
+mypy.....................................................................Failed
+- hook id: mypy
+- exit code: 1
+
+compute_forecast/pipeline/metadata_collection/analysis/statistical_analyzer.py:111: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/metadata_collection/analysis/statistical_analyzer.py:112: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/content_extraction/parser/core/cost_tracker.py:16: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/content_extraction/parser/core/cost_tracker.py:17: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/orchestration/core/monitoring_components.py:133: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/orchestration/core/monitoring_components.py:210: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/orchestration/core/monitoring_components.py:211: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alerting_engine.py:137: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alerting_engine.py:138: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alerting_engine.py:139: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alerting_engine.py:140: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alerting_engine.py:147: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alerting_engine.py:148: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alerting_engine.py:449: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alerting_engine.py:486: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/notification_channels.py:315: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/notification_channels.py:316: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alert_suppression.py:37: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alert_suppression.py:41: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alert_suppression.py:42: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alert_suppression.py:43: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alert_suppression.py:394: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/monitoring/alerting/alert_suppression.py:395: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/quality/quality_monitoring_integration.py:293: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/injection_framework.py:51: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/injection_framework.py:52: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/injection_framework.py:53: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/injection_framework.py:54: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/recovery_validator.py:43: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/recovery_validator.py:44: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/reporter_errors.py:32: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/reporter_errors.py:33: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/reporter_errors.py:34: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/reporter_errors.py:35: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/reporter_errors.py:36: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/reporter_errors.py:37: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/collector_errors.py:32: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/collector_errors.py:33: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/collector_errors.py:34: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/analyzer_errors.py:33: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/testing/error_injection/component_handlers/analyzer_errors.py:44: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/metadata_collection/collectors/state_management.py:34: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/analysis/computational/quality_control.py:771: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/analysis/computational/quality_control.py:772: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/analysis/classification/enhanced_organizations.py:61: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/analysis/classification/enhanced_organizations.py:62: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/analysis/classification/enhanced_organizations.py:63: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/pdf_acquisition/discovery/sources/cvf_collector.py:45: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/pdf_acquisition/discovery/sources/aaai_collector.py:40: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/pdf_acquisition/discovery/sources/aaai_collector.py:41: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/pdf_acquisition/discovery/deduplication/engine.py:36: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/content_extraction/templates/template_engine.py:96: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/content_extraction/templates/validation_rules.py:22: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/content_extraction/templates/coverage_reporter.py:92: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/content_extraction/templates/coverage_reporter.py:93: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/core/contracts/pipeline_validator.py:35: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/core/contracts/contract_tests.py:70: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/core/contracts/contract_tests.py:71: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/pipeline/analysis/classification/enhanced_validator.py:26: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+compute_forecast/orchestration/orchestrators/venue_collection_orchestrator.py:338: error: Unexpected keyword argument "checkpoint_dir" for "StatePersistenceManager"  [call-arg]
+compute_forecast/orchestration/state/state_persistence.py:34: note: "StatePersistenceManager" defined here
+compute_forecast/orchestration/orchestrators/venue_collection_orchestrator.py:338: error: Unexpected keyword argument "enable_compression" for "StatePersistenceManager"  [call-arg]
+compute_forecast/orchestration/state/state_persistence.py:34: note: "StatePersistenceManager" defined here
+Found 2 errors in 1 file (checked 228 source files)

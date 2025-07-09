@@ -4,7 +4,7 @@ import random
 from datetime import datetime
 from typing import List
 
-from compute_forecast.data.models import (
+from compute_forecast.pipeline.metadata_collection.models import (
     Author,
     AuthorshipAnalysis,
     ComputationalAnalysis,

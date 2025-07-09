@@ -3,9 +3,13 @@
 import pytest
 from datetime import datetime
 
-from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
-from compute_forecast.quality.contracts.base_contracts import ContractViolationType
-from compute_forecast.quality.contracts.analysis_contracts import (
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+    ComputationalAnalysis,
+    Author,
+)
+from compute_forecast.core.contracts.base_contracts import ContractViolationType
+from compute_forecast.core.contracts.analysis_contracts import (
     ComputationalAnalysisContract,
     PaperMetadataContract,
     ResourceMetricsContract,

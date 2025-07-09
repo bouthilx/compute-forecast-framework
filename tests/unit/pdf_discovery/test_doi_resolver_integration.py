@@ -4,12 +4,17 @@ import pytest
 from unittest.mock import patch
 from datetime import datetime
 
-from compute_forecast.pdf_discovery.sources.doi_resolver_collector import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.doi_resolver_collector import (
     DOIResolverCollector,
 )
-from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
-from compute_forecast.pdf_discovery.core.models import PDFRecord, DiscoveryResult
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
+    PDFDiscoveryFramework,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import (
+    PDFRecord,
+    DiscoveryResult,
+)
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 class TestDOIResolverIntegration:
@@ -64,7 +69,10 @@ class TestDOIResolverIntegration:
         ):
             # Setup mock responses for successful lookups
             def crossref_side_effect(doi):
-                from compute_forecast.data.models import APIResponse, ResponseMetadata
+                from compute_forecast.pipeline.metadata_collection.models import (
+                    APIResponse,
+                    ResponseMetadata,
+                )
 
                 if doi in ["10.1038/nature12373", "10.1126/science.123456"]:
                     return APIResponse(
@@ -94,7 +102,10 @@ class TestDOIResolverIntegration:
                 return APIResponse(success=False, papers=[], metadata=None, errors=[])
 
             def unpaywall_side_effect(doi):
-                from compute_forecast.data.models import APIResponse, ResponseMetadata
+                from compute_forecast.pipeline.metadata_collection.models import (
+                    APIResponse,
+                    ResponseMetadata,
+                )
 
                 if doi == "10.1038/nature12373":  # Only first DOI has OA
                     return APIResponse(

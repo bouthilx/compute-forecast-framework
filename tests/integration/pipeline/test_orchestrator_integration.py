@@ -7,10 +7,10 @@ import pytest
 import time
 from unittest.mock import Mock, patch
 
-from compute_forecast.orchestration.venue_collection_orchestrator import (
+from compute_forecast.orchestration.orchestrators.venue_collection_orchestrator import (
     VenueCollectionOrchestrator,
 )
-from compute_forecast.data.models import CollectionConfig
+from compute_forecast.pipeline.metadata_collection.models import CollectionConfig
 
 
 @pytest.mark.skip(reason="refactor: Missing modules and architectural changes needed")

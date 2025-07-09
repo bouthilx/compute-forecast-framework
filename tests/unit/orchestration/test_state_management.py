@@ -11,8 +11,10 @@ import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 
-from compute_forecast.data.collectors.state_management import StateManager
-from compute_forecast.data.collectors.state_structures import (
+from compute_forecast.pipeline.metadata_collection.collectors.state_management import (
+    StateManager,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     VenueConfig,
     CheckpointData,
     RecoveryPlan,

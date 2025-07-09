@@ -4,11 +4,13 @@ import pytest
 from unittest.mock import patch, Mock
 import os
 
-from compute_forecast.pdf_discovery.sources.ieee_xplore_collector import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.ieee_xplore_collector import (
     IEEEXplorePDFCollector,
 )
-from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
+    PDFDiscoveryFramework,
+)
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class TestIEEEXploreIntegration:

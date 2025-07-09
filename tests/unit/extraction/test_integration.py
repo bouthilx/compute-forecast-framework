@@ -3,12 +3,12 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from compute_forecast.extraction import (
+from compute_forecast.pipeline.content_extraction.templates.template_engine import (
     ExtractionTemplateEngine,
     ExtractionTemplate,
     ExtractionField,
 )
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class TestExtractionIntegration:
@@ -92,7 +92,9 @@ class TestExtractionIntegration:
             },
         }
 
-    @patch("compute_forecast.extraction.template_engine.ComputationalAnalyzer")
+    @patch(
+        "compute_forecast.pipeline.content_extraction.templates.template_engine.ComputationalAnalyzer"
+    )
     def test_nlp_extraction_workflow(
         self, mock_analyzer_class, sample_paper_nlp, mock_analyzer_nlp_result
     ):
@@ -133,7 +135,9 @@ class TestExtractionIntegration:
         # Check confidence scores
         assert all(0 <= score <= 1 for score in result["confidence_scores"].values())
 
-    @patch("compute_forecast.extraction.template_engine.ComputationalAnalyzer")
+    @patch(
+        "compute_forecast.pipeline.content_extraction.templates.template_engine.ComputationalAnalyzer"
+    )
     def test_cv_extraction_workflow(
         self, mock_analyzer_class, sample_paper_cv, mock_analyzer_cv_result
     ):
@@ -165,7 +169,9 @@ class TestExtractionIntegration:
         # Check validation
         assert result["validation_results"]["passed"] is True
 
-    @patch("compute_forecast.extraction.template_engine.ComputationalAnalyzer")
+    @patch(
+        "compute_forecast.pipeline.content_extraction.templates.template_engine.ComputationalAnalyzer"
+    )
     def test_validation_failure(self, mock_analyzer_class):
         """Test extraction with validation failures."""
         # Mock unrealistic values
@@ -195,7 +201,9 @@ class TestExtractionIntegration:
         assert validation["passed"] is False
         assert len(validation["errors"]) > 0
 
-    @patch("compute_forecast.extraction.template_engine.ComputationalAnalyzer")
+    @patch(
+        "compute_forecast.pipeline.content_extraction.templates.template_engine.ComputationalAnalyzer"
+    )
     def test_template_selection(self, mock_analyzer_class):
         """Test selecting appropriate template based on paper content."""
         mock_analyzer = Mock()
@@ -246,7 +254,9 @@ class TestExtractionIntegration:
         assert "custom_test" in engine.templates
         assert engine.templates["custom_test"] == custom_template
 
-    @patch("compute_forecast.extraction.template_engine.ComputationalAnalyzer")
+    @patch(
+        "compute_forecast.pipeline.content_extraction.templates.template_engine.ComputationalAnalyzer"
+    )
     def test_end_to_end_with_all_components(self, mock_analyzer_class):
         """Test complete end-to-end workflow with all components."""
         # Complex mock result with various field types

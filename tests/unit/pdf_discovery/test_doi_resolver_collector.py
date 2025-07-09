@@ -4,10 +4,15 @@ import pytest
 from unittest.mock import patch
 from datetime import datetime
 
-from compute_forecast.pdf_discovery.sources.doi_resolver_collector import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.doi_resolver_collector import (
     DOIResolverCollector,
 )
-from compute_forecast.data.models import Paper, Author, APIResponse, ResponseMetadata
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+    Author,
+    APIResponse,
+    ResponseMetadata,
+)
 
 
 class TestDOIResolverCollector:

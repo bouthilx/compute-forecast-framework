@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple, Any
 from datetime import datetime
 import copy
 
-from .quality_structures import (
+from compute_forecast.quality.quality_structures import (
     QualityThresholds,
     AdaptationConfig,
     QualityPerformanceMetrics,

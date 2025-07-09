@@ -2,8 +2,10 @@
 
 import pytest
 
-from compute_forecast.data.models import Paper
-from compute_forecast.pdf_discovery.sources.jmlr_collector import JMLRCollector
+from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.jmlr_collector import (
+    JMLRCollector,
+)
 
 
 @pytest.mark.integration

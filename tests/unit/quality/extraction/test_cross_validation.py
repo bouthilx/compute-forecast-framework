@@ -2,10 +2,10 @@
 Tests for CrossValidationFramework.
 """
 
-from compute_forecast.quality.extraction.cross_validation import (
+from compute_forecast.pipeline.content_extraction.quality.cross_validation import (
     CrossValidationFramework,
 )
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class TestCrossValidationFramework:

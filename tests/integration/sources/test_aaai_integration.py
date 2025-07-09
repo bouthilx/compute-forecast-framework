@@ -2,8 +2,10 @@
 
 import pytest
 
-from compute_forecast.pdf_discovery.sources.aaai_collector import AAICollector
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.aaai_collector import (
+    AAICollector,
+)
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 @pytest.mark.integration

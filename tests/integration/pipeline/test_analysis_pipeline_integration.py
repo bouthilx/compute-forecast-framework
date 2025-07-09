@@ -11,7 +11,7 @@ from datetime import datetime
 import random
 
 # Core imports
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 @dataclass
@@ -628,7 +628,7 @@ class EndToEndPipelineTester:
         """Test venue normalization component"""
         try:
             # Mock venue normalizer component
-            from compute_forecast.data.processors.venue_normalizer import (
+            from compute_forecast.pipeline.metadata_collection.processors.venue_normalizer import (
                 VenueNormalizer,
             )
 
@@ -693,7 +693,9 @@ class EndToEndPipelineTester:
     def _test_deduplication(self, papers: List[Paper]) -> ValidationResult:
         """Test deduplication component"""
         try:
-            from compute_forecast.data.processors.deduplicator import Deduplicator
+            from compute_forecast.pipeline.metadata_collection.processors.deduplicator import (
+                Deduplicator,
+            )
 
             deduplicator = Deduplicator()
 
@@ -763,7 +765,7 @@ class EndToEndPipelineTester:
     def _test_citation_analysis(self, papers: List[Paper]) -> ValidationResult:
         """Test citation analysis component"""
         try:
-            from compute_forecast.data.processors.citation_analyzer import (
+            from compute_forecast.pipeline.metadata_collection.processors.citation_analyzer import (
                 CitationAnalyzer,
             )
 

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
-from ...data.models import Paper
+from ...pipeline.metadata_collection.models import Paper
 
 
 class BaseValidator(ABC):

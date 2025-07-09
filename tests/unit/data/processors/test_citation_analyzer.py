@@ -5,10 +5,14 @@ from datetime import datetime
 from unittest.mock import patch
 import numpy as np
 
-from compute_forecast.data.models import Paper, Author
-from compute_forecast.data.collectors.state_structures import VenueConfig
-from compute_forecast.data.processors.citation_analyzer import CitationAnalyzer
-from compute_forecast.data.processors.citation_statistics import (
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
+    VenueConfig,
+)
+from compute_forecast.pipeline.metadata_collection.processors.citation_analyzer import (
+    CitationAnalyzer,
+)
+from compute_forecast.pipeline.metadata_collection.processors.citation_statistics import (
     CitationAnalysisReport,
     CitationFilterResult,
     FilteringQualityReport,
@@ -47,7 +51,7 @@ class TestCitationAnalyzer:
     def analyzer(self, venue_configs):
         """Create analyzer instance."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             return CitationAnalyzer(venue_configs)
@@ -118,7 +122,7 @@ class TestCitationAnalyzer:
     def test_analyze_citation_distributions(self, analyzer, sample_papers):
         """Test comprehensive citation distribution analysis."""
         with patch(
-            "compute_forecast.data.processors.citation_analyzer.datetime"
+            "compute_forecast.pipeline.metadata_collection.processors.citation_analyzer.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             analyzer.current_year = 2024
@@ -209,7 +213,7 @@ class TestCitationAnalyzer:
         papers = sample_papers + [breakthrough_paper]
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.datetime"
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             analyzer.breakthrough_detector.current_year = 2024

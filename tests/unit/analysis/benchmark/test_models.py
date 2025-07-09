@@ -1,14 +1,18 @@
 """Tests for benchmark extraction data models."""
 
 # Import future models
-from compute_forecast.analysis.benchmark.models import (
+from compute_forecast.pipeline.analysis.benchmark.models import (
     BenchmarkDomain,
     BenchmarkPaper,
     ExtractionBatch,
     BenchmarkExport,
     ExtractionQA,
 )
-from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+    ComputationalAnalysis,
+    Author,
+)
 
 
 class TestBenchmarkModels:

@@ -7,10 +7,14 @@ import psutil
 from dataclasses import dataclass, field
 from typing import Dict, List, Any
 
-from compute_forecast.orchestration.venue_collection_orchestrator import (
+from compute_forecast.orchestration.orchestrators.venue_collection_orchestrator import (
     VenueCollectionOrchestrator,
 )
-from compute_forecast.data.models import CollectionConfig, Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import (
+    CollectionConfig,
+    Paper,
+    Author,
+)
 
 
 @dataclass

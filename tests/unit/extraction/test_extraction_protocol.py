@@ -10,7 +10,7 @@ from datetime import datetime
 from unittest.mock import Mock
 import yaml
 
-from compute_forecast.analysis.computational.extraction_protocol import (
+from compute_forecast.pipeline.analysis.computational.extraction_protocol import (
     ExtractionProtocol,
     ExtractionResult,
     ExtractionMetadata,

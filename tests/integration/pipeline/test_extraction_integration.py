@@ -8,15 +8,19 @@ import pytest
 from unittest.mock import Mock
 from datetime import datetime
 
-from compute_forecast.analysis.computational.extraction_protocol import (
+from compute_forecast.pipeline.analysis.computational.extraction_protocol import (
     ExtractionProtocol,
 )
-from compute_forecast.analysis.computational.extraction_forms import (
+from compute_forecast.pipeline.analysis.computational.extraction_forms import (
     FormManager,
     ExtractionFormTemplate,
 )
-from compute_forecast.analysis.computational.extraction_patterns import PatternMatcher
-from compute_forecast.analysis.computational.quality_control import QualityController
+from compute_forecast.pipeline.analysis.computational.extraction_patterns import (
+    PatternMatcher,
+)
+from compute_forecast.pipeline.analysis.computational.quality_control import (
+    QualityController,
+)
 
 
 @pytest.fixture

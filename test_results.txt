@@ -1,0 +1,13 @@
+ERROR tests/unit/data/processors/test_citation_analyzer_edge_cases.py
+ERROR tests/unit/data/test_enhanced_affiliation_parser.py
+ERROR tests/unit/data/test_enhanced_organizations.py
+ERROR tests/unit/data/test_venue_normalizer.py
+ERROR tests/unit/extraction/test_coverage_reporter.py
+ERROR tests/unit/extraction/test_integration.py
+ERROR tests/unit/orchestration/test_enhanced_orchestrator.py
+ERROR tests/unit/orchestration/test_enhanced_orchestrator_env.py
+ERROR tests/unit/pdf_discovery/test_google_scholar.py
+ERROR tests/unit/quality/test_quality_control.py
+ERROR tests/unit/testing/integration/test_performance_monitor.py
+ERROR tests/unit/testing/integration/test_phase_validators.py
+ERROR tests/unit/testing/integration/test_pipeline_test_framework.py

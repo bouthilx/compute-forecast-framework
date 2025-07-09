@@ -6,10 +6,14 @@ import time
 from dataclasses import dataclass, field
 from typing import Dict, List, Any
 
-from compute_forecast.orchestration.venue_collection_orchestrator import (
+from compute_forecast.orchestration.orchestrators.venue_collection_orchestrator import (
     VenueCollectionOrchestrator,
 )
-from compute_forecast.data.models import CollectionConfig, Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import (
+    CollectionConfig,
+    Paper,
+    Author,
+)
 
 
 @dataclass
@@ -87,7 +91,9 @@ class ComponentIntegrationTest:
             }
 
             # Mock checkpoint data structure
-            from compute_forecast.orchestration.state_manager import CheckpointData
+            from compute_forecast.orchestration.state.state_manager import (
+                CheckpointData,
+            )
             from datetime import datetime
 
             checkpoint = CheckpointData(
@@ -340,7 +346,9 @@ class ComponentIntegrationTest:
             test_result.assertions_passed += 1
 
             # Test state checkpoint with processing results
-            from compute_forecast.orchestration.state_manager import CheckpointData
+            from compute_forecast.orchestration.state.state_manager import (
+                CheckpointData,
+            )
             from datetime import datetime
 
             processing_checkpoint = CheckpointData(

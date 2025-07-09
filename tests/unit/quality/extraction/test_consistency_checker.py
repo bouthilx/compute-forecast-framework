@@ -4,11 +4,11 @@ Tests for ExtractionConsistencyChecker.
 
 import numpy as np
 
-from compute_forecast.quality.extraction.consistency_checker import (
+from compute_forecast.pipeline.content_extraction.quality.consistency_checker import (
     ExtractionConsistencyChecker,
     ConsistencyCheck,
 )
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 from .test_helpers import MockComputationalAnalysis as ComputationalAnalysis
 
 

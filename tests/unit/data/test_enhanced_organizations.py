@@ -1,7 +1,7 @@
 """Test suite for enhanced organization classification system."""
 
 import pytest
-from compute_forecast.analysis.classification.enhanced_organizations import (
+from compute_forecast.pipeline.analysis.classification.enhanced_organizations import (
     EnhancedOrganizationClassifier,
     OrganizationType,
     OrganizationRecord,
@@ -157,7 +157,7 @@ class TestEnhancedAffiliationParser:
     @pytest.fixture
     def parser(self):
         """Create parser instance for testing."""
-        from compute_forecast.analysis.classification.enhanced_affiliation_parser import (
+        from compute_forecast.pipeline.analysis.classification.enhanced_affiliation_parser import (
             EnhancedAffiliationParser,
         )
 
@@ -226,7 +226,7 @@ class TestClassificationValidator:
     @pytest.fixture
     def validator(self):
         """Create validator instance for testing."""
-        from compute_forecast.analysis.classification.enhanced_validator import (
+        from compute_forecast.pipeline.analysis.classification.enhanced_validator import (
             EnhancedClassificationValidator,
         )
 
@@ -234,7 +234,7 @@ class TestClassificationValidator:
 
     def test_validation_accuracy_calculation(self, validator):
         """Test accuracy calculation on known test cases."""
-        from compute_forecast.data.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
         # Create test papers with known classifications
         test_papers = [
@@ -262,7 +262,7 @@ class TestClassificationValidator:
 
     def test_edge_case_identification(self, validator):
         """Test identification of classification edge cases."""
-        from compute_forecast.data.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
         # Create paper with mixed affiliations (edge case)
         Paper(
@@ -283,7 +283,7 @@ class TestClassificationValidator:
 
     def test_confidence_distribution_analysis(self, validator):
         """Test analysis of confidence score distribution."""
-        from compute_forecast.data.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
         papers = [
             Paper(
@@ -317,7 +317,7 @@ class TestOrganizationDatabaseExpansion:
 
     def test_load_enhanced_database(self):
         """Test loading of enhanced organization database from YAML."""
-        from compute_forecast.analysis.classification.enhanced_organizations import (
+        from compute_forecast.pipeline.analysis.classification.enhanced_organizations import (
             EnhancedOrganizationClassifier,
         )
 
@@ -335,7 +335,7 @@ class TestOrganizationDatabaseExpansion:
 
     def test_organization_database_coverage(self):
         """Test that database covers major institutions."""
-        from compute_forecast.analysis.classification.enhanced_organizations import (
+        from compute_forecast.pipeline.analysis.classification.enhanced_organizations import (
             EnhancedOrganizationClassifier,
         )
 
@@ -386,7 +386,7 @@ class TestPaperAuthorClassification:
     @pytest.fixture
     def classifier(self):
         """Create enhanced classifier for testing."""
-        from compute_forecast.analysis.classification.enhanced_organizations import (
+        from compute_forecast.pipeline.analysis.classification.enhanced_organizations import (
             EnhancedOrganizationClassifier,
         )
 
@@ -396,7 +396,7 @@ class TestPaperAuthorClassification:
 
     def test_academic_paper_classification(self, classifier):
         """Test classification of purely academic papers."""
-        from compute_forecast.data.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
         paper = Paper(
             title="Academic Paper",
@@ -418,7 +418,7 @@ class TestPaperAuthorClassification:
 
     def test_industry_paper_classification(self, classifier):
         """Test classification of industry-dominated papers."""
-        from compute_forecast.data.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
         paper = Paper(
             title="Industry Paper",
@@ -441,7 +441,7 @@ class TestPaperAuthorClassification:
 
     def test_borderline_paper_classification(self, classifier):
         """Test classification of papers near 25% threshold."""
-        from compute_forecast.data.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
         # Exactly 25% industry (should be academic)
         paper = Paper(

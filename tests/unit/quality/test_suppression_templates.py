@@ -1,6 +1,6 @@
 """Tests for extraction templates with suppression indicators."""
 
-from compute_forecast.extraction.suppression_templates import (
+from compute_forecast.pipeline.content_extraction.templates.suppression_templates import (
     SuppressionTemplates,
     SuppressionField,
     SuppressionIndicators,

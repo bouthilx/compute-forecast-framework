@@ -3,7 +3,9 @@
 import time
 from unittest.mock import patch
 
-from compute_forecast.pdf_discovery.utils.rate_limiter import RateLimiter
+from compute_forecast.pipeline.pdf_acquisition.discovery.utils.rate_limiter import (
+    RateLimiter,
+)
 
 
 class TestRateLimiter:

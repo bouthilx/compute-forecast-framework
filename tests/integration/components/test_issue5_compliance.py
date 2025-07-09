@@ -10,10 +10,16 @@ import time
 from pathlib import Path
 from datetime import datetime
 
-from compute_forecast.data.collectors.state_management import StateManager
-from compute_forecast.data.collectors.recovery_engine import RecoveryEngine
-from compute_forecast.data.collectors.state_persistence import StatePersistence
-from compute_forecast.data.collectors.state_structures import (
+from compute_forecast.pipeline.metadata_collection.collectors.state_management import (
+    StateManager,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.recovery_engine import (
+    RecoveryEngine,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.state_persistence import (
+    StatePersistence,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     CheckpointData,
     ErrorContext,
 )

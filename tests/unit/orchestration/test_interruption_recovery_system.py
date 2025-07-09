@@ -4,17 +4,17 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime, timedelta
 
-from compute_forecast.orchestration.recovery_system import (
+from compute_forecast.orchestration.recovery.recovery_system import (
     InterruptionRecoverySystem,
     RecoveryStrategy,
     InterruptionType,
     RecoveryState,
     RecoveryPlan,
 )
-from compute_forecast.orchestration.venue_collection_orchestrator import (
+from compute_forecast.orchestration.orchestrators.venue_collection_orchestrator import (
     SessionMetadata,
 )
-from compute_forecast.orchestration.recovery_system import SessionState
+from compute_forecast.orchestration.recovery.recovery_system import SessionState
 
 
 class TestInterruptionRecoverySystem:
@@ -83,7 +83,9 @@ class TestInterruptionRecoverySystem:
     @pytest.fixture
     def test_session(self):
         """Create test collection session."""
-        from compute_forecast.data.models import CollectionConfig
+        from compute_forecast.pipeline.metadata_collection.models import (
+            CollectionConfig,
+        )
 
         session = SessionMetadata(
             session_id="test-session-123",

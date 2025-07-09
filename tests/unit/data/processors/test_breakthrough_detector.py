@@ -5,8 +5,10 @@ from datetime import datetime
 from unittest.mock import patch, mock_open
 import json
 
-from compute_forecast.data.models import Paper, Author
-from compute_forecast.data.processors.breakthrough_detector import BreakthroughDetector
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector import (
+    BreakthroughDetector,
+)
 
 
 class TestBreakthroughDetector:
@@ -16,7 +18,7 @@ class TestBreakthroughDetector:
     def detector(self):
         """Create detector instance."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             return BreakthroughDetector()
@@ -78,7 +80,7 @@ class TestBreakthroughDetector:
         mock_keywords = {"keywords": ["test1", "test2", "test3"]}
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=True,
         ):
             with patch("builtins.open", mock_open(read_data=json.dumps(mock_keywords))):
@@ -100,7 +102,7 @@ class TestBreakthroughDetector:
     ):
         """Test breakthrough score for high-impact paper."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.datetime"
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             detector.current_year = 2024
@@ -120,7 +122,7 @@ class TestBreakthroughDetector:
     ):
         """Test breakthrough score for medium-impact paper."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.datetime"
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             detector.current_year = 2024
@@ -133,7 +135,7 @@ class TestBreakthroughDetector:
     def test_calculate_breakthrough_score_low_impact(self, detector, low_impact_paper):
         """Test breakthrough score for low-impact paper."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.datetime"
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             detector.current_year = 2024
@@ -163,7 +165,7 @@ class TestBreakthroughDetector:
     def test_identify_breakthrough_indicators(self, detector, high_impact_paper):
         """Test identification of breakthrough indicators."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.datetime"
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             detector.current_year = 2024
@@ -182,7 +184,7 @@ class TestBreakthroughDetector:
     ):
         """Test detecting breakthrough papers from a list."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.datetime"
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             detector.current_year = 2024
@@ -254,7 +256,7 @@ class TestBreakthroughDetector:
     def test_recency_bonus(self, detector):
         """Test recency bonus in breakthrough scoring."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.datetime"
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             detector.current_year = 2024
@@ -308,7 +310,7 @@ class TestBreakthroughDetector:
     def test_breakthrough_paper_dataclass(self, detector, high_impact_paper):
         """Test BreakthroughPaper dataclass creation."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.datetime"
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1)
             detector.current_year = 2024

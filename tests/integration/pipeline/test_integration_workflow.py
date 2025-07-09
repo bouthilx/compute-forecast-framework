@@ -8,13 +8,17 @@ import time
 import threading
 from unittest.mock import Mock
 
-from compute_forecast.data.models import (
+from compute_forecast.pipeline.metadata_collection.models import (
     APIConfig,
     HealthMonitoringConfig,
     RateLimitingConfig,
 )
-from compute_forecast.data.collectors.rate_limit_manager import RateLimitManager
-from compute_forecast.data.collectors.api_health_monitor import APIHealthMonitor
+from compute_forecast.pipeline.metadata_collection.collectors.rate_limit_manager import (
+    RateLimitManager,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.api_health_monitor import (
+    APIHealthMonitor,
+)
 
 
 class TestIntegrationWorkflow:

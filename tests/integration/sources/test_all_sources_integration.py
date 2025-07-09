@@ -4,7 +4,7 @@ import asyncio
 from datetime import datetime
 from unittest.mock import patch
 import pytest
-from compute_forecast.data.collectors.enhanced_orchestrator import (
+from compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator import (
     EnhancedCollectionOrchestrator as EnhancedOrchestrator,
 )
 

@@ -1,7 +1,14 @@
 """Error Injection Framework for systematic error testing."""
 
-from .injection_framework import ErrorType, ErrorScenario, ErrorInjectionFramework
-from .recovery_validator import RecoveryMetrics, RecoveryValidator
+from compute_forecast.testing.error_injection.injection_framework import (
+    ErrorType,
+    ErrorScenario,
+    ErrorInjectionFramework,
+)
+from compute_forecast.testing.error_injection.recovery_validator import (
+    RecoveryMetrics,
+    RecoveryValidator,
+)
 
 __all__ = [
     "ErrorType",

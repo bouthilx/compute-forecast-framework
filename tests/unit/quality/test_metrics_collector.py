@@ -6,12 +6,12 @@ import time
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
-from compute_forecast.monitoring.metrics_collector import MetricsCollector
-from compute_forecast.monitoring.dashboard_metrics import (
+from compute_forecast.monitoring.metrics.metrics_collector import MetricsCollector
+from compute_forecast.monitoring.server.dashboard_metrics import (
     SystemMetrics,
     CollectionProgressMetrics,
 )
-from compute_forecast.data.models import APIHealthStatus
+from compute_forecast.pipeline.metadata_collection.models import APIHealthStatus
 
 
 class TestMetricsCollector:
@@ -289,7 +289,7 @@ class TestMetricsCollector:
         self, papers_collected: int, papers_per_minute: float
     ) -> SystemMetrics:
         """Helper to create test metrics"""
-        from compute_forecast.monitoring.dashboard_metrics import (
+        from compute_forecast.monitoring.server.dashboard_metrics import (
             SystemMetrics,
             ProcessingMetrics,
             SystemResourceMetrics,

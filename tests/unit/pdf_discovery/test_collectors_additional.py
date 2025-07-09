@@ -1,8 +1,10 @@
 """Additional unit tests for collectors to improve coverage."""
 
 from unittest.mock import Mock, patch
-from compute_forecast.pdf_discovery.core.collectors import BasePDFCollector
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import (
+    BasePDFCollector,
+)
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class SimpleCollector(BasePDFCollector):

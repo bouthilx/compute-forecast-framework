@@ -7,13 +7,17 @@ import unittest
 import time
 from datetime import datetime
 
-from compute_forecast.monitoring.alert_system import (
+from compute_forecast.monitoring.alerting.alert_system import (
     IntelligentAlertSystem,
     AlertRuleEvaluator,
 )
-from compute_forecast.monitoring.alert_suppression import AlertSuppressionManager
-from compute_forecast.monitoring.notification_channels import NotificationChannelManager
-from compute_forecast.monitoring.alert_structures import (
+from compute_forecast.monitoring.alerting.alert_suppression import (
+    AlertSuppressionManager,
+)
+from compute_forecast.monitoring.alerting.notification_channels import (
+    NotificationChannelManager,
+)
+from compute_forecast.monitoring.alerting.alert_structures import (
     Alert,
     AlertRule,
     AlertSeverity,
@@ -22,7 +26,7 @@ from compute_forecast.monitoring.alert_structures import (
     AlertConfiguration,
     BUILT_IN_ALERT_RULES,
 )
-from compute_forecast.monitoring.dashboard_metrics import (
+from compute_forecast.monitoring.server.dashboard_metrics import (
     SystemMetrics,
     CollectionProgressMetrics,
     APIMetrics,

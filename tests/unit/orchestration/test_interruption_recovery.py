@@ -12,12 +12,14 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
-from compute_forecast.data.collectors.interruption_recovery import (
+from compute_forecast.pipeline.metadata_collection.collectors.interruption_recovery import (
     InterruptionRecoveryEngine,
     InterruptionType,
 )
-from compute_forecast.data.collectors.state_management import StateManager
-from compute_forecast.data.collectors.state_structures import (
+from compute_forecast.pipeline.metadata_collection.collectors.state_management import (
+    StateManager,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     VenueConfig,
     CheckpointData,
     RecoveryPlan,
@@ -506,7 +508,7 @@ class TestInterruptionRecoveryEngine:
         with patch.object(
             state_manager.checkpoint_manager, "validate_checkpoint"
         ) as mock_validate:
-            from compute_forecast.data.collectors.state_structures import (
+            from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
                 CheckpointValidationResult,
             )
 

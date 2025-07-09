@@ -2,12 +2,12 @@
 Tests for ExtractionQualityValidator.
 """
 
-from compute_forecast.quality.extraction.extraction_validator import (
+from compute_forecast.pipeline.content_extraction.quality.extraction_validator import (
     ExtractionQualityValidator,
     ExtractionValidation,
     ExtractionQuality,
 )
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 from .test_helpers import MockComputationalAnalysis as ComputationalAnalysis
 
 

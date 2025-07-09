@@ -7,8 +7,10 @@ from unittest.mock import Mock, patch, MagicMock
 import pytest
 import requests
 
-from compute_forecast.pdf_download.downloader import SimplePDFDownloader
-from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pipeline.pdf_acquisition.download.downloader import (
+    SimplePDFDownloader,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 from datetime import datetime
 
 
@@ -289,7 +291,7 @@ class TestSimplePDFDownloader:
         assert "fail-1" in result["failed"]
         assert result["success_rate"] == pytest.approx(2 / 3)
 
-    @patch("compute_forecast.pdf_download.downloader.Progress")
+    @patch("compute_forecast.pipeline.pdf_acquisition.download.downloader.Progress")
     @patch("requests.Session.get")
     def test_download_batch_progress_tracking(
         self, mock_get, mock_progress_class, downloader

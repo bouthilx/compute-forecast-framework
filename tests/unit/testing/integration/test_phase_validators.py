@@ -17,7 +17,10 @@ from compute_forecast.testing.integration.phase_validators import (
     DataIntegrityChecker,
 )
 from compute_forecast.testing.integration.pipeline_test_framework import PipelinePhase
-from compute_forecast.data.models import Paper, ComputationalAnalysis
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+    ComputationalAnalysis,
+)
 
 
 class TestValidationResult:

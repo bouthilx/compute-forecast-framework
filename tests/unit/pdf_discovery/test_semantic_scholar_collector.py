@@ -4,10 +4,10 @@ import pytest
 from unittest.mock import Mock, patch
 import time
 
-from compute_forecast.pdf_discovery.sources.semantic_scholar_collector import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector import (
     SemanticScholarPDFCollector,
 )
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 class TestSemanticScholarPDFCollector:

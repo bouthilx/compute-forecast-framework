@@ -1,6 +1,6 @@
 """Tests for PDF discovery exceptions."""
 
-from compute_forecast.pdf_discovery.utils.exceptions import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.utils.exceptions import (
     PDFDiscoveryError,
     APIError,
     NoResultsError,

@@ -2,12 +2,12 @@
 
 import pytest
 
-from compute_forecast.analysis.benchmark.domain_extractors import (
+from compute_forecast.pipeline.analysis.benchmark.domain_extractors import (
     NLPBenchmarkExtractor,
     CVBenchmarkExtractor,
     RLBenchmarkExtractor,
 )
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 class TestNLPBenchmarkExtractor:

@@ -1,7 +1,10 @@
 """Unit tests for PDF discovery models."""
 
 from datetime import datetime
-from compute_forecast.pdf_discovery.core.models import PDFRecord, DiscoveryResult
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import (
+    PDFRecord,
+    DiscoveryResult,
+)
 
 
 class TestPDFRecord:

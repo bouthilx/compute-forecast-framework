@@ -5,9 +5,11 @@ from unittest.mock import patch
 from datetime import datetime
 from typing import Dict, List
 
-from compute_forecast.pdf_discovery.core.models import PDFRecord
-from compute_forecast.pdf_discovery.core.collectors import BasePDFCollector
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import (
+    BasePDFCollector,
+)
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class MockPDFCollector(BasePDFCollector):

@@ -3,12 +3,16 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
-from compute_forecast.quality.contracts.base_contracts import (
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+    ComputationalAnalysis,
+    Author,
+)
+from compute_forecast.core.contracts.base_contracts import (
     ContractViolationType,
     ContractValidationResult,
 )
-from compute_forecast.quality.contracts.pipeline_validator import (
+from compute_forecast.core.contracts.pipeline_validator import (
     AnalysisContractValidator,
     PipelineIntegrationValidator,
     PipelineValidationReport,

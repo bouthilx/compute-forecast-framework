@@ -2,7 +2,7 @@
 
 import pytest
 
-from compute_forecast.analysis.mila.paper_selector import (
+from compute_forecast.pipeline.analysis.mila.paper_selector import (
     MilaPaperSelector,
     PaperSelectionCriteria,
     DomainClassifier,

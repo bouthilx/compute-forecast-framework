@@ -3,13 +3,17 @@
 import pytest
 import time
 
-from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
-from compute_forecast.quality.contracts import (
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+    ComputationalAnalysis,
+    Author,
+)
+from compute_forecast.core.contracts import (
     AnalysisContractValidator,
     PipelineIntegrationValidator,
     ContractViolationType,
 )
-from compute_forecast.quality.contracts.contract_tests import ContractTestSuite
+from compute_forecast.core.contracts.contract_tests import ContractTestSuite
 
 
 class TestContractValidationIntegration:

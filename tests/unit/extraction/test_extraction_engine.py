@@ -3,12 +3,12 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from compute_forecast.extraction.template_engine import (
+from compute_forecast.pipeline.content_extraction.templates.template_engine import (
     ExtractionTemplateEngine,
     ExtractionTemplate,
     ExtractionField,
 )
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class TestExtractionTemplateEngine:

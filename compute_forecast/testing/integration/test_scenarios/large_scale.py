@@ -18,7 +18,7 @@ from compute_forecast.testing.integration.performance_monitor import (
     BottleneckAnalyzer,
 )
 from compute_forecast.testing.mock_data.generators import MockDataGenerator
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 @dataclass

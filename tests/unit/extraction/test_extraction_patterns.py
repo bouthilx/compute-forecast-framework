@@ -6,7 +6,7 @@ Tests common patterns, regex extractors, and edge case handlers for computationa
 
 import pytest
 
-from compute_forecast.analysis.computational.extraction_patterns import (
+from compute_forecast.pipeline.analysis.computational.extraction_patterns import (
     PatternType,
     ExtractionPattern,
     CommonPatterns,

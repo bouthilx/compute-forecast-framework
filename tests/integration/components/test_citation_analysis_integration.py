@@ -5,11 +5,17 @@ from datetime import datetime
 from unittest.mock import patch
 import numpy as np
 
-from compute_forecast.data.models import Paper, Author
-from compute_forecast.data.collectors.state_structures import VenueConfig
-from compute_forecast.data.processors.citation_analyzer import CitationAnalyzer
-from compute_forecast.data.processors.breakthrough_detector import BreakthroughDetector
-from compute_forecast.data.processors.adaptive_threshold_calculator import (
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
+    VenueConfig,
+)
+from compute_forecast.pipeline.metadata_collection.processors.citation_analyzer import (
+    CitationAnalyzer,
+)
+from compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector import (
+    BreakthroughDetector,
+)
+from compute_forecast.pipeline.metadata_collection.processors.adaptive_threshold_calculator import (
     AdaptiveThresholdCalculator,
 )
 
@@ -139,7 +145,7 @@ class TestCitationAnalysisIntegration:
     def test_end_to_end_citation_analysis(self, venue_configs, realistic_papers):
         """Test complete citation analysis workflow."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(venue_configs)
@@ -182,7 +188,7 @@ class TestCitationAnalysisIntegration:
     def test_adaptive_threshold_across_venues(self, venue_configs):
         """Test that adaptive thresholds vary appropriately across venues."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(venue_configs)
@@ -223,7 +229,7 @@ class TestCitationAnalysisIntegration:
     def test_breakthrough_detection_integration(self, realistic_papers):
         """Test breakthrough detection integrated with citation analysis."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             detector = BreakthroughDetector()
@@ -244,7 +250,7 @@ class TestCitationAnalysisIntegration:
     def test_filtering_preserves_venue_diversity(self, venue_configs, realistic_papers):
         """Test that filtering maintains representation from all venues."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(venue_configs)
@@ -271,11 +277,11 @@ class TestCitationAnalysisIntegration:
     def test_year_based_threshold_adaptation(self, venue_configs):
         """Test that thresholds adapt based on paper age."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             with patch(
-                "compute_forecast.data.processors.adaptive_threshold_calculator.datetime"
+                "compute_forecast.pipeline.metadata_collection.processors.adaptive_threshold_calculator.datetime"
             ) as mock_datetime:
                 mock_datetime.now.return_value = datetime(2024, 1, 1)
 
@@ -320,7 +326,7 @@ class TestCitationAnalysisIntegration:
     def test_quality_metrics_consistency(self, venue_configs, realistic_papers):
         """Test consistency of quality metrics across analysis and filtering."""
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(venue_configs)
@@ -392,7 +398,7 @@ class TestCitationAnalysisIntegration:
             )
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(venue_configs)

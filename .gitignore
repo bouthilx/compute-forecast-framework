@@ -74,6 +74,7 @@ neurips_2024_test_cache/
 *.csv
 *.pdf
 !examples/*.json
+!compute_forecast/pipeline/pdf_acquisition/discovery/sources/data/pmlr_volumes.json
 
 # Logs
 *.log

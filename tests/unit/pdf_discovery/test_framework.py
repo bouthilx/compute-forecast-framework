@@ -5,10 +5,17 @@ from datetime import datetime
 from typing import List
 import time
 
-from compute_forecast.pdf_discovery.core.models import PDFRecord, DiscoveryResult
-from compute_forecast.pdf_discovery.core.collectors import BasePDFCollector
-from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import (
+    PDFRecord,
+    DiscoveryResult,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import (
+    BasePDFCollector,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
+    PDFDiscoveryFramework,
+)
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 class MockCollector(BasePDFCollector):

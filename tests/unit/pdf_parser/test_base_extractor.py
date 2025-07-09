@@ -5,7 +5,9 @@ from abc import ABC
 from pathlib import Path
 from typing import Dict, List
 
-from compute_forecast.pdf_parser.core.base_extractor import BaseExtractor
+from compute_forecast.pipeline.content_extraction.parser.core.base_extractor import (
+    BaseExtractor,
+)
 
 
 class ConcreteExtractor(BaseExtractor):
