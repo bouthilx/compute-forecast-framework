@@ -119,6 +119,14 @@ class BaseScraper(ABC):
         """Scrape all papers from a venue for a specific year"""
         pass
 
+    def estimate_paper_count(self, venue: str, year: int) -> Optional[int]:
+        """Estimate the number of papers available for a venue/year.
+        
+        Returns None if estimation is not possible.
+        Override in subclasses to provide better estimates.
+        """
+        return None
+
     def scrape_multiple_venues(
         self, venue_years: Dict[str, List[int]]
     ) -> Dict[str, ScrapingResult]:
@@ -156,7 +164,10 @@ class BaseScraper(ABC):
         """Validate venue and year parameters"""
         errors = []
 
-        if venue not in self.get_supported_venues():
+        # Check venue support with case-insensitive matching
+        supported = self.get_supported_venues()
+        venue_supported = any(venue.lower() == v.lower() for v in supported)
+        if not venue_supported:
             errors.append(f"Venue '{venue}' not supported")
 
         available_years = self.get_available_years(venue)

@@ -24,6 +24,7 @@ class SimplePaper:
     pdf_urls: List[str] = field(default_factory=list)  # Multiple PDF URLs
     doi: Optional[str] = None
     arxiv_id: Optional[str] = None
+    keywords: List[str] = field(default_factory=list)  # Extracted keywords
     
     # Source tracking
     source_scraper: str = ""
@@ -44,6 +45,7 @@ class SimplePaper:
             abstract=self.abstract or "",
             doi=self.doi or "",
             urls=self.pdf_urls,
+            keywords=self.keywords,  # Pass through keywords
             collection_source=self.source_scraper,
             collection_timestamp=self.scraped_at,
             citations=0,  # Default for scraped papers

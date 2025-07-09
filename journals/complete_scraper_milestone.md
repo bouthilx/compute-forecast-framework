@@ -1098,163 +1098,216 @@ results = scraper.scrape_multiple_venues(venue_years)
 
 ---
 
-### Issue #7: Basic Integration & Testing
-**Priority**: Medium  
-**Estimate**: M (4-6 hours)  
-**Dependencies**: Issues #5, #6
-
-#### Description
-Create integration layer to test IJCAI and ACL scrapers together, validate data quality, and establish testing framework.
-
-#### Detailed Implementation
-```python
-# compute_forecast/data/sources/scrapers/integration.py
-
-from typing import List, Dict, Any
-from ..base import BaseScaper, ScrapingResult
-from ..models import ScrapedPaper
-from ..institution_matcher import InstitutionMatcher
-from .conference_scrapers.ijcai_scraper import IJCAIScraper
-from .conference_scrapers.acl_anthology_scraper import ACLAnthologyScraper
-
-class ScraperOrchestrator:
-    """Orchestrate multiple scrapers and provide unified interface"""
-    
-    def __init__(self):
-        self.scrapers: Dict[str, BaseScaper] = {
-            "ijcai": IJCAIScraper(),
-            "acl_anthology": ACLAnthologyScraper()
-        }
-        self.institution_matcher = InstitutionMatcher()
-        
-    def get_all_supported_venues(self) -> Dict[str, List[str]]:
-        """Get all venues supported by all scrapers"""
-        venues = {}
-        for scraper_name, scraper in self.scrapers.items():
-            venues[scraper_name] = scraper.get_supported_venues()
-        return venues
-        
-    def scrape_venues_for_institutions(self, 
-                                     venue_years: Dict[str, List[int]], 
-                                     target_institutions: List[str]) -> Dict[str, List[ScrapedPaper]]:
-        """Scrape venues and filter by institutions"""
-        
-        all_papers = []
-        results = {}
-        
-        # Collect papers from all venues
-        for venue, years in venue_years.items():
-            scraper = self._get_scraper_for_venue(venue)
-            if not scraper:
-                continue
-                
-            for year in years:
-                result = scraper.scrape_venue_year(venue, year)
-                if result.success:
-                    all_papers.extend(result.papers_collected)
-                    
-        # Filter by institutions
-        for institution in target_institutions:
-            filtered_papers = self.institution_matcher.filter_papers_by_institutions(
-                all_papers, [institution]
-            )
-            results[institution] = filtered_papers
-            
-        return results
-        
-    def _get_scraper_for_venue(self, venue: str) -> Optional[BaseScaper]:
-        """Get appropriate scraper for venue"""
-        for scraper in self.scrapers.values():
-            if venue in scraper.get_supported_venues():
-                return scraper
-        return None
-
-# tests/integration/test_scrapers_integration.py
-import pytest
-from compute_forecast.data.sources.scrapers.integration import ScraperOrchestrator
-
-class TestScrapersIntegration:
-    """Integration tests for scrapers"""
-    
-    def test_ijcai_scraper_basic(self):
-        """Test IJCAI scraper can extract papers"""
-        orchestrator = ScraperOrchestrator()
-        
-        # Test recent IJCAI year
-        venue_years = {"IJCAI": [2024]}
-        
-        results = orchestrator.scrape_venues_for_institutions(
-            venue_years, 
-            ["Mila - Quebec AI Institute"]
-        )
-        
-        assert "Mila - Quebec AI Institute" in results
-        mila_papers = results["Mila - Quebec AI Institute"]
-        
-        # Should find at least some papers (even if zero Mila papers)
-        # Validate paper structure
-        if mila_papers:
-            paper = mila_papers[0]
-            assert paper.title
-            assert paper.venue == "IJCAI"
-            assert paper.year == 2024
-            assert paper.source_scraper == "ijcai"
-            
-    def test_acl_scraper_basic(self):
-        """Test ACL Anthology scraper can extract papers"""
-        orchestrator = ScraperOrchestrator()
-        
-        venue_years = {"ACL": [2024]}
-        
-        results = orchestrator.scrape_venues_for_institutions(
-            venue_years,
-            ["Mila - Quebec AI Institute"] 
-        )
-        
-        assert "Mila - Quebec AI Institute" in results
-        
-    def test_multiple_venues(self):
-        """Test scraping multiple venues together"""
-        orchestrator = ScraperOrchestrator()
-        
-        venue_years = {
-            "IJCAI": [2024],
-            "ACL": [2024]
-        }
-        
-        results = orchestrator.scrape_venues_for_institutions(
-            venue_years,
-            ["Mila - Quebec AI Institute", "Massachusetts Institute of Technology"]
-        )
-        
-        assert len(results) == 2
-        assert "Mila - Quebec AI Institute" in results
-        assert "Massachusetts Institute of Technology" in results
-```
-
-#### Acceptance Criteria
-- [ ] Unified interface for multiple scrapers
-- [ ] Institution filtering integration
-- [ ] Basic integration tests pass
-- [ ] Data quality validation
-- [ ] Error reporting across scrapers
-- [ ] Performance benchmarking
-
-This detailed milestone plan provides:
-
-1. **Clear scope separation** - Each issue has distinct responsibilities
-2. **Detailed APIs** - Standardized interfaces for parallel development  
-3. **Implementation flow** - Dependencies clearly mapped
-4. **Concrete deliverables** - Specific acceptance criteria
-5. **Realistic estimates** - Based on complexity analysis
-
-The plan enables parallel development while ensuring coherent integration. Each issue can be worked on independently once its dependencies are complete.### Issue #7: CVF Scraper (CVPR/ICCV/ECCV/WACV)
+### Issue #7: CVF Scraper (CVPR/ICCV/ECCV/WACV)
 **Priority**: High  
 **Estimate**: L (6-8 hours)  
 **Dependencies**: Issues #1, #2, #4
 
 #### Description
-Implement CVF (Computer Vision Foundation) scraper for comprehensive computer vision conference coverage with 12+ conferences and 40,000+ papers across years.
+Implement CVF (Computer Vision Foundation) scraper for comprehensive computer vision conference coverage including CVPR, ICCV, ECCV, and WACV proceedings. This scraper will provide bulk paper collection from major computer vision conferences with 12+ conferences and 40,000+ papers across years.
+
+#### Detailed Implementation
+```python
+# compute_forecast/data/sources/scrapers/conference_scrapers/cvf_scraper.py
+
+import re
+import requests
+from bs4 import BeautifulSoup
+from typing import List, Dict, Optional
+from urllib.parse import urljoin
+from datetime import datetime
+
+from ..base import ConferenceProceedingsScaper, ScrapingConfig, ScrapingResult
+from ..models import ScrapedPaper, ScrapedAuthor
+from ..error_handling import retry_on_error, ErrorType, ScrapingError
+
+class CVFScraper(ConferenceProceedingsScaper):
+    """Scraper for CVF Open Access proceedings"""
+    
+    def __init__(self, config: ScrapingConfig = None):
+        super().__init__("cvf", config or ScrapingConfig())
+        self.base_url = "https://openaccess.thecvf.com/"
+        self.venue_mappings = self._load_venue_mappings()
+        
+    def _load_venue_mappings(self) -> Dict[str, str]:
+        """Map venue names to CVF format and validate conference schedules"""
+        return {
+            "CVPR": "CVPR",      # Annual
+            "ICCV": "ICCV",      # Odd years only (2019, 2021, 2023, ...)
+            "ECCV": "ECCV",      # Even years only (2018, 2020, 2022, ...)
+            "WACV": "WACV"       # Annual
+        }
+        
+    def get_supported_venues(self) -> List[str]:
+        return list(self.venue_mappings.keys())
+        
+    def get_available_years(self, venue: str) -> List[int]:
+        """Get years available for venue respecting conference schedules"""
+        if venue not in self.venue_mappings:
+            return []
+            
+        # Respect biennial conference schedules
+        current_year = 2024
+        base_years = list(range(current_year, 2017, -1))
+        
+        if venue == "ICCV":
+            return [year for year in base_years if year % 2 == 1]  # Odd years
+        elif venue == "ECCV":
+            return [year for year in base_years if year % 2 == 0]  # Even years
+        else:
+            return base_years  # Annual conferences
+    
+    def get_proceedings_url(self, venue: str, year: int) -> str:
+        """Construct CVF proceedings URL"""
+        venue_code = self.venue_mappings.get(venue, venue)
+        return urljoin(self.base_url, f"{venue_code}{year}/")
+        
+    @retry_on_error(max_retries=3, delay=1.0)
+    def scrape_venue_year(self, venue: str, year: int) -> ScrapingResult:
+        """Scrape CVF papers for venue/year"""
+        if venue not in self.venue_mappings:
+            return ScrapingResult(
+                success=False,
+                papers_collected=0,
+                errors=[f"Venue {venue} not supported"],
+                metadata={},
+                timestamp=datetime.now()
+            )
+            
+        # Validate conference schedule
+        available_years = self.get_available_years(venue)
+        if year not in available_years:
+            return ScrapingResult(
+                success=False,
+                papers_collected=0,
+                errors=[f"{venue} {year} not available (conference schedule)"],
+                metadata={"venue": venue, "year": year},
+                timestamp=datetime.now()
+            )
+            
+        try:
+            url = self.get_proceedings_url(venue, year)
+            papers = self.parse_proceedings_page_from_url(url, venue, year)
+            
+            return ScrapingResult(
+                success=True,
+                papers_collected=len(papers),
+                errors=[],
+                metadata={"url": url, "venue": venue, "year": year},
+                timestamp=datetime.now()
+            )
+            
+        except Exception as e:
+            error_msg = f"Failed to scrape {venue} {year}: {str(e)}"
+            self.logger.error(error_msg)
+            return ScrapingResult(
+                success=False,
+                papers_collected=0,
+                errors=[error_msg],
+                metadata={"venue": venue, "year": year},
+                timestamp=datetime.now()
+            )
+    
+    def parse_proceedings_page_from_url(self, url: str, venue: str, year: int) -> List[ScrapedPaper]:
+        """Fetch and parse CVF proceedings page"""
+        response = requests.get(url, timeout=self.config.timeout)
+        response.raise_for_status()
+        return self.parse_proceedings_page(response.text, venue, year, url)
+        
+    def parse_proceedings_page(self, html: str, venue: str, year: int, source_url: str = "") -> List[ScrapedPaper]:
+        """Parse CVF proceedings HTML to extract papers"""
+        soup = BeautifulSoup(html, 'html.parser')
+        papers = []
+        
+        # CVF uses structured paper entries with PDF links
+        paper_entries = soup.find_all('dt', class_='ptitle')
+        
+        for entry in paper_entries:
+            try:
+                paper = self._extract_paper_from_entry(entry, venue, year, source_url)
+                if paper:
+                    papers.append(paper)
+            except Exception as e:
+                self.logger.warning(f"Failed to extract paper from entry: {e}")
+                continue
+                
+        self.logger.info(f"Extracted {len(papers)} papers from {venue} {year}")
+        return papers
+        
+    def _extract_paper_from_entry(self, entry, venue: str, year: int, source_url: str) -> Optional[ScrapedPaper]:
+        """Extract paper from CVF proceedings entry"""
+        
+        # Get title
+        title_link = entry.find('a')
+        if not title_link:
+            return None
+            
+        title = title_link.get_text(strip=True)
+        paper_detail_url = title_link.get('href', '')
+        
+        if paper_detail_url and not paper_detail_url.startswith('http'):
+            paper_detail_url = urljoin(source_url, paper_detail_url)
+            
+        # Get authors from next dd element
+        authors_elem = entry.find_next_sibling('dd')
+        authors = self._extract_authors_from_element(authors_elem) if authors_elem else []
+        
+        # Extract paper ID from detail URL
+        paper_id_match = re.search(r'/([^/]+)\.html$', paper_detail_url)
+        paper_id = paper_id_match.group(1) if paper_id_match else title.replace(' ', '_')[:50]
+        
+        # Construct PDF URL
+        pdf_url = None
+        if paper_detail_url:
+            pdf_url = paper_detail_url.replace('.html', '.pdf')
+            
+        return ScrapedPaper(
+            paper_id=f"cvf_{venue.lower()}_{year}_{paper_id}",
+            title=title,
+            authors=authors,
+            venue=venue,
+            year=year,
+            pdf_urls=[pdf_url] if pdf_url else [],
+            source_scraper="cvf",
+            source_url=paper_detail_url,
+            metadata_completeness=self._calculate_completeness(title, authors, pdf_url),
+            extraction_confidence=0.95  # High confidence for CVF proceedings
+        )
+        
+    def _extract_authors_from_element(self, element) -> List[ScrapedAuthor]:
+        """Extract authors from CVF author element"""
+        authors = []
+        
+        if not element:
+            return authors
+            
+        author_text = element.get_text(strip=True)
+        
+        # Split authors (typically comma-separated)
+        author_names = [name.strip() for name in author_text.split(',')]
+        
+        for i, name in enumerate(author_names):
+            if len(name) > 3:  # Basic name validation
+                authors.append(ScrapedAuthor(
+                    name=name,
+                    position=i + 1
+                ))
+                
+        return authors
+        
+    def _calculate_completeness(self, title: str, authors: List[ScrapedAuthor], pdf_url: Optional[str]) -> float:
+        """Calculate metadata completeness score"""
+        score = 0.0
+        
+        if title and len(title) > 10:
+            score += 0.4
+        if authors:
+            score += 0.3
+        if pdf_url:
+            score += 0.3
+            
+        return min(1.0, score)
+```
 
 #### API Specification
 ```python
@@ -1267,17 +1320,30 @@ venues = scraper.get_supported_venues()  # ["CVPR", "ICCV", "ECCV", "WACV"]
 # Get available years for venue (respects conference schedules)
 years = scraper.get_available_years("CVPR")  # [2024, 2023, 2022, ...] - annual
 years = scraper.get_available_years("ICCV")  # [2023, 2021, 2019, ...] - odd years only
+years = scraper.get_available_years("ECCV")  # [2024, 2022, 2020, ...] - even years only
 
 # Scrape specific venue/year
 result = scraper.scrape_venue_year("CVPR", 2024)
+
+# Scrape multiple CV conferences
+venue_years = {
+    "CVPR": [2024, 2023, 2022],
+    "ICCV": [2023, 2021, 2019],
+    "ECCV": [2024, 2022, 2020],
+    "WACV": [2024, 2023, 2022]
+}
+results = scraper.scrape_multiple_venues(venue_years)
 ```
 
 #### Acceptance Criteria
 - [ ] Successfully scrapes all 4 CVF conferences (CVPR, ICCV, ECCV, WACV)
 - [ ] Respects conference schedules (ICCV odd years, ECCV even years)
-- [ ] Extracts 2,000+ papers per major conference
-- [ ] Handles workshop papers separately
-- [ ] High extraction confidence for structured proceedings
+- [ ] Extracts 2,000+ papers per major conference year
+- [ ] Handles missing data gracefully with confidence scoring
+- [ ] Provides PDF URLs for direct paper access
+- [ ] High extraction confidence for structured proceedings (>95%)
+- [ ] Supports multiple years with proper error handling
+- [ ] Rate limiting and polite crawling compliance
 
 ---
 
