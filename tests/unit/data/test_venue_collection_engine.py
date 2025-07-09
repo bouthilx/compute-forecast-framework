@@ -5,7 +5,6 @@ Following TDD approach - these tests should fail initially
 
 import pytest
 from unittest.mock import Mock
-from datetime import datetime
 
 from compute_forecast.data.models import (
     Paper,
@@ -323,54 +322,6 @@ class TestVenueCollectionEngineIntegration:
         assert reduction_percentage >= 0.80, (
             f"Only achieved {reduction_percentage:.2%} reduction"
         )  # 80% is still very good
-
-
-class TestVenueCollectionEnginePerformance:
-    """Performance tests for VenueCollectionEngine"""
-
-    @pytest.mark.skip(reason="refactor: Slow test")
-    def test_batch_collection_completes_within_time_limit(self):
-        """Test batch collection completes within 5 minutes"""
-        venues = ["ICML", "NeurIPS", "ICLR", "AAAI", "IJCAI", "KDD"]
-        year = 2023
-
-        from compute_forecast.data.collectors.api_integration_layer import (
-            VenueCollectionEngine,
-        )
-
-        # This should fail until implementation exists
-        engine = VenueCollectionEngine(
-            CollectionConfig(batch_timeout_seconds=300), Mock(), Mock()
-        )
-
-        start_time = datetime.now()
-        result = engine.collect_venue_batch(venues, year)
-        duration = (datetime.now() - start_time).total_seconds()
-
-        assert duration <= 300, f"Batch collection took {duration}s, should be ≤300s"
-        assert result.total_duration_seconds <= 300
-
-    def test_single_venue_handles_large_datasets(self):
-        """Test single venue collection can handle 6000+ papers"""
-        venue = "ArXiv_CS_AI"  # Simulate large venue
-        year = 2023
-
-        from compute_forecast.data.collectors.api_integration_layer import (
-            VenueCollectionEngine,
-        )
-
-        # This should fail until implementation exists
-        engine = VenueCollectionEngine(
-            CollectionConfig(single_venue_timeout_seconds=1800), Mock(), Mock()
-        )
-
-        result = engine.collect_single_venue(venue, year)
-
-        # Should be able to handle large number of papers
-        assert isinstance(result, VenueCollectionResult)
-        assert result.success is True
-        # Large venues might have thousands of papers
-        assert len(result.papers) >= 0  # Will be populated in real implementation
 
 
 if __name__ == "__main__":

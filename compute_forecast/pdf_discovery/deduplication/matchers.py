@@ -330,6 +330,12 @@ class PaperFuzzyMatcher:
         if record_to_paper is None:
             record_to_paper = {}
 
+        # If no record_to_paper mapping provided, build it from paper_data attributes
+        if not record_to_paper:
+            for record in records:
+                if hasattr(record, "paper_data") and record.paper_data:
+                    record_to_paper[record.paper_id] = record.paper_data
+
         # Group by identifiers
         doi_groups: Dict[str, List[PDFRecord]] = {}
         arxiv_groups: Dict[str, List[PDFRecord]] = {}
@@ -408,6 +414,12 @@ class PaperFuzzyMatcher:
 
         if record_to_paper is None:
             record_to_paper = {}
+
+        # If no record_to_paper mapping provided, build it from paper_data attributes
+        if not record_to_paper:
+            for record in records:
+                if hasattr(record, "paper_data") and record.paper_data:
+                    record_to_paper[record.paper_id] = record.paper_data
 
         # Skip fuzzy matching if dataset is too large to avoid O(n²) performance issues
         if len(records) > 5000:

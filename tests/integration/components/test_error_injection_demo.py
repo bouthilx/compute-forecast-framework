@@ -78,6 +78,7 @@ def test_analyzer_error_handler_demo():
     assert handler.get_available_memory_mb() > 0
 
     # Simulate memory pressure
+    handler.set_memory_threshold_mb(20.0)  # Set high threshold to ensure failures
     handler.simulate_memory_pressure()
     assert handler.get_available_memory_mb() < 100  # Should be very low
 

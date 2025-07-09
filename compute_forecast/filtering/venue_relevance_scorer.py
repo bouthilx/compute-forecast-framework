@@ -408,7 +408,7 @@ class VenueRelevanceScorer:
             if any(known_venue in venue_upper for known_venue in venues):
                 # Use computational weight for the domain
                 relevance_score = self.computational_weights.get(domain, 0.5)
-                return relevance_score
+                return float(relevance_score)
 
         # If not in known venues, analyze venue name
         venue_lower = venue_name.lower()

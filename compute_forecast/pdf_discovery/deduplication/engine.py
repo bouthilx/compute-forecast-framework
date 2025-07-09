@@ -65,6 +65,13 @@ class PaperDeduplicator:
         # Store the mapping for the matcher to use
         self._record_to_paper = record_to_paper or {}
 
+        # If no record_to_paper mapping provided, build it from paper_data attributes
+        if not self._record_to_paper:
+            for paper_group_id, records in all_records.items():
+                for record in records:
+                    if hasattr(record, "paper_data") and record.paper_data:
+                        self._record_to_paper[record.paper_id] = record.paper_data
+
         # Flatten all records
         all_flat_records = []
         for paper_group_id, records in all_records.items():
@@ -195,7 +202,7 @@ class PaperDeduplicator:
 
         # Add remaining ungrouped records as individual groups
         for record in all_records:
-            if record not in grouped_records:
+            if record.paper_id not in grouped_records:
                 group_id = f"individual_{record.paper_id}_{record.source}"
                 groups[group_id] = [record]
 

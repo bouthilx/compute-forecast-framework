@@ -257,7 +257,7 @@ class TestInterruptionRecoverySystem:
         )
 
         # Mock checkpoint load failure
-        recovery_system.checkpoint_manager.load_checkpoint.side_effect = Exception(
+        recovery_system.state_manager.load_checkpoint.side_effect = Exception(
             "Checkpoint not found"
         )
 
@@ -336,7 +336,7 @@ class TestInterruptionRecoverySystem:
         self, recovery_system, test_session
     ):
         """Test validation when no checkpoints exist."""
-        recovery_system.checkpoint_manager.list_checkpoints.return_value = []
+        recovery_system.state_manager.list_session_checkpoints.return_value = []
 
         is_valid, error_msg = recovery_system.validate_recovery_capability(test_session)
 

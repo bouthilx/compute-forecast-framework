@@ -176,7 +176,7 @@ class SuppressionTemplates:
         )
 
         # Add extract method
-        # template.extract_suppression_indicators = cls._create_extractor()  # type: ignore
+        template.extract_suppression_indicators = cls._create_extractor()  # type: ignore
 
         return template
 
@@ -208,7 +208,7 @@ class SuppressionTemplates:
             suppression_patterns=cls.SUPPRESSION_PATTERNS,
         )
 
-        # template.extract_suppression_indicators = cls._create_extractor()  # type: ignore
+        template.extract_suppression_indicators = cls._create_extractor()  # type: ignore
 
         return template
 
@@ -240,7 +240,7 @@ class SuppressionTemplates:
             suppression_patterns=cls.SUPPRESSION_PATTERNS,
         )
 
-        # template.extract_suppression_indicators = cls._create_extractor()  # type: ignore
+        template.extract_suppression_indicators = cls._create_extractor()  # type: ignore
 
         return template
 
