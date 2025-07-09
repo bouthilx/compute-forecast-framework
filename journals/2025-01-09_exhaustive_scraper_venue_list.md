@@ -24,9 +24,9 @@
 ### 3. **OpenReviewScraper** ✅ (Partially Implemented)
 **Total Papers: 541**
 - ICLR: 292 papers ✅ (already implemented)
-- TMLR: 203 papers (to implement)
-- COLM: 31 papers (to implement)
-- RLC: 15 papers (to implement)
+- TMLR: 203 papers ✅ (already implemented)
+- COLM: 31 papers ✅ (already implemented)
+- RLC: 15 papers ✅ (already implemented)
 
 ---
 
