@@ -62,7 +62,7 @@ class ScrapingResult:
         )
 
 
-class BaseScaper(ABC):
+class BaseScraper(ABC):
     """Abstract base class for all paper scrapers"""
 
     def __init__(self, source_name: str, config: Optional[ScrapingConfig] = None):
@@ -166,7 +166,7 @@ class BaseScaper(ABC):
         return errors
 
 
-class ConferenceProceedingsScaper(BaseScaper):
+class ConferenceProceedingsScraper(BaseScraper):
     """Base class for conference proceedings scrapers"""
 
     @abstractmethod
@@ -212,7 +212,7 @@ class ConferenceProceedingsScaper(BaseScaper):
             )
 
 
-class JournalPublisherScaper(BaseScaper):
+class JournalPublisherScraper(BaseScraper):
     """Base class for journal publisher scrapers"""
 
     @abstractmethod
@@ -244,7 +244,7 @@ class JournalPublisherScaper(BaseScaper):
             )
 
 
-class APIEnhancedScaper(BaseScaper):
+class APIEnhancedScraper(BaseScraper):
     """Base class for API-based scrapers"""
 
     def __init__(self, source_name: str, config: Optional[ScrapingConfig] = None):

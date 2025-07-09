@@ -1,10 +1,10 @@
 """Web scraper infrastructure for collecting papers from conference and journal websites"""
 
 from .base import (
-    BaseScaper,
-    ConferenceProceedingsScaper,
-    JournalPublisherScaper,
-    APIEnhancedScaper,
+    BaseScraper,
+    ConferenceProceedingsScraper,
+    JournalPublisherScraper,
+    APIEnhancedScraper,
     ScrapingConfig,
     ScrapingResult,
 )
@@ -23,10 +23,10 @@ from .error_handling import (
 
 __all__ = [
     # Base classes
-    "BaseScaper",
-    "ConferenceProceedingsScaper",
-    "JournalPublisherScaper",
-    "APIEnhancedScaper",
+    "BaseScraper",
+    "ConferenceProceedingsScraper",
+    "JournalPublisherScraper",
+    "APIEnhancedScraper",
     "ScrapingConfig",
     "ScrapingResult",
     # Models
