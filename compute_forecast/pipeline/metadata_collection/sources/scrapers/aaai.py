@@ -215,6 +215,11 @@ class AAAIScraper(BaseScraper):
                         if retry_count >= max_retries:
                             continue
                             
+                        # Check if response is defined (it won't be if all retries failed)
+                        if 'response' not in locals():
+                            self.logger.error(f"No response received for {week_from} to {week_until}")
+                            continue
+                            
                         # Parse XML response
                         root = ET.fromstring(response.text)
                     
