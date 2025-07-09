@@ -92,6 +92,7 @@ def save_papers(papers: List[SimplePaper], output_path: Path, metadata: Dict[str
                 "year": p.year,
                 "abstract": p.abstract,
                 "pdf_urls": p.pdf_urls,
+                "keywords": getattr(p, 'keywords', []),  # Include keywords if available
                 "doi": p.doi,
                 "arxiv_id": p.arxiv_id,
                 "paper_id": p.paper_id,

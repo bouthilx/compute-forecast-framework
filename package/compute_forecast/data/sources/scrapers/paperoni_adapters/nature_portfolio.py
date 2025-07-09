@@ -183,6 +183,8 @@ class NaturePortfolioAdapter(BasePaperoniAdapter):
         doi = item.get('DOI', '')
         paper_url = item.get('URL', f"https://doi.org/{doi}" if doi else '')
         
+        # Keywords will be extracted in consolidation phase, not during collection
+        
         return SimplePaper(
             title=title,
             authors=authors,
@@ -190,6 +192,7 @@ class NaturePortfolioAdapter(BasePaperoniAdapter):
             year=actual_year,
             abstract=abstract,
             pdf_urls=pdf_urls,
+            keywords=[],  # Keywords will be added in consolidation phase
             paper_id=doi,
             source_scraper=self.source_name,
             source_url=paper_url,
@@ -227,3 +230,4 @@ class NaturePortfolioAdapter(BasePaperoniAdapter):
         clean_text = clean_text.strip()
         
         return clean_text
+    
