@@ -52,7 +52,8 @@ class ScraperRegistry:
                 MLRAdapter,
                 OpenReviewAdapter,
                 SemanticScholarAdapter,
-                NaturePortfolioAdapter
+                NaturePortfolioAdapter,
+                AAAIAdapter
             )
 
             self.register_scraper("NeurIPSScraper", NeurIPSAdapter)
@@ -60,6 +61,7 @@ class ScraperRegistry:
             self.register_scraper("OpenReviewScraper", OpenReviewAdapter)
             self.register_scraper("SemanticScholarScraper", SemanticScholarAdapter)
             self.register_scraper("NaturePortfolioScraper", NaturePortfolioAdapter)
+            self.register_scraper("AAAIScraper", AAAIAdapter)
             
         except ImportError as e:
             logger.warning(f"Failed to import paperoni adapters: {e}")
@@ -99,8 +101,13 @@ class ScraperRegistry:
             "nature-methods": "NaturePortfolioScraper",
             "nature-biotechnology": "NaturePortfolioScraper",
             
+            # AAAI venues
+            "aaai": "AAAIScraper",
+            "aies": "AAAIScraper",
+            "hcomp": "AAAIScraper",
+            "icwsm": "AAAIScraper",
+            
             # Other venues with SemanticScholar fallback
-            "aaai": "SemanticScholarScraper", 
             "miccai": "SemanticScholarScraper",
             "kdd": "SemanticScholarScraper",
             "www": "SemanticScholarScraper",
