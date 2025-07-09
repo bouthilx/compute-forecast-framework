@@ -213,7 +213,7 @@ class AAAIAdapter(BasePaperoniAdapter):
                 try:
                     pub_date = datetime.strptime(date_elem.text[:10], '%Y-%m-%d')
                     actual_year = pub_date.year
-                except:
+                except (ValueError, TypeError):
                     actual_year = year
             else:
                 actual_year = year
