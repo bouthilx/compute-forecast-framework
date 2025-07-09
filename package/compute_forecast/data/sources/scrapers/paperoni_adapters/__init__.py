@@ -4,10 +4,12 @@ from .neurips import NeurIPSAdapter
 from .mlr import MLRAdapter
 from .openreview import OpenReviewAdapter
 from .semantic_scholar import SemanticScholarAdapter
+from .nature_portfolio import NaturePortfolioAdapter
 
 __all__ = [
     "NeurIPSAdapter",
     "MLRAdapter", 
     "OpenReviewAdapter",
-    "SemanticScholarAdapter"
+    "SemanticScholarAdapter",
+    "NaturePortfolioAdapter"
 ]
