@@ -17,8 +17,6 @@ from .alerting_engine import (
 )
 from .notification_channels import (
     create_notification_channel,
-    DashboardNotificationChannel,
-    ConsoleNotificationChannel,
 )
 from .alert_rules import AlertRuleFactory, CustomAlertRule
 from .metrics_collector import MetricsCollector
@@ -258,13 +256,11 @@ class IntelligentAlertingSystem:
         """Setup default notification channels"""
         # Always add console channel for development
         if self.enable_console_alerts:
-            console_channel = ConsoleNotificationChannel(verbose=True)
             console_casted = AlertingEngineNotificationChannel("console")
             self.alerting_engine.add_notification_channel("console", console_casted)
 
         # Add dashboard channel if enabled
         if self.enable_dashboard_alerts:
-            dashboard_channel = DashboardNotificationChannel()
             dashboard_casted = AlertingEngineNotificationChannel("dashboard")
             self.alerting_engine.add_notification_channel("dashboard", dashboard_casted)
 

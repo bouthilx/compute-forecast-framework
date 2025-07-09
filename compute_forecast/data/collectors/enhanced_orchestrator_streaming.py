@@ -277,14 +277,7 @@ class EnhancedCollectionOrchestratorStreaming:
             # Get the source client
             source_client = self.sources[source_name]
 
-            # Create paginated query
-            paginated_query = CollectionQuery(
-                domain=query.domain,
-                keywords=query.keywords,
-                venue=query.venue,
-                year=query.year,
-                max_results=current_batch_size,
-            )
+            # Note: Using current_batch_size directly in API calls below
 
             # Perform collection based on query type
             if query.venue:
