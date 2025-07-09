@@ -1,7 +1,7 @@
 """Tests for Nature Portfolio adapter using Crossref API."""
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from datetime import datetime
 
 from compute_forecast.data.sources.scrapers.paperoni_adapters.nature_portfolio import NaturePortfolioAdapter

@@ -4,7 +4,6 @@ import re
 import time
 from typing import List, Any, Optional
 from datetime import datetime
-import requests
 
 from .base import BasePaperoniAdapter
 from ..models import SimplePaper
