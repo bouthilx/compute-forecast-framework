@@ -56,7 +56,7 @@ class PDFManager:
         if self.metadata_file.exists():
             try:
                 with open(self.metadata_file, "r") as f:
-                    return json.load(f)
+                    return dict(json.load(f))
             except Exception as e:
                 logger.error(f"Failed to load metadata: {e}")
         return {}
@@ -125,7 +125,7 @@ class PDFManager:
         try:
             # Upload to Drive
             file_id = self.drive_store.upload_pdf(paper_id, pdf_path, metadata)
-            
+
             if not file_id:
                 logger.error(f"Failed to get file ID for {paper_id}")
                 return False

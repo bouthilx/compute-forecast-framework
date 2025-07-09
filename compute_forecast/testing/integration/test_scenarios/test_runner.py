@@ -62,7 +62,7 @@ class EndToEndTestRunner:
         print("🎯 Starting End-to-End Pipeline Test Suite")
         print("=" * 60)
 
-        results = {}
+        results: Dict[str, Optional[Any]] = {}
         tests_run = 0
         tests_passed = 0
 

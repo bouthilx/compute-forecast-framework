@@ -3,7 +3,7 @@
 import json
 import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from collections import defaultdict
 import numpy as np
 
@@ -129,7 +129,8 @@ class DomainClassifier:
 
         # Return domain with highest score
         if max(domain_scores.values()) > 0:
-            return max(domain_scores, key=domain_scores.get)
+            best_domain = max(domain_scores, key=lambda k: domain_scores[k])
+            return str(best_domain)
 
         return "Other"
 
@@ -281,10 +282,11 @@ class MilaPaperSelector:
             "tmlr",
         }
 
-    def load_papers(self, file_path: str) -> List[Dict]:
+    def load_papers(self, file_path: str) -> List[Dict[str, Any]]:
         """Load papers from JSON file."""
         with open(file_path, "r") as f:
-            return json.load(f)
+            data = json.load(f)
+            return list(data) if isinstance(data, list) else []
 
     def filter_by_year(
         self, papers: List[Dict], start_year: int, end_year: int
@@ -313,7 +315,7 @@ class MilaPaperSelector:
         for release in paper.get("releases", []):
             venue_name = release.get("venue", {}).get("name", "")
             if venue_name:
-                return venue_name.lower()
+                return str(venue_name).lower()
         return ""
 
     def _is_top_venue(self, paper: Dict) -> bool:
@@ -334,8 +336,10 @@ class MilaPaperSelector:
         )
 
         # Classify papers by domain
-        papers_by_year_domain = defaultdict(lambda: defaultdict(list))
-        papers_by_year = defaultdict(list)  # All papers by year
+        papers_by_year_domain: Dict[int, Dict[str, List[Dict]]] = defaultdict(
+            lambda: defaultdict(list)
+        )
+        papers_by_year: Dict[int, List[Dict]] = defaultdict(list)  # All papers by year
 
         for paper in papers:
             year = self._extract_year(paper)
@@ -397,12 +401,15 @@ class MilaPaperSelector:
 
         return selected
 
-    def generate_selection_summary(self, selected_papers: List[Dict]) -> Dict:
+    def generate_selection_summary(self, selected_papers: List[Dict]) -> Dict[str, Any]:
         """Generate summary statistics for selected papers."""
-        summary = {
+        by_year: Dict[int, int] = defaultdict(int)
+        by_domain: Dict[str, int] = defaultdict(int)
+
+        summary: Dict[str, Any] = {
             "total_selected": len(selected_papers),
-            "by_year": defaultdict(int),
-            "by_domain": defaultdict(int),
+            "by_year": by_year,
+            "by_domain": by_domain,
             "by_venue_tier": {"top": 0, "other": 0},
             "computational_richness": {
                 "scores": [],
@@ -413,23 +420,25 @@ class MilaPaperSelector:
             },
         }
 
-        richness_scores = []
+        richness_scores: List[float] = []
 
         for paper in selected_papers:
             # Year
             year = self._extract_year(paper)
             if year:
-                summary["by_year"][year] += 1
+                by_year[year] += 1
 
             # Domain
             domain = self.domain_classifier.classify(paper)
-            summary["by_domain"][domain] += 1
+            by_domain[domain] += 1
 
             # Venue tier
-            if self._is_top_venue(paper):
-                summary["by_venue_tier"]["top"] += 1
-            else:
-                summary["by_venue_tier"]["other"] += 1
+            venue_tier = summary["by_venue_tier"]
+            if isinstance(venue_tier, dict):
+                if self._is_top_venue(paper):
+                    venue_tier["top"] += 1
+                else:
+                    venue_tier["other"] += 1
 
             # Richness score
             score = paper.get(
@@ -439,15 +448,16 @@ class MilaPaperSelector:
             richness_scores.append(score)
 
         # Compute richness statistics
-        if richness_scores:
-            summary["computational_richness"]["scores"] = richness_scores
-            summary["computational_richness"]["mean"] = float(np.mean(richness_scores))
-            summary["computational_richness"]["std"] = float(np.std(richness_scores))
-            summary["computational_richness"]["min"] = float(np.min(richness_scores))
-            summary["computational_richness"]["max"] = float(np.max(richness_scores))
+        richness_dict = summary["computational_richness"]
+        if richness_scores and isinstance(richness_dict, dict):
+            richness_dict["scores"] = richness_scores
+            richness_dict["mean"] = float(np.mean(richness_scores))
+            richness_dict["std"] = float(np.std(richness_scores))
+            richness_dict["min"] = float(np.min(richness_scores))
+            richness_dict["max"] = float(np.max(richness_scores))
 
         # Convert defaultdicts to regular dicts
-        summary["by_year"] = dict(summary["by_year"])
-        summary["by_domain"] = dict(summary["by_domain"])
+        summary["by_year"] = dict(by_year)
+        summary["by_domain"] = dict(by_domain)
 
         return summary

@@ -37,11 +37,11 @@ class ExtractionQualityAssurance:
 
     def validate_distribution(self, results: List[ExtractionBatch]) -> Dict[str, Any]:
         """Check extraction distribution is balanced."""
-        domain_counts = defaultdict(int)
-        year_counts = defaultdict(int)
+        domain_counts: Dict[str, int] = defaultdict(int)
+        year_counts: Dict[int, int] = defaultdict(int)
 
         for batch in results:
-            domain_counts[batch.domain] += batch.total_extracted
+            domain_counts[str(batch.domain)] += batch.total_extracted
             year_counts[batch.year] += batch.total_extracted
 
         # Check if distribution is reasonably balanced
@@ -147,8 +147,8 @@ class ExtractionQualityAssurance:
                     low_confidence += 1
 
         # Domain distribution
-        domain_dist = defaultdict(int)
-        year_dist = defaultdict(int)
+        domain_dist: Dict[BenchmarkDomain, int] = defaultdict(int)
+        year_dist: Dict[int, int] = defaultdict(int)
 
         for batch in results:
             domain_dist[batch.domain] += batch.total_extracted

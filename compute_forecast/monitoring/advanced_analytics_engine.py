@@ -248,7 +248,8 @@ class AdvancedAnalyticsEngine:
 
         # Check cache
         if self._is_cached(cache_key):
-            return self.analytics_cache[cache_key]
+            cached_result = self.analytics_cache[cache_key]
+            return cached_result if isinstance(cached_result, TrendAnalysis) else None
 
         try:
             # Extract time series data
@@ -283,7 +284,12 @@ class AdvancedAnalyticsEngine:
 
         # Check cache
         if self._is_cached(cache_key):
-            return self.analytics_cache[cache_key]
+            cached_result = self.analytics_cache[cache_key]
+            return (
+                cached_result
+                if isinstance(cached_result, PerformanceAnalytics)
+                else None
+            )
 
         try:
             # Get current and historical values
@@ -328,7 +334,12 @@ class AdvancedAnalyticsEngine:
 
         # Check cache
         if self._is_cached(cache_key):
-            return self.analytics_cache[cache_key]
+            cached_result = self.analytics_cache[cache_key]
+            return (
+                cached_result
+                if isinstance(cached_result, PredictiveAnalytics)
+                else None
+            )
 
         try:
             # Get historical data
@@ -360,7 +371,12 @@ class AdvancedAnalyticsEngine:
 
         # Check cache
         if self._is_cached(cache_key):
-            return self.analytics_cache[cache_key]
+            cached_result = self.analytics_cache[cache_key]
+            return (
+                cached_result
+                if isinstance(cached_result, AnalyticsSummary)
+                else self._generate_comprehensive_summary()
+            )
 
         try:
             summary = self._generate_comprehensive_summary()
@@ -383,7 +399,7 @@ class AdvancedAnalyticsEngine:
     def get_custom_analytics(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """Generate custom analytics based on configuration"""
         try:
-            results = {}
+            results: Dict[str, Any] = {}
 
             # Custom metric calculations
             if "custom_metrics" in config:
@@ -401,7 +417,7 @@ class AdvancedAnalyticsEngine:
                     hours = window_config["hours"]
                     metrics = window_config.get("metrics", [])
 
-                    window_results = {}
+                    window_results: Dict[str, Any] = {}
                     for metric in metrics:
                         trend = self.get_trend_analysis(
                             metric, AnalyticsTimeWindow.last_hours(hours)
@@ -497,8 +513,10 @@ class AdvancedAnalyticsEngine:
         self, metric_name: str, current_value: float, historical_values: List[float]
     ) -> PerformanceAnalytics:
         """Analyze performance metrics"""
-        baseline_value = self.performance_baselines.get(
-            metric_name, np.median(historical_values)
+        baseline_value = float(
+            self.performance_baselines.get(
+                metric_name, float(np.median(historical_values))
+            )
         )
 
         # Calculate percentile rank
@@ -510,10 +528,14 @@ class AdvancedAnalyticsEngine:
         # Calculate performance score
         if metric_name in ["papers_per_minute", "api_success_rate"]:
             # Higher is better
-            performance_score = min(100, (current_value / baseline_value) * 100)
+            performance_score = float(
+                min(100.0, (current_value / baseline_value) * 100)
+            )
         else:
             # Lower is better (memory, CPU, response time)
-            performance_score = max(0, 100 - ((current_value / baseline_value) * 50))
+            performance_score = float(
+                max(0.0, 100.0 - ((current_value / baseline_value) * 50))
+            )
 
         # Determine efficiency rating
         if performance_score >= 90:
@@ -645,7 +667,7 @@ class AdvancedAnalyticsEngine:
             # Collection rate score
             rate = current_metrics.collection_progress.papers_per_minute
             rate_score = min(100, (rate / 20.0) * 100) if rate > 0 else 0
-            scores.append(rate_score)
+            scores.append(float(rate_score))
 
             # API health score
             api_scores = []
@@ -658,7 +680,7 @@ class AdvancedAnalyticsEngine:
                 api_scores.append(api_score)
 
             if api_scores:
-                scores.append(np.mean(api_scores))
+                scores.append(float(np.mean(api_scores)))
 
             # Processing score
             if hasattr(
@@ -674,7 +696,7 @@ class AdvancedAnalyticsEngine:
                     )  # Scale error rate
                     scores.append(processing_score)
 
-            return np.mean(scores) if scores else 50.0
+            return float(np.mean(scores)) if scores else 50.0
 
         except Exception as e:
             logger.debug(f"Error calculating collection health score: {e}")
@@ -690,19 +712,19 @@ class AdvancedAnalyticsEngine:
             scores = []
 
             # Memory efficiency (lower is better)
-            memory_usage = current_metrics.system_metrics.memory_usage_percent
+            memory_usage = current_metrics.system_metrics.memory_usage_percentage
             memory_score = max(0, 100 - memory_usage) if memory_usage > 0 else 100
             scores.append(memory_score)
 
             # CPU efficiency (lower is better)
-            cpu_usage = current_metrics.system_metrics.cpu_usage_percent
+            cpu_usage = current_metrics.system_metrics.cpu_usage_percentage
             cpu_score = max(0, 100 - cpu_usage) if cpu_usage > 0 else 100
             scores.append(cpu_score)
 
             # Network efficiency (placeholder - would need actual metrics)
             scores.append(85.0)  # Assume good network efficiency
 
-            return np.mean(scores)
+            return float(np.mean(scores))
 
         except Exception as e:
             logger.debug(f"Error calculating system efficiency score: {e}")
@@ -887,11 +909,12 @@ class AdvancedAnalyticsEngine:
             # Safe evaluation with limited scope
             safe_dict = {
                 "papers_per_minute": current_metrics.collection_progress.papers_per_minute,
-                "memory_usage": current_metrics.system_metrics.memory_usage_percent,
-                "cpu_usage": current_metrics.system_metrics.cpu_usage_percent,
+                "memory_usage": current_metrics.system_metrics.memory_usage_percentage,
+                "cpu_usage": current_metrics.system_metrics.cpu_usage_percentage,
             }
 
-            return eval(calculation, {"__builtins__": {}}, safe_dict)
+            result = eval(calculation, {"__builtins__": {}}, safe_dict)
+            return float(result)
 
         except Exception as e:
             logger.error(f"Error calculating custom metric: {e}")
@@ -934,20 +957,22 @@ class AdvancedAnalyticsEngine:
             if metric_name == "papers_per_minute":
                 return metrics.collection_progress.papers_per_minute
             elif metric_name == "memory_usage_percent":
-                return metrics.system_metrics.memory_usage_percent
+                return float(metrics.system_metrics.memory_usage_percentage)
             elif metric_name == "cpu_usage_percent":
-                return metrics.system_metrics.cpu_usage_percent
+                return float(metrics.system_metrics.cpu_usage_percentage)
             elif metric_name == "total_papers":
-                return float(metrics.collection_progress.total_papers_collected)
+                return float(metrics.collection_progress.papers_collected)
             elif metric_name == "venues_completed":
-                return float(metrics.collection_progress.venues_completed)
+                return float(
+                    getattr(metrics.collection_progress, "venues_completed", 0)
+                )
             elif metric_name == "api_success_rate":
                 # Average success rate across all APIs
                 rates = []
                 for api_metrics in metrics.api_metrics.values():
                     if hasattr(api_metrics, "success_rate"):
                         rates.append(api_metrics.success_rate)
-                return np.mean(rates) if rates else None
+                return float(np.mean(rates)) if rates else None
             else:
                 return None
 

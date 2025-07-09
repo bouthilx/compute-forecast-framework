@@ -93,7 +93,8 @@ class VenueStrategist:
         if worker2_file.exists():
             logger.info("Loading Mila venue statistics from Worker 2")
             with open(worker2_file, "r") as f:
-                return json.load(f)
+                data = json.load(f)
+                return dict(data) if isinstance(data, dict) else None
 
         # Fallback: Use existing venue analysis infrastructure
         logger.info("Worker 2 data not available, using venue analysis fallback")
@@ -312,7 +313,7 @@ class VenueStrategist:
                 }
                 domains = domain_mapping.get(venue_info.domain, ["General"])
 
-        return domains[:4]  # Limit to 4 domains
+        return list(domains[:4])  # Limit to 4 domains
 
     def generate_domain_specific_venues(
         self, mila_data: Dict[str, Any]
@@ -333,7 +334,7 @@ class VenueStrategist:
 
         for domain in research_domains:
             # Get venues that publish in this domain
-            domain_venue_list = []
+            domain_venue_list: List[Dict[str, Any]] = []
 
             # Get venues from venue database for this domain
             db_domain_map = {
@@ -368,7 +369,9 @@ class VenueStrategist:
                     )
 
             # Sort by priority score and take top venues
-            domain_venue_list.sort(key=lambda x: x["priority_score"], reverse=True)
+            domain_venue_list.sort(
+                key=lambda x: float(x["priority_score"]), reverse=True
+            )
             domain_venues[domain] = domain_venue_list[:8]  # Top 8 per domain
 
         logger.info(

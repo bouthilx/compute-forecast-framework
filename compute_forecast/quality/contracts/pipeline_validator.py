@@ -288,7 +288,7 @@ class AnalysisContractValidator(BaseValidator):
         Returns:
             Score between 0.0 and 1.0
         """
-        return validation_result.get("validation_rate", 0.0)
+        return float(validation_result.get("validation_rate", 0.0))
 
 
 @dataclass

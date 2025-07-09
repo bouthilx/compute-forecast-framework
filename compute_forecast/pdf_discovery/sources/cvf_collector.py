@@ -76,7 +76,7 @@ class CVFCollector(BasePDFCollector):
         Returns:
             Full proceedings URL
         """
-        return urljoin(self.base_url, f"{venue}{year}")
+        return str(urljoin(self.base_url, f"{venue}{year}"))
 
     def _construct_pdf_url(self, venue: str, year: int, paper_id: str) -> str:
         """Construct PDF URL from components.
@@ -89,7 +89,7 @@ class CVFCollector(BasePDFCollector):
         Returns:
             Full PDF URL
         """
-        return urljoin(self.base_url, f"{venue}{year}/papers/{paper_id}.pdf")
+        return str(urljoin(self.base_url, f"{venue}{year}/papers/{paper_id}.pdf"))
 
     def _search_proceedings_page(
         self, venue: str, year: int, paper_title: str
@@ -199,7 +199,7 @@ class CVFCollector(BasePDFCollector):
 
         # Create and return PDF record
         return PDFRecord(
-            paper_id=paper.paper_id,
+            paper_id=paper.paper_id or f"cvf_{paper_id}",
             pdf_url=pdf_url,
             source=self.source_name,
             discovery_timestamp=datetime.now(),

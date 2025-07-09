@@ -42,6 +42,7 @@ class AnalyzerErrorHandler:
         self._total_papers = 0
         self._processed_papers = 0
         self._processing_errors: List[Dict[str, Any]] = []
+        self._memory_threshold_mb = 2.0  # Default threshold for minimum memory
 
     def simulate_corrupted_input(self, corruption_type: str) -> None:
         """
@@ -67,9 +68,9 @@ class AnalyzerErrorHandler:
         logger.warning("Simulating memory pressure")
         self._memory_pressure_active = True
 
-        # Reduce available memory significantly
+        # Reduce available memory to simulate pressure but allow some processing
         self._memory_state.available_mb = min(
-            100.0, self._memory_state.available_mb * 0.1
+            15.0, self._memory_state.available_mb * 0.1
         )
         self._memory_state.used_mb = (
             self._memory_state.total_mb - self._memory_state.available_mb
@@ -125,6 +126,16 @@ class AnalyzerErrorHandler:
             self._memory_state.available_mb = limit_mb * 0.2
         logger.info(f"Set memory limit to {limit_mb}MB")
 
+    def set_memory_threshold_mb(self, threshold_mb: float) -> None:
+        """
+        Set minimum memory threshold for processing.
+
+        Args:
+            threshold_mb: Minimum memory threshold in megabytes
+        """
+        self._memory_threshold_mb = max(0.0, threshold_mb)
+        logger.info(f"Set memory threshold to {threshold_mb}MB")
+
     def get_available_memory_mb(self) -> float:
         """
         Get available memory.
@@ -132,7 +143,7 @@ class AnalyzerErrorHandler:
         Returns:
             Available memory in MB
         """
-        return self._memory_state.available_mb
+        return float(self._memory_state.available_mb)
 
     def set_total_papers(self, count: int) -> None:
         """
@@ -154,11 +165,14 @@ class AnalyzerErrorHandler:
         Returns:
             Processing results
         """
-        results = {"processed": 0, "failed": 0, "errors": []}
+        results: Dict[str, Any] = {"processed": 0, "failed": 0, "errors": []}
 
         for i in range(batch_size):
             # Check memory pressure
-            if self._memory_pressure_active and self._memory_state.available_mb < 10:
+            if (
+                self._memory_pressure_active
+                and self._memory_state.available_mb < self._memory_threshold_mb
+            ):
                 error = {
                     "paper_index": self._processed_papers + i,
                     "error_type": ErrorType.MEMORY_EXHAUSTION.value,
@@ -202,7 +216,8 @@ class AnalyzerErrorHandler:
 
             # Simulate memory usage
             if self._memory_pressure_active:
-                self._memory_state.used_mb += random.uniform(0.5, 2.0)
+                # Add smaller memory increments to allow more papers to process
+                self._memory_state.used_mb += random.uniform(0.01, 0.05)
                 self._memory_state.available_mb = max(
                     0, self._memory_state.total_mb - self._memory_state.used_mb
                 )

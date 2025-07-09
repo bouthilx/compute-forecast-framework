@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+from typing import Dict, Any
 from .base import BaseCitationSource
 from ..models import Paper, Author, CollectionQuery, CollectionResult
 from ...core.config import ConfigManager
@@ -176,9 +177,9 @@ class OpenAlexSource(BaseCitationSource):
             citations=citations,
             abstract="",  # Abstract not available in basic API response
             doi=work.get("doi", "").strip(),
-            urls=[work.get("id")] if work.get("id") else [],
+            urls=[str(work.get("id"))] if work.get("id") else [],
             source="openalex",
-            collection_timestamp=datetime.now().isoformat(),
+            collection_timestamp=datetime.now(),
             mila_domain=query.domain,
         )
 
@@ -240,9 +241,9 @@ class OpenAlexSource(BaseCitationSource):
                 citations=work_data.get("cited_by_count", 0),
                 abstract="",  # Abstract not available in basic API response
                 doi=work_data.get("doi", ""),
-                urls=[work_data.get("id")] if work_data.get("id") else [],
+                urls=[str(work_data.get("id"))] if work_data.get("id") else [],
                 source="openalex",
-                collection_timestamp=datetime.now().isoformat(),
+                collection_timestamp=datetime.now(),
             )
 
             return paper
@@ -255,7 +256,10 @@ class OpenAlexSource(BaseCitationSource):
         """Test OpenAlex API connectivity"""
         try:
             test_url = f"{self.base_url}/works"
-            params = {"filter": "title.search:machine learning", "per-page": 1}
+            params: Dict[str, Any] = {
+                "filter": "title.search:machine learning",
+                "per-page": 1,
+            }
             response = requests.get(test_url, params=params, timeout=10)
             return response.status_code == 200
         except Exception as e:

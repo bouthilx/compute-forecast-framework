@@ -6,7 +6,7 @@ with venue collection engines, state managers, and data processors.
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, cast
 from datetime import datetime
 
 from ..data.models import APIHealthStatus
@@ -26,7 +26,7 @@ class VenueEngineAdapter:
         try:
             # Try to get progress from venue engine
             if hasattr(self.venue_engine, "get_collection_progress"):
-                return self.venue_engine.get_collection_progress()
+                return cast(Dict[str, Any], self.venue_engine.get_collection_progress())
 
             # Fallback: construct progress from available methods
             progress = {
@@ -61,7 +61,10 @@ class VenueEngineAdapter:
         try:
             # Try to get API health from venue engine
             if hasattr(self.venue_engine, "get_api_health_status"):
-                return self.venue_engine.get_api_health_status()
+                return cast(
+                    Dict[str, APIHealthStatus],
+                    self.venue_engine.get_api_health_status(),
+                )
 
             # Try to get from API health monitor
             if hasattr(self.venue_engine, "api_health_monitor"):
@@ -94,7 +97,9 @@ class VenueEngineAdapter:
         try:
             # Try to get venue-specific progress
             if hasattr(self.venue_engine, "get_venue_progress"):
-                return self.venue_engine.get_venue_progress()
+                return cast(
+                    Dict[str, Dict[str, Any]], self.venue_engine.get_venue_progress()
+                )
 
             # Fallback: construct mock venue progress
             venues = ["NeurIPS", "ICML", "AAAI", "IJCAI", "KDD"]
@@ -131,7 +136,9 @@ class StateManagerAdapter:
         """Extract checkpoint statistics from state manager"""
         try:
             if hasattr(self.state_manager, "get_checkpoint_statistics"):
-                return self.state_manager.get_checkpoint_statistics()
+                return cast(
+                    Dict[str, Any], self.state_manager.get_checkpoint_statistics()
+                )
 
             # Fallback: construct basic checkpoint stats
             return {
@@ -174,7 +181,7 @@ class DataProcessorAdapter:
         try:
             normalizer = self.processors.get("venue_normalizer")
             if normalizer and hasattr(normalizer, "get_mapping_statistics"):
-                return normalizer.get_mapping_statistics()
+                return cast(Dict[str, Any], normalizer.get_mapping_statistics())
 
             return {"venues_normalized": 0, "accuracy": 1.0, "rate_per_second": 0.0}
 
@@ -187,7 +194,7 @@ class DataProcessorAdapter:
         try:
             deduplicator = self.processors.get("deduplicator")
             if deduplicator and hasattr(deduplicator, "get_statistics"):
-                return deduplicator.get_statistics()
+                return cast(Dict[str, Any], deduplicator.get_statistics())
 
             return {
                 "papers_processed": 0,
@@ -210,7 +217,7 @@ class DataProcessorAdapter:
         try:
             comp_filter = self.processors.get("computational_filter")
             if comp_filter and hasattr(comp_filter, "get_statistics"):
-                return comp_filter.get_statistics()
+                return cast(Dict[str, Any], comp_filter.get_statistics())
 
             return {
                 "papers_analyzed": 0,
@@ -246,13 +253,13 @@ class DashboardIntegration:
         self.processor_adapter = MockDataProcessors()
 
     def get_venue_engine_adapter(self) -> Optional[VenueEngineAdapter]:
-        return self.venue_adapter
+        return cast(Optional[VenueEngineAdapter], self.venue_adapter)
 
     def get_state_manager_adapter(self) -> Optional[StateManagerAdapter]:
-        return self.state_adapter
+        return cast(Optional[StateManagerAdapter], self.state_adapter)
 
     def get_processor_adapter(self) -> DataProcessorAdapter:
-        return self.processor_adapter
+        return cast(DataProcessorAdapter, self.processor_adapter)
 
 
 class MockVenueEngine:

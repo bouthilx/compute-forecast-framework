@@ -5,7 +5,7 @@ This module implements comprehensive venue scoring for paper collection prioriti
 """
 
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -57,7 +57,7 @@ class VenueScorer:
         self.venue_impact_scores = self._load_venue_impact_scores()
 
         # Cache for Mila publication data
-        self._mila_data_cache = None
+        self._mila_data_cache: Optional[Dict[str, Any]] = None
 
     def _load_venue_impact_scores(self) -> Dict[str, float]:
         """Load or define venue impact scores (h5-index based)"""
@@ -118,7 +118,7 @@ class VenueScorer:
         return self._mila_data_cache
 
     def calculate_venue_score(
-        self, venue: str, domain: str, mila_data: Dict = None
+        self, venue: str, domain: str, mila_data: Optional[Dict] = None
     ) -> VenueScore:
         """Comprehensive venue scoring for paper collection priority"""
 
@@ -188,7 +188,7 @@ class VenueScorer:
         )
 
     def _assess_domain_match(
-        self, venue: str, target_domain: str, venue_info: VenueInfo = None
+        self, venue: str, target_domain: str, venue_info: Optional[VenueInfo] = None
     ) -> float:
         """Assess how well venue matches the target domain"""
         if venue_info and venue_info.domain == target_domain:
@@ -336,7 +336,7 @@ class VenueScorer:
 
         if all_venue_scores:
             # Global venue rankings
-            global_rankings = {}
+            global_rankings: Dict[str, Dict[str, Any]] = {}
             for score in all_venue_scores:
                 venue = score.venue_name
                 if (
@@ -351,7 +351,9 @@ class VenueScorer:
 
             # Sort global rankings
             sorted_global = sorted(
-                global_rankings.items(), key=lambda x: x[1]["score"], reverse=True
+                global_rankings.items(),
+                key=lambda x: float(x[1]["score"]),
+                reverse=True,
             )
 
             results["cross_domain_analysis"] = {

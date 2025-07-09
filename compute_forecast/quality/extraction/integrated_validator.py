@@ -58,7 +58,7 @@ class IntegratedExtractionValidator:
         self.rules = self._load_validation_rules(config_path)
 
         # Cache for batch validations
-        self._batch_cache = {}
+        self._batch_cache: Dict[str, Any] = {}
 
     def validate_extraction(
         self,
@@ -86,9 +86,10 @@ class IntegratedExtractionValidator:
         consistency_checks = []
 
         # Domain consistency
-        extraction_dict = (
-            extraction.__dict__ if hasattr(extraction, "__dict__") else extraction
-        )
+        if hasattr(extraction, "__dict__"):
+            extraction_dict = extraction.__dict__
+        else:
+            extraction_dict = extraction if isinstance(extraction, dict) else {}
         domain_check = self.consistency_checker.check_domain_consistency(
             paper, extraction_dict
         )
@@ -203,11 +204,13 @@ class IntegratedExtractionValidator:
         """Load validation rules from YAML file."""
         if config_path is None:
             # Use default path
-            config_path = Path(__file__).parent / "validation_rules.yaml"
+            config_file_path = Path(__file__).parent / "validation_rules.yaml"
+        else:
+            config_file_path = Path(config_path)
 
         try:
-            with open(config_path, "r") as f:
-                return yaml.safe_load(f)
+            with open(config_file_path, "r") as f:
+                return dict(yaml.safe_load(f))
         except Exception:
             # Return default rules if file not found
             return {
@@ -314,9 +317,10 @@ class IntegratedExtractionValidator:
         self._batch_cache.clear()
 
         for paper, extraction in extractions:
-            extraction_dict = (
-                extraction.__dict__ if hasattr(extraction, "__dict__") else extraction
-            )
+            if hasattr(extraction, "__dict__"):
+                extraction_dict = extraction.__dict__
+            else:
+                extraction_dict = extraction if isinstance(extraction, dict) else {}
             for field, value in extraction_dict.items():
                 if isinstance(value, (int, float)) and value > 0:
                     if field not in self._batch_cache:
@@ -329,7 +333,7 @@ class IntegratedExtractionValidator:
         """Get field values from cache or paper group."""
         # First check cache
         if field in self._batch_cache:
-            return self._batch_cache[field]
+            return list(self._batch_cache[field])
 
         # Otherwise extract from paper group
         if paper_group:
@@ -352,7 +356,7 @@ class IntegratedExtractionValidator:
         self, extractions: List[Tuple[Paper, ComputationalAnalysis]]
     ) -> Dict[str, List[Paper]]:
         """Group papers by domain for consistency checks."""
-        domain_groups = {}
+        domain_groups: Dict[str, List[Paper]] = {}
 
         for paper, _ in extractions:
             domain = self._determine_paper_domain(paper)
@@ -397,8 +401,8 @@ class IntegratedExtractionValidator:
     ) -> Tuple[Dict, Dict]:
         """Separate manual and automated extraction data."""
         # This is a placeholder - in practice, you'd separate based on extraction method
-        manual_data = {}
-        auto_data = {}
+        manual_data: Dict[str, Any] = {}
+        auto_data: Dict[str, Any] = {}
         return manual_data, auto_data
 
     def _generate_batch_report(

@@ -154,8 +154,8 @@ class CitationAnalyzer:
         papers_above_threshold = []
         papers_below_threshold = []
         breakthrough_papers_preserved = []
-        filtering_statistics = defaultdict(int)
-        venue_representation = defaultdict(int)
+        filtering_statistics: Dict[str, int] = defaultdict(int)
+        venue_representation: Dict[str, int] = defaultdict(int)
 
         # First detect breakthrough papers if preservation is enabled
         breakthrough_papers = set()
@@ -458,7 +458,7 @@ class CitationAnalyzer:
 
         # Identify high-impact papers (top percentage from config)
         high_impact_threshold = (
-            percentiles.get(self.config.high_impact_percentile, mean_citations * 2)
+            percentiles.get(int(self.config.high_impact_percentile), mean_citations * 2)
             if percentiles
             else 0
         )

@@ -465,7 +465,7 @@ class AuthorshipClassifier:
             patterns["collaboration_type"] = "unknown"
 
         # Extract primary affiliations
-        affiliation_counts = Counter()
+        affiliation_counts: Counter[str] = Counter()
         for author in authors:
             if author.affiliation:
                 # Extract institution name (simplified)
@@ -504,7 +504,7 @@ class AuthorshipClassifier:
         lower = cleaned.lower()
         for known in self.known_academic.union(self.known_industry):
             if known in lower:
-                return known.title()
+                return str(known.title())
 
         # Return cleaned version
         return cleaned[:50] if cleaned else ""

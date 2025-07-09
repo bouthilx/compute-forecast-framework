@@ -105,12 +105,12 @@ class ArXivPDFCollector(BasePDFCollector):
         # First try URL pattern
         url_match = self.arxiv_url_pattern.search(text)
         if url_match:
-            return url_match.group(1)
+            return str(url_match.group(1))
 
         # Then try direct ID pattern
         id_match = self.arxiv_id_pattern.search(text)
         if id_match:
-            return id_match.group(1)  # Return without version
+            return str(id_match.group(1))  # Return without version
 
         return None
 
@@ -125,7 +125,7 @@ class ArXivPDFCollector(BasePDFCollector):
         """
         match = self.arxiv_id_pattern.search(arxiv_id)
         if match and match.group(2):
-            return match.group(2)  # Returns 'v5', 'v1', etc.
+            return str(match.group(2))  # Returns 'v5', 'v1', etc.
         return None
 
     def _build_pdf_url(self, arxiv_id: str) -> str:
@@ -214,13 +214,13 @@ class ArXivPDFCollector(BasePDFCollector):
             for entry in entries:
                 title_elem = entry.find("atom:title", ns)
                 if title_elem is not None:
-                    entry_title = title_elem.text.strip().lower()
+                    entry_title = (title_elem.text or "").strip().lower()
 
                     # Check for exact or very close title match
                     if self._titles_match(paper_title_lower, entry_title):
                         # Extract arXiv ID from the entry
                         id_elem = entry.find("atom:id", ns)
-                        if id_elem is not None:
+                        if id_elem is not None and id_elem.text:
                             arxiv_url = id_elem.text
                             arxiv_id = self._extract_id_from_string(arxiv_url)
                             if arxiv_id:
@@ -339,7 +339,7 @@ class ArXivPDFCollector(BasePDFCollector):
         if arxiv_id:
             logger.debug(f"Using direct arXiv ID: {arxiv_id}")
             pdf_record = self.handle_versions(arxiv_id)
-            pdf_record.paper_id = paper.paper_id
+            pdf_record.paper_id = paper.paper_id or f"arxiv_{arxiv_id}"
             return pdf_record
 
         # Strategy 2: Title + author search
@@ -349,7 +349,7 @@ class ArXivPDFCollector(BasePDFCollector):
         if arxiv_id:
             logger.info(f"Found arXiv ID via search: {arxiv_id}")
             pdf_record = self.handle_versions(arxiv_id)
-            pdf_record.paper_id = paper.paper_id
+            pdf_record.paper_id = paper.paper_id or f"arxiv_{arxiv_id}"
             # Lower confidence for search-based discovery
             pdf_record.confidence_score = min(pdf_record.confidence_score, 0.8)
             return pdf_record

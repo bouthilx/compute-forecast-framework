@@ -39,15 +39,15 @@ class NormalizationEngine:
 
     def normalize_time_to_hours(self, value: float, unit: str) -> float:
         """Convert time to hours."""
-        return value * self.time_conversions.get(unit, 1)
+        return float(value * self.time_conversions.get(unit, 1))
 
     def normalize_memory_to_gb(self, value: float, unit: str) -> float:
         """Convert memory to GB."""
-        return value * self.memory_conversions.get(unit, 1)
+        return float(value * self.memory_conversions.get(unit, 1))
 
     def normalize_parameters_to_millions(self, value: float, unit: str) -> float:
         """Convert parameters to millions."""
-        return value * self.parameter_conversions.get(unit, 1)
+        return float(value * self.parameter_conversions.get(unit, 1))
 
     def normalize_gpu_names(self, gpu_name: str) -> str:
         """Normalize GPU naming variations."""
@@ -56,7 +56,7 @@ class NormalizationEngine:
         for canonical, variations in self.gpu_mappings.items():
             for var in variations:
                 if var.lower() in gpu_name.lower():
-                    return canonical
+                    return str(canonical)
 
         return gpu_name
 

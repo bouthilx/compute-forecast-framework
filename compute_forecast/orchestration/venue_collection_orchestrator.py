@@ -116,12 +116,12 @@ class VenueCollectionOrchestrator:
         self.config = config
 
         # Agent components (initialized during system startup)
-        self.api_integration_layer = None  # Agent Alpha
-        self.state_manager = None  # Agent Beta
-        self.data_processors = {}  # Agent Gamma components
-        self.metrics_collector = None  # Agent Delta
-        self.dashboard = None  # Agent Delta
-        self.alert_system = None  # Agent Delta
+        self.api_integration_layer: Optional[Any] = None  # Agent Alpha
+        self.state_manager: Optional[Any] = None  # Agent Beta
+        self.data_processors: Dict[str, Any] = {}  # Agent Gamma components
+        self.metrics_collector: Optional[Any] = None  # Agent Delta
+        self.dashboard: Optional[Any] = None  # Agent Delta
+        self.alert_system: Optional[Any] = None  # Agent Delta
 
         # Supporting components
         self.system_initializer = SystemInitializer()
@@ -130,12 +130,12 @@ class VenueCollectionOrchestrator:
 
         # System state
         self.system_ready = False
-        self.active_sessions = {}  # session_id -> SessionMetadata
-        self.component_status = {}  # component_name -> ComponentStatus
+        self.active_sessions: Dict[str, Any] = {}  # session_id -> SessionMetadata
+        self.component_status: Dict[str, Any] = {}  # component_name -> ComponentStatus
 
         # Performance tracking
-        self.initialization_time = None
-        self.startup_metrics = {}
+        self.initialization_time: Optional[float] = None
+        self.startup_metrics: Dict[str, Any] = {}
 
         logger.info("VenueCollectionOrchestrator initialized with config")
 
@@ -279,27 +279,26 @@ class VenueCollectionOrchestrator:
 
         try:
             # Import and initialize API components
-            from ..data.collectors import APIIntegrationLayer
-            from ..data.sources import (
-                EnhancedCrossrefClient,
-                EnhancedOpenAlexClient,
-                EnhancedSemanticScholarClient,
-            )
+            from ..data.collectors.api_integration_layer import VenueCollectionEngine
+            from ..monitoring.health_monitor import HealthMonitor
+            from ..monitoring.rate_limiter import AdaptiveRateLimiter
 
-            # Create API clients
-            api_clients = {
-                "crossref": EnhancedCrossrefClient(self.config),
-                "openalex": EnhancedOpenAlexClient(self.config),
-                "semantic_scholar": EnhancedSemanticScholarClient(self.config),
-            }
+            # Initialize dependencies for VenueCollectionEngine
+            rate_limiter = AdaptiveRateLimiter()
+            health_monitor = HealthMonitor()
 
             # Initialize integration layer
-            self.api_integration_layer = APIIntegrationLayer(
-                api_clients=api_clients, config=self.config
+            self.api_integration_layer = VenueCollectionEngine(
+                config=self.config,
+                rate_limiter=rate_limiter,
+                health_monitor=health_monitor,
             )
 
             # Validate initialization
-            if self.api_integration_layer.validate_setup():
+            if (
+                hasattr(self.api_integration_layer, "validate_setup")
+                and self.api_integration_layer.validate_setup()
+            ):
                 status.status = "ready"
                 status.health_check_passed = True
                 status.interface_validation_passed = True
@@ -335,11 +334,15 @@ class VenueCollectionOrchestrator:
 
             # Create state management components
             self.state_manager = StatePersistenceManager(
-                checkpoint_dir=self.config.checkpoint_dir, enable_compression=True
+                checkpoint_dir=getattr(self.config, "checkpoint_dir", "./checkpoints"),
+                enable_compression=True,
             )
 
             # Validate initialization
-            if self.state_manager.validate_setup():
+            if (
+                hasattr(self.state_manager, "validate_setup")
+                and self.state_manager.validate_setup()
+            ):
                 status.status = "ready"
                 status.health_check_passed = True
                 status.interface_validation_passed = True
@@ -431,14 +434,16 @@ class VenueCollectionOrchestrator:
             # Create monitoring components
             self.metrics_collector = MetricsCollector(collection_interval_seconds=5)
             self.dashboard = CollectionDashboard(
-                host=self.config.dashboard_host, port=self.config.dashboard_port
+                host=getattr(self.config, "dashboard_host", "localhost"),
+                port=getattr(self.config, "dashboard_port", 8080),
             )
             self.alert_system = AlertSystemFactory.create_default_system()
 
             # Set up alert system with metrics provider
-            self.alert_system.metrics_provider = (
-                lambda: self.metrics_collector.get_current_metrics()
-            )
+            if hasattr(self.alert_system, "metrics_provider"):
+                self.alert_system.metrics_provider = (
+                    lambda: self.metrics_collector.get_current_metrics()
+                )
 
             status.status = "ready"
             status.health_check_passed = True
@@ -546,24 +551,28 @@ class VenueCollectionOrchestrator:
             )
 
             # Initialize session state
-            self.state_manager.create_session(
-                session_id,
-                {"venues": venues, "years": years, "config": config.__dict__},
-            )
+            if self.state_manager is not None:
+                self.state_manager.create_session(
+                    session_id,
+                    {"venues": venues, "years": years, "config": config.__dict__},
+                )
 
             # Start monitoring for this session
-            self.metrics_collector.start_collection(
-                venue_engine=self.workflow_coordinator,
-                state_manager=self.state_manager,
-                api_managers={"integration": self.api_integration_layer},
-                data_processors=self.data_processors,
-            )
+            if self.metrics_collector is not None:
+                self.metrics_collector.start_collection(
+                    venue_engine=self.workflow_coordinator,
+                    state_manager=self.state_manager,
+                    api_managers={"integration": self.api_integration_layer},
+                    data_processors=self.data_processors,
+                )
 
             # Start dashboard
-            self.dashboard.start_dashboard(self.metrics_collector)
+            if self.dashboard is not None:
+                self.dashboard.start_dashboard(self.metrics_collector)
 
             # Start alert system
-            self.alert_system.start()
+            if self.alert_system is not None:
+                self.alert_system.start()
 
             # Store session info
             self.active_sessions[session_id] = session
@@ -608,13 +617,18 @@ class VenueCollectionOrchestrator:
             session.status = "collecting"
 
             # Execute collection through workflow coordinator
-            collection_stats = self.workflow_coordinator.execute_collection_workflow(
-                venues=session.venues,
-                years=session.years,
-                api_layer=self.api_integration_layer,
-                state_manager=self.state_manager,
-                processors=self.data_processors,
-                metrics_collector=self.metrics_collector,
+            collection_stats = (
+                self.workflow_coordinator.execute_venue_collection_workflow(
+                    session_id=session_id,
+                    venues=session.venues,
+                    years=session.years,
+                    api_engine=self.api_integration_layer,
+                    state_manager=self.state_manager,
+                    venue_normalizer=self.data_processors.get("normalizer"),
+                    deduplicator=self.data_processors.get("deduplicator"),
+                    citation_analyzer=self.data_processors.get("filter"),
+                    metrics_collector=self.metrics_collector,
+                )
             )
 
             # Update result
@@ -636,9 +650,11 @@ class VenueCollectionOrchestrator:
             result.total_processing_time_seconds = time.time() - start_time
 
             # Save final state
-            self.state_manager.save_session_state(
-                session_id, {"result": result.__dict__, "final_status": session.status}
-            )
+            if self.state_manager is not None:
+                self.state_manager.save_session_state(
+                    session_id,
+                    {"result": result.__dict__, "final_status": session.status},
+                )
 
         return result
 
@@ -658,17 +674,21 @@ class VenueCollectionOrchestrator:
 
         try:
             # Signal pause to workflow coordinator
-            self.workflow_coordinator.pause_collection()
+            if hasattr(self.workflow_coordinator, "pause_collection"):
+                self.workflow_coordinator.pause_collection()
 
             # Wait for operations to pause (max 30 seconds)
             pause_start = time.time()
             while (
-                self.workflow_coordinator.is_active() and time.time() - pause_start < 30
+                hasattr(self.workflow_coordinator, "is_active")
+                and self.workflow_coordinator.is_active()
+                and time.time() - pause_start < 30
             ):
                 time.sleep(1)
 
             # Save current state
-            self.state_manager.checkpoint_session(session_id)
+            if self.state_manager is not None:
+                self.state_manager.checkpoint_session(session_id)
 
             # Update session status
             session.status = "paused"
@@ -705,7 +725,11 @@ class VenueCollectionOrchestrator:
             # Check if session exists
             if session_id not in self.active_sessions:
                 # Try to recover from state manager
-                recovery_data = self.state_manager.recover_session(session_id)
+                recovery_data = (
+                    self.state_manager.recover_session(session_id)
+                    if self.state_manager is not None
+                    else None
+                )
 
                 if recovery_data:
                     # Recreate session metadata
@@ -727,17 +751,21 @@ class VenueCollectionOrchestrator:
                 result.state_recovery_success = True
 
             # Resume workflow coordinator
-            resume_stats = self.workflow_coordinator.resume_collection(
-                session_id=session_id, state_manager=self.state_manager
-            )
+            if hasattr(self.workflow_coordinator, "resume_collection"):
+                resume_stats = self.workflow_coordinator.resume_collection(
+                    session_id=session_id, state_manager=self.state_manager
+                )
+            else:
+                resume_stats = {}
 
             # Restart monitoring
-            self.metrics_collector.start_collection(
-                venue_engine=self.workflow_coordinator,
-                state_manager=self.state_manager,
-                api_managers={"integration": self.api_integration_layer},
-                data_processors=self.data_processors,
-            )
+            if self.metrics_collector is not None:
+                self.metrics_collector.start_collection(
+                    venue_engine=self.workflow_coordinator,
+                    state_manager=self.state_manager,
+                    api_managers={"integration": self.api_integration_layer},
+                    data_processors=self.data_processors,
+                )
 
             result.success = True
             result.papers_recovered = resume_stats.get("papers_recovered", 0)
@@ -812,7 +840,9 @@ class VenueCollectionOrchestrator:
                     )
 
             # Shutdown workflow coordinator
-            if self.workflow_coordinator:
+            if self.workflow_coordinator and hasattr(
+                self.workflow_coordinator, "shutdown"
+            ):
                 self.workflow_coordinator.shutdown()
 
             # Clear active sessions
@@ -829,7 +859,7 @@ class VenueCollectionOrchestrator:
 
     def get_system_health(self) -> Dict[str, Any]:
         """Get overall system health and component status"""
-        health = {
+        health: Dict[str, Any] = {
             "system_ready": self.system_ready,
             "initialization_time": self.initialization_time,
             "active_sessions": len(self.active_sessions),

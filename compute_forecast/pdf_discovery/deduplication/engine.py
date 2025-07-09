@@ -1,9 +1,10 @@
 """Main deduplication engine for PDF discovery."""
 
 import logging
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 from dataclasses import dataclass
 
+from compute_forecast.data.models import Paper
 from compute_forecast.pdf_discovery.core.models import PDFRecord
 from .matchers import PaperFuzzyMatcher, IdentifierNormalizer, ExactMatch, FuzzyMatch
 from .version_manager import VersionManager
@@ -35,7 +36,9 @@ class PaperDeduplicator:
         self.dedup_log: List[DeduplicationDecision] = []
 
     def deduplicate_records(
-        self, all_records: Dict[str, List[PDFRecord]]
+        self,
+        all_records: Dict[str, List[PDFRecord]],
+        record_to_paper: Optional[Dict[str, Paper]] = None,
     ) -> Dict[str, PDFRecord]:
         """Select best PDF for each paper from all discovered records.
 
@@ -48,6 +51,7 @@ class PaperDeduplicator:
 
         Args:
             all_records: Dict mapping paper_id to list of PDFRecord from different sources
+            record_to_paper: Optional mapping from record paper_id to Paper objects
 
         Returns:
             Dict mapping unique paper identifier to the best PDFRecord for that paper
@@ -58,16 +62,20 @@ class PaperDeduplicator:
         # Clear previous log
         self.dedup_log.clear()
 
-        # Flatten all records and ensure paper_data is attached
+        # Store the mapping for the matcher to use
+        self._record_to_paper = record_to_paper or {}
+
+        # If no record_to_paper mapping provided, build it from paper_data attributes
+        if not self._record_to_paper:
+            for paper_group_id, records in all_records.items():
+                for record in records:
+                    if hasattr(record, "paper_data") and record.paper_data:
+                        self._record_to_paper[record.paper_id] = record.paper_data
+
+        # Flatten all records
         all_flat_records = []
         for paper_group_id, records in all_records.items():
             for record in records:
-                # Ensure paper data is available for matching
-                if not hasattr(record, "paper_data"):
-                    logger.warning(
-                        f"Record {record.paper_id} missing paper_data, skipping"
-                    )
-                    continue
                 all_flat_records.append(record)
 
         if not all_flat_records:
@@ -76,10 +84,14 @@ class PaperDeduplicator:
         logger.info(f"Starting deduplication of {len(all_flat_records)} records")
 
         # Step 1: Find exact matches
-        exact_matches = self.fuzzy_matcher.find_duplicates_exact(all_flat_records)
+        exact_matches = self.fuzzy_matcher.find_duplicates_exact(
+            all_flat_records, self._record_to_paper
+        )
 
         # Step 2: Find fuzzy matches on remaining records
-        fuzzy_matches = self.fuzzy_matcher.find_duplicates_fuzzy(all_flat_records)
+        fuzzy_matches = self.fuzzy_matcher.find_duplicates_fuzzy(
+            all_flat_records, self._record_to_paper
+        )
 
         # Step 3: Build groups of duplicate records
         duplicate_groups = self._build_duplicate_groups(
@@ -127,7 +139,7 @@ class PaperDeduplicator:
         """
         # Create a mapping from paper_id to list of records
         # This allows us to handle multiple records with the same paper_id
-        paper_id_to_records = {}
+        paper_id_to_records: Dict[str, List[PDFRecord]] = {}
         for record in all_records:
             if record.paper_id not in paper_id_to_records:
                 paper_id_to_records[record.paper_id] = []
@@ -151,9 +163,9 @@ class PaperDeduplicator:
                 if record_id in paper_id_to_records:
                     # Add all records with this paper_id to the group
                     for record in paper_id_to_records[record_id]:
-                        if record not in grouped_records:
+                        if record.paper_id not in grouped_records:
                             group_records.append(record)
-                            grouped_records.add(record)
+                            grouped_records.add(record.paper_id)
 
             if group_records:
                 groups[group_id] = group_records
@@ -164,33 +176,33 @@ class PaperDeduplicator:
                 )
 
         # Process fuzzy matches (only for ungrouped records)
-        for match in fuzzy_matches:
-            if any(rid in grouped_records for rid in match.record_ids):
+        for fuzzy_match in fuzzy_matches:
+            if any(rid in grouped_records for rid in fuzzy_match.record_ids):
                 continue  # Skip if any record already grouped
 
             group_id = f"fuzzy_group_{group_counter}"
             group_counter += 1
 
             group_records = []
-            for record_id in match.record_ids:
+            for record_id in fuzzy_match.record_ids:
                 if record_id in paper_id_to_records:
                     # Add all records with this paper_id to the group
                     for record in paper_id_to_records[record_id]:
-                        if record not in grouped_records:
+                        if record.paper_id not in grouped_records:
                             group_records.append(record)
-                            grouped_records.add(record)
+                            grouped_records.add(record.paper_id)
 
             if group_records:
                 groups[group_id] = group_records
                 self._log_deduplication_decision(
                     group_records,
                     group_records[0],
-                    f"fuzzy_match_confidence:{match.confidence:.3f}",
+                    f"fuzzy_match_confidence:{fuzzy_match.confidence:.3f}",
                 )
 
         # Add remaining ungrouped records as individual groups
         for record in all_records:
-            if record not in grouped_records:
+            if record.paper_id not in grouped_records:
                 group_id = f"individual_{record.paper_id}_{record.source}"
                 groups[group_id] = [record]
 

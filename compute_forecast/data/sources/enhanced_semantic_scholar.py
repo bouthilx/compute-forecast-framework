@@ -5,7 +5,7 @@ Real implementation with API integration, retry logic, and error handling
 
 import time
 import requests
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from ..models import Paper, Author, APIResponse, ResponseMetadata, APIError
 from datetime import datetime
 import logging
@@ -43,7 +43,7 @@ class EnhancedSemanticScholarClient:
 
         # Construct API URL and parameters
         url = f"{self.base_url}/paper/search"
-        params = {
+        params: Dict[str, Any] = {
             "query": query,
             "limit": min(limit, 100),  # SS API limit is 100 per request
             "offset": offset,

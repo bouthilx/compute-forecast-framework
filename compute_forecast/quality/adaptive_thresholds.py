@@ -54,7 +54,23 @@ class AdaptiveThresholdEngine:
         if key not in self.venue_thresholds:
             # Create default thresholds
             self.venue_thresholds[key] = QualityThresholds(
-                venue=venue, year=year, **DEFAULT_QUALITY_THRESHOLDS
+                venue=venue,
+                year=year,
+                min_citation_count=int(
+                    DEFAULT_QUALITY_THRESHOLDS["min_citation_count"]
+                ),
+                min_paper_quality_score=float(
+                    DEFAULT_QUALITY_THRESHOLDS["min_paper_quality_score"]
+                ),
+                min_combined_quality_score=float(
+                    DEFAULT_QUALITY_THRESHOLDS["min_combined_quality_score"]
+                ),
+                min_venue_quality_score=float(
+                    DEFAULT_QUALITY_THRESHOLDS["min_venue_quality_score"]
+                ),
+                min_venue_impact_factor=float(
+                    DEFAULT_QUALITY_THRESHOLDS["min_venue_impact_factor"]
+                ),
             )
             logger.info(f"Created default thresholds for {key}")
 

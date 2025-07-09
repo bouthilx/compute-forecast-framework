@@ -8,7 +8,7 @@ import threading
 import shutil
 import hashlib
 from pathlib import Path
-from typing import Union, Dict, Any, Optional, TypeVar, Type, List
+from typing import Union, Dict, Any, Optional, TypeVar, Type, List, cast, Literal
 from datetime import datetime
 import logging
 
@@ -173,12 +173,12 @@ class StatePersistence:
 
                 # Convert to expected type if possible
                 if expected_type is dict:
-                    return raw_data
+                    return cast(T, raw_data)
                 elif hasattr(expected_type, "from_dict"):
-                    return expected_type.from_dict(raw_data)
+                    return cast(T, expected_type.from_dict(raw_data))  # type: ignore
                 elif expected_type is CheckpointData:
                     # Special handling for CheckpointData
-                    return CheckpointData.from_dict(raw_data)
+                    return cast(T, CheckpointData.from_dict(raw_data))
                 else:
                     # Try to construct directly
                     return expected_type(**raw_data)
@@ -226,6 +226,7 @@ class StatePersistence:
             checksum_valid = self._validate_file_integrity(file_path)
 
             # Determine status
+            status: Literal["valid", "corrupted", "missing", "partial"]
             if not json_valid:
                 status = "corrupted"
                 recovery_action = "restore_from_backup"
@@ -403,7 +404,7 @@ class StatePersistence:
                 return True
 
             current_checksum = self._calculate_file_checksum(file_path)
-            return current_checksum == stored_checksum
+            return bool(current_checksum == stored_checksum)
 
         except Exception as e:
             logger.warning(f"Failed to validate integrity for {file_path}: {e}")

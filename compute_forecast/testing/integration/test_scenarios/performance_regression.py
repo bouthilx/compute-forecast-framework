@@ -277,31 +277,31 @@ class PerformanceRegressionTestScenario:
         analyses = [
             self._analyze_metric(
                 "execution_time",
-                self.baseline.execution_time_seconds,
+                self.baseline.execution_time_seconds if self.baseline else 0,
                 current.execution_time_seconds,
                 lower_is_better=True,
             ),
             self._analyze_metric(
                 "peak_memory",
-                self.baseline.peak_memory_mb,
+                self.baseline.peak_memory_mb if self.baseline else 0,
                 current.peak_memory_mb,
                 lower_is_better=True,
             ),
             self._analyze_metric(
                 "throughput",
-                self.baseline.throughput_papers_per_second,
+                self.baseline.throughput_papers_per_second if self.baseline else 0,
                 current.throughput_papers_per_second,
                 lower_is_better=False,
             ),
             self._analyze_metric(
                 "cpu_utilization",
-                self.baseline.cpu_utilization,
+                self.baseline.cpu_utilization if self.baseline else 0,
                 current.cpu_utilization,
                 lower_is_better=True,
             ),
             self._analyze_metric(
                 "memory_efficiency",
-                self.baseline.memory_efficiency,
+                self.baseline.memory_efficiency if self.baseline else 0,
                 current.memory_efficiency,
                 lower_is_better=False,
             ),
@@ -310,10 +310,11 @@ class PerformanceRegressionTestScenario:
         regression_analyses.extend(analyses)
 
         # Phase-level analysis
-        for phase_name in set(self.baseline.phase_metrics.keys()) | set(
+        baseline_phases = self.baseline.phase_metrics if self.baseline else {}
+        for phase_name in set(baseline_phases.keys()) | set(
             current.phase_metrics.keys()
         ):
-            baseline_phase = self.baseline.phase_metrics.get(phase_name, {})
+            baseline_phase = baseline_phases.get(phase_name, {})
             current_phase = current.phase_metrics.get(phase_name, {})
 
             if baseline_phase and current_phase:
@@ -363,7 +364,7 @@ class PerformanceRegressionTestScenario:
 
         return PerformanceRegressionResult(
             success=success,
-            baseline_version=self.baseline.version,
+            baseline_version=self.baseline.version if self.baseline else "unknown",
             current_performance=current,
             regression_analysis=regression_analyses,
             overall_regression_score=regression_score,
@@ -448,7 +449,7 @@ class PerformanceRegressionTestScenario:
             )
 
         # Metric-specific recommendations
-        metric_issues = {}
+        metric_issues: Dict[str, List[str]] = {}
         for analysis in analyses:
             if analysis.is_regression and analysis.severity in [
                 "medium",
@@ -458,7 +459,9 @@ class PerformanceRegressionTestScenario:
                 metric_type = analysis.metric_name.split("_")[0]
                 if metric_type not in metric_issues:
                     metric_issues[metric_type] = []
-                metric_issues[metric_type].append(analysis)
+                metric_issues[metric_type].append(
+                    f"{analysis.metric_name}: {analysis.severity} regression"
+                )
 
         if "execution" in metric_issues:
             recommendations.append("Profile code to identify performance bottlenecks")

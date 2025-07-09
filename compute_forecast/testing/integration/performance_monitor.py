@@ -131,6 +131,7 @@ class PerformanceMonitor:
         self.is_monitoring: bool = False
         self._monitoring_thread: Optional[threading.Thread] = None
         self._stop_event = threading.Event()
+        self._process: Optional[psutil.Process] = None
 
         # Initialize process handle
         try:
@@ -160,7 +161,9 @@ class PerformanceMonitor:
         self.current_phase = phase
         self.profiles[phase] = PerformanceProfile(phase)
 
-    def stop_phase_monitoring(self, phase: PipelinePhase) -> PerformanceProfile:
+    def stop_phase_monitoring(
+        self, phase: PipelinePhase
+    ) -> Optional[PerformanceProfile]:
         """Stop monitoring a phase and return its profile"""
         if phase in self.profiles:
             profile = self.profiles[phase]
@@ -276,7 +279,7 @@ class BottleneckAnalyzer:
         self, profile: PerformanceProfile, max_memory_mb: float = 4096.0
     ) -> List[str]:
         """Analyze a performance profile for bottlenecks"""
-        bottlenecks = []
+        bottlenecks: List[str] = []
 
         if not profile.snapshots:
             return bottlenecks

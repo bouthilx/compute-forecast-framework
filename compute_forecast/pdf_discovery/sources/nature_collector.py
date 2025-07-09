@@ -203,7 +203,7 @@ class NaturePDFCollector(BasePDFCollector):
             article_id = self._extract_article_id_from_doi(paper.doi)
             if article_id:
                 pdf_url = self._check_open_access_availability(article_id)
-                if pdf_url:
+                if pdf_url and paper.paper_id:
                     return PDFRecord(
                         paper_id=paper.paper_id,
                         pdf_url=pdf_url,

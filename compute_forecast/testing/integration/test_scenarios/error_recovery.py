@@ -383,7 +383,7 @@ class ErrorRecoveryTestScenario:
         )
 
         # Group failures by phase
-        failures_by_phase = {}
+        failures_by_phase: Dict[str, List[str]] = {}
         for error in self.errors_injected:
             phase_name = error["phase"].value
             if phase_name not in failures_by_phase:
@@ -463,7 +463,9 @@ class ErrorRecoveryTestScenario:
                 recovery_time = attempt["timestamp"] - error_time
                 recovery_times.append(recovery_time)
 
-        return sum(recovery_times) / len(recovery_times) if recovery_times else 0.0
+        return (
+            float(sum(recovery_times) / len(recovery_times)) if recovery_times else 0.0
+        )
 
     def _generate_recovery_recommendations(
         self,

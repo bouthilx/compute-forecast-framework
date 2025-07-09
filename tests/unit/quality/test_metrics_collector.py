@@ -26,7 +26,7 @@ class TestMetricsCollector:
         assert collector.collection_thread is None
         assert collector.venue_engine is None
         assert collector.state_manager is None
-        assert collector.data_processors is None
+        assert collector.data_processors == {}
         assert collector.session_id is None
         assert collector.collection_stats["metrics_collected"] == 0
         assert collector.collection_stats["collection_errors"] == 0

@@ -3,6 +3,7 @@
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional, List, cast
+from googleapiclient.discovery import Resource
 import json
 from datetime import datetime
 
@@ -34,7 +35,7 @@ class GoogleDriveStore:
             folder_id: Google Drive folder ID to store PDFs
         """
         self.folder_id = folder_id
-        self._service = None
+        self._service: Optional[Resource] = None
         self._credentials_path = credentials_path
         self._initialize_service()
 
@@ -209,13 +210,16 @@ class GoogleDriveStore:
         """
         try:
             assert self._service is not None
-            file = (
-                self._service.files()
-                .get(
-                    fileId=file_id,
-                    fields="id, name, size, createdTime, modifiedTime, description",
-                )
-                .execute()
+            file = cast(
+                Dict[str, Any],
+                (
+                    self._service.files()
+                    .get(
+                        fileId=file_id,
+                        fields="id, name, size, createdTime, modifiedTime, description",
+                    )
+                    .execute()
+                ),
             )
 
             # Parse description JSON if present
@@ -275,7 +279,7 @@ class GoogleDriveStore:
             raise FileNotFoundError(f"File not found: {file_path}")
 
         # Prepare file metadata
-        file_metadata = {
+        file_metadata: Dict[str, Any] = {
             "name": filename,
             "parents": [self.folder_id],
         }
@@ -286,6 +290,9 @@ class GoogleDriveStore:
         # Upload the file
         media = MediaFileUpload(str(file_path), mimetype="application/pdf")
 
+        if self._service is None:
+            raise RuntimeError("Google Drive service not initialized")
+
         try:
             file_obj = (
                 self._service.files()
@@ -295,7 +302,7 @@ class GoogleDriveStore:
 
             file_id = file_obj.get("id")
             logger.info(f"Successfully uploaded file {filename} with ID: {file_id}")
-            return file_id
+            return str(file_id) if file_id is not None else None
 
         except Exception as e:
             logger.error(f"Failed to upload file {filename}: {e}")
@@ -310,6 +317,9 @@ class GoogleDriveStore:
         Returns:
             True if file exists, False otherwise
         """
+        if self._service is None:
+            raise RuntimeError("Google Drive service not initialized")
+
         try:
             query = (
                 f"name='{filename}' and parents in '{self.folder_id}' and trashed=false"

@@ -217,7 +217,7 @@ class PaperFuzzyMatcher:
         partial = fuzz.partial_ratio(norm1, norm2) / 100.0
 
         # Weighted average
-        return token_sort * 0.5 + token_set * 0.3 + partial * 0.2
+        return float(token_sort * 0.5 + token_set * 0.3 + partial * 0.2)
 
     def calculate_author_similarity(
         self, authors1: List[Author], authors2: List[Author]
@@ -319,9 +319,22 @@ class PaperFuzzyMatcher:
             and norm2.confidence > 0.8
         )
 
-    def find_duplicates_exact(self, records: List[PDFRecord]) -> List[ExactMatch]:
+    def find_duplicates_exact(
+        self,
+        records: List[PDFRecord],
+        record_to_paper: Optional[Dict[str, Paper]] = None,
+    ) -> List[ExactMatch]:
         """Find exact duplicates based on identifiers."""
         matches = []
+
+        if record_to_paper is None:
+            record_to_paper = {}
+
+        # If no record_to_paper mapping provided, build it from paper_data attributes
+        if not record_to_paper:
+            for record in records:
+                if hasattr(record, "paper_data") and record.paper_data:
+                    record_to_paper[record.paper_id] = record.paper_data
 
         # Group by identifiers
         doi_groups: Dict[str, List[PDFRecord]] = {}
@@ -329,10 +342,9 @@ class PaperFuzzyMatcher:
         paper_id_groups: Dict[str, List[PDFRecord]] = {}
 
         for record in records:
-            # Assume paper data is attached to record
-            if hasattr(record, "paper_data"):
-                paper = record.paper_data
-
+            # Get paper data from mapping
+            paper = record_to_paper.get(record.paper_id)
+            if paper:
                 # Group by DOI
                 if paper.doi:
                     normalized_doi = self.identifier_normalizer.normalize_doi(paper.doi)
@@ -392,9 +404,22 @@ class PaperFuzzyMatcher:
 
         return matches
 
-    def find_duplicates_fuzzy(self, records: List[PDFRecord]) -> List[FuzzyMatch]:
+    def find_duplicates_fuzzy(
+        self,
+        records: List[PDFRecord],
+        record_to_paper: Optional[Dict[str, Paper]] = None,
+    ) -> List[FuzzyMatch]:
         """Find fuzzy duplicates based on title/author similarity."""
         matches: List[FuzzyMatch] = []
+
+        if record_to_paper is None:
+            record_to_paper = {}
+
+        # If no record_to_paper mapping provided, build it from paper_data attributes
+        if not record_to_paper:
+            for record in records:
+                if hasattr(record, "paper_data") and record.paper_data:
+                    record_to_paper[record.paper_id] = record.paper_data
 
         # Skip fuzzy matching if dataset is too large to avoid O(n²) performance issues
         if len(records) > 5000:
@@ -403,14 +428,21 @@ class PaperFuzzyMatcher:
             )
             return matches
 
-        # Pre-filter records that have paper_data
-        valid_records = [r for r in records if hasattr(r, "paper_data")]
+        # Pre-filter records that have paper data
+        valid_records = []
+        for r in records:
+            if r.paper_id in record_to_paper:
+                valid_records.append(r)
 
         # Compare all pairs
         for i in range(len(valid_records)):
             for j in range(i + 1, len(valid_records)):
                 record1, record2 = valid_records[i], valid_records[j]
-                paper1, paper2 = record1.paper_data, record2.paper_data
+                paper1 = record_to_paper.get(record1.paper_id)
+                paper2 = record_to_paper.get(record2.paper_id)
+
+                if not paper1 or not paper2:
+                    continue
 
                 # Quick title check first (fastest filter)
                 title_sim = self.calculate_title_similarity(paper1.title, paper2.title)

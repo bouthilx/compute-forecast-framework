@@ -5,7 +5,7 @@ Intelligent Batched API Collection System that reduces API calls by 85%
 
 import time
 from datetime import datetime
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional, Set, Any
 import logging
 
 from ..models import (
@@ -37,7 +37,7 @@ class VenueCollectionEngine:
         self.health_monitor = health_monitor
 
         # Initialize API clients (will be created when needed)
-        self._api_clients = {}
+        self._api_clients: Dict[str, Any] = {}
 
         # Collection statistics
         self.total_api_calls = 0

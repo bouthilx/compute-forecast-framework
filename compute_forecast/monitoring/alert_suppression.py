@@ -458,7 +458,7 @@ class SuppressionRuleManager:
             ) * 100
             stats["last_updated"] = datetime.now()
 
-    def get_rule_recommendations(self) -> List[Dict[str, any]]:
+    def get_rule_recommendations(self) -> List[Dict[str, Any]]:
         """Get recommendations for new suppression rules"""
         with self._lock:
             recommendations = []
@@ -491,7 +491,7 @@ class SuppressionRuleManager:
 
     def _generate_rule_recommendations(
         self, patterns: Dict[str, int], bursts: Dict[str, Dict]
-    ) -> List[Dict[str, any]]:
+    ) -> List[Dict[str, Any]]:
         """Generate specific rule recommendations based on analysis"""
         recommendations = []
 

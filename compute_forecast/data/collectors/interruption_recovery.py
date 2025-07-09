@@ -5,15 +5,17 @@ Provides fast recovery from various interruption types within 5 minutes.
 
 import logging
 import time
-from typing import Dict, Any
+from typing import Dict, Any, Literal
 from datetime import datetime, timedelta
 from enum import Enum
+from pathlib import Path
 
 from .state_structures import (
     RecoveryPlan,
     SessionResumeResult,
     InterruptionAnalysis,
     InterruptionCause,
+    IntegrityCheckResult,
 )
 from .state_management import StateManager
 
@@ -328,9 +330,30 @@ class InterruptionRecoveryEngine:
             # Detect interruption type
             interruption_type = self.detect_interruption_type(session_id)
 
+            # Map interruption type to cause type
+            cause_type_mapping: Dict[
+                InterruptionType,
+                Literal[
+                    "process_killed",
+                    "system_crash",
+                    "network_failure",
+                    "api_failure",
+                    "disk_full",
+                    "memory_error",
+                    "unknown",
+                ],
+            ] = {
+                InterruptionType.API_FAILURE: "api_failure",
+                InterruptionType.PROCESS_TERMINATION: "process_killed",
+                InterruptionType.NETWORK_INTERRUPTION: "network_failure",
+                InterruptionType.COMPONENT_CRASH: "system_crash",
+                InterruptionType.DISK_SPACE_EXHAUSTION: "disk_full",
+                InterruptionType.UNKNOWN: "unknown",
+            }
+
             # Create interruption cause analysis
             interruption_cause = InterruptionCause(
-                cause_type=interruption_type.value,
+                cause_type=cause_type_mapping.get(interruption_type, "unknown"),
                 confidence=0.8,  # Default confidence
                 evidence=[f"Session last active: {session.last_activity_time}"],
                 recovery_implications=["State restoration required"],
@@ -628,9 +651,18 @@ class InterruptionRecoveryEngine:
 
             # Add validation details to result
             for validation in validation_results:
-                result.data_integrity_checks.append(
-                    f"{validation.validation_type}: {'PASSED' if validation.passed else 'FAILED'}"
+                integrity_check = IntegrityCheckResult(
+                    file_path=Path(f"validation_{validation.validation_type}"),
+                    integrity_status="valid" if validation.passed else "corrupted",
+                    checksum_valid=validation.passed,
+                    size_expected=0,
+                    size_actual=0,
+                    last_modified=datetime.now(),
+                    recovery_action=None
+                    if validation.passed
+                    else f"Fix {validation.validation_type}",
                 )
+                result.data_integrity_checks.append(integrity_check)
 
             if all_passed:
                 result.recovery_steps_executed.append(

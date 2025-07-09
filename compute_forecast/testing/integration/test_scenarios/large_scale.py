@@ -6,7 +6,7 @@ Verifies memory optimization and streaming/batching capabilities.
 
 import time
 import threading
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
 from compute_forecast.testing.integration.pipeline_test_framework import (
@@ -74,8 +74,8 @@ class LargeScaleTestScenario:
         self.bottleneck_analyzer = BottleneckAnalyzer()
 
         # Memory tracking for leak detection
-        self.memory_samples = []
-        self._memory_tracking_thread = None
+        self.memory_samples: List[Dict[str, Any]] = []
+        self._memory_tracking_thread: Optional[threading.Thread] = None
         self._stop_memory_tracking = threading.Event()
 
         # Setup mock data generator with larger datasets
@@ -269,7 +269,7 @@ class LargeScaleTestScenario:
         """Get peak memory usage from samples"""
         if not self.memory_samples:
             return 0.0
-        return max(sample["memory_mb"] for sample in self.memory_samples)
+        return float(max(sample["memory_mb"] for sample in self.memory_samples))
 
     def _analyze_performance_metrics(self) -> Dict[str, Any]:
         """Analyze detailed performance metrics"""
@@ -285,16 +285,16 @@ class LargeScaleTestScenario:
             if profile.snapshots:
                 averages = profile.calculate_averages()
                 analysis[phase.value] = {
-                    "duration": profile.duration_seconds,
+                    "duration": int(profile.duration_seconds),
                     "snapshots": len(profile.snapshots),
-                    "peak_cpu": profile.peak_cpu,
-                    "peak_memory": profile.peak_memory_mb,
-                    "avg_cpu": averages["avg_cpu_percent"],
-                    "avg_memory": averages["avg_memory_mb"],
-                    "cpu_variance": averages["cpu_std_dev"],
-                    "memory_variance": averages["memory_std_dev"],
-                    "io_rate": profile.get_io_rate_mbps(),
-                    "network_rate": profile.get_network_rate_mbps(),
+                    "peak_cpu": int(profile.peak_cpu),
+                    "peak_memory": int(profile.peak_memory_mb),
+                    "avg_cpu": int(averages["avg_cpu_percent"]),
+                    "avg_memory": int(averages["avg_memory_mb"]),
+                    "cpu_variance": int(averages["cpu_std_dev"]),
+                    "memory_variance": int(averages["memory_std_dev"]),
+                    "io_rate": int(profile.get_io_rate_mbps()),
+                    "network_rate": int(profile.get_network_rate_mbps()),
                 }
 
         return analysis
@@ -441,7 +441,7 @@ class LargeScaleTestScenario:
         print(f"Memory Efficiency: {result.memory_efficiency:.2f} papers/MB")
         print(f"Papers Processed: {result.papers_processed}")
         print(
-            f"Phases Completed: {len(result.phases_completed)}/{len(self.config.phases_to_test)}"
+            f"Phases Completed: {len(result.phases_completed)}/{len(self.config.phases_to_test or [])}"
         )
 
         if result.scaling_issues:

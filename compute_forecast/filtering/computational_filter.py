@@ -27,9 +27,9 @@ class FilteringResult:
     paper: Paper
     passed: bool
     score: float
-    computational_analysis: ComputationalAnalysis
-    authorship_analysis: AuthorshipAnalysis
-    venue_analysis: VenueAnalysis
+    computational_analysis: Optional[ComputationalAnalysis]
+    authorship_analysis: Optional[AuthorshipAnalysis]
+    venue_analysis: Optional[VenueAnalysis]
     reasons: List[str]
     confidence: float
 
@@ -72,13 +72,18 @@ class ComputationalResearchFilter:
         self.venue_scorer = VenueRelevanceScorer()
 
         # Statistics
-        self.stats = {
+        self.stats: Dict[str, Any] = {
             "total_processed": 0,
             "total_passed": 0,
             "computational_filtered": 0,
             "authorship_filtered": 0,
             "venue_filtered": 0,
             "combined_filtered": 0,
+            "pass_rate": 0.0,
+            "computational_filter_rate": 0.0,
+            "authorship_filter_rate": 0.0,
+            "venue_filter_rate": 0.0,
+            "combined_filter_rate": 0.0,
         }
 
         logger.info("ComputationalResearchFilter initialized")
@@ -365,17 +370,17 @@ class ComputationalResearchFilter:
 
         # Calculate rates
         if stats["total_processed"] > 0:
-            stats["pass_rate"] = stats["total_passed"] / stats["total_processed"]
-            stats["computational_filter_rate"] = (
+            stats["pass_rate"] = float(stats["total_passed"] / stats["total_processed"])
+            stats["computational_filter_rate"] = float(
                 stats["computational_filtered"] / stats["total_processed"]
             )
-            stats["authorship_filter_rate"] = (
+            stats["authorship_filter_rate"] = float(
                 stats["authorship_filtered"] / stats["total_processed"]
             )
-            stats["venue_filter_rate"] = (
+            stats["venue_filter_rate"] = float(
                 stats["venue_filtered"] / stats["total_processed"]
             )
-            stats["combined_filter_rate"] = (
+            stats["combined_filter_rate"] = float(
                 stats["combined_filtered"] / stats["total_processed"]
             )
         else:
@@ -396,6 +401,11 @@ class ComputationalResearchFilter:
             "authorship_filtered": 0,
             "venue_filtered": 0,
             "combined_filtered": 0,
+            "pass_rate": 0.0,
+            "computational_filter_rate": 0.0,
+            "authorship_filter_rate": 0.0,
+            "venue_filter_rate": 0.0,
+            "combined_filter_rate": 0.0,
         }
 
     def update_config(self, new_config: FilteringConfig) -> None:

@@ -4,7 +4,7 @@ Filters papers based on quality thresholds with real-time performance requiremen
 """
 
 import logging
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, cast
 
 from .quality_structures import QualityMetrics, QualityThresholds
 
@@ -213,8 +213,10 @@ class QualityFilter:
         temp_thresholds = QualityThresholds(
             venue=self.thresholds.venue,
             year=self.thresholds.year,
-            min_citation_count=threshold_changes.get(
-                "min_citation_count", self.thresholds.min_citation_count
+            min_citation_count=int(
+                threshold_changes.get(
+                    "min_citation_count", self.thresholds.min_citation_count
+                )
             ),
             min_paper_quality_score=threshold_changes.get(
                 "min_paper_quality_score", self.thresholds.min_paper_quality_score
@@ -255,8 +257,8 @@ class QualityFilter:
         if len(papers) > 0:
             impact["original_pass_rate"] = len(original_results["passed"]) / len(papers)
             impact["new_pass_rate"] = len(results["passed"]) / len(papers)
-            impact["pass_rate_change"] = (
-                impact["new_pass_rate"] - impact["original_pass_rate"]
+            impact["pass_rate_change"] = cast(float, impact["new_pass_rate"]) - cast(
+                float, impact["original_pass_rate"]
             )
 
         return impact

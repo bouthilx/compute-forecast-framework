@@ -57,6 +57,17 @@ class TestInterruptionRecoverySystem:
             "state": SessionState.RUNNING,
             "progress": 0.5,
         }
+        mock.list_session_checkpoints.return_value = ["ckpt-001", "ckpt-002"]
+        mock.load_checkpoint.return_value = {
+            "timestamp": datetime.now().isoformat(),
+            "state_data": {
+                "completed_venues": ["NeurIPS_2023", "ICML_2023"],
+                "workflow_state": {
+                    "active_venues": set(),
+                    "failed_venues": {"ICLR_2023": "API timeout"},
+                },
+            },
+        }
         return mock
 
     @pytest.fixture
@@ -167,6 +178,7 @@ class TestInterruptionRecoverySystem:
     def test_create_recovery_plan_no_checkpoint(self, recovery_system, test_session):
         """Test recovery plan when no checkpoints exist."""
         recovery_system.checkpoint_manager.list_checkpoints.return_value = []
+        recovery_system.state_manager.list_session_checkpoints.return_value = []
 
         plan = recovery_system.create_recovery_plan(
             test_session, InterruptionType.NETWORK_FAILURE
@@ -245,7 +257,7 @@ class TestInterruptionRecoverySystem:
         )
 
         # Mock checkpoint load failure
-        recovery_system.checkpoint_manager.load_checkpoint.side_effect = Exception(
+        recovery_system.state_manager.load_checkpoint.side_effect = Exception(
             "Checkpoint not found"
         )
 
@@ -324,7 +336,7 @@ class TestInterruptionRecoverySystem:
         self, recovery_system, test_session
     ):
         """Test validation when no checkpoints exist."""
-        recovery_system.checkpoint_manager.list_checkpoints.return_value = []
+        recovery_system.state_manager.list_session_checkpoints.return_value = []
 
         is_valid, error_msg = recovery_system.validate_recovery_capability(test_session)
 

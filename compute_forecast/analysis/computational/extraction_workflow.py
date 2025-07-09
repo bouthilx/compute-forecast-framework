@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .analyzer import ComputationalAnalyzer
+from ...data.models import Paper
 from .extraction_protocol import ExtractionProtocol, ExtractionResult
 from .quality_control import QualityController, QualityReport
 from .extraction_forms import FormManager
@@ -253,8 +254,22 @@ class ExtractionWorkflowOrchestrator:
         step.status = WorkflowStatus.IN_PROGRESS
 
         try:
+            # Create temporary Paper object for analysis
+            temp_paper = Paper(
+                title=workflow_result.paper_id,  # Use paper_id as title fallback
+                authors=[],
+                venue="",
+                year=0,
+                citations=0,
+                abstract=paper_content[:500]
+                if paper_content
+                else "",  # Use part of content as abstract
+                paper_id=workflow_result.paper_id,
+                collection_timestamp=datetime.now(),
+            )
+
             # Run automated analysis
-            analysis_result = self.analyzer.analyze(paper_content)
+            analysis_result = self.analyzer.analyze(temp_paper)
 
             # Create extraction protocol and run automated phase
             protocol = ExtractionProtocol(

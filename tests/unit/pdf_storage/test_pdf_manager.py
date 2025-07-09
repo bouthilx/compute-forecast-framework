@@ -60,7 +60,9 @@ class TestPDFManager(unittest.TestCase):
             saved_metadata = json.load(f)
 
         self.assertIn("test_paper_1", saved_metadata)
-        self.assertEqual(saved_metadata["test_paper_1"]["metadata"]["venue"], "Test Conference")
+        self.assertEqual(
+            saved_metadata["test_paper_1"]["metadata"]["venue"], "Test Conference"
+        )
 
     @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
     def test_store_pdf_failure(self, mock_home):
@@ -111,18 +113,21 @@ class TestPDFManager(unittest.TestCase):
         # Mock successful download
         def mock_download(file_id, destination):
             destination.write_bytes(b"downloaded pdf content")
-        
+
         self.mock_drive_store.download_pdf.side_effect = mock_download
 
         manager = PDFManager(self.mock_drive_store, cache_dir=str(self.temp_dir))
-        
+
         # Ensure no cached file exists
         potential_cached_file = manager.cache_dir / "test_paper_1.pdf"
         if potential_cached_file.exists():
             potential_cached_file.unlink()
 
         # Add metadata without cached file
-        manager.metadata["test_paper_1"] = {"drive_file_id": "drive_id", "venue": "Test Conference"}
+        manager.metadata["test_paper_1"] = {
+            "drive_file_id": "drive_id",
+            "venue": "Test Conference",
+        }
         manager._save_metadata()
 
         result = manager.get_pdf_for_analysis("test_paper_1")
@@ -161,8 +166,14 @@ class TestPDFManager(unittest.TestCase):
         old_time = (datetime.utcnow() - timedelta(hours=2)).isoformat()
         recent_time = datetime.utcnow().isoformat()
 
-        manager.metadata["old_paper"] = {"drive_file_id": "old_id", "cached_at": old_time}
-        manager.metadata["recent_paper"] = {"drive_file_id": "recent_id", "cached_at": recent_time}
+        manager.metadata["old_paper"] = {
+            "drive_file_id": "old_id",
+            "cached_at": old_time,
+        }
+        manager.metadata["recent_paper"] = {
+            "drive_file_id": "recent_id",
+            "cached_at": recent_time,
+        }
         manager._save_metadata()
 
         # Run cleanup

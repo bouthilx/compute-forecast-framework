@@ -91,7 +91,7 @@ class CheckpointData:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        result = {}
+        result: Dict[str, Any] = {}
         for key, value in self.__dict__.items():
             if isinstance(value, datetime):
                 result[key] = value.isoformat()
@@ -380,7 +380,7 @@ class CollectionSession:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        result = {}
+        result: Dict[str, Any] = {}
         for key, value in self.__dict__.items():
             if isinstance(value, datetime):
                 result[key] = value.isoformat()

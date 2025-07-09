@@ -153,7 +153,7 @@ class DataCorruptionScenarios:
         Returns:
             Validation results
         """
-        validation = {"passed": True, "checks": [], "failures": []}
+        validation: Dict[str, Any] = {"passed": True, "checks": [], "failures": []}
 
         # Check data preservation
         data_preserved = recovery_metrics.get("data_preservation_rate", 0)

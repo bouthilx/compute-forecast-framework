@@ -7,7 +7,7 @@ import time
 import threading
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Callable
 from collections import defaultdict, deque
 
 from .alert_structures import (
@@ -111,7 +111,7 @@ class AlertNotificationManager:
             lambda: {"sent": 0, "failed": 0, "total_latency_ms": 0.0}
         )
 
-    def add_channel(self, name: str, handler: callable) -> None:
+    def add_channel(self, name: str, handler: Callable) -> None:
         """Add a notification channel"""
         self.channels[name] = handler
 
@@ -259,7 +259,7 @@ class IntelligentAlertSystem:
             context = EvaluationContext(
                 metrics=metrics,
                 current_time=datetime.now(),
-                rule_history=dict(self.rule_history),
+                rule_history={k: list(v) for k, v in self.rule_history.items()},
                 system_config={},
             )
 
@@ -648,7 +648,7 @@ class IntelligentAlertSystem:
                 context = EvaluationContext(
                     metrics=metrics,
                     current_time=datetime.now(),
-                    rule_history=dict(self.rule_history),
+                    rule_history={k: list(v) for k, v in self.rule_history.items()},
                     system_config={},
                 )
 

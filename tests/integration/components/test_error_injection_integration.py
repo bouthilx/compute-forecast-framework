@@ -65,7 +65,7 @@ class TestErrorInjectionIntegration:
         # If all APIs failed, clear error from one to test fallback
         if not collector_handler.get_active_api():
             collector_handler.clear_error("crossref")
-        
+
         # Verify fallback behavior
         assert collector_handler.verify_fallback_behavior() is True
 

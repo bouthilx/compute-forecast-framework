@@ -4,7 +4,7 @@ import logging
 import re
 import requests
 import xml.etree.ElementTree as ET
-from typing import Optional, List
+from typing import Optional, List, Dict, Union
 from datetime import datetime
 
 from compute_forecast.data.models import Paper
@@ -130,16 +130,18 @@ class HALPDFCollector(BasePDFCollector):
             is_open_access = any("openAccess" in r.text for r in rights if r.text)
 
             return PDFRecord(
-                paper_id=paper.paper_id,
+                paper_id=paper.paper_id or f"hal_{identifier.replace('oai:HAL:', '')}",
                 pdf_url=pdf_url,
                 source=self.source_name,
                 discovery_timestamp=datetime.now(),
                 confidence_score=0.85,
                 version_info={
                     "hal_id": identifier,
-                    "oai_datestamp": record.find(
-                        ".//oai:datestamp", self.namespaces
-                    ).text,
+                    "oai_datestamp": getattr(
+                        record.find(".//oai:datestamp", self.namespaces),
+                        "text",
+                        "unknown",
+                    ),
                 },
                 validation_status="verified",
                 license="open_access" if is_open_access else None,
@@ -170,7 +172,7 @@ class HALPDFCollector(BasePDFCollector):
         else:
             query_parts.append(f'title_t:"{paper.title}"')
 
-        params = {
+        params: Dict[str, Union[str, int]] = {
             "q": " OR ".join(query_parts),
             "fl": "docid,title_s,authFullName_s,files_s,doiId_s,openAccess_bool",
             "rows": 10,
@@ -201,7 +203,7 @@ class HALPDFCollector(BasePDFCollector):
 
                 if pdf_url:
                     return PDFRecord(
-                        paper_id=paper.paper_id,
+                        paper_id=paper.paper_id or f"hal_{doc.get('docid', 'unknown')}",
                         pdf_url=pdf_url,
                         source=self.source_name,
                         discovery_timestamp=datetime.now(),

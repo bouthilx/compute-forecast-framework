@@ -100,7 +100,7 @@ class ReporterErrorHandler:
         """
         if self._output_error_type == "disk_full":
             return 0.0
-        return self._disk_space_mb
+        return float(self._disk_space_mb)
 
     def add_alternative_output(
         self, path: str, name: str, output_type: str = "file", priority: int = 5

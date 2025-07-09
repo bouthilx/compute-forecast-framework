@@ -32,7 +32,7 @@ class AuthorshipAnalysis:
     industry_count: int
     unknown_count: int
     confidence: float
-    author_details: List[Dict[str, str]]
+    author_details: List[Dict[str, Any]]
 
 
 @dataclass
@@ -86,7 +86,7 @@ class Paper:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert paper to dictionary for JSON serialization"""
-        result = {}
+        result: Dict[str, Any] = {}
         for key, value in self.__dict__.items():
             if isinstance(value, list) and value and hasattr(value[0], "__dict__"):
                 result[key] = [item.__dict__ for item in value]

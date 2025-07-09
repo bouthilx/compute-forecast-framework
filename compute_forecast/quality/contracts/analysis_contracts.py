@@ -70,9 +70,9 @@ class ComputationalAnalysisContract(BaseContract):
                 if range_violation:
                     violations.append(range_violation)
             else:
-                violations.append(
-                    self._check_type(richness, float, "computational_richness")
-                )
+                violation = self._check_type(richness, float, "computational_richness")
+                if violation:
+                    violations.append(violation)
 
         # Validate confidence score
         if "confidence_score" in analysis_data:
@@ -100,9 +100,9 @@ class ComputationalAnalysisContract(BaseContract):
                         )
                     )
             else:
-                violations.append(
-                    self._check_type(confidence, float, "confidence_score")
-                )
+                violation = self._check_type(confidence, float, "confidence_score")
+                if violation:
+                    violations.append(violation)
 
         # Validate keyword matches
         if "keyword_matches" in analysis_data:
@@ -250,7 +250,9 @@ class PaperMetadataContract(BaseContract):
                         )
                     )
             else:
-                violations.append(self._check_type(title, str, "title"))
+                violation = self._check_type(title, str, "title")
+                if violation:
+                    violations.append(violation)
 
         # Validate authors
         if "authors" in paper_data:
@@ -295,7 +297,9 @@ class PaperMetadataContract(BaseContract):
                         )
                     )
             else:
-                violations.append(self._check_type(year, int, "year"))
+                violation = self._check_type(year, int, "year")
+                if violation:
+                    violations.append(violation)
 
         # Validate venue
         if "venue" in paper_data:
@@ -313,7 +317,9 @@ class PaperMetadataContract(BaseContract):
                         )
                     )
             else:
-                violations.append(self._check_type(venue, str, "venue"))
+                violation = self._check_type(venue, str, "venue")
+                if violation:
+                    violations.append(violation)
 
         # Validate citations if present
         if "citations" in paper_data and paper_data["citations"] is not None:
@@ -331,7 +337,9 @@ class PaperMetadataContract(BaseContract):
                         )
                     )
             else:
-                violations.append(self._check_type(citations, int, "citations"))
+                violation = self._check_type(citations, int, "citations")
+                if violation:
+                    violations.append(violation)
 
         # Validate at least one identifier is present
         identifiers = ["paper_id", "openalex_id", "arxiv_id"]

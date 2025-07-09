@@ -190,6 +190,9 @@ class SemanticScholarPDFCollector(BasePDFCollector):
             else CONFIDENCE_SCORE_TITLE_SEARCH
         )
 
+        if paper.paper_id is None:
+            raise ValueError(f"Paper has no paper_id: {paper.title}")
+
         return PDFRecord(
             paper_id=paper.paper_id,
             pdf_url=open_access_pdf["url"],
@@ -267,7 +270,11 @@ class SemanticScholarPDFCollector(BasePDFCollector):
 
                         # Extract PDF if available
                         open_access_pdf = ss_paper.get("openAccessPdf")
-                        if open_access_pdf and open_access_pdf.get("url"):
+                        if (
+                            open_access_pdf
+                            and open_access_pdf.get("url")
+                            and our_paper.paper_id is not None
+                        ):
                             pdf_record = PDFRecord(
                                 paper_id=our_paper.paper_id,
                                 pdf_url=open_access_pdf["url"],
@@ -291,7 +298,8 @@ class SemanticScholarPDFCollector(BasePDFCollector):
                 # Handle papers that couldn't be batched (no identifiers)
                 for paper in batch:
                     if (
-                        paper.paper_id not in results
+                        paper.paper_id is not None
+                        and paper.paper_id not in results
                         and paper not in paper_map.values()
                     ):
                         try:
@@ -306,7 +314,7 @@ class SemanticScholarPDFCollector(BasePDFCollector):
                 logger.error(f"Batch discovery failed: {e}")
                 # Fall back to individual discovery for this batch
                 for paper in batch:
-                    if paper.paper_id not in results:
+                    if paper.paper_id is not None and paper.paper_id not in results:
                         try:
                             pdf_record = self._discover_single(paper)
                             results[paper.paper_id] = pdf_record

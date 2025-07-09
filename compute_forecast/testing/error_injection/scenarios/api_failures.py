@@ -167,7 +167,7 @@ class APIFailureScenarios:
         Returns:
             Validation results
         """
-        validation = {"passed": True, "checks": [], "failures": []}
+        validation: Dict[str, Any] = {"passed": True, "checks": [], "failures": []}
 
         # Check recovery time
         if recovery_metrics.get("avg_recovery_time", 0) > 300:  # 5 minutes

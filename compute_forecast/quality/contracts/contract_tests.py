@@ -432,7 +432,7 @@ class ContractTestSuite:
 
     def run_all_tests(self) -> Dict[str, Any]:
         """Run all contract validation tests."""
-        results = {
+        results: Dict[str, Any] = {
             "total_tests": len(self.test_cases),
             "passed": 0,
             "failed": 0,
@@ -445,17 +445,17 @@ class ContractTestSuite:
         for test_case in self.test_cases:
             result = self.run_test(test_case)
             results["results"].append(result)
-            results["execution_time_ms"] += result.execution_time_ms
+            results["execution_time_ms"] += float(result.execution_time_ms)
 
             if result.error:
-                results["errors"] += 1
+                results["errors"] += int(1)
                 results["failures"].append(
                     {"test": test_case.name, "error": result.error}
                 )
             elif result.success:
-                results["passed"] += 1
+                results["passed"] += int(1)
             else:
-                results["failed"] += 1
+                results["failed"] += int(1)
                 results["failures"].append(
                     {
                         "test": test_case.name,

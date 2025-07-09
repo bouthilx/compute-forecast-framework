@@ -189,7 +189,7 @@ class ACLAnthologyCollector(BasePDFCollector):
         return None
 
     def _fuzzy_match_title(
-        self, title1: str, title2: str, threshold: float = None
+        self, title1: str, title2: str, threshold: Optional[float] = None
     ) -> bool:
         """Fuzzy match two titles to handle minor variations.
 
@@ -274,7 +274,7 @@ class ACLAnthologyCollector(BasePDFCollector):
                     logger.info(f"Found valid PDF at: {pdf_url}")
 
                     return PDFRecord(
-                        paper_id=paper.paper_id,
+                        paper_id=paper.paper_id or f"acl_{venue_code}_{paper_id}",
                         pdf_url=pdf_url,
                         source=self.source_name,
                         discovery_timestamp=datetime.now(),
@@ -380,8 +380,13 @@ class ACLAnthologyCollector(BasePDFCollector):
                                         )
 
                                         if is_valid:
-                                            results[paper.paper_id] = PDFRecord(
-                                                paper_id=paper.paper_id,
+                                            # Generate a fallback ID if paper.paper_id is None
+                                            record_id = (
+                                                paper.paper_id
+                                                or f"acl_{venue_code}_{paper_id}"
+                                            )
+                                            results[record_id] = PDFRecord(
+                                                paper_id=record_id,
                                                 pdf_url=pdf_url,
                                                 source=self.source_name,
                                                 discovery_timestamp=datetime.now(),

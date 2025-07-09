@@ -143,7 +143,7 @@ class ErrorInjectionFramework:
             f"Running error scenario suite with {len(self.scenarios)} scenarios"
         )
 
-        results = {
+        results: Dict[str, Any] = {
             "total_scenarios": len(self.scenarios),
             "scenarios_executed": 0,
             "injection_success_rate": 0.0,
@@ -218,7 +218,7 @@ class ErrorInjectionFramework:
         Returns:
             Dictionary containing injection statistics
         """
-        stats = {
+        stats: Dict[str, Any] = {
             "total_injections": len(self._injection_history),
             "active_injections": len(self._active_injections),
             "by_component": defaultdict(int),

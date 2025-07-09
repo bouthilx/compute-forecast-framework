@@ -157,8 +157,8 @@ class FilterTestSuite:
             results["priority_scoring_functional"] = True
             return results
 
-        except Exception as e:
-            return {"priority_scoring_functional": False, "error": str(e)}
+        except Exception:
+            return {"priority_scoring_functional": False}
 
     def test_report_generation(self) -> Dict[str, bool]:
         """Test report generation functionality"""
@@ -261,7 +261,7 @@ class FilterTestSuite:
     def run_comprehensive_tests(self) -> Dict[str, Any]:
         """Run all filter tests and return results"""
 
-        results = {
+        results: Dict[str, Any] = {
             "filtering": self.test_paper_filtering(),
             "priority_scoring": self.test_priority_scoring(),
             "report_generation": self.test_report_generation(),

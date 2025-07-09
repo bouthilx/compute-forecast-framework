@@ -5,7 +5,7 @@ Orchestrates multi-source collection with parallel execution, streaming, and pag
 
 import time
 import logging
-from typing import Dict, List, Optional, Iterator, AsyncIterator
+from typing import Dict, List, Optional, Iterator, AsyncIterator, Callable, Any
 from dataclasses import dataclass
 import asyncio
 from collections import deque
@@ -14,7 +14,7 @@ from ..models import Paper, CollectionQuery, APIConfig
 from ..sources.enhanced_semantic_scholar import EnhancedSemanticScholarClient
 from ..sources.enhanced_openalex import EnhancedOpenAlexClient
 from ..sources.enhanced_crossref import EnhancedCrossrefClient
-from ..sources.google_scholar import GoogleScholarClient
+from ..sources.google_scholar import GoogleScholarSource
 from .rate_limit_manager import RateLimitManager
 
 logger = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ class EnhancedCollectionOrchestratorStreaming:
             max_memory_papers: Maximum papers to keep in memory at once
         """
         # Initialize API clients
-        self.sources = {
+        self.sources: Dict[str, Any] = {
             "semantic_scholar": EnhancedSemanticScholarClient(
                 api_key=api_keys.get("semantic_scholar") if api_keys else None
             ),
@@ -66,8 +66,8 @@ class EnhancedCollectionOrchestratorStreaming:
             "crossref": EnhancedCrossrefClient(
                 email=api_keys.get("crossref_email") if api_keys else None
             ),
-            "google_scholar": GoogleScholarClient(
-                use_proxy=api_keys.get("google_scholar_proxy", False)
+            "google_scholar": GoogleScholarSource(
+                use_proxy=bool(api_keys.get("google_scholar_proxy", False))
                 if api_keys
                 else False
             ),
@@ -124,7 +124,7 @@ class EnhancedCollectionOrchestratorStreaming:
         self,
         query: CollectionQuery,
         sources_to_use: Optional[List[str]] = None,
-        process_callback: Optional[callable] = None,
+        process_callback: Optional[Callable[[Paper], None]] = None,
     ) -> Iterator[Paper]:
         """
         Stream papers from all sources with memory-efficient processing
@@ -159,7 +159,7 @@ class EnhancedCollectionOrchestratorStreaming:
                     for paper in paper_batch:
                         # Apply callback if provided
                         if process_callback:
-                            paper = process_callback(paper)
+                            process_callback(paper)
 
                         # Update statistics
                         source_counts[source_name] += 1
@@ -180,7 +180,7 @@ class EnhancedCollectionOrchestratorStreaming:
         self,
         query: CollectionQuery,
         sources_to_use: Optional[List[str]] = None,
-        process_callback: Optional[callable] = None,
+        process_callback: Optional[Callable[[Paper], None]] = None,
     ) -> AsyncIterator[Paper]:
         """
         Asynchronously stream papers from all sources
@@ -277,15 +277,7 @@ class EnhancedCollectionOrchestratorStreaming:
             # Get the source client
             source_client = self.sources[source_name]
 
-            # Create paginated query
-            CollectionQuery(
-                domain=query.domain,
-                keywords=query.keywords,
-                venue=query.venue,
-                year=query.year,
-                max_results=current_batch_size,
-                offset=offset,  # Add offset support to CollectionQuery
-            )
+            # Note: Using current_batch_size directly in API calls below
 
             # Perform collection based on query type
             if query.venue:
@@ -362,8 +354,8 @@ class EnhancedCollectionOrchestratorStreaming:
         memory_limit_mb * papers_per_mb
 
         # Initialize statistics
-        source_counts = {}
-        errors = []
+        source_counts: Dict[str, int] = {}
+        errors: List[str] = []
         total_processed = 0
 
         # Process papers in batches
@@ -394,7 +386,7 @@ class EnhancedCollectionOrchestratorStreaming:
     def process_papers_in_batches(
         self,
         query: CollectionQuery,
-        batch_processor: callable,
+        batch_processor: Callable[[List[Paper]], None],
         sources_to_use: Optional[List[str]] = None,
     ) -> StreamingCollectionResult:
         """
@@ -411,8 +403,8 @@ class EnhancedCollectionOrchestratorStreaming:
         start_time = time.time()
 
         # Initialize statistics
-        source_counts = {}
-        errors = []
+        source_counts: Dict[str, int] = {}
+        errors: List[str] = []
         total_processed = 0
         current_batch = []
 

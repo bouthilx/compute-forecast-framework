@@ -44,7 +44,7 @@ class MetricsCollector:
         self.venue_engine = None
         self.state_manager = None
         self.api_managers: Dict[str, Any] = {}
-        self.data_processors = None
+        self.data_processors: Dict[str, Any] = {}
 
         # Collection control
         self._running = False
@@ -55,8 +55,8 @@ class MetricsCollector:
         self._last_collection_time = 0.0
         self._collection_count = 0
         self._collection_errors = 0
-        self._session_id = None
-        self.session_start_time = None
+        self._session_id: Optional[str] = None
+        self.session_start_time: Optional[datetime] = None
 
         logger.info(
             f"MetricsCollector initialized with {collection_interval_seconds}s interval"
@@ -115,8 +115,10 @@ class MetricsCollector:
             # Store component references
             self.venue_engine = venue_engine
             self.state_manager = state_manager
-            self.api_managers = api_managers
-            self.data_processors = data_processors
+            self.api_managers = api_managers if api_managers is not None else {}
+            self.data_processors = (
+                data_processors if data_processors is not None else {}
+            )
 
             # Generate session ID and start time
             import uuid
@@ -197,8 +199,8 @@ class MetricsCollector:
         ].collection_progress.papers_collected
 
         # Calculate API metrics
-        api_success_rates = {}
-        api_avg_response_times = {}
+        api_success_rates: Dict[str, Any] = {}
+        api_avg_response_times: Dict[str, Any] = {}
 
         for metrics in metrics_history:
             for api_name, api_metrics in metrics.api_metrics.items():
@@ -212,12 +214,13 @@ class MetricsCollector:
 
         # Average the API metrics
         for api_name in api_success_rates:
-            api_success_rates[api_name] = sum(api_success_rates[api_name]) / len(
-                api_success_rates[api_name]
+            api_success_rates[api_name] = float(
+                sum(api_success_rates[api_name]) / len(api_success_rates[api_name])
             )
-            api_avg_response_times[api_name] = sum(
-                api_avg_response_times[api_name]
-            ) / len(api_avg_response_times[api_name])
+            api_avg_response_times[api_name] = float(
+                sum(api_avg_response_times[api_name])
+                / len(api_avg_response_times[api_name])
+            )
 
         # Calculate system metrics
         memory_usage = [
@@ -225,10 +228,10 @@ class MetricsCollector:
         ]
         cpu_usage = [m.system_metrics.cpu_usage_percentage for m in metrics_history]
 
-        avg_memory_usage = sum(memory_usage) / len(memory_usage)
-        peak_memory_usage = max(memory_usage)
-        avg_cpu_usage = sum(cpu_usage) / len(cpu_usage)
-        peak_cpu_usage = max(cpu_usage)
+        avg_memory_usage = float(sum(memory_usage) / len(memory_usage))
+        peak_memory_usage = float(max(memory_usage))
+        avg_cpu_usage = float(sum(cpu_usage) / len(cpu_usage))
+        peak_cpu_usage = float(max(cpu_usage))
 
         return MetricsSummary(
             time_period_minutes=time_window_minutes,
@@ -416,23 +419,24 @@ class MetricsCollector:
             venues_normalized = 0
             normalization_accuracy = 0.0
 
-            for processor_name, processor in self.data_processors.items():
-                # Handle venue normalizer specially
-                if processor_name == "venue_normalizer" and hasattr(
-                    processor, "get_mapping_statistics"
-                ):
-                    stats = processor.get_mapping_statistics()
-                    venues_normalized = stats.get("venues_normalized", 0)
-                    normalization_accuracy = stats.get("accuracy", 0.0)
-                elif hasattr(processor, "get_statistics"):
-                    stats = processor.get_statistics()
-                    total_processed += stats.get("papers_processed", 0)
-                    total_deduplicated += stats.get(
-                        "papers_processed", 0
-                    )  # Use papers_processed
-                    duplicates_removed += stats.get("duplicates_removed", 0)
-                    papers_above_threshold += stats.get("papers_above_threshold", 0)
-                    breakthrough_papers += stats.get("breakthrough_papers", 0)
+            if self.data_processors:
+                for processor_name, processor in self.data_processors.items():
+                    # Handle venue normalizer specially
+                    if processor_name == "venue_normalizer" and hasattr(
+                        processor, "get_mapping_statistics"
+                    ):
+                        stats = processor.get_mapping_statistics()
+                        venues_normalized = stats.get("venues_normalized", 0)
+                        normalization_accuracy = stats.get("accuracy", 0.0)
+                    elif hasattr(processor, "get_statistics"):
+                        stats = processor.get_statistics()
+                        total_processed += stats.get("papers_processed", 0)
+                        total_deduplicated += stats.get(
+                            "papers_processed", 0
+                        )  # Use papers_processed
+                        duplicates_removed += stats.get("duplicates_removed", 0)
+                        papers_above_threshold += stats.get("papers_above_threshold", 0)
+                        breakthrough_papers += stats.get("breakthrough_papers", 0)
 
             # Calculate rates
             dedup_rate = duplicates_removed / max(total_processed, 1)
@@ -492,7 +496,7 @@ class MetricsCollector:
 
             return SystemResourceMetrics(
                 cpu_usage_percentage=cpu_percent,
-                cpu_count=cpu_count,
+                cpu_count=cpu_count or 1,
                 memory_usage_percentage=memory_percent,
                 memory_used_mb=memory_used_mb,
                 memory_available_mb=memory_available_mb,

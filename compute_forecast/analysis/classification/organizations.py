@@ -40,11 +40,11 @@ class OrganizationDatabase:
 
     def get_academic_organizations(self) -> List[str]:
         """Get list of academic organizations"""
-        return self._academic_orgs.copy()
+        return list(self._academic_orgs.copy())
 
     def get_industry_organizations(self) -> List[str]:
         """Get list of industry organizations"""
-        return self._industry_orgs.copy()
+        return list(self._industry_orgs.copy())
 
     def is_academic_organization(self, affiliation: str) -> bool:
         """Check if affiliation matches academic organization"""
@@ -70,4 +70,4 @@ class OrganizationDatabase:
             if org.lower() in affiliation_lower:
                 return {"type": "industry", "organization": org}
 
-        return {"type": "unknown", "organization": None}
+        return {"type": "unknown", "organization": ""}

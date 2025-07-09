@@ -1,6 +1,6 @@
 import yaml
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from dataclasses import dataclass
 
 
@@ -8,7 +8,7 @@ from dataclasses import dataclass
 class CitationSourceConfig:
     rate_limit: float
     retry_attempts: int
-    api_key: str = None
+    api_key: Optional[str] = None
     timeout: int = 30
     use_browser_automation: bool = False
     manual_captcha_intervention: bool = False
@@ -33,13 +33,13 @@ class QualityConfig:
 class ConfigManager:
     def __init__(self, config_path: str = "config/settings.yaml"):
         self.config_path = Path(config_path)
-        self._config = None
+        self._config: Optional[Dict[str, Any]] = None
 
     def load_config(self) -> Dict[str, Any]:
         """Load configuration from YAML file"""
         if self._config is None:
             with open(self.config_path, "r") as f:
-                self._config = yaml.safe_load(f)
+                self._config = yaml.safe_load(f) or {}
         return self._config
 
     def get_citation_config(self, source: str) -> CitationSourceConfig:
@@ -62,4 +62,4 @@ class ConfigManager:
         """Get venue configuration"""
         venue_config_path = self.config_path.parent / "venues.yaml"
         with open(venue_config_path, "r") as f:
-            return yaml.safe_load(f)
+            return yaml.safe_load(f) or {}

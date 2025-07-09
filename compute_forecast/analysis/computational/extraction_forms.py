@@ -254,7 +254,7 @@ class ExtractionFormTemplate:
         with open(filepath, "r") as f:
             template = yaml.safe_load(f)
         logger.info(f"Template loaded from {filepath}")
-        return template
+        return dict(template)
 
 
 @dataclass

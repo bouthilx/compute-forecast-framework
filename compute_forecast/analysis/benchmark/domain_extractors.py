@@ -51,7 +51,7 @@ class NLPBenchmarkExtractor:
 
     def extract_nlp_specific_metrics(self, paper: Paper) -> Dict[str, Any]:
         """Extract NLP-specific computational metrics."""
-        metrics = {
+        metrics: Dict[str, Any] = {
             "token_count": None,
             "vocabulary_size": None,
             "sequence_length": None,
@@ -172,7 +172,7 @@ class CVBenchmarkExtractor:
 
     def extract_cv_specific_metrics(self, paper: Paper) -> Dict[str, Any]:
         """Extract CV-specific computational metrics."""
-        metrics = {
+        metrics: Dict[str, Any] = {
             "image_resolution": None,
             "throughput_fps": None,
             "augmentation_compute": False,
@@ -299,7 +299,7 @@ class RLBenchmarkExtractor:
 
     def extract_rl_specific_metrics(self, paper: Paper) -> Dict[str, Any]:
         """Extract RL-specific computational metrics."""
-        metrics = {
+        metrics: Dict[str, Any] = {
             "environment_steps": None,
             "simulation_time_days": None,
             "parallel_environments": None,
@@ -369,7 +369,7 @@ class RLBenchmarkExtractor:
         if metrics.get("simulation_time_days"):
             # Assume 1 GPU per environment if not specified
             gpu_count = metrics.get("parallel_environments", 1)
-            return metrics["simulation_time_days"] * 24 * gpu_count
+            return float(metrics["simulation_time_days"] * 24 * gpu_count)
 
         return 0.0
 

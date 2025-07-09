@@ -31,12 +31,14 @@ class PatternTestSuite:
             for test_results in results.values()
         )
 
-        results["summary"] = {
+        # Create a separate summary dict with different types
+        summary = {
             "total_tests": total_tests,
             "passed_tests": passed_tests,
             "success_rate": passed_tests / total_tests if total_tests > 0 else 0.0,
             "all_tests_passed": passed_tests == total_tests,
         }
+        results["summary"] = summary  # type: ignore
 
         return results
 

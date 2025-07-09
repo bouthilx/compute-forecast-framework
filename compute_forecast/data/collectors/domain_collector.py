@@ -5,7 +5,7 @@ Handles collection of papers for specific domains and years.
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, cast
 from collections import defaultdict
 
 
@@ -84,7 +84,7 @@ class DomainCollector:
         logger.info(
             f"\nCollection complete! Total papers: {len(self.collection_results['raw_papers'])}"
         )
-        return self.collection_results
+        return cast(Dict[str, Any], self.collection_results)
 
     def collect_domain_year_papers(
         self, domain_name: str, year: int, target_count: int

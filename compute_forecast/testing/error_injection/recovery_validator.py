@@ -121,7 +121,7 @@ class RecoveryValidator:
         if isinstance(expected, dict) and isinstance(actual, dict):
             return self._measure_dict_integrity_weighted(expected, actual)
         elif isinstance(expected, (list, tuple)) and isinstance(actual, (list, tuple)):
-            return self._measure_list_integrity(expected, actual)
+            return self._measure_list_integrity(list(expected), list(actual))
         elif isinstance(expected, (int, float)) and isinstance(actual, (int, float)):
             return self._measure_numeric_integrity(expected, actual)
         else:
@@ -233,7 +233,7 @@ class RecoveryValidator:
         )
 
         # Group by error type
-        by_error_type = defaultdict(
+        by_error_type: Dict[str, Dict[str, Any]] = defaultdict(
             lambda: {"total": 0, "successful": 0, "avg_time": 0.0}
         )
         for metric in self.recovery_metrics:
@@ -313,7 +313,7 @@ class RecoveryValidator:
         for indicator in partial_indicators:
             if indicator in state and state[indicator]:
                 if isinstance(state[indicator], (int, float)):
-                    return state[indicator] > 0
+                    return bool(state[indicator] > 0)
                 elif isinstance(state[indicator], (list, dict)):
                     return len(state[indicator]) > 0
                 else:

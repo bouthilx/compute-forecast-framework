@@ -82,13 +82,16 @@ class TestPaperDeduplicator:
 
         # Group records by paper for testing
         all_records = {}
+        record_to_paper = {}
         for record in records:
             base_id = record.paper_data.paper_id
             if base_id not in all_records:
                 all_records[base_id] = []
             all_records[base_id].append(record)
+            # Map each record to its paper for deduplication
+            record_to_paper[record.paper_id] = record.paper_data
 
-        result = deduplicator.deduplicate_records(all_records)
+        result = deduplicator.deduplicate_records(all_records, record_to_paper)
 
         # Should return fewer records due to deduplication
         # First two papers share same DOI, so should be merged

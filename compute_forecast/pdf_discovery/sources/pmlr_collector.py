@@ -78,13 +78,13 @@ class PMLRCollector(BasePDFCollector):
 
         # Check aliases
         if venue_name in self.aliases:
-            return self.aliases[venue_name]
+            return str(self.aliases[venue_name])
 
         # Try case-insensitive match
         venue_upper = venue_name.upper()
         for abbr in self.venue_volumes:
             if venue_upper == abbr.upper():
-                return abbr
+                return str(abbr)
 
         # Return original if no match found
         return venue_name
@@ -105,7 +105,8 @@ class PMLRCollector(BasePDFCollector):
             return None
 
         year_str = str(year)
-        return self.venue_volumes[normalized_venue].get(year_str)
+        result = self.venue_volumes[normalized_venue].get(year_str)
+        return str(result) if result is not None else None
 
     def _search_proceedings_page(self, volume: str, paper_title: str) -> Optional[str]:
         """Search proceedings page for paper ID by title.
@@ -120,7 +121,8 @@ class PMLRCollector(BasePDFCollector):
         # Check cache first
         cache_key = f"{volume}:{paper_title}"
         if cache_key in self._proceedings_cache:
-            return self._proceedings_cache[cache_key]
+            cached_result = self._proceedings_cache[cache_key]
+            return str(cached_result) if cached_result is not None else None
 
         try:
             # Fetch proceedings page
@@ -179,7 +181,7 @@ class PMLRCollector(BasePDFCollector):
 
                 # Cache the result
                 self._proceedings_cache[cache_key] = paper_id
-                return paper_id
+                return str(paper_id)
 
             logger.warning(f"No match found for '{paper_title}' in {volume}")
             return None
@@ -198,8 +200,8 @@ class PMLRCollector(BasePDFCollector):
         Returns:
             Full PDF URL
         """
-        pdf_path = self.pdf_pattern.format(volume=volume, paper_id=paper_id)
-        return self.base_url + pdf_path
+        pdf_path = str(self.pdf_pattern).format(volume=volume, paper_id=paper_id)
+        return str(self.base_url) + pdf_path
 
     def _discover_single(self, paper: Paper) -> PDFRecord:
         """Discover PDF for a single paper.
@@ -228,7 +230,7 @@ class PMLRCollector(BasePDFCollector):
 
         # Create PDF record
         return PDFRecord(
-            paper_id=paper.paper_id,
+            paper_id=paper.paper_id or f"pmlr_{paper_id}",
             pdf_url=pdf_url,
             source=self.source_name,
             discovery_timestamp=datetime.now(),

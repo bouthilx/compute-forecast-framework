@@ -5,7 +5,7 @@ Real implementation with API integration, retry logic, and error handling
 
 import time
 import requests
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from ..models import Paper, Author, APIResponse, ResponseMetadata, APIError
 from datetime import datetime
 import logging
@@ -46,7 +46,7 @@ class EnhancedOpenAlexClient:
 
         # Construct API URL and parameters
         url = f"{self.base_url}/works"
-        params = {
+        params: Dict[str, Any] = {
             "filter": oa_query,
             "per-page": min(limit, 200),  # OpenAlex limit is 200 per request
             "page": (offset // min(limit, 200)) + 1,  # Convert offset to page

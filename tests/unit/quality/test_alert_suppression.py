@@ -12,8 +12,6 @@ from compute_forecast.monitoring.alert_suppression import (
 from compute_forecast.monitoring.alert_structures import (
     Alert,
     SuppressionRule,
-    AlertSeverity,
-    AlertStatus,
 )
 
 
@@ -248,15 +246,6 @@ class TestSuppressionRule:
             suppression_duration_minutes=30,
         )
 
-        alert = Alert(
-            alert_id="test_001",
-            rule_id="test_rule",
-            message="Collection Rate Below Threshold",
-            description="Rate is low",
-            severity=AlertSeverity.WARNING,
-            status=AlertStatus.ACTIVE,
-        )
-
         # Test pattern matching would be handled by suppression manager
         assert rule.alert_rule_pattern == "collection_rate.*"
         assert rule.enabled
@@ -269,15 +258,6 @@ class TestSuppressionRule:
             description="Test",
             alert_rule_pattern=".*rate.*low.*",
             suppression_duration_minutes=30,
-        )
-
-        alert = Alert(
-            alert_id="test_001",
-            rule_id="test_rule",
-            message="Test Alert",
-            description="Collection rate is low",
-            severity=AlertSeverity.WARNING,
-            status=AlertStatus.ACTIVE,
         )
 
         # Test pattern matching would be handled by suppression manager
@@ -294,22 +274,12 @@ class TestSuppressionRule:
             suppression_duration_minutes=30,
         )
 
-        alert = Alert(
-            alert_id="test_001",
-            rule_id="collection_rate_low",
-            message="Different Title",
-            description="Different message",
-            severity=AlertSeverity.WARNING,
-            status=AlertStatus.ACTIVE,
-        )
-
         # Test pattern matching would be handled by suppression manager
         assert rule.alert_rule_pattern == "collection_rate_low"
         assert rule.enabled
 
     def test_no_match_when_expired(self):
         """Test that expired rules don't match"""
-        past_time = datetime.now() - timedelta(minutes=60)
         rule = SuppressionRule(
             rule_id="test_rule_006",
             name="Test Disabled Rule",
@@ -317,15 +287,6 @@ class TestSuppressionRule:
             alert_rule_pattern="test",
             suppression_duration_minutes=30,
             enabled=False,  # Disabled rule
-        )
-
-        alert = Alert(
-            alert_id="test_001",
-            rule_id="test_rule",
-            message="Test Alert",
-            description="Test message",
-            severity=AlertSeverity.WARNING,
-            status=AlertStatus.ACTIVE,
         )
 
         # Test disabled rule

@@ -133,7 +133,7 @@ class EndToEndTestFramework:
             # Execute each phase
             current_data = input_data
 
-            for phase in self.config.phases_to_test:
+            for phase in self.config.phases_to_test or []:
                 phase_result = self._execute_phase(phase, current_data)
 
                 if phase_result["success"]:
@@ -192,9 +192,8 @@ class EndToEndTestFramework:
             with ThreadPoolExecutor(max_workers=1) as executor:
                 future = executor.submit(self._run_phase_logic, phase, data, metrics)
 
-                timeout = self.config.max_execution_time_seconds / len(
-                    self.config.phases_to_test
-                )
+                phases = self.config.phases_to_test or []
+                timeout = self.config.max_execution_time_seconds / max(len(phases), 1)
                 output_data = future.result(timeout=timeout)
 
             metrics.success = True
@@ -343,7 +342,7 @@ class EndToEndTestFramework:
             "generated_at": datetime.now().isoformat(),
             "pipeline_config": {
                 "test_data_size": self.config.test_data_size,
-                "phases_tested": [p.value for p in self.config.phases_to_test],
+                "phases_tested": [p.value for p in (self.config.phases_to_test or [])],
             },
         }
 
@@ -417,7 +416,7 @@ class EndToEndTestFramework:
     def _get_memory_usage(self) -> float:
         """Get current memory usage in MB"""
         try:
-            return self._process.memory_info().rss / 1024 / 1024
+            return float(self._process.memory_info().rss / 1024 / 1024)
         except Exception:
             return 0.0
 
@@ -443,8 +442,9 @@ class EndToEndTestFramework:
             # Check execution time
             if phase.value in self.phase_metrics:
                 metrics = self.phase_metrics[phase.value]
-                expected_time = self.config.max_execution_time_seconds / len(
-                    self.config.phases_to_test
+                phases = self.config.phases_to_test or []
+                expected_time = self.config.max_execution_time_seconds / max(
+                    len(phases), 1
                 )
                 if metrics.execution_time_seconds > expected_time * 0.8:
                     phase_bottlenecks.append(

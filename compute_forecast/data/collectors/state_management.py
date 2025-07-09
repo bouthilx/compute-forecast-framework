@@ -8,7 +8,7 @@ import time
 import gzip
 import json
 from pathlib import Path
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Literal
 from datetime import datetime, timedelta
 import uuid
 
@@ -38,16 +38,22 @@ class SimpleCheckpointManager:
     def create_checkpoint(
         self,
         session_id: str,
-        checkpoint_type: str,
+        checkpoint_type: Literal[
+            "venue_completed",
+            "batch_completed",
+            "api_call_completed",
+            "error_occurred",
+            "session_started",
+        ],
         venues_completed: List[tuple],
         venues_in_progress: List[tuple],
         venues_not_started: List[tuple],
         papers_collected: int,
         papers_by_venue: Dict[str, Dict[int, int]],
         last_successful_operation: str,
-        api_health_status: Dict = None,
-        rate_limit_status: Dict = None,
-        error_context=None,
+        api_health_status: Optional[Dict] = None,
+        rate_limit_status: Optional[Dict] = None,
+        error_context: Optional[Any] = None,
     ) -> Optional[str]:
         """Create a new checkpoint"""
         checkpoint_id = f"{session_id}_checkpoint_{int(time.time())}"
@@ -136,7 +142,7 @@ class SimpleCheckpointManager:
         earliest = min(checkpoints, key=lambda cp: cp.timestamp)
 
         # Count checkpoint types
-        type_counts = {}
+        type_counts: Dict[str, int] = {}
         for cp in checkpoints:
             type_counts[cp.checkpoint_type] = type_counts.get(cp.checkpoint_type, 0) + 1
 
@@ -230,25 +236,25 @@ class StateManager:
         # Handle Issue #5 compatibility - session_config contains everything
         if session_config is not None:
             # Extract configuration from session_config
-            if hasattr(session_config, '__dict__'):
+            if hasattr(session_config, "__dict__"):
                 collection_config = session_config.__dict__
             else:
                 collection_config = {}
-            
+
             # Create default venues and years if not provided
             if target_venues is None:
                 target_venues = [
                     VenueConfig(
-                        venue_name="NeurIPS", 
+                        venue_name="NeurIPS",
                         target_years=list(range(2019, 2025)),
                         max_papers_per_year=50,
-                        priority=1
+                        priority=1,
                     ),
                     VenueConfig(
-                        venue_name="ICML", 
+                        venue_name="ICML",
                         target_years=list(range(2019, 2025)),
                         max_papers_per_year=50,
-                        priority=1
+                        priority=1,
                     ),
                 ]
             if target_years is None:
@@ -256,7 +262,9 @@ class StateManager:
 
         # Ensure we have required parameters
         if target_venues is None or target_years is None or collection_config is None:
-            raise ValueError("Must provide either session_config or (target_venues, target_years, collection_config)")
+            raise ValueError(
+                "Must provide either session_config or (target_venues, target_years, collection_config)"
+            )
 
         if session_id is None:
             session_id = f"session_{uuid.uuid4().hex[:8]}"
@@ -433,6 +441,8 @@ class StateManager:
         else:
             logger.debug(f"Checkpoint {checkpoint_id} saved in {duration:.3f}s")
 
+        if checkpoint_id is None:
+            raise ValueError("Failed to create checkpoint")
         return checkpoint_id
 
     def load_latest_checkpoint(self, session_id: str) -> Optional[CheckpointData]:
@@ -937,4 +947,4 @@ def create_session_flexible(self, *args, **kwargs):
 
 
 # Apply the monkey patch
-StateManager.create_session = create_session_flexible
+# StateManager.create_session = create_session_flexible  # type: ignore

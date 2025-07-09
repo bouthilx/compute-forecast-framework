@@ -114,7 +114,7 @@ class PDFDiscoveryFramework:
                 total_papers=len(papers),
                 discovered_count=0,
                 records=[],
-                failed_papers=[p.paper_id for p in papers],
+                failed_papers=[p.paper_id for p in papers if p.paper_id is not None],
                 source_statistics={},
                 execution_time_seconds=time.time() - start_time,
             )
@@ -123,13 +123,17 @@ class PDFDiscoveryFramework:
         papers_by_venue = self._group_papers_by_venue(papers)
 
         # Track failed papers
-        failed_papers: Set[str] = set(p.paper_id for p in papers)
+        failed_papers: Set[str] = set(
+            p.paper_id for p in papers if p.paper_id is not None
+        )
 
         # Collect statistics
         source_stats = {}
 
         # Collect all discovered records for deduplication
         all_discovered_records: Dict[str, List[PDFRecord]] = {}
+        # Map PDFRecord to Paper for deduplication
+        record_to_paper: Dict[str, Paper] = {}
 
         # Run collectors in parallel
         with ThreadPoolExecutor(max_workers=max(1, len(self.collectors))) as executor:
@@ -156,12 +160,13 @@ class PDFDiscoveryFramework:
 
                     # Collect discovered PDFs for deduplication
                     for paper_id, pdf_record in results.items():
-                        # Attach paper data for deduplication
+                        # Store paper data mapping for deduplication
                         paper = next(
                             (p for p in papers if p.paper_id == paper_id), None
                         )
                         if paper:
-                            pdf_record.paper_data = paper
+                            # Use pdf_record's paper_id as key for mapping
+                            record_to_paper[pdf_record.paper_id] = paper
 
                         # Group by base paper ID for deduplication
                         base_id = paper_id
@@ -193,7 +198,7 @@ class PDFDiscoveryFramework:
 
             try:
                 deduplicated_records = self.deduplicator.deduplicate_records(
-                    all_discovered_records
+                    all_discovered_records, record_to_paper
                 )
 
                 # Update discovered_papers with deduplicated results

@@ -2,6 +2,7 @@ from scholarly import scholarly
 import time
 import random
 from datetime import datetime
+from typing import Optional
 
 try:
     from .base import BaseCitationSource
@@ -10,10 +11,10 @@ try:
     from ...core.logging import setup_logging
 except ImportError:
     # Fallback for direct execution
-    from base import BaseCitationSource
-    from models import Paper, Author, CollectionQuery, CollectionResult
-    from core.config import ConfigManager
-    from core.logging import setup_logging
+    from base import BaseCitationSource  # type: ignore
+    from models import Paper, Author, CollectionQuery, CollectionResult  # type: ignore
+    from core.config import ConfigManager  # type: ignore
+    from core.logging import setup_logging  # type: ignore
 
 # Enhanced browser automation imports
 from selenium import webdriver
@@ -37,7 +38,7 @@ class GoogleScholarSource(BaseCitationSource):
         self.use_browser = getattr(config, "use_browser_automation", True)
         self.manual_captcha = getattr(config, "manual_captcha_intervention", True)
         self.driver = None
-        self.session_start_time = None
+        self.session_start_time: Optional[float] = None
         self.request_count = 0
         self.max_requests_per_session = 30
 
@@ -84,13 +85,14 @@ class GoogleScholarSource(BaseCitationSource):
                 self.driver = webdriver.Firefox(service=service, options=options)
 
             # Configure timeouts
-            self.driver.set_page_load_timeout(30)
-            self.driver.implicitly_wait(10)
+            if self.driver:
+                self.driver.set_page_load_timeout(30)
+                self.driver.implicitly_wait(10)
 
-            # Execute script to remove webdriver property
-            self.driver.execute_script(
-                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
-            )
+                # Execute script to remove webdriver property
+                self.driver.execute_script(
+                    "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+                )
 
             self.session_start_time = time.time()
             self.request_count = 0
@@ -331,9 +333,9 @@ class GoogleScholarSource(BaseCitationSource):
             year=year,
             citations=citations,
             abstract=abstract,
-            urls=urls,
+            urls=[url for url in urls if url is not None],
             source="google_scholar",
-            collection_timestamp=datetime.now().isoformat(),
+            collection_timestamp=datetime.now(),
             mila_domain=query.domain,
         )
 
@@ -373,7 +375,7 @@ class GoogleScholarSource(BaseCitationSource):
                 doi=filled_paper.get("doi", ""),
                 urls=[filled_paper.get("url", "")] if filled_paper.get("url") else [],
                 source="google_scholar",
-                collection_timestamp=datetime.now().isoformat(),
+                collection_timestamp=datetime.now(),
             )
 
             return paper

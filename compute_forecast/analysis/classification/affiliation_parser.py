@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List
+from typing import Dict, List, Any
 from .organizations import OrganizationDatabase
 from ...core.logging import setup_logging
 
@@ -89,7 +89,7 @@ class AffiliationParser:
         # Try to find known organizations first
         match = self.org_db.get_organization_match(normalized)
         if match["organization"]:
-            return match["organization"]
+            return str(match["organization"])
 
         # Split by common separators and take the first meaningful part
         parts = re.split(r"[,;]", normalized)
@@ -107,7 +107,7 @@ class AffiliationParser:
 
         return normalized
 
-    def classify_affiliation(self, affiliation: str) -> Dict[str, any]:
+    def classify_affiliation(self, affiliation: str) -> Dict[str, Any]:
         """Classify affiliation as academic, industry, or unknown with confidence"""
         if not affiliation:
             return {

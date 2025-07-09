@@ -7,7 +7,7 @@ import json
 import time
 import uuid
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, cast
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
@@ -87,7 +87,7 @@ class SimpleStateManager:
             session_file = self.storage_dir / f"{session_id}.json"
             if session_file.exists():
                 with open(session_file, "r") as f:
-                    session_data = json.load(f)
+                    session_data = cast(Dict[str, Any], json.load(f))
                     self.active_sessions[session_id] = session_data
                     return session_data
 
@@ -128,7 +128,7 @@ class SimpleStateManager:
             print(f"Failed to save session {session_id} to disk: {e}")
 
     def update_session_progress(
-        self, session_id: str, papers_collected: int, status: str = None
+        self, session_id: str, papers_collected: int, status: Optional[str] = None
     ):
         """Update session progress"""
         if session_id in self.active_sessions:
