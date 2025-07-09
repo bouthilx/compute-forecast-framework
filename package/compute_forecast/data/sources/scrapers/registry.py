@@ -36,10 +36,12 @@ class ScraperRegistry:
             from .conference_scrapers.ijcai_scraper import IJCAIScraper
             from .conference_scrapers.acl_anthology_scraper import ACLAnthologyScraper
             from .conference_scrapers.cvf_scraper import CVFScraper
+            from .conference_scrapers.pmlr_scraper import PMLRScraper
             
             self.register_scraper("IJCAIScraper", IJCAIScraper)
             self.register_scraper("ACLAnthologyScraper", ACLAnthologyScraper)
             self.register_scraper("CVFScraper", CVFScraper)
+            self.register_scraper("PMLRScraper", PMLRScraper)
             
         except ImportError as e:
             logger.warning(f"Failed to import package scrapers: {e}")
@@ -67,15 +69,16 @@ class ScraperRegistry:
         self._venue_mapping = {
             # Direct scrapers with dedicated implementations
             "neurips": "NeurIPSScraper",
-            "icml": "MLRScraper",
+            "icml": "PMLRScraper",
             "iclr": "OpenReviewScraper",
             "ijcai": "IJCAIScraper",
             "acl": "ACLAnthologyScraper",
             "emnlp": "ACLAnthologyScraper",
             "naacl": "ACLAnthologyScraper", 
             "coling": "ACLAnthologyScraper",
-            "aistats": "MLRScraper",
-            "uai": "MLRScraper",
+            "aistats": "PMLRScraper",
+            "uai": "PMLRScraper",
+            "collas": "PMLRScraper",
             
             # CVF venues with dedicated scraper
             "cvpr": "CVFScraper",
