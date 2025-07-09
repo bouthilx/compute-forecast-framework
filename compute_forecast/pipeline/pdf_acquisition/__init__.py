@@ -6,6 +6,6 @@ from . import storage
 
 __all__ = [
     "discovery",
-    "download", 
+    "download",
     "storage",
 ]

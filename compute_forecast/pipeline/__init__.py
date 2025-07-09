@@ -8,7 +8,7 @@ from . import pdf_acquisition
 
 __all__ = [
     "analysis",
-    "content_extraction", 
+    "content_extraction",
     "metadata_collection",
     "paper_filtering",
     "pdf_acquisition",

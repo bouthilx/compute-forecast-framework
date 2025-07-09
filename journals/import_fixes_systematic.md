@@ -1,7 +1,7 @@
 # Import Fixes - Systematic File-by-File Approach
 
-**Date**: 2025-01-09  
-**Task**: Fix all import statements in the codebase after pipeline refactoring  
+**Date**: 2025-01-09
+**Task**: Fix all import statements in the codebase after pipeline refactoring
 **Method**: Manual file-by-file fixes, avoiding relative imports where possible
 
 ## All Python Files in Codebase
@@ -128,7 +128,7 @@ Let me get a complete list of all files...
 
 ## Todo List - One Line Per File
 
-**Status**: Starting systematic fixes  
+**Status**: Starting systematic fixes
 **Progress**: 0/~186 files processed
 
 ### Priority 1: Core Package Files (Start Here)
@@ -327,13 +327,13 @@ Let me get a complete list of all files...
 
 ## Final Completion Summary
 
-**Task**: Fix all import statements in the codebase after pipeline refactoring  
-**Status**: ✅ COMPLETED - All files processed systematically  
-**Date**: 2025-01-09  
+**Task**: Fix all import statements in the codebase after pipeline refactoring
+**Status**: ✅ COMPLETED - All files processed systematically
+**Date**: 2025-01-09
 
 ### Total Files Processed
 - **Priority 1 (Core)**: 4/4 files ✅
-- **Priority 2 (Pipeline)**: 14/14 files ✅  
+- **Priority 2 (Pipeline)**: 14/14 files ✅
 - **Priority 3 (Other Components)**: 13/13 files ✅
 - **Priority 4 (Testing)**: 10/10 files ✅
 - **Priority 5 (Root Scripts)**: All checked ✅
@@ -361,12 +361,12 @@ Let me get a complete list of all files...
 **Categories**:
 - Monitoring/Orchestration: Already using absolute imports
 - Quality validators: No imports to fix
-- Testing integration: No imports to fix  
+- Testing integration: No imports to fix
 - Root scripts: External dependencies only
 - Examples: Already using absolute imports
 
 ### Import Pattern Changes
-**Before**: `from .module import Class` (relative imports)  
+**Before**: `from .module import Class` (relative imports)
 **After**: `from compute_forecast.module import Class` (absolute imports)
 
 This ensures the codebase works correctly with the new pipeline structure and eliminates import path issues that could cause runtime errors.
@@ -375,7 +375,7 @@ This ensures the codebase works correctly with the new pipeline structure and el
 
 ## Phase 2: Fixing Missing Module Attributes After Import Fixes
 
-**Date**: 2025-01-09  
+**Date**: 2025-01-09
 **Status**: IN PROGRESS
 
 After fixing the import paths, 31 tests are still failing due to missing attributes in modules. These are caused by files being moved to different locations but not being properly exposed in the new module hierarchy.
@@ -423,14 +423,14 @@ After fixing the import paths, 31 tests are still failing due to missing attribu
 
 ### Final Progress Update
 - **Before**: 31 failures, 1351 passed
-- **After Phase 1**: 5 failures, 1387 passed  
+- **After Phase 1**: 5 failures, 1387 passed
 - **After Phase 2**: 2 failures, 1390 passed
 - **Improvement**: 29 additional tests now pass!
 - **Success Rate**: 99.9% (1390/1392 actual tests)
 
 ### Phase 3: Additional Import Path Fixes
 
-**Date**: 2025-01-09  
+**Date**: 2025-01-09
 **Status**: COMPLETED
 
 Found 3 more import-related issues in the 5 remaining test failures:
@@ -471,7 +471,7 @@ All import-related issues have been systematically identified and fixed. The rem
 
 ## Phase 4: Analysis of Remaining Test Failures
 
-**Date**: 2025-01-09  
+**Date**: 2025-01-09
 **Status**: COMPLETED
 
 ### 1. **test_confidence_distribution_analysis** Analysis
@@ -483,7 +483,7 @@ All import-related issues have been systematically identified and fixed. The rem
 - Needed to change to `../../../../config/organizations_enhanced.yaml` (4 levels up)
 - **Fix Applied**: Updated relative path in enhanced_validator.py
 
-### 2. **test_get_mapping_statistics** Analysis  
+### 2. **test_get_mapping_statistics** Analysis
 
 **Root Cause**: Wrong import - using wrong VenueConfig class
 - Found TWO different VenueConfig classes in the codebase:
@@ -501,14 +501,68 @@ All import-related issues have been systematically identified and fixed. The rem
 
 All issues were directly caused by the pipeline refactoring moving modules to new locations!
 
+## PR #184 CI Failures Analysis
+
+**Date**: 2025-01-09
+**PR**: https://github.com/bouthilx/compute-forecast-framework/pull/184
+
+### Summary of Failing Checks:
+
+1. **PR Checks** (failed) - Title validation issue
+2. **Pre-commit** (failed) - Code formatting issues
+3. **Test** (failed) - Missing data file errors
+
+### Detailed Failure Analysis:
+
+#### 1. PR Checks Failure
+**Error**: No release type found in pull request title "Fix #134: Complete pipeline refactoring and resolve all import issues"
+**Cause**: PR title doesn't follow conventional commits format
+**Fix needed**: Add prefix like `fix:`, `feat:`, `refactor:`, etc.
+
+#### 2. Pre-commit Failures
+**Issues found**:
+- Trailing whitespace in 4 files:
+  - fix_test_imports.py
+  - compute_forecast/pipeline/pdf_acquisition/__init__.py
+  - journals/import_fixes_systematic.md
+  - compute_forecast/pipeline/__init__.py
+
+- Missing end-of-file newlines in 6 files:
+  - fix_test_imports.py
+  - compute_forecast/pipeline/pdf_acquisition/__init__.py
+  - compute_forecast/pipeline/content_extraction/__init__.py
+  - journals/import_fixes_systematic.md
+  - compute_forecast/pipeline/__init__.py
+  - pre-commit-output.txt
+
+- Ruff formatting issues:
+  - Found 3 errors (all auto-fixed)
+  - 1 file reformatted (fix_test_imports.py)
+
+#### 3. Test Failures
+**20 test errors** - All related to missing PMLR data file:
+- **Error**: FileNotFoundError: PMLR volumes file not found: `/home/runner/work/compute-forecast-framework/compute-forecast-framework/compute_forecast/pipeline/pdf_acquisition/discovery/sources/data/pmlr_volumes.json`
+- **Affected tests**:
+  - 4 integration tests in test_pmlr_integration.py
+  - 16 unit tests in test_pmlr_collector.py
+
+**Test summary**: 1372 passed, 99 skipped, 10 warnings, 20 errors
+
+### Todo List for Fixing PR #184
+
+- [ ] Fix PR title to follow conventional commits format
+- [ ] Run pre-commit locally to fix formatting issues
+- [ ] Fix missing PMLR volumes data file issue
+- [ ] Push fixes and verify CI passes
+
 ## Final Results After All Fixes
 
-**Date**: 2025-01-09  
+**Date**: 2025-01-09
 **Status**: ✅ **ALL TESTS PASSING**
 
 - **Started with**: 31 test failures after pipeline refactoring
 - **Fixed in Phase 1**: 26 failures (module path updates in tests)
-- **Fixed in Phase 2**: 3 failures (additional import path fixes)  
+- **Fixed in Phase 2**: 3 failures (additional import path fixes)
 - **Fixed in Phase 3**: 2 failures (relative path and wrong import fixes)
 - **Final result**: **1392 passed, 99 skipped, 0 failures**
 
@@ -524,7 +578,7 @@ All issues were directly caused by the pipeline refactoring moving modules to ne
 
 ## Phase 5: Pre-commit Check Fixes
 
-**Date**: 2025-01-09  
+**Date**: 2025-01-09
 **Status**: COMPLETED
 
 ### Mypy Error Fixed:
@@ -532,7 +586,7 @@ All issues were directly caused by the pipeline refactoring moving modules to ne
 **Error**: `Unexpected keyword argument "checkpoint_dir" and "enable_compression" for "StatePersistenceManager"`
 - **Location**: `compute_forecast/orchestration/orchestrators/venue_collection_orchestrator.py:338`
 - **Root Cause**: StatePersistenceManager constructor only accepts `state_dir` parameter, not `checkpoint_dir` and `enable_compression`
-- **Fix Applied**: 
+- **Fix Applied**:
   - Changed from: `StatePersistenceManager(checkpoint_dir=..., enable_compression=True)`
   - Changed to: `StatePersistenceManager(state_dir=Path(...))`
   - Added missing `from pathlib import Path` import

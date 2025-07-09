@@ -78,4 +78,3 @@ compute_forecast/orchestration/state/state_persistence.py:34: note: "StatePersis
 compute_forecast/orchestration/orchestrators/venue_collection_orchestrator.py:338: error: Unexpected keyword argument "enable_compression" for "StatePersistenceManager"  [call-arg]
 compute_forecast/orchestration/state/state_persistence.py:34: note: "StatePersistenceManager" defined here
 Found 2 errors in 1 file (checked 228 source files)
-
