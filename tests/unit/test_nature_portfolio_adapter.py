@@ -236,3 +236,32 @@ class TestNaturePortfolioAdapter:
         # Test with plain text
         plain = "Just plain text"
         assert adapter._clean_abstract(plain) == plain
+    
+    def test_paper_keywords_empty(self, adapter):
+        """Test that papers have empty keywords list (extraction done in consolidation)."""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'message': {
+                'total-results': 1,
+                'items': [{
+                    'DOI': '10.1038/s41586-024-12345-6',
+                    'title': ['Machine Learning Applications in Climate Science'],
+                    'author': [{'given': 'John', 'family': 'Doe'}],
+                    'abstract': 'This study uses deep learning and neural networks to predict climate change impacts.',
+                    'published-print': {'date-parts': [[2024, 1, 1]]},
+                    'URL': 'https://doi.org/10.1038/s41586-024-12345-6',
+                    'type': 'journal-article'
+                }]
+            }
+        }
+        
+        with patch.object(adapter.session, 'get', return_value=mock_response):
+            papers = adapter._call_paperoni_scraper(None, "nature", 2024)
+        
+        assert len(papers) == 1
+        paper = papers[0]
+        
+        # Check that keywords list exists but is empty (will be populated in consolidation)
+        assert hasattr(paper, 'keywords')
+        assert paper.keywords == []
