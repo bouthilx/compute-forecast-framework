@@ -193,13 +193,13 @@ Papers often appear in multiple sources. Simple deduplication:
 def deduplicate_papers(papers):
     seen_titles = set()
     unique_papers = []
-    
+
     for paper in papers:
         normalized_title = paper['title'].lower().strip()
         if normalized_title not in seen_titles:
             seen_titles.add(normalized_title)
             unique_papers.append(paper)
-    
+
     return unique_papers
 ```
 

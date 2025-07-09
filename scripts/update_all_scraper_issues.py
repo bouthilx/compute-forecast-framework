@@ -2,10 +2,9 @@
 """Update all scraper milestone issues with complete descriptions from journal"""
 
 import subprocess
-import sys
 
 # Read the complete journal content
-with open('journals/complete_scraper_milestone.md', 'r') as f:
+with open("journals/complete_scraper_milestone.md", "r") as f:
     journal_content = f.read()
 
 # Split the content into sections for each issue
@@ -13,15 +12,15 @@ issues = {}
 current_issue = None
 current_content = []
 
-for line in journal_content.split('\n'):
-    if line.startswith('### Issue #'):
+for line in journal_content.split("\n"):
+    if line.startswith("### Issue #"):
         # Save previous issue if exists
         if current_issue:
-            issues[current_issue] = '\n'.join(current_content)
-        
+            issues[current_issue] = "\n".join(current_content)
+
         # Start new issue
         try:
-            issue_num = int(line.split(':')[0].replace('### Issue #', ''))
+            issue_num = int(line.split(":")[0].replace("### Issue #", ""))
             current_issue = issue_num
             current_content = []
         except:
@@ -31,32 +30,32 @@ for line in journal_content.split('\n'):
 
 # Save last issue
 if current_issue:
-    issues[current_issue] = '\n'.join(current_content)
+    issues[current_issue] = "\n".join(current_content)
 
 # Map GitHub issue numbers to journal issue numbers
 # Journal has issues 1-16, GitHub has issues 140-155
 issue_mapping = {
-    1: 140,   # Base Scraper Classes
-    2: 141,   # Enhanced Data Models
-    3: 142,   # Institution Filtering Wrapper
-    4: 143,   # Error Handling
-    5: 144,   # IJCAI Scraper
-    6: 145,   # ACL Anthology Scraper
-    7: 146,   # CVF Scraper
-    8: 147,   # Enhanced OpenReview
-    9: 148,   # Enhanced PMLR
+    1: 140,  # Base Scraper Classes
+    2: 141,  # Enhanced Data Models
+    3: 142,  # Institution Filtering Wrapper
+    4: 143,  # Error Handling
+    5: 144,  # IJCAI Scraper
+    6: 145,  # ACL Anthology Scraper
+    7: 146,  # CVF Scraper
+    8: 147,  # Enhanced OpenReview
+    9: 148,  # Enhanced PMLR
     10: 149,  # Nature Family
     11: 150,  # AAAI Scraper
     12: 151,  # Medical Journals
     13: 152,  # Unified Pipeline
     14: 153,  # Quality Validation
     15: 154,  # Performance Optimization
-    16: 155   # Documentation & Testing
+    16: 155,  # Documentation & Testing
 }
 
 # Special handling for Issue #2 (141) - use simplified approach
-simplified_issue_2 = """**Priority**: Critical  
-**Estimate**: M (4-6 hours)  
+simplified_issue_2 = """**Priority**: Critical
+**Estimate**: M (4-6 hours)
 **Dependencies**: Issue #140 (Base Scraper Classes Framework)
 
 #### Description
@@ -84,20 +83,20 @@ class SimplePaper:
     authors: List[str]  # Simple list of author names
     venue: str
     year: int
-    
+
     # Optional fields
     abstract: Optional[str] = None
     pdf_url: Optional[str] = None
     doi: Optional[str] = None
-    
+
     # Source tracking
     source_scraper: str = ""
     source_url: str = ""
     scraped_at: datetime = field(default_factory=datetime.now)
-    
+
     # Quality indicators
     extraction_confidence: float = 1.0
-    
+
     def to_package_paper(self) -> Paper:
         \"\"\"Convert to package's Paper model\"\"\"
         return Paper(
@@ -114,19 +113,19 @@ class SimplePaper:
 
 class PaperoniAdapter:
     \"\"\"Adapter to convert paperoni models to SimplePaper\"\"\"
-    
+
     @staticmethod
     def convert(paperoni_paper) -> SimplePaper:
         \"\"\"Convert a paperoni Paper object to SimplePaper\"\"\"
         # Extract basic fields
         title = paperoni_paper.title
-        
+
         # Extract authors (paperoni has complex PaperAuthor → Author structure)
         authors = []
         for paper_author in paperoni_paper.authors:
             if hasattr(paper_author, 'author') and hasattr(paper_author.author, 'name'):
                 authors.append(paper_author.author.name)
-        
+
         # Extract venue and year from releases
         venue = ""
         year = None
@@ -136,14 +135,14 @@ class PaperoniAdapter:
                 venue = release.venue.name
             if hasattr(release, 'date'):
                 year = release.date.year
-        
+
         # Extract PDF URL from links
         pdf_url = None
         for link in paperoni_paper.links:
             if hasattr(link, 'type') and 'pdf' in str(link.type).lower():
                 pdf_url = link.url
                 break
-        
+
         return SimplePaper(
             title=title,
             authors=authors,
@@ -166,7 +165,7 @@ class ScrapingBatch:
     total_found: int
     successfully_parsed: int
     errors: List[str] = field(default_factory=list)
-    
+
     @property
     def success_rate(self) -> float:
         return self.successfully_parsed / max(1, self.total_found)
@@ -222,37 +221,38 @@ package_papers = [p.to_package_paper() for p in papers]
 # Update each issue
 for journal_num, github_num in issue_mapping.items():
     print(f"Updating issue #{github_num} (journal issue #{journal_num})...")
-    
+
     if journal_num == 2:  # Special case for simplified Issue #141
         body = simplified_issue_2
     else:
         body = issues.get(journal_num, "")
-    
+
     if not body:
         print(f"  Warning: No content found for journal issue #{journal_num}")
         continue
-    
+
     # Remove the leading "---" if present
     body = body.strip()
-    if body.startswith('---'):
+    if body.startswith("---"):
         body = body[3:].strip()
-    
+
     # Add "## " before Priority if missing
-    if not body.startswith('## Priority') and body.startswith('**Priority'):
-        body = '## Priority\n' + body[11:]  # Remove "**Priority**:"
-    
+    if not body.startswith("## Priority") and body.startswith("**Priority"):
+        body = "## Priority\n" + body[11:]  # Remove "**Priority**:"
+
     # Escape the body content for shell
     import tempfile
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
         f.write(body)
         temp_file = f.name
-    
+
     # Update the issue
     try:
         result = subprocess.run(
-            ['gh', 'issue', 'edit', str(github_num), '--body-file', temp_file],
+            ["gh", "issue", "edit", str(github_num), "--body-file", temp_file],
             capture_output=True,
-            text=True
+            text=True,
         )
         if result.returncode == 0:
             print(f"  ✓ Successfully updated issue #{github_num}")
@@ -262,6 +262,7 @@ for journal_num, github_num in issue_mapping.items():
         print(f"  ✗ Error updating issue #{github_num}: {e}")
     finally:
         import os
+
         os.unlink(temp_file)
 
 print("\nAll issues have been updated with complete descriptions from the journal.")

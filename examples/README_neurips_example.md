@@ -8,13 +8,13 @@ The `example_neurips_pipeline.py` script shows the proper workflow separation:
 
 1. **Paper Collection**: Uses `CitationCollector` to gather paper metadata from multiple sources:
    - OpenAlex
-   - Semantic Scholar  
+   - Semantic Scholar
    - Google Scholar
-   
+
 2. **PDF Discovery**: Uses PDF discovery modules to find downloadable URLs:
    - OpenReviewPDFCollector for papers on OpenReview
    - ArXiv URLs for papers with arXiv IDs
-   
+
 3. **PDF Download**: Downloads PDFs using the discovered URLs
 
 4. **Text Extraction**: Uses PyMuPDF to extract text from the PDFs
@@ -53,7 +53,7 @@ The example demonstrates the proper separation of concerns:
 - Each source (OpenAlex, Semantic Scholar, Google Scholar) provides paper metadata
 - Returns `Paper` objects with title, authors, venue, year, etc.
 
-### PDF Discovery Layer  
+### PDF Discovery Layer
 - Takes `Paper` objects and finds downloadable PDF URLs
 - Uses specialized collectors like `OpenReviewPDFCollector`
 - Falls back to constructing URLs from identifiers (e.g., arXiv IDs)
