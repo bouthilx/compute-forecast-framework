@@ -1,5 +1,5 @@
 # Journal Entry: Issue #135 Migration Analysis
-**Date**: 2025-01-09  
+**Date**: 2025-01-09
 **Task**: Analyze and document the status of pipeline refactoring (Issue #135)
 
 ## Summary
@@ -13,7 +13,7 @@ The `compute_forecast/pipeline/` directory exists with all expected subdirectori
 - **metadata_collection/** (38 Python files)
   - sources/, collectors/, processors/, analysis/
   - models.py
-- **paper_filtering/** (7 Python files)  
+- **paper_filtering/** (7 Python files)
   - selectors/
 - **pdf_acquisition/** (36 Python files)
   - discovery/, download/, storage/
