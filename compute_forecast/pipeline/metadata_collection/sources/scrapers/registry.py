@@ -77,6 +77,10 @@ class ScraperRegistry:
             "aistats": "PMLRScraper",
             "uai": "PMLRScraper",
             "collas": "PMLRScraper",
+            # OpenReview venues
+            "tmlr": "OpenReviewScraper",
+            "colm": "OpenReviewScraper",
+            "rlc": "OpenReviewScraper",
             # CVF venues with dedicated scraper
             "cvpr": "CVFScraper",
             "iccv": "CVFScraper",
