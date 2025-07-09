@@ -550,10 +550,45 @@ All issues were directly caused by the pipeline refactoring moving modules to ne
 
 ### Todo List for Fixing PR #184
 
-- [ ] Fix PR title to follow conventional commits format
-- [ ] Run pre-commit locally to fix formatting issues
-- [ ] Fix missing PMLR volumes data file issue
-- [ ] Push fixes and verify CI passes
+- [x] Fix PR title to follow conventional commits format
+- [x] Run pre-commit locally to fix formatting issues
+- [x] Fix missing PMLR volumes data file issue
+- [x] Push fixes and verify CI passes
+
+### Fixes Applied:
+
+1. **PR Title Fix**:
+   - Changed from: "Fix #134: Complete pipeline refactoring and resolve all import issues"
+   - Changed to: "refactor: complete pipeline refactoring and resolve all import issues"
+   - Used `gh pr edit` command to update the title
+
+2. **Pre-commit Formatting Fixes**:
+   - Ran `uv run --group dev pre-commit run --all-files`
+   - Fixed trailing whitespace in 4 files
+   - Added missing end-of-file newlines to 6 files
+   - Applied ruff formatting to fix_test_imports.py
+   - Committed with: `git commit -m "style: fix pre-commit formatting issues (trailing whitespace, EOF, ruff)"`
+
+3. **PMLR Volumes Data File Fix**:
+   - Found that `pmlr_volumes.json` was not tracked by git due to `*.json` in .gitignore
+   - Added exception to .gitignore: `!compute_forecast/pipeline/pdf_acquisition/discovery/sources/data/pmlr_volumes.json`
+   - Added the file to git and committed
+   - Committed with: `git commit -m "fix: add pmlr_volumes.json to git and update gitignore exception"`
+
+4. **Pushed all fixes**: `git push origin issue_134`
+
+**Result**: All identified CI failures have been addressed. Waiting for CI to re-run on the updated PR.
+
+### Final CI Results:
+
+✅ **All CI checks passed!**
+- PR Checks: ✅ pass (8s)
+- Pre-commit: ✅ pass (22s)
+- Test: ✅ pass (2m21s)
+- Security Scan: ✅ pass (32s)
+- Auto Label PR: ✅ pass (6s)
+
+**PR #184 is now ready for review and merge!**
 
 ## Final Results After All Fixes
 
