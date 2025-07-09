@@ -40,7 +40,7 @@ class ComputationalFilter:
     ) -> Dict[str, List[Paper]]:
         """Filter and prioritize papers based on computational content"""
 
-        filtered_papers = {
+        filtered_papers: Dict[str, List[Paper]] = {
             "high_priority": [],  # Rich computational content
             "medium_priority": [],  # Some computational content
             "low_priority": [],  # Minimal computational content
@@ -118,7 +118,7 @@ class ComputationalFilter:
             + self.priority_weights["implementation_details"] * implementation_score
         )
 
-        return min(priority_score, 1.0)
+        return float(min(priority_score, 1.0))
 
     def _calculate_resource_specificity(
         self, resource_metrics: Dict[str, Any]
@@ -322,7 +322,8 @@ class ComputationalFilter:
                 if (
                     hasattr(paper, "computational_analysis")
                     and paper.computational_analysis
-                    and paper.computational_analysis.get("resource_metrics")
+                    and hasattr(paper.computational_analysis, "resource_metrics")
+                    and paper.computational_analysis.resource_metrics
                 ):
                     papers_with_analysis += 1
 
@@ -382,7 +383,7 @@ class ComputationalFilter:
         import json
         from datetime import datetime
 
-        export_data = {
+        export_data: Dict[str, Any] = {
             "export_timestamp": datetime.now().isoformat(),
             "total_papers": sum(len(papers) for papers in filtered_papers.values()),
             "categories": {},

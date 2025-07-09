@@ -6,7 +6,7 @@ Implements robust state management with checkpoint validation and recovery.
 import json
 import threading
 from pathlib import Path
-from typing import Optional, Dict, List, Any
+from typing import Optional, Dict, List, Any, cast, Literal
 from datetime import datetime
 import logging
 
@@ -349,7 +349,9 @@ class StatePersistenceManager:
 
             return IntegrityCheckResult(
                 file_path=file_path,
-                integrity_status=status,
+                integrity_status=cast(
+                    Literal["valid", "corrupted", "missing", "partial"], status
+                ),
                 checksum_valid=checksum_valid,
                 size_expected=size_actual,  # We don't have expected size
                 size_actual=size_actual,

@@ -35,8 +35,8 @@ class AAICollector(BasePDFCollector):
         self.search_path = "/index.php/AAAI/search/search"
 
         # Cache for search results and proceedings
-        self._search_cache = {}
-        self._issue_cache = {}
+        self._search_cache: Dict[str, Optional[Tuple[str, str]]] = {}
+        self._issue_cache: Dict[str, List[Tuple[str, str]]] = {}
 
         # Conference name to AAAI mapping
         self.conference_mapping = {
@@ -122,7 +122,7 @@ class AAICollector(BasePDFCollector):
                         f"Request failed after {self.max_retries} attempts: {e}"
                     )
 
-        raise last_exception
+        raise last_exception or Exception("Request failed after all retries")
 
     def _search_by_title(self, title: str, year: int) -> Optional[Tuple[str, str]]:
         """Search for paper by title using AAAI search.
@@ -245,8 +245,11 @@ class AAICollector(BasePDFCollector):
             # Alternative pattern
             soup = BeautifulSoup(response.text, "html.parser")
             pdf_link = soup.find("a", class_="obj_galley_link pdf")
-            if pdf_link and "href" in pdf_link.attrs:
-                match = re.search(r"/(\d+)/?$", pdf_link["href"])
+            if pdf_link and hasattr(pdf_link, "attrs") and "href" in pdf_link.attrs:
+                href = pdf_link.attrs["href"]
+                if isinstance(href, list):
+                    href = href[0]
+                match = re.search(r"/(\d+)/?$", str(href))
                 if match:
                     return match.group(1)
 
@@ -354,6 +357,9 @@ class AAICollector(BasePDFCollector):
         pdf_url = self._construct_pdf_url(article_id, pdf_id)
 
         # Create PDF record
+        if not paper.paper_id:
+            raise ValueError(f"Paper {paper.title} has no paper_id")
+
         return PDFRecord(
             paper_id=paper.paper_id,
             pdf_url=pdf_url,

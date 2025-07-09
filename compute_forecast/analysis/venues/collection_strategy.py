@@ -6,7 +6,7 @@ to maximize paper collection efficiency and coverage.
 """
 
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, cast
 from dataclasses import dataclass, asdict
 from datetime import datetime
 
@@ -48,7 +48,7 @@ class CollectionStrategyOptimizer:
         self.scorer = venue_scorer
 
         # Default collection parameters
-        self.default_params = {
+        self.default_params: Dict[str, Any] = {
             "papers_per_venue_year": 8,
             "primary_venue_count": 3,
             "secondary_venue_count": 3,
@@ -90,29 +90,31 @@ class CollectionStrategyOptimizer:
 
         # Generate venue targets for each category
         primary_venues = self._create_venue_targets(
-            high_priority[: self.default_params["primary_venue_count"]],
+            high_priority[: cast(int, self.default_params["primary_venue_count"])],
             "primary",
-            self.default_params["papers_per_venue_year"],
-            self.default_params["high_impact_citation_thresholds"],
+            cast(int, self.default_params["papers_per_venue_year"]),
+            cast(
+                Dict[int, int], self.default_params["high_impact_citation_thresholds"]
+            ),
         )
 
         secondary_venues = self._create_venue_targets(
             (
-                high_priority[self.default_params["primary_venue_count"] :]
+                high_priority[cast(int, self.default_params["primary_venue_count"]) :]
                 + medium_priority
-            )[: self.default_params["secondary_venue_count"]],
+            )[: cast(int, self.default_params["secondary_venue_count"])],
             "secondary",
-            max(self.default_params["papers_per_venue_year"] - 2, 4),
-            self.default_params["min_citation_thresholds"],
+            max(cast(int, self.default_params["papers_per_venue_year"]) - 2, 4),
+            cast(Dict[int, int], self.default_params["min_citation_thresholds"]),
         )
 
         backup_venues = self._create_venue_targets(
             (medium_priority + low_priority)[
-                : self.default_params["backup_venue_count"]
+                : cast(int, self.default_params["backup_venue_count"])
             ],
             "backup",
-            max(self.default_params["papers_per_venue_year"] - 4, 2),
-            self.default_params["min_citation_thresholds"],
+            max(cast(int, self.default_params["papers_per_venue_year"]) - 4, 2),
+            cast(Dict[int, int], self.default_params["min_citation_thresholds"]),
         )
 
         # Add general ML venues (always include for computational research)
@@ -125,10 +127,13 @@ class CollectionStrategyOptimizer:
                 target = VenueTarget(
                     venue_name=venue_name,
                     priority="general_ml",
-                    papers_per_year=self.default_params["papers_per_venue_year"],
-                    citation_threshold_by_year=self.default_params[
-                        "high_impact_citation_thresholds"
-                    ],
+                    papers_per_year=cast(
+                        int, self.default_params["papers_per_venue_year"]
+                    ),
+                    citation_threshold_by_year=cast(
+                        Dict[int, int],
+                        self.default_params["high_impact_citation_thresholds"],
+                    ),
                     collection_notes=f"High-impact general ML venue, score: {venue_score.final_score}",
                 )
                 general_ml_targets.append(target)
@@ -379,7 +384,7 @@ class CollectionStrategyOptimizer:
     def validate_strategies(self) -> Dict[str, Any]:
         """Validate collection strategies meet requirements"""
         strategies = self.generate_all_domain_strategies()
-        validation_results = {
+        validation_results: Dict[str, Any] = {
             "overall_status": "pass",
             "domain_validations": {},
             "issues_found": [],
@@ -387,7 +392,7 @@ class CollectionStrategyOptimizer:
         }
 
         for domain, strategy in strategies.items():
-            domain_validation = {
+            domain_validation: Dict[str, Any] = {
                 "has_sufficient_primary_venues": len(strategy.primary_venues) >= 2,
                 "has_backup_venues": len(strategy.backup_venues) > 0,
                 "total_venues": len(strategy.primary_venues)
@@ -398,7 +403,7 @@ class CollectionStrategyOptimizer:
             }
 
             # Check for issues
-            issues = []
+            issues: List[str] = []
             if not domain_validation["has_sufficient_primary_venues"]:
                 issues.append("Insufficient primary venues (< 2)")
             if not domain_validation["has_backup_venues"]:
@@ -415,19 +420,21 @@ class CollectionStrategyOptimizer:
 
             if issues:
                 validation_results["overall_status"] = "warning"
-                validation_results["issues_found"].extend(
-                    [f"{domain}: {issue}" for issue in issues]
-                )
+                issues_found = validation_results["issues_found"]
+                if isinstance(issues_found, list):
+                    issues_found.extend([f"{domain}: {issue}" for issue in issues])
 
         # Generate recommendations
-        if validation_results["issues_found"]:
-            validation_results["recommendations"].append(
-                "Review domains with insufficient venue coverage"
-            )
+        issues_found = validation_results["issues_found"]
+        recommendations = validation_results["recommendations"]
+        if isinstance(issues_found, list) and issues_found:
+            if isinstance(recommendations, list):
+                recommendations.append(
+                    "Review domains with insufficient venue coverage"
+                )
 
         if len(strategies) < 5:
-            validation_results["recommendations"].append(
-                "Consider expanding to more research domains"
-            )
+            if isinstance(recommendations, list):
+                recommendations.append("Consider expanding to more research domains")
 
         return validation_results

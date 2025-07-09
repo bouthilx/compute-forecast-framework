@@ -111,7 +111,7 @@ class OutlierDetector:
         Returns:
             Context dictionary explaining the outlier
         """
-        context = {
+        context: Dict[str, Any] = {
             "paper_id": paper.paper_id or "unknown",
             "field": field,
             "value": value,
@@ -244,7 +244,7 @@ class OutlierDetector:
         z_scores = np.abs((values - mean) / std)
         outliers = np.where(z_scores > threshold)[0]
 
-        return outliers.tolist()
+        return list(map(int, outliers.tolist()))
 
     def _detect_iqr_outliers(
         self, values: np.ndarray, field: Optional[str] = None
@@ -272,7 +272,7 @@ class OutlierDetector:
 
         outliers = np.where((values < lower_bound) | (values > upper_bound))[0]
 
-        return outliers.tolist()
+        return list(map(int, outliers.tolist()))
 
     def _detect_isolation_forest_outliers(self, values: np.ndarray) -> List[int]:
         """
@@ -295,7 +295,7 @@ class OutlierDetector:
         modified_z_scores = 0.6745 * (values - median) / mad
         outliers = np.where(np.abs(modified_z_scores) > 3.5)[0]
 
-        return outliers.tolist()
+        return list(map(int, outliers.tolist()))
 
     def _detect_combined_outliers(
         self, values: np.ndarray, field: Optional[str] = None
@@ -404,7 +404,7 @@ class OutlierDetector:
             return {"no_outliers": True}
 
         # Group by field
-        outliers_by_field = {}
+        outliers_by_field: Dict[str, List[Any]] = {}
         for outlier in outliers:
             field = getattr(outlier, "field", "unknown")
             if field not in outliers_by_field:

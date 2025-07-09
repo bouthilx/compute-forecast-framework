@@ -429,7 +429,7 @@ class AlertRuleFactory:
                     processing_metrics.processing_errors
                     / processing_metrics.papers_processed
                 )
-                return error_rate > 0.1  # More than 10% error rate
+                return bool(error_rate > 0.1)  # More than 10% error rate
         return False
 
     @staticmethod
@@ -502,11 +502,15 @@ class CustomAlertRule:
                     else:
                         return False
 
+                # Ensure value is numeric for comparison
+                if not isinstance(value, (int, float)):
+                    return False
+
                 # Apply comparison
                 if comparison == "greater_than":
-                    return value > threshold
+                    return float(value) > float(threshold)
                 elif comparison == "less_than":
-                    return value < threshold
+                    return float(value) < float(threshold)
                 elif comparison == "equals":
                     return value == threshold
                 elif comparison == "not_equals":

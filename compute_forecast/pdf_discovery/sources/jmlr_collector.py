@@ -84,7 +84,7 @@ class JMLRCollector(BasePDFCollector):
             response = self.session.head(pdf_url, timeout=self.DEFAULT_TIMEOUT)
             if response.status_code == 200:
                 return PDFRecord(
-                    paper_id=paper.paper_id,
+                    paper_id=paper.paper_id or f"jmlr_{volume_info['paper_id']}",
                     pdf_url=pdf_url,
                     source=self.source_name,
                     discovery_timestamp=datetime.now(),
@@ -121,7 +121,8 @@ class JMLRCollector(BasePDFCollector):
                         pdf_url = urljoin(self.tmlr_base_url, href)
 
                         return PDFRecord(
-                            paper_id=paper.paper_id,
+                            paper_id=paper.paper_id
+                            or f"tmlr_{href.split('/')[-1].replace('.pdf', '')}",
                             pdf_url=pdf_url,
                             source=self.source_name,
                             discovery_timestamp=datetime.now(),
@@ -201,7 +202,8 @@ class JMLRCollector(BasePDFCollector):
                             )
 
                             return PDFRecord(
-                                paper_id=paper.paper_id,
+                                paper_id=paper.paper_id
+                                or f"jmlr_{href.split('/')[-1].replace('.pdf', '')}",
                                 pdf_url=pdf_url,
                                 source=self.source_name,
                                 discovery_timestamp=datetime.now(),
@@ -221,7 +223,7 @@ class JMLRCollector(BasePDFCollector):
                                 )
 
                                 return PDFRecord(
-                                    paper_id=paper.paper_id,
+                                    paper_id=paper.paper_id or f"jmlr_{paper_id}",
                                     pdf_url=pdf_url,
                                     source=self.source_name,
                                     discovery_timestamp=datetime.now(),

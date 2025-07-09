@@ -3,7 +3,7 @@
 import logging
 import time
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from datetime import datetime
 import requests
 
@@ -113,18 +113,18 @@ class OpenAlexPDFCollector(BasePDFCollector):
         # Prefer best_oa_location if available
         best_oa = work.get("best_oa_location")
         if best_oa and best_oa.get("pdf_url"):
-            return best_oa["pdf_url"]
+            return str(best_oa["pdf_url"])
 
         # Fall back to primary_location
         primary = work.get("primary_location", {})
         if primary.get("is_oa") and primary.get("pdf_url"):
-            return primary["pdf_url"]
+            return str(primary["pdf_url"])
 
         # Check all locations as last resort
         locations = work.get("locations", [])
         for location in locations:
             if location.get("is_oa") and location.get("pdf_url"):
-                return location["pdf_url"]
+                return str(location["pdf_url"])
 
         return None
 
@@ -140,12 +140,12 @@ class OpenAlexPDFCollector(BasePDFCollector):
         # Check best_oa_location first
         best_oa = work.get("best_oa_location")
         if best_oa and best_oa.get("license"):
-            return best_oa["license"]
+            return str(best_oa["license"])
 
         # Check primary_location
         primary = work.get("primary_location", {})
         if primary.get("license"):
-            return primary["license"]
+            return str(primary["license"])
 
         return None
 
@@ -189,7 +189,7 @@ class OpenAlexPDFCollector(BasePDFCollector):
         filter_query = self._build_filter_query(paper)
 
         # API parameters
-        params = {
+        params: Dict[str, Union[str, int]] = {
             "filter": filter_query,
             "per-page": 10,  # Small limit for single search
             "select": "id,title,doi,best_oa_location,primary_location,locations,authorships",
@@ -234,7 +234,8 @@ class OpenAlexPDFCollector(BasePDFCollector):
                     has_mila_author = self._has_mila_author(work)
 
                     return PDFRecord(
-                        paper_id=paper.paper_id,
+                        paper_id=paper.paper_id
+                        or f"openalex_{openalex_id.split('/')[-1] if openalex_id else 'unknown'}",
                         pdf_url=pdf_url,
                         source=self.source_name,
                         discovery_timestamp=datetime.now(),
@@ -331,7 +332,7 @@ class OpenAlexPDFCollector(BasePDFCollector):
             if doi_filters:
                 # OpenAlex uses | for OR within a single filter
                 filter_query = "|".join(doi_filters)
-                params = {
+                params: Dict[str, Union[str, int]] = {
                     "filter": filter_query,  # Already includes doi: prefix for each DOI
                     "per-page": len(doi_filters),
                     "select": "id,title,doi,best_oa_location,primary_location,locations,authorships",
@@ -358,7 +359,8 @@ class OpenAlexPDFCollector(BasePDFCollector):
 
                                 if pdf_url:
                                     pdf_record = PDFRecord(
-                                        paper_id=paper.paper_id,
+                                        paper_id=paper.paper_id
+                                        or f"openalex_{work.get('id', '').split('/')[-1] if work.get('id') else 'unknown'}",
                                         pdf_url=pdf_url,
                                         source=self.source_name,
                                         discovery_timestamp=datetime.now(),
@@ -373,7 +375,10 @@ class OpenAlexPDFCollector(BasePDFCollector):
                                         file_size_bytes=None,
                                         license=self._extract_license(work),
                                     )
-                                    results[paper.paper_id] = pdf_record
+                                    results[
+                                        paper.paper_id
+                                        or f"openalex_{work.get('id', '').split('/')[-1] if work.get('id') else 'unknown'}"
+                                    ] = pdf_record
 
                 except Exception as e:
                     logger.error(f"Batch DOI query failed: {e}")
@@ -382,7 +387,7 @@ class OpenAlexPDFCollector(BasePDFCollector):
             for paper in title_papers:
                 try:
                     pdf_record = self._discover_single(paper)
-                    results[paper.paper_id] = pdf_record
+                    results[paper.paper_id or f"openalex_title_{i}"] = pdf_record
                 except Exception as e:
                     logger.debug(f"Failed to discover PDF for {paper.paper_id}: {e}")
 

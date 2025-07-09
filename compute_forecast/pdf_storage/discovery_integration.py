@@ -66,7 +66,7 @@ class PDFDiscoveryStorage:
             "failed_download": 0,
             "failed_upload": 0,
             "already_stored": 0,
-            "execution_time": 0,
+            "execution_time": 0.0,
         }
 
         if not pdf_records:

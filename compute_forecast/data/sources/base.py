@@ -27,4 +27,4 @@ class BaseCitationSource(ABC):
 
     def get_rate_limit(self) -> float:
         """Get rate limit for this source"""
-        return self.rate_limit
+        return float(self.rate_limit)

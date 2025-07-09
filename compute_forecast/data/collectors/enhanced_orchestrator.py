@@ -58,7 +58,7 @@ class EnhancedCollectionOrchestrator:
             merged_keys.update(api_keys)
 
         # Initialize API clients
-        self.sources = {
+        self.sources: Dict[str, Any] = {
             "semantic_scholar": EnhancedSemanticScholarClient(
                 api_key=merged_keys.get("semantic_scholar")
             ),
@@ -75,7 +75,7 @@ class EnhancedCollectionOrchestrator:
 
     def _load_from_env(self) -> Dict[str, Any]:
         """Load API configuration from environment variables"""
-        env_config = {}
+        env_config: Dict[str, Any] = {}
 
         # Semantic Scholar API key
         if os.getenv("SEMANTIC_SCHOLAR_API_KEY"):
@@ -90,10 +90,13 @@ class EnhancedCollectionOrchestrator:
             env_config["crossref_email"] = os.getenv("CROSSREF_EMAIL")
 
         # Google Scholar proxy setting
-        if os.getenv("GOOGLE_SCHOLAR_USE_PROXY"):
-            env_config["google_scholar_proxy"] = os.getenv(
-                "GOOGLE_SCHOLAR_USE_PROXY"
-            ).lower() in ("true", "1", "yes")
+        proxy_setting = os.getenv("GOOGLE_SCHOLAR_USE_PROXY")
+        if proxy_setting:
+            env_config["google_scholar_proxy"] = proxy_setting.lower() in (
+                "true",
+                "1",
+                "yes",
+            )
 
         logger.info(
             f"Loaded {len(env_config)} API configurations from environment variables"
@@ -284,7 +287,7 @@ class EnhancedCollectionOrchestrator:
         )
 
         if response.success:
-            return response.papers
+            return list(response.papers) if response.papers else []
         else:
             # Log errors and return empty list
             for error in response.errors:
@@ -305,7 +308,7 @@ class EnhancedCollectionOrchestrator:
             CollectionResult from first successful source
         """
         start_time = time.time()
-        errors = []
+        errors: List[str] = []
 
         for source_name in preferred_sources:
             if source_name not in self.sources:

@@ -3,7 +3,7 @@
 import time
 import logging
 import xml.etree.ElementTree as ET
-from typing import Optional
+from typing import Optional, Dict, Union
 from datetime import datetime
 
 import requests
@@ -62,7 +62,7 @@ class PubMedCentralCollector(BasePDFCollector):
                     pdf_url = self._build_pdf_url(pmc_id)
 
                     return PDFRecord(
-                        paper_id=paper.paper_id,
+                        paper_id=paper.paper_id or f"pmc_{pmc_id}",
                         pdf_url=pdf_url,
                         source=self.source_name,
                         discovery_timestamp=datetime.now(),
@@ -130,11 +130,16 @@ class PubMedCentralCollector(BasePDFCollector):
             # Use first author's last name and year
             if paper.authors and paper.year:
                 first_author = paper.authors[0]
+                author_name = (
+                    first_author.name
+                    if hasattr(first_author, "name")
+                    else str(first_author)
+                )
                 # Extract last name (assume format "First Last" or "Last, First")
-                if "," in first_author:
-                    last_name = first_author.split(",")[0].strip()
+                if "," in author_name:
+                    last_name = author_name.split(",")[0].strip()
                 else:
-                    parts = first_author.strip().split()
+                    parts = author_name.strip().split()
                     last_name = parts[-1] if parts else ""
 
                 if last_name:
@@ -153,7 +158,12 @@ class PubMedCentralCollector(BasePDFCollector):
         """
         self._rate_limit()
 
-        params = {"db": "pubmed", "term": query, "retmax": 10, "retmode": "xml"}
+        params: Dict[str, Union[str, int]] = {
+            "db": "pubmed",
+            "term": query,
+            "retmax": 10,
+            "retmode": "xml",
+        }
 
         try:
             response = requests.get(

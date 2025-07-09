@@ -1,7 +1,7 @@
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 
 
 def setup_logging(log_level: str = "INFO", log_file: Optional[str] = None):
@@ -15,9 +15,10 @@ def setup_logging(log_level: str = "INFO", log_file: Optional[str] = None):
     log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
     # Setup handlers
-    handlers = [logging.StreamHandler(sys.stdout)]
+    handlers: List[logging.Handler] = [logging.StreamHandler(sys.stdout)]
     if log_file:
-        handlers.append(logging.FileHandler(log_file))
+        file_handler: logging.Handler = logging.FileHandler(log_file)
+        handlers.append(file_handler)
 
     # Configure root logger
     logging.basicConfig(

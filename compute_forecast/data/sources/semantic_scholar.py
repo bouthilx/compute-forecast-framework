@@ -282,7 +282,7 @@ class SemanticScholarSource(BaseCitationSource):
         jitter_range = delay * 0.25
         jitter = random.uniform(-jitter_range, jitter_range)
 
-        return max(delay + jitter, 1.0)  # Minimum 1 second
+        return float(max(delay + jitter, 1.0))  # Minimum 1 second
 
     def _get_dynamic_citation_threshold(
         self, paper_year: int, base_threshold: int
@@ -344,9 +344,9 @@ class SemanticScholarSource(BaseCitationSource):
             year=year,
             citations=citations,
             abstract=(result.get("abstract") or "").strip(),
-            urls=[result.get("url")] if result.get("url") else [],
+            urls=[str(result.get("url"))] if result.get("url") else [],
             source="semantic_scholar",
-            collection_timestamp=datetime.now().isoformat(),
+            collection_timestamp=datetime.now(),
             mila_domain=query.domain,
         )
 
@@ -389,9 +389,9 @@ class SemanticScholarSource(BaseCitationSource):
                 citations=paper_data.get("citationCount", 0),
                 abstract=paper_data.get("abstract", ""),
                 doi=paper_data.get("doi", ""),
-                urls=[paper_data.get("url")] if paper_data.get("url") else [],
+                urls=[str(paper_data.get("url"))] if paper_data.get("url") else [],
                 source="semantic_scholar",
-                collection_timestamp=datetime.now().isoformat(),
+                collection_timestamp=datetime.now(),
             )
 
             return paper

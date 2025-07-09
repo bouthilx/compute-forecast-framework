@@ -6,7 +6,7 @@ system crashes, and manual interruptions.
 """
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, List, Optional, Set, Tuple, Any, TYPE_CHECKING
@@ -170,23 +170,27 @@ class InterruptionRecoverySystem:
         """
         # Get the latest checkpoint if not specified
         if not checkpoint_id:
-            checkpoints = self.checkpoint_manager.list_checkpoints(session.session_id)
-            if checkpoints:
-                checkpoint_id = checkpoints[-1]["checkpoint_id"]
+            checkpoint_ids = self.state_manager.list_session_checkpoints(
+                session.session_id
+            )
+            if checkpoint_ids:
+                # Use the most recent checkpoint
+                checkpoint_id = checkpoint_ids[-1]
 
         # Load checkpoint data
         checkpoint_data = None
         if checkpoint_id:
-            checkpoint_data = self.checkpoint_manager.load_checkpoint(checkpoint_id)
+            checkpoint_data = self.state_manager.load_checkpoint(checkpoint_id)
 
         # Determine recovery strategy based on interruption type
+        checkpoint_dict = asdict(checkpoint_data) if checkpoint_data else None
         strategy = self._determine_recovery_strategy(
-            interruption_type, session, checkpoint_data
+            interruption_type, session, checkpoint_dict
         )
 
         # Identify venues to recover
         venues_to_recover, venues_to_skip = self._identify_recovery_targets(
-            session, checkpoint_data
+            session, checkpoint_dict
         )
 
         # Estimate recovery time
@@ -194,12 +198,12 @@ class InterruptionRecoverySystem:
 
         # Calculate confidence score
         confidence = self._calculate_recovery_confidence(
-            interruption_type, strategy, checkpoint_data
+            interruption_type, strategy, checkpoint_dict
         )
 
         # Generate recovery steps
         steps = self._generate_recovery_steps(
-            strategy, venues_to_recover, checkpoint_data
+            strategy, venues_to_recover, checkpoint_dict
         )
 
         return RecoveryPlan(
@@ -270,8 +274,12 @@ class InterruptionRecoverySystem:
             return RecoveryResult(
                 success=False,
                 recovered_data={},
-                recovery_time=recovery_state.recovery_end_time
-                - recovery_state.recovery_start_time,
+                recovery_time=(
+                    recovery_state.recovery_end_time
+                    - recovery_state.recovery_start_time
+                    if recovery_state.recovery_start_time is not None
+                    else timedelta(0)
+                ),
                 recovery_state=recovery_state,
                 error_message=str(e),
             )
@@ -504,16 +512,16 @@ class InterruptionRecoverySystem:
         """Resume collection from a checkpoint."""
         logger.info(f"Resuming from checkpoint: {recovery_plan.checkpoint_id}")
 
-        recovered_data = {}
+        recovered_data: Dict[str, Any] = {}
 
         try:
             # Load checkpoint data
-            checkpoint_data = self.checkpoint_manager.load_checkpoint(
-                recovery_plan.checkpoint_id
+            checkpoint_data = self.state_manager.load_checkpoint(
+                recovery_plan.checkpoint_id or ""
             )
 
             # Restore session state
-            if checkpoint_data and "state_data" in checkpoint_data:
+            if checkpoint_data:
                 # This would integrate with the actual collection logic
                 # For now, we'll simulate the recovery
                 for venue, year in recovery_plan.venues_to_recover:
@@ -526,8 +534,12 @@ class InterruptionRecoverySystem:
             return RecoveryResult(
                 success=True,
                 recovered_data=recovered_data,
-                recovery_time=recovery_state.recovery_end_time
-                - recovery_state.recovery_start_time,
+                recovery_time=(
+                    recovery_state.recovery_end_time
+                    - recovery_state.recovery_start_time
+                    if recovery_state.recovery_start_time is not None
+                    else timedelta(0)
+                ),
                 recovery_state=recovery_state,
             )
 
@@ -539,7 +551,7 @@ class InterruptionRecoverySystem:
                 success=False,
                 recovered_data=recovered_data,
                 recovery_time=recovery_state.recovery_end_time
-                - recovery_state.recovery_start_time,
+                - (recovery_state.recovery_start_time or datetime.now()),
                 recovery_state=recovery_state,
                 error_message=str(e),
             )
@@ -553,7 +565,7 @@ class InterruptionRecoverySystem:
         """Retry collection for failed venues."""
         logger.info(f"Retrying {len(recovery_plan.venues_to_recover)} failed venues")
 
-        recovered_data = {}
+        recovered_data: Dict[str, Any] = {}
 
         # This would integrate with the actual collection logic
         for venue, year in recovery_plan.venues_to_recover:
@@ -573,7 +585,7 @@ class InterruptionRecoverySystem:
             success=success,
             recovered_data=recovered_data,
             recovery_time=recovery_state.recovery_end_time
-            - recovery_state.recovery_start_time,
+            - (recovery_state.recovery_start_time or datetime.now()),
             recovery_state=recovery_state,
         )
 
@@ -588,7 +600,7 @@ class InterruptionRecoverySystem:
         priority_venues = recovery_plan.venues_to_recover[:10]
         logger.info(f"Performing partial recovery for {len(priority_venues)} venues")
 
-        recovered_data = {}
+        recovered_data: Dict[str, Any] = {}
 
         for venue, year in priority_venues:
             venue_key = f"{venue}_{year}"
@@ -601,7 +613,7 @@ class InterruptionRecoverySystem:
             success=True,
             recovered_data=recovered_data,
             recovery_time=recovery_state.recovery_end_time
-            - recovery_state.recovery_start_time,
+            - (recovery_state.recovery_start_time or datetime.now()),
             recovery_state=recovery_state,
         )
 
@@ -614,7 +626,7 @@ class InterruptionRecoverySystem:
         """Skip problematic venues and continue with others."""
         logger.info(f"Skipping {len(recovery_plan.venues_to_skip)} problematic venues")
 
-        recovered_data = {}
+        recovered_data: Dict[str, Any] = {}
 
         # Process only non-problematic venues
         for venue, year in recovery_plan.venues_to_recover:
@@ -630,7 +642,7 @@ class InterruptionRecoverySystem:
             success=True,
             recovered_data=recovered_data,
             recovery_time=recovery_state.recovery_end_time
-            - recovery_state.recovery_start_time,
+            - (recovery_state.recovery_start_time or datetime.now()),
             recovery_state=recovery_state,
         )
 
@@ -646,14 +658,14 @@ class InterruptionRecoverySystem:
         # Clear all state and start fresh
         # This would integrate with the actual collection logic
 
-        recovered_data = {}
+        recovered_data: Dict[str, Any] = {}
         recovery_state.recovery_end_time = datetime.now()
 
         return RecoveryResult(
             success=True,
             recovered_data=recovered_data,
             recovery_time=recovery_state.recovery_end_time
-            - recovery_state.recovery_start_time,
+            - (recovery_state.recovery_start_time or datetime.now()),
             recovery_state=recovery_state,
         )
 
@@ -693,8 +705,8 @@ class InterruptionRecoverySystem:
             Tuple of (is_valid, error_message)
         """
         # Check if checkpoints exist
-        checkpoints = self.checkpoint_manager.list_checkpoints(session.session_id)
-        if not checkpoints:
+        checkpoint_ids = self.state_manager.list_session_checkpoints(session.session_id)
+        if not checkpoint_ids:
             return False, "No checkpoints available for recovery"
 
         # Check if session state is persisted

@@ -678,7 +678,7 @@ class QualityController:
             )
 
             # Group by field for specific recommendations
-            field_issues = {}
+            field_issues: Dict[str, List[Any]] = {}
             for issue in critical_issues:
                 field_issues.setdefault(issue.field, []).append(issue)
 
@@ -889,7 +889,7 @@ class CrossFieldValidator:
             # Basic validation - reasonable memory per GPU
             if gpu_memory > 0 and gpu_count > 0:
                 memory_per_gpu = gpu_memory / gpu_count
-                return 4 <= memory_per_gpu <= 80  # Reasonable GPU memory range
+                return bool(4 <= memory_per_gpu <= 80)  # Reasonable GPU memory range
             return False
         except (TypeError, ZeroDivisionError):
             return False
@@ -903,8 +903,8 @@ class CrossFieldValidator:
 
             # Basic validation based on architecture type
             if "transformer" in architecture.lower() and parameters > 0:
-                return parameters >= 10  # Minimum reasonable parameter count
-            return parameters > 0
+                return bool(parameters >= 10)  # Minimum reasonable parameter count
+            return bool(parameters > 0)
         except (TypeError, KeyError):
             return False
 
@@ -919,8 +919,8 @@ class CrossFieldValidator:
 
             # Simple heuristic: batch size should be reasonable for memory
             if batch_size > 0 and gpu_memory > 0:
-                return batch_size <= gpu_memory * 10  # Rough estimate
-            return batch_size > 0
+                return bool(batch_size <= gpu_memory * 10)  # Rough estimate
+            return bool(batch_size > 0)
         except (TypeError, KeyError):
             return False
 

@@ -56,7 +56,7 @@ class PDFManager:
         if self.metadata_file.exists():
             try:
                 with open(self.metadata_file, "r") as f:
-                    return json.load(f)
+                    return dict(json.load(f))
             except Exception as e:
                 logger.error(f"Failed to load metadata: {e}")
         return {}

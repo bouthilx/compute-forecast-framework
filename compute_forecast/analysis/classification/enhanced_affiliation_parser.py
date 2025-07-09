@@ -90,9 +90,9 @@ class EnhancedAffiliationParser(AffiliationParser):
             # Check for department
             if not result["department"]:
                 for pattern in self.department_patterns:
-                    match = re.search(pattern, part, re.IGNORECASE)
-                    if match:
-                        dept = match.group(1)
+                    dept_match = re.search(pattern, part, re.IGNORECASE)
+                    if dept_match is not None:
+                        dept = dept_match.group(1)
                         # Expand abbreviations in department name
                         for abbrev, expansion in self.abbreviations.items():
                             dept = re.sub(
@@ -199,12 +199,13 @@ class EnhancedAffiliationParser(AffiliationParser):
         if not result["organization"]:
             confidence *= 0.3
         elif (
-            "unknown" in result["organization"].lower()
+            isinstance(result["organization"], str)
+            and "unknown" in result["organization"].lower()
             and "affiliation" in result["organization"].lower()
         ):
             # Very vague/unknown affiliation
             confidence *= 0.3
-        elif any(
+        elif isinstance(result["organization"], str) and any(
             vague in result["organization"].lower()
             for vague in ["unknown", "research lab", "laboratory"]
         ):
@@ -220,7 +221,11 @@ class EnhancedAffiliationParser(AffiliationParser):
             confidence *= 0.7
 
         # Check for location quality
-        if result.get("city") and "unknown" in result["city"].lower():
+        if (
+            result.get("city")
+            and isinstance(result["city"], str)
+            and "unknown" in result["city"].lower()
+        ):
             confidence *= 0.8
 
         # Very short affiliations are less reliable
@@ -251,7 +256,7 @@ class EnhancedAffiliationParser(AffiliationParser):
     def extract_primary_organization(self, parsed: Dict[str, Any]) -> str:
         """Extract main organization from parsed data."""
         if parsed.get("organization"):
-            return parsed["organization"]
+            return str(parsed["organization"])
 
         # Try to construct from other fields
         if parsed.get("department") and parsed.get("email_domain"):
@@ -261,7 +266,11 @@ class EnhancedAffiliationParser(AffiliationParser):
                 org_part = domain_parts[0]
                 # Common academic domain patterns
                 if org_part in ["mit", "stanford", "harvard", "berkeley"]:
-                    return org_part.upper() if org_part == "mit" else org_part.title()
+                    return (
+                        str(org_part.upper())
+                        if org_part == "mit"
+                        else str(org_part.title())
+                    )
 
         return ""
 
@@ -277,7 +286,7 @@ class EnhancedAffiliationParser(AffiliationParser):
             if parts:
                 primary = parts[0].strip()
                 parsed = self.parse_complex_affiliation(primary)
-                return parsed.get("organization", primary)
+                return str(parsed.get("organization", primary))
 
         # Handle affiliations with both academic and industry
         if " and " in affiliation.lower() or " & " in affiliation:
@@ -286,14 +295,14 @@ class EnhancedAffiliationParser(AffiliationParser):
             if parts:
                 primary = parts[0].strip()
                 parsed = self.parse_complex_affiliation(primary)
-                return parsed.get("organization", primary)
+                return str(parsed.get("organization", primary))
 
         # Handle non-English affiliations (preserve them)
         if self._contains_non_ascii(affiliation):
             # Try basic parsing but preserve original if it fails
             parsed = self.parse_complex_affiliation(affiliation)
             if parsed.get("organization"):
-                return parsed["organization"]
+                return str(parsed["organization"])
             else:
                 # Return cleaned version of original
                 return self._clean_organization_name(affiliation)

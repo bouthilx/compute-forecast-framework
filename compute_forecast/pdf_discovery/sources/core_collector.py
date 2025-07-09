@@ -2,7 +2,7 @@
 
 import logging
 import requests
-from typing import Optional, Dict, Any
+from typing import Optional, Union, Dict, Any
 from datetime import datetime
 
 from compute_forecast.data.models import Paper
@@ -66,7 +66,11 @@ class COREPDFCollector(BasePDFCollector):
         self.rate_limiter.wait()
 
         # Search CORE API
-        params = {"q": query, "limit": 10, "fulltext": "false"}
+        params: Dict[str, Union[str, int]] = {
+            "q": query,
+            "limit": 10,
+            "fulltext": "false",
+        }
 
         try:
             response = requests.get(
@@ -90,7 +94,8 @@ class COREPDFCollector(BasePDFCollector):
                 pdf_url = self._extract_pdf_url(result)
                 if pdf_url:
                     return PDFRecord(
-                        paper_id=paper.paper_id,
+                        paper_id=paper.paper_id
+                        or f"core_{result.get('id', 'unknown')}",
                         pdf_url=pdf_url,
                         source=self.source_name,
                         discovery_timestamp=datetime.now(),
@@ -144,8 +149,8 @@ class COREPDFCollector(BasePDFCollector):
         """
         # Check downloadUrl first
         download_url = result.get("downloadUrl")
-        if download_url and download_url.endswith(".pdf"):
-            return download_url
+        if download_url and str(download_url).endswith(".pdf"):
+            return str(download_url)
 
         # Check repository document
         repo_doc = result.get("repositoryDocument", {})
@@ -154,11 +159,11 @@ class COREPDFCollector(BasePDFCollector):
             if repo_doc.get("pdfStatus") == 1:
                 pdf_url = repo_doc.get("pdfUrl")
                 if pdf_url:
-                    return pdf_url
+                    return str(pdf_url)
 
         # Last resort: check if downloadUrl exists (might not end with .pdf)
         if download_url:
-            return download_url
+            return str(download_url)
 
         return None
 
@@ -178,6 +183,6 @@ class COREPDFCollector(BasePDFCollector):
         # Check rights field
         rights = result.get("rights")
         if rights:
-            return rights
+            return str(rights)
 
         return None

@@ -176,7 +176,7 @@ class CollectionExecutor:
                 with open(filename, "r") as f:
                     data = json.load(f)
                     logger.info(f"✓ Loaded domain analysis from {filename}")
-                    return data
+                    return dict(data) if isinstance(data, dict) else {}
             except FileNotFoundError:
                 logger.debug(f"Domain file {filename} not found, trying next...")
                 continue

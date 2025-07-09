@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 from datetime import datetime
 from ..sources.google_scholar import GoogleScholarSource
 from ..sources.semantic_scholar import SemanticScholarSource
@@ -122,7 +122,14 @@ class CitationCollector:
 
         try:
             self.logger.info(f"Getting paper details for {paper_id} from {source}")
-            paper = self.sources[source].get_paper_details(paper_id)
+            paper_data = self.sources[source].get_paper_details(paper_id)
+            if isinstance(paper_data, Paper):
+                paper = paper_data
+            else:
+                # Convert from dict/other format to Paper object if needed
+                paper = (
+                    Paper(**paper_data) if isinstance(paper_data, dict) else paper_data
+                )
             self.logger.info(f"Successfully retrieved paper: {paper.title[:50]}...")
             return paper
         except Exception as e:
@@ -134,7 +141,7 @@ class CitationCollector:
         venue: str,
         year: int,
         citation_threshold: int = 0,
-        working_apis: List[str] = None,
+        working_apis: Optional[List[str]] = None,
     ) -> List[Dict]:
         """Collect papers from specific venue and year"""
         papers = []
@@ -208,7 +215,7 @@ class CitationCollector:
         year: int,
         keywords: List[str],
         domain: str,
-        working_apis: List[str] = None,
+        working_apis: Optional[List[str]] = None,
     ) -> List[Dict]:
         """Collect papers from venue/year combination with domain keywords"""
         papers = []
@@ -282,7 +289,7 @@ class CitationCollector:
         keywords: List[str],
         year: int,
         domain: str,
-        working_apis: List[str] = None,
+        working_apis: Optional[List[str]] = None,
     ) -> List[Dict]:
         """Collect papers using direct keyword search"""
         papers = []

@@ -24,9 +24,9 @@ class OrganizationRecord:
 
     name: str
     type: OrganizationType
-    aliases: List[str] = None
-    domains: List[str] = None
-    keywords: List[str] = None
+    aliases: Optional[List[str]] = None
+    domains: Optional[List[str]] = None
+    keywords: Optional[List[str]] = None
     confidence: float = 1.0
 
     def __post_init__(self):
@@ -99,11 +99,11 @@ class EnhancedOrganizationClassifier(OrganizationDatabase):
         self._enhanced_orgs[org.name.lower()] = org
 
         # Build alias map
-        for alias in org.aliases:
+        for alias in org.aliases or []:
             self._alias_map[alias.lower()] = org.name
 
         # Build domain map
-        for domain in org.domains:
+        for domain in org.domains or []:
             self._domain_map[domain.lower()] = org.name
 
     def classify_with_confidence(self, affiliation: str) -> ClassificationResult:
@@ -271,19 +271,19 @@ class EnhancedOrganizationClassifier(OrganizationDatabase):
     ) -> Optional[ClassificationResult]:
         """Try keyword-based classification."""
         # Count keywords by type
-        type_scores = {
+        type_scores: Dict[OrganizationType, int] = {
             org_type: 0
             for org_type in OrganizationType
             if org_type != OrganizationType.UNKNOWN
         }
 
         for org in self._enhanced_orgs.values():
-            for keyword in org.keywords:
+            for keyword in org.keywords or []:
                 if keyword.lower() in affiliation_lower:
                     type_scores[org.type] += 1
 
         # Find dominant type
-        best_type = max(type_scores, key=type_scores.get)
+        best_type = max(type_scores, key=lambda x: type_scores[x])
         best_score = type_scores[best_type]
 
         if best_score > 0:

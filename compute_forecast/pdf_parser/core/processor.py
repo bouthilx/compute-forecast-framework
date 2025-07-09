@@ -154,7 +154,7 @@ class OptimizedPDFProcessor:
         for level, name, extractor in available_extractors:
             try:
                 logger.info(f"Extracting full text using '{name}'")
-                full_text = extractor.extract_full_text(pdf_path)
+                full_text = str(extractor.extract_full_text(pdf_path))
 
                 # Record cost for full text extraction
                 extraction_cost = self._calculate_extraction_cost(

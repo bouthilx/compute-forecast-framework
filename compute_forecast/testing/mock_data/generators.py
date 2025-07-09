@@ -432,8 +432,8 @@ class MockDataGenerator:
             venue=venue,
             year=year,
             citations=citations,
-            abstract=abstract,
-            keywords=keywords,
+            abstract=abstract or "",
+            keywords=keywords or [],
             arxiv_id=arxiv_id,
             openalex_id=openalex_id,
             computational_analysis=computational_analysis,
@@ -516,7 +516,7 @@ class MockDataGenerator:
             other_method=self.random.choice(methods),
         )
 
-        return title
+        return str(title)
 
     def _generate_authors(self, quality: DataQuality) -> List[Author]:
         """Generate list of authors."""
@@ -564,9 +564,9 @@ class MockDataGenerator:
             authors.append(
                 Author(
                     name=name,
-                    affiliation=affiliation,
+                    affiliation=affiliation or "",
                     author_id=f"author_{self.random.randint(10000000, 99999999):x}",
-                    email=email,
+                    email=email or "",
                 )
             )
 
@@ -577,7 +577,7 @@ class MockDataGenerator:
         # More recent years have higher probability
         years = list(range(2019, 2025))
         weights = [1, 2, 3, 5, 8, 13]  # Fibonacci-like growth for recency
-        return self.random.choices(years, weights=weights)[0]
+        return int(self.random.choices(years, weights=weights)[0])
 
     def _generate_citations(self, year: int) -> int:
         """Generate citation count based on year and realistic distribution."""
@@ -599,7 +599,7 @@ class MockDataGenerator:
             else:  # Few have many citations
                 base_citations = self.random.randint(base_range * 5, base_range * 50)
 
-        return base_citations
+        return int(base_citations)
 
     def _generate_abstract(self) -> str:
         """Generate a realistic abstract."""
@@ -708,7 +708,7 @@ class MockDataGenerator:
     def _generate_keywords(self) -> List[str]:
         """Generate list of keywords."""
         num_keywords = self.random.randint(3, 7)
-        return self.random.sample(self.KEYWORDS, num_keywords)
+        return list(self.random.sample(self.KEYWORDS, num_keywords))
 
     def _generate_computational_analysis(self) -> ComputationalAnalysis:
         """Generate computational analysis data."""

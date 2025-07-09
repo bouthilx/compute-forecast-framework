@@ -203,7 +203,7 @@ class OpenReviewPDFCollector(BasePDFCollector):
         pdf_url = self._build_pdf_url(forum_id)
 
         return PDFRecord(
-            paper_id=paper.paper_id,
+            paper_id=paper.paper_id or f"openreview_{forum_id}",
             pdf_url=pdf_url,
             source=self.source_name,
             discovery_timestamp=datetime.now(),
@@ -241,7 +241,7 @@ class OpenReviewPDFCollector(BasePDFCollector):
         if hasattr(submission, "content") and isinstance(submission.content, dict):
             title_field = submission.content.get("title", {})
             if isinstance(title_field, dict):
-                return title_field.get("value", "")
+                return str(title_field.get("value", ""))
             return str(title_field) if title_field else None
         return None
 

@@ -7,7 +7,7 @@ This module analyzes current Mila publication venues and maps them to research d
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from collections import defaultdict, Counter
 
 from compute_forecast.core.config import ConfigManager
@@ -26,7 +26,9 @@ class MilaVenueAnalyzer:
             "computational_focus_scores", {}
         )
 
-    def load_current_domain_results(self, file_path: str = None) -> Dict[str, Any]:
+    def load_current_domain_results(
+        self, file_path: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Load current domain analysis results"""
         if file_path is None:
             # Try to find the most recent domain analysis file
@@ -75,11 +77,11 @@ class MilaVenueAnalyzer:
                     f"Sample record missing expected fields: {missing_fields}"
                 )
 
-        return data
+        return dict(data)
 
     def extract_venues_from_papers(self, papers_data: List[Dict]) -> Dict[str, Dict]:
         """Extract venue information from papers data"""
-        venue_stats = defaultdict(
+        venue_stats: Dict[str, Dict[str, Any]] = defaultdict(
             lambda: {"papers": [], "domains": set(), "years": set(), "total_count": 0}
         )
 
@@ -111,7 +113,7 @@ class MilaVenueAnalyzer:
                     return self._normalize_venue_name(venue)
 
         # Try to extract from title or other fields if needed
-        return None
+        return "Unknown"
 
     def _normalize_venue_name(self, venue: str) -> str:
         """Normalize venue name to standard format"""
@@ -138,10 +140,16 @@ class MilaVenueAnalyzer:
         domain_data = self.load_current_domain_results()
 
         # Extract venues from papers
-        venue_stats = self.extract_venues_from_papers(domain_data)
+        # Extract papers from domain data structure
+        all_papers = []
+        if isinstance(domain_data, dict):
+            for domain_name, domain_info in domain_data.items():
+                if isinstance(domain_info, dict) and "papers" in domain_info:
+                    all_papers.extend(domain_info["papers"])
+        venue_stats = self.extract_venues_from_papers(all_papers)
 
         # Organize venues by domain
-        venues_by_domain = defaultdict(
+        venues_by_domain: Dict[str, Dict[str, Any]] = defaultdict(
             lambda: {
                 "primary_venues": [],
                 "all_venues": {},
@@ -151,14 +159,15 @@ class MilaVenueAnalyzer:
         )
 
         # Count papers and venues per domain
-        domain_paper_counts = Counter()
+        domain_paper_counts: Dict[str, int] = Counter()
         domain_venue_sets = defaultdict(set)
 
-        for paper in domain_data:
-            domain = paper.get("domain_name", "Unknown")
+        for paper in all_papers:
+            paper_dict: Dict[str, Any] = paper if isinstance(paper, dict) else {}
+            domain = paper_dict.get("domain_name", "Unknown")
             domain_paper_counts[domain] += 1
 
-            venue = self._extract_venue_from_paper(paper)
+            venue = self._extract_venue_from_paper(paper_dict)
             if venue:
                 domain_venue_sets[domain].add(venue)
 

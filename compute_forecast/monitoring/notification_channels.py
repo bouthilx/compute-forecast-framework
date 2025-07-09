@@ -126,7 +126,7 @@ class DashboardNotificationChannel(NotificationChannel):
         self.name = name
         self._notifications_sent = 0
         self._lock = threading.RLock()
-        self._last_alert = None
+        self._last_alert: Optional[Alert] = None
 
     def send_notification(self, alert: Alert) -> NotificationResult:
         """Send alert to dashboard via WebSocket"""
@@ -457,7 +457,7 @@ class NotificationChannelManager:
             for stats in self.delivery_stats.values()
         )
 
-        return (total_successful / max(total_attempts, 1)) * 100
+        return float((total_successful / max(total_attempts, 1)) * 100)
 
 
 # Factory function for creating notification channels

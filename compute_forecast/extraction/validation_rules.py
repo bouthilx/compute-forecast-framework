@@ -77,13 +77,13 @@ class ValidationRulesEngine:
 
     def validate_custom(self, value: Any, function: Callable) -> bool:
         """Validate using custom function."""
-        return function(value)
+        return bool(function(value))
 
     def validate_gpu_configuration(
         self, gpu_type: str, gpu_count: int
     ) -> Dict[str, Any]:
         """Validate GPU configuration makes sense."""
-        result = {"valid": True, "warnings": [], "errors": []}
+        result: Dict[str, Any] = {"valid": True, "warnings": [], "errors": []}
 
         # Define realistic limits per GPU type
         gpu_limits = {
@@ -120,7 +120,7 @@ class ValidationRulesEngine:
         self, parameters: float, training_time: float, dataset_size: float
     ) -> Dict[str, Any]:
         """Validate values follow known scaling laws."""
-        result = {"valid": True, "warnings": [], "errors": []}
+        result: Dict[str, Any] = {"valid": True, "warnings": [], "errors": []}
 
         # Simple heuristic based on Chinchilla scaling
         # Rough estimate: 1B params needs ~20-100 hours on modern hardware
@@ -143,7 +143,12 @@ class ValidationRulesEngine:
 
     def validate_field(self, field: ExtractionField, value: Any) -> Dict[str, Any]:
         """Validate a single field value."""
-        result = {"valid": True, "errors": [], "warnings": [], "info": []}
+        result: Dict[str, Any] = {
+            "valid": True,
+            "errors": [],
+            "warnings": [],
+            "info": [],
+        }
 
         if field not in self.rules:
             return result
@@ -155,7 +160,11 @@ class ValidationRulesEngine:
             if rule.rule_type == "range":
                 min_val = rule.parameters.get("min")
                 max_val = rule.parameters.get("max")
-                if not self.validate_range(value, min_val, max_val):
+                if (
+                    min_val is not None
+                    and max_val is not None
+                    and not self.validate_range(value, float(min_val), float(max_val))
+                ):
                     rule_valid = False
                     message = f"Value {value} outside range [{min_val}, {max_val}]"
 
@@ -193,7 +202,12 @@ class ValidationRulesEngine:
         self, extraction: Dict[ExtractionField, Any]
     ) -> Dict[str, Any]:
         """Validate complete extraction results."""
-        result = {"passed": True, "errors": [], "warnings": [], "info": []}
+        result: Dict[str, Any] = {
+            "passed": True,
+            "errors": [],
+            "warnings": [],
+            "info": [],
+        }
 
         # Validate each field
         for field, value in extraction.items():

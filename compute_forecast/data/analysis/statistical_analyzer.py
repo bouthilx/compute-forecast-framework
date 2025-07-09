@@ -7,7 +7,7 @@ import logging
 import numpy as np
 from collections import defaultdict, Counter
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Tuple, cast
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -131,7 +131,10 @@ class StatisticalAnalyzer:
         cache_key = f"paper_analysis_{len(papers)}_{hash(str(sorted(p.get('paper_id', '') for p in papers[:10])))}"
 
         if self._is_cached(cache_key):
-            return self.analysis_cache[cache_key]
+            cached_result = self.analysis_cache[cache_key]
+            if isinstance(cached_result, PaperStatistics):
+                return cached_result
+            return cast(PaperStatistics, cached_result)
 
         stats = PaperStatistics()
         stats.total_papers = len(papers)
@@ -250,7 +253,9 @@ class StatisticalAnalyzer:
         years = [
             year
             for p in venue_papers
-            if (year := p.get("year")) is not None and year > 1900
+            if (year := p.get("year")) is not None
+            and isinstance(year, int)
+            and year > 1900
         ]
         stats.years_covered = sorted(list(set(years)))
 
@@ -314,13 +319,25 @@ class StatisticalAnalyzer:
             quality_scores = []
             for paper in venue_papers:
                 # Calculate a simple quality score based on available metrics
-                citations = paper.get("citation_count", 0)
-                authors = paper.get("author_count", 1)
-                pages = paper.get("page_count", 0)
+                citation_count = (
+                    int(paper.get("citation_count", 0))
+                    if isinstance(paper.get("citation_count", 0), (int, float))
+                    else 0
+                )
+                authors = (
+                    int(paper.get("author_count", 1))
+                    if isinstance(paper.get("author_count", 1), (int, float))
+                    else 1
+                )
+                pages = (
+                    int(paper.get("page_count", 0))
+                    if isinstance(paper.get("page_count", 0), (int, float))
+                    else 0
+                )
 
                 # Simple quality scoring
                 quality_score = (
-                    min(citations / 50.0, 1.0) * 0.6  # Citation component
+                    min(citation_count / 50.0, 1.0) * 0.6  # Citation component
                     + min(authors / 10.0, 1.0) * 0.2  # Author component
                     + min(pages / 20.0, 1.0) * 0.2  # Page component
                 )
@@ -331,12 +348,10 @@ class StatisticalAnalyzer:
                     "avg_quality_score": np.mean(quality_scores),
                     "quality_variance": np.var(quality_scores),
                     "high_quality_papers": sum(1 for q in quality_scores if q > 0.7),
-                    "quality_distribution": {
-                        "excellent": sum(1 for q in quality_scores if q > 0.8),
-                        "good": sum(1 for q in quality_scores if 0.6 < q <= 0.8),
-                        "fair": sum(1 for q in quality_scores if 0.4 < q <= 0.6),
-                        "poor": sum(1 for q in quality_scores if q <= 0.4),
-                    },
+                    "excellent_papers": sum(1 for q in quality_scores if q > 0.8),
+                    "good_papers": sum(1 for q in quality_scores if 0.6 < q <= 0.8),
+                    "fair_papers": sum(1 for q in quality_scores if 0.4 < q <= 0.6),
+                    "poor_papers": sum(1 for q in quality_scores if q <= 0.4),
                 }
 
         return stats
@@ -362,7 +377,11 @@ class StatisticalAnalyzer:
         # Extract basic information
         venues = list(set(p.get("venue", "Unknown") for p in papers if p.get("venue")))
         years = [
-            year for p in papers if (year := p.get("year")) is not None and year > 1900
+            year
+            for p in papers
+            if (year := p.get("year")) is not None
+            and isinstance(year, int)
+            and year > 1900
         ]
 
         summary.venues_analyzed = sorted(venues)
@@ -433,7 +452,7 @@ class StatisticalAnalyzer:
             ((x - mean) / std) ** 3 for x in data
         )
 
-        return skewness
+        return float(skewness)
 
     def _calculate_citation_growth_rate(self, papers: List[Dict[str, Any]]) -> float:
         """Calculate citation growth rate over time."""
@@ -470,7 +489,7 @@ class StatisticalAnalyzer:
 
         growth_rate = ((last_year_avg / first_year_avg) ** (1 / years_span)) - 1
 
-        return growth_rate
+        return float(growth_rate)
 
     def _analyze_yearly_citation_trend(
         self, citation_by_year: Dict[int, List[int]]
@@ -565,7 +584,9 @@ class StatisticalAnalyzer:
         if cache_key not in self.cache_timestamp:
             return False
 
-        return datetime.now() - self.cache_timestamp[cache_key] < self.cache_duration
+        return bool(
+            (datetime.now() - self.cache_timestamp[cache_key]) < self.cache_duration
+        )
 
     def _cache_result(self, cache_key: str, result: Any) -> None:
         """Cache analysis result with timestamp."""
@@ -575,6 +596,8 @@ class StatisticalAnalyzer:
         # Limit cache size
         if len(self.analysis_cache) > 100:
             # Remove oldest entries
-            oldest_key = min(self.cache_timestamp.keys(), key=self.cache_timestamp.get)
+            oldest_key = min(
+                self.cache_timestamp.keys(), key=lambda k: self.cache_timestamp[k]
+            )
             del self.analysis_cache[oldest_key]
             del self.cache_timestamp[oldest_key]

@@ -198,7 +198,8 @@ class NormalFlowTestScenario:
         mock_config = MockDataConfig(
             size=self.config.test_data_size, quality=DataQuality.NORMAL
         )
-        return self.mock_generator.generate(mock_config)
+        result = self.mock_generator.generate(mock_config)
+        return list(result) if result else []
 
     def _validate_results(self, pipeline_result: Dict[str, Any]) -> Dict[str, Any]:
         """Validate pipeline results"""

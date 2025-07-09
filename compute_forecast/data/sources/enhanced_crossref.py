@@ -44,7 +44,7 @@ class EnhancedCrossrefClient:
 
         # Construct API URL and parameters
         url = f"{self.base_url}/works"
-        params = {
+        params: Dict[str, Any] = {
             "query": cr_query,
             "rows": min(limit, 1000),  # Crossref limit is 1000 per request
             "offset": offset,

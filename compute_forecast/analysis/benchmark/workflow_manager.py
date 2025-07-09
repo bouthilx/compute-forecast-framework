@@ -2,7 +2,7 @@
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from collections import defaultdict
 
 from compute_forecast.analysis.benchmark.models import BenchmarkDomain, ExtractionBatch
@@ -151,7 +151,7 @@ class ExtractionWorkflowManager:
         report_data = []
 
         # Aggregate by domain and year
-        aggregated = defaultdict(
+        aggregated: Dict[Tuple[str, int], Dict[str, int]] = defaultdict(
             lambda: {
                 "total_extracted": 0,
                 "high_confidence_count": 0,

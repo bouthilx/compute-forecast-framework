@@ -162,7 +162,7 @@ class SystemResourceMetrics:
             memory_used_mb=memory.used / 1024 / 1024,
             memory_available_mb=memory.available / 1024 / 1024,
             cpu_usage_percentage=cpu_percent,
-            cpu_count=cpu_count,
+            cpu_count=cpu_count or 1,
             network_bytes_sent=network.bytes_sent,
             network_bytes_received=network.bytes_recv,
             network_connections=network_connections,

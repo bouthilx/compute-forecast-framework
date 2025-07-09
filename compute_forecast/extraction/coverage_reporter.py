@@ -12,7 +12,7 @@ from .template_engine import ExtractionField, ExtractionTemplate
 class FieldCoverageStats:
     """Statistics for a single field across extractions."""
 
-    field: ExtractionField
+    extraction_field: ExtractionField
     total_papers: int = 0
     papers_with_field: int = 0
     confidence_scores: List[float] = field(default_factory=list)
@@ -133,7 +133,7 @@ class CoverageReporter:
         for template_field in all_fields:
             if template_field not in report.field_coverage:
                 report.field_coverage[template_field] = FieldCoverageStats(
-                    field=template_field
+                    extraction_field=template_field
                 )
 
             stats = report.field_coverage[template_field]
@@ -166,7 +166,7 @@ class CoverageReporter:
 
     def generate_summary_report(self) -> Dict[str, Any]:
         """Generate summary report across all templates."""
-        summary = {
+        summary: Dict[str, Any] = {
             "total_extractions": len(self.extraction_results),
             "templates_used": len(self.template_reports),
             "template_summaries": {},
@@ -188,7 +188,7 @@ class CoverageReporter:
 
     def get_field_insights(self, field: ExtractionField) -> Dict[str, Any]:
         """Get insights for a specific field across all templates."""
-        insights = {
+        insights: Dict[str, Any] = {
             "field": field.value,
             "usage_by_template": {},
             "overall_coverage": 0.0,
@@ -199,7 +199,7 @@ class CoverageReporter:
         total_papers = 0
         papers_with_field = 0
         all_confidence_scores = []
-        value_frequency = defaultdict(int)
+        value_frequency: Dict[str, int] = defaultdict(int)
 
         for template_id, report in self.template_reports.items():
             if field in report.field_coverage:
@@ -279,7 +279,7 @@ class CoverageReporter:
             lines.extend(["", "## Common Validation Issues", "-" * 80])
 
             # Count issue frequency
-            issue_counts = defaultdict(int)
+            issue_counts: Dict[str, int] = defaultdict(int)
             for issue in report.common_validation_issues:
                 issue_counts[issue] += 1
 

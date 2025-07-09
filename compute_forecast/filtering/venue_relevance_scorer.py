@@ -529,7 +529,7 @@ class VenueRelevanceScorer:
         # Check direct matches in rankings
         for ranked_venue, rank in self.venue_rankings.items():
             if ranked_venue in venue_upper:
-                return rank
+                return int(rank)
 
         # Check if it's a workshop of a known venue
         if "WORKSHOP" in venue_upper:
@@ -537,7 +537,7 @@ class VenueRelevanceScorer:
             for ranked_venue, rank in self.venue_rankings.items():
                 if ranked_venue in venue_upper:
                     # Workshops are typically one tier lower
-                    return min(rank + 1, 5)
+                    return int(min(rank + 1, 5))
             # If workshop but not of a known venue
             return 4
 
@@ -593,6 +593,6 @@ class VenueRelevanceScorer:
 
         for domain, venues in self.venue_classifications.items():
             if any(known_venue in venue_upper for known_venue in venues):
-                return domain
+                return str(domain)
 
         return None

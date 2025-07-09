@@ -96,7 +96,7 @@ class ClassificationValidator(BaseValidator):
             + weights["edge_case_handling"] * edge_case_score
         )
 
-        return min(1.0, overall_score)
+        return float(min(1.0, overall_score))
 
     def validate_known_papers(self) -> Dict[str, float]:
         """Test classification on papers with known academic/industry status"""
@@ -202,7 +202,7 @@ class ClassificationValidator(BaseValidator):
         """Analyze distribution of confidence scores"""
 
         confidences = []
-        category_confidences = {
+        category_confidences: Dict[str, List[float]] = {
             "academic_eligible": [],
             "industry_eligible": [],
             "needs_manual_review": [],

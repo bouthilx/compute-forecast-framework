@@ -134,8 +134,9 @@ class EnhancedClassificationValidator(ClassificationValidator):
             "government_precision": 0.0,
             "non_profit_precision": 0.0,
             "unknown_rate": 0.0,
-            "type_accuracy": {},
-            "confidence_metrics": {},
+            "average_confidence": 0.0,
+            "min_confidence": 0.0,
+            "max_confidence": 0.0,
         }
 
         if not self.test_cases:
@@ -179,11 +180,6 @@ class EnhancedClassificationValidator(ClassificationValidator):
             if type_total[org_type] > 0:
                 precision = type_correct[org_type] / type_total[org_type]
                 results[f"{org_type}_precision"] = precision
-                results["type_accuracy"][org_type] = {
-                    "correct": type_correct[org_type],
-                    "total": type_total[org_type],
-                    "accuracy": precision,
-                }
 
         return results
 
@@ -214,7 +210,7 @@ class EnhancedClassificationValidator(ClassificationValidator):
             "low_confidence": 0,  # < 0.5
         }
 
-        confidence_by_type = {
+        confidence_by_type: Dict[str, List[float]] = {
             "academic": [],
             "industry": [],
             "government": [],
@@ -283,14 +279,23 @@ class EnhancedClassificationValidator(ClassificationValidator):
 
         # Type-specific accuracy
         report += "### Accuracy by Organization Type\n"
-        for org_type, metrics in accuracy_results.get("type_accuracy", {}).items():
-            report += f"- {org_type.title()}: {metrics['accuracy']:.1%} ({metrics['correct']}/{metrics['total']})\n"
+        org_types = ["academic", "industry", "government", "non_profit"]
+        for org_type in org_types:
+            precision_key = f"{org_type}_precision"
+            if precision_key in accuracy_results:
+                report += (
+                    f"- {org_type.title()}: {accuracy_results[precision_key]:.1%}\n"
+                )
 
         # Confidence distribution
         report += "\n## Confidence Distribution (Real Papers)\n"
-        report += f"Total Authors Analyzed: {confidence_dist['total_authors']}\n"
-        for level, percentage in confidence_dist["percentages"].items():
-            report += f"- {level.replace('_', ' ').title()}: {percentage:.1%}\n"
+        if isinstance(confidence_dist, dict):
+            report += (
+                f"Total Authors Analyzed: {confidence_dist.get('total_authors', 0)}\n"
+            )
+            percentages = confidence_dist.get("percentages", {})
+            for level, percentage in percentages.items():
+                report += f"- {level.replace('_', ' ').title()}: {percentage:.1%}\n"
 
         # Failures
         report += "\n## Classification Failures\n"

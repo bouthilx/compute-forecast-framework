@@ -54,7 +54,7 @@ class AcademicBenchmarkExtractor:
         """Process batch of papers for a domain."""
         extracted_papers = []
         high_confidence_count = 0
-        manual_review_ids = []
+        manual_review_ids: List[str] = []
 
         # Identify SOTA papers
         sota_paper_ids = self.identify_sota_papers(papers)
@@ -95,7 +95,8 @@ class AcademicBenchmarkExtractor:
             if confidence >= self.confidence_threshold:
                 high_confidence_count += 1
             else:
-                manual_review_ids.append(paper.paper_id)
+                if paper.paper_id:
+                    manual_review_ids.append(paper.paper_id)
 
         # Determine year from papers
         year = papers[0].year if papers else 2023
@@ -120,13 +121,15 @@ class AcademicBenchmarkExtractor:
             # Check for explicit SOTA patterns
             for pattern in self.sota_patterns:
                 if re.search(pattern, text_to_check, re.IGNORECASE):
-                    sota_ids.add(paper.paper_id)
+                    if paper.paper_id:
+                        sota_ids.add(paper.paper_id)
                     break
 
             # Check for landmark papers
             for landmark in self.landmark_papers:
                 if landmark in text_to_check:
-                    sota_ids.add(paper.paper_id)
+                    if paper.paper_id:
+                        sota_ids.add(paper.paper_id)
                     break
 
             # Also check if paper has high citation count relative to year
@@ -135,13 +138,14 @@ class AcademicBenchmarkExtractor:
                 if years_since_pub > 0:
                     citations_per_year = paper.citations / years_since_pub
                     if citations_per_year > 50:  # Threshold for high impact
-                        sota_ids.add(paper.paper_id)
+                        if paper.paper_id:
+                            sota_ids.add(paper.paper_id)
 
         return sota_ids
 
     def extract_computational_details(self, paper: Paper) -> Dict[str, Any]:
         """Extract detailed computational requirements."""
-        details = {
+        details: Dict[str, Any] = {
             "gpu_hours": None,
             "gpu_type": None,
             "gpu_count": None,

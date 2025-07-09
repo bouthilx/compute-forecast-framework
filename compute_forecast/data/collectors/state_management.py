@@ -8,7 +8,7 @@ import time
 import gzip
 import json
 from pathlib import Path
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Literal
 from datetime import datetime, timedelta
 import uuid
 
@@ -38,16 +38,22 @@ class SimpleCheckpointManager:
     def create_checkpoint(
         self,
         session_id: str,
-        checkpoint_type: str,
+        checkpoint_type: Literal[
+            "venue_completed",
+            "batch_completed",
+            "api_call_completed",
+            "error_occurred",
+            "session_started",
+        ],
         venues_completed: List[tuple],
         venues_in_progress: List[tuple],
         venues_not_started: List[tuple],
         papers_collected: int,
         papers_by_venue: Dict[str, Dict[int, int]],
         last_successful_operation: str,
-        api_health_status: Dict = None,
-        rate_limit_status: Dict = None,
-        error_context=None,
+        api_health_status: Optional[Dict] = None,
+        rate_limit_status: Optional[Dict] = None,
+        error_context: Optional[Any] = None,
     ) -> Optional[str]:
         """Create a new checkpoint"""
         checkpoint_id = f"{session_id}_checkpoint_{int(time.time())}"
@@ -136,7 +142,7 @@ class SimpleCheckpointManager:
         earliest = min(checkpoints, key=lambda cp: cp.timestamp)
 
         # Count checkpoint types
-        type_counts = {}
+        type_counts: Dict[str, int] = {}
         for cp in checkpoints:
             type_counts[cp.checkpoint_type] = type_counts.get(cp.checkpoint_type, 0) + 1
 
@@ -435,6 +441,8 @@ class StateManager:
         else:
             logger.debug(f"Checkpoint {checkpoint_id} saved in {duration:.3f}s")
 
+        if checkpoint_id is None:
+            raise ValueError("Failed to create checkpoint")
         return checkpoint_id
 
     def load_latest_checkpoint(self, session_id: str) -> Optional[CheckpointData]:
@@ -939,4 +947,4 @@ def create_session_flexible(self, *args, **kwargs):
 
 
 # Apply the monkey patch
-StateManager.create_session = create_session_flexible
+# StateManager.create_session = create_session_flexible  # type: ignore

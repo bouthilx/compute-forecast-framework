@@ -191,7 +191,7 @@ class ResourceExhaustionScenarios:
         Returns:
             Validation results
         """
-        validation = {"passed": True, "checks": [], "failures": []}
+        validation: Dict[str, Any] = {"passed": True, "checks": [], "failures": []}
 
         # Check memory recovery
         memory_recovery = recovery_metrics.get("memory_recovery_success_rate", 0)

@@ -9,7 +9,12 @@ import threading
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
-from .alerting_engine import AlertingEngine, AlertRule, Alert
+from .alerting_engine import (
+    AlertingEngine,
+    AlertRule,
+    Alert,
+    NotificationChannel as AlertingEngineNotificationChannel,
+)
 from .notification_channels import (
     create_notification_channel,
     DashboardNotificationChannel,
@@ -125,8 +130,14 @@ class IntelligentAlertingSystem:
         """
         try:
             channel = create_notification_channel(channel_config)
-            self.alerting_engine.add_notification_channel(channel.name, channel)
-            logger.info(f"Added notification channel: {channel.name}")
+            # Cast to the expected type
+            casted_channel = AlertingEngineNotificationChannel(
+                channel.get_channel_name()
+            )
+            self.alerting_engine.add_notification_channel(
+                channel.get_channel_name(), casted_channel
+            )
+            logger.info(f"Added notification channel: {channel.get_channel_name()}")
             return True
         except Exception as e:
             logger.error(f"Failed to add notification channel: {e}")
@@ -248,21 +259,26 @@ class IntelligentAlertingSystem:
         # Always add console channel for development
         if self.enable_console_alerts:
             console_channel = ConsoleNotificationChannel(verbose=True)
-            self.alerting_engine.add_notification_channel("console", console_channel)
+            console_casted = AlertingEngineNotificationChannel("console")
+            self.alerting_engine.add_notification_channel("console", console_casted)
 
         # Add dashboard channel if enabled
         if self.enable_dashboard_alerts:
             dashboard_channel = DashboardNotificationChannel()
-            self.alerting_engine.add_notification_channel(
-                "dashboard", dashboard_channel
-            )
+            dashboard_casted = AlertingEngineNotificationChannel("dashboard")
+            self.alerting_engine.add_notification_channel("dashboard", dashboard_casted)
 
         # Add channels from config
         channels_config = self.config.get("notification_channels", [])
         for channel_config in channels_config:
             try:
                 channel = create_notification_channel(channel_config)
-                self.alerting_engine.add_notification_channel(channel.name, channel)
+                channel_casted = AlertingEngineNotificationChannel(
+                    channel.get_channel_name()
+                )
+                self.alerting_engine.add_notification_channel(
+                    channel.get_channel_name(), channel_casted
+                )
             except Exception as e:
                 logger.error(f"Failed to setup channel from config: {e}")
 

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Any
 from collections import defaultdict
 from ..base import BaseAnalyzer
 from ...data.models import Paper, AuthorshipAnalysis
@@ -150,11 +150,12 @@ class PaperClassifier(BaseAnalyzer):
         else:
             final_confidence = base_confidence
 
-        return min(0.95, final_confidence)
+        return float(min(0.95, final_confidence))
 
-    def classify_affiliation(self, affiliation: str) -> Dict:
+    def classify_affiliation(self, affiliation: str) -> Dict[Any, Any]:
         """Wrapper method for affiliation classification"""
-        return self.affiliation_parser.classify_affiliation(affiliation)
+        result = self.affiliation_parser.classify_affiliation(affiliation)
+        return dict(result) if result else {}
 
     def get_classification_summary(self, papers: List[Paper]) -> Dict:
         """Generate summary statistics for a batch of papers"""
@@ -164,7 +165,7 @@ class PaperClassifier(BaseAnalyzer):
         needs_review = 0
         total_confidence = 0.0
 
-        category_breakdown = defaultdict(int)
+        category_breakdown: Dict[str, int] = defaultdict(int)
 
         for paper in papers:
             analysis = self.classify_paper_authorship(paper)

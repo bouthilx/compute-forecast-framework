@@ -298,7 +298,8 @@ class SemanticScholarPDFCollector(BasePDFCollector):
                 # Handle papers that couldn't be batched (no identifiers)
                 for paper in batch:
                     if (
-                        paper.paper_id not in results
+                        paper.paper_id is not None
+                        and paper.paper_id not in results
                         and paper not in paper_map.values()
                     ):
                         try:
@@ -313,7 +314,7 @@ class SemanticScholarPDFCollector(BasePDFCollector):
                 logger.error(f"Batch discovery failed: {e}")
                 # Fall back to individual discovery for this batch
                 for paper in batch:
-                    if paper.paper_id not in results:
+                    if paper.paper_id is not None and paper.paper_id not in results:
                         try:
                             pdf_record = self._discover_single(paper)
                             results[paper.paper_id] = pdf_record

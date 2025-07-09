@@ -62,7 +62,7 @@ class ComputationalAnalyzer(BaseAnalyzer):
         if is_experimental:
             confidence += 0.2
 
-        return min(confidence, 1.0)
+        return float(min(confidence, 1.0))
 
     def extract_paper_text(self, paper: Paper) -> str:
         """Extract all available text from paper"""
@@ -138,7 +138,7 @@ class ComputationalAnalyzer(BaseAnalyzer):
                     if isinstance(match, tuple) and len(match) >= 1:
                         normalized.append({"value": int(match[0]), "unit": "gpus"})
                     else:
-                        normalized.append({"value": int(match), "unit": "gpus"})
+                        normalized.append({"value": int(str(match)), "unit": "gpus"})
 
                 elif metric_type == "training_time":
                     # Expect 2 groups: (value, unit)
@@ -277,7 +277,7 @@ class ComputationalAnalyzer(BaseAnalyzer):
         """Calculate overall computational richness score (0-1)"""
 
         # Keyword contribution (40% of score)
-        keyword_component = 0
+        keyword_component = 0.0
         category_weights = {
             "gpu_hardware": 0.3,
             "training_resources": 0.25,
@@ -294,7 +294,7 @@ class ComputationalAnalyzer(BaseAnalyzer):
             keyword_component += weight * category_score
 
         # Resource metrics contribution (60% of score)
-        metrics_component = 0
+        metrics_component = 0.0
         if resource_metrics:
             metrics_weights = {
                 "gpu_count": 0.2,

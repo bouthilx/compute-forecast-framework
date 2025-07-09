@@ -6,7 +6,7 @@ Handles checkpoint creation, validation, and cleanup.
 import logging
 import threading
 from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Literal
 from datetime import datetime
 import uuid
 
@@ -53,16 +53,22 @@ class CheckpointManager:
     def create_checkpoint(
         self,
         session_id: str,
-        checkpoint_type: str,
+        checkpoint_type: Literal[
+            "venue_completed",
+            "batch_completed",
+            "api_call_completed",
+            "error_occurred",
+            "session_started",
+        ],
         venues_completed: List[tuple],
         venues_in_progress: List[tuple],
         venues_not_started: List[tuple],
         papers_collected: int,
         papers_by_venue: Dict[str, Dict[int, int]],
         last_successful_operation: str,
-        api_health_status: Dict = None,
-        rate_limit_status: Dict = None,
-        error_context=None,
+        api_health_status: Optional[Dict] = None,
+        rate_limit_status: Optional[Dict] = None,
+        error_context: Optional[Any] = None,
     ) -> Optional[str]:
         """
         Create a new checkpoint with validation.
@@ -474,7 +480,7 @@ class CheckpointManager:
             checkpoints.sort(key=lambda x: x.timestamp)
 
             # Count checkpoint types
-            checkpoint_types = {}
+            checkpoint_types: Dict[str, int] = {}
             for checkpoint in checkpoints:
                 checkpoint_types[checkpoint.checkpoint_type] = (
                     checkpoint_types.get(checkpoint.checkpoint_type, 0) + 1

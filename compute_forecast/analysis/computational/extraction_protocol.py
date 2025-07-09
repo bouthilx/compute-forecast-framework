@@ -296,7 +296,7 @@ class ExtractionProtocol:
         logger.info(f"Starting Phase 1: Paper Preparation for {self.paper_id}")
 
         phase_start = datetime.now()
-        preparation_results = {
+        preparation_results: Dict[str, Any] = {
             "has_computational_experiments": False,
             "pdf_quality": "unknown",
             "structure_notes": [],

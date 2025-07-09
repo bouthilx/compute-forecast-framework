@@ -203,7 +203,7 @@ class FuzzyVenueMatcher:
             + ratio * 0.1
         )
 
-        return similarity
+        return float(similarity)
 
     def find_fuzzy_matches(
         self, raw_venue: str, candidates: List[str], threshold: Optional[float] = None
@@ -312,7 +312,10 @@ class FuzzyVenueMatcher:
         return False
 
     def batch_find_matches(
-        self, raw_venues: List[str], candidates: List[str], threshold: Optional[float] = None
+        self,
+        raw_venues: List[str],
+        candidates: List[str],
+        threshold: Optional[float] = None,
     ) -> Dict[str, FuzzyMatchResult]:
         """
         Batch processing for multiple venue matches

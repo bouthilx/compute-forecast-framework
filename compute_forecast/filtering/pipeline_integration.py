@@ -190,7 +190,8 @@ class FilteringPipelineIntegration:
             filtered_papers = self.filter_papers_realtime(papers)
 
             # Continue with original processing on filtered papers
-            return original_process(filtered_papers)
+            result = original_process(filtered_papers)
+            return list(result) if result else []
 
         # Replace the processing method
         api_layer._process_paper_batch = filtered_process

@@ -5,7 +5,7 @@ This module validates extraction results with confidence scoring and completenes
 """
 
 from dataclasses import dataclass
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, Union, List
 from enum import Enum
 
 from compute_forecast.quality.quality_analyzer import QualityAnalyzer
@@ -69,7 +69,7 @@ class ExtractionQualityValidator(QualityAnalyzer):
         }
 
     def validate_extraction(
-        self, paper: Paper, extraction: ComputationalAnalysis
+        self, paper: Paper, extraction: Union[Dict[str, Any], ComputationalAnalysis]
     ) -> ExtractionValidation:
         """
         Validate single extraction with confidence scoring.
@@ -111,7 +111,9 @@ class ExtractionQualityValidator(QualityAnalyzer):
             },
         )
 
-    def calculate_completeness_score(self, extraction: ComputationalAnalysis) -> float:
+    def calculate_completeness_score(
+        self, extraction: Union[Dict[str, Any], ComputationalAnalysis]
+    ) -> float:
         """
         Score extraction completeness (0-1).
 
@@ -125,9 +127,11 @@ class ExtractionQualityValidator(QualityAnalyzer):
         completed_weight = 0.0
 
         # Check each field in the extraction
-        extraction_dict = (
-            extraction.__dict__ if hasattr(extraction, "__dict__") else extraction
-        )
+        extraction_dict: Dict[str, Any]
+        if hasattr(extraction, "__dict__"):
+            extraction_dict = extraction.__dict__
+        else:
+            extraction_dict = extraction  # type: ignore
 
         for field, weight in self.field_importance.items():
             total_weight += weight
@@ -144,7 +148,9 @@ class ExtractionQualityValidator(QualityAnalyzer):
 
         return completed_weight / total_weight if total_weight > 0 else 0.0
 
-    def _calculate_validity_score(self, extraction: ComputationalAnalysis) -> float:
+    def _calculate_validity_score(
+        self, extraction: Union[Dict[str, Any], ComputationalAnalysis]
+    ) -> float:
         """
         Calculate validity score based on value plausibility.
 
@@ -157,9 +163,11 @@ class ExtractionQualityValidator(QualityAnalyzer):
         valid_fields = 0
         total_fields = 0
 
-        extraction_dict = (
-            extraction.__dict__ if hasattr(extraction, "__dict__") else extraction
-        )
+        extraction_dict: Dict[str, Any]
+        if hasattr(extraction, "__dict__"):
+            extraction_dict = extraction.__dict__
+        else:
+            extraction_dict = extraction  # type: ignore
 
         # Check GPU hours
         if "gpu_hours" in extraction_dict and extraction_dict["gpu_hours"] is not None:
@@ -203,7 +211,7 @@ class ExtractionQualityValidator(QualityAnalyzer):
         return valid_fields / total_fields if total_fields > 0 else 0.5
 
     def _check_paper_consistency(
-        self, paper: Paper, extraction: ComputationalAnalysis
+        self, paper: Paper, extraction: Union[Dict[str, Any], ComputationalAnalysis]
     ) -> float:
         """
         Check consistency between paper metadata and extraction.
@@ -217,11 +225,15 @@ class ExtractionQualityValidator(QualityAnalyzer):
         """
         consistency_checks = []
 
+        # Get extraction dict once for the entire function
+        extraction_dict: Dict[str, Any]
+        if hasattr(extraction, "__dict__"):
+            extraction_dict = extraction.__dict__
+        else:
+            extraction_dict = extraction  # type: ignore
+
         # Check year consistency (newer papers tend to use more resources)
         if hasattr(paper, "year") and paper.year:
-            extraction_dict = (
-                extraction.__dict__ if hasattr(extraction, "__dict__") else extraction
-            )
             if "gpu_hours" in extraction_dict and extraction_dict["gpu_hours"]:
                 # Expect higher GPU hours for recent papers
                 if paper.year >= 2020 and extraction_dict["gpu_hours"] > 100:
@@ -234,9 +246,6 @@ class ExtractionQualityValidator(QualityAnalyzer):
         # Check domain consistency
         if hasattr(paper, "title") and paper.title:
             title_lower = paper.title.lower()
-            extraction_dict = (
-                extraction.__dict__ if hasattr(extraction, "__dict__") else extraction
-            )
 
             # Language models should have parameters
             if any(
@@ -299,8 +308,8 @@ class ExtractionQualityValidator(QualityAnalyzer):
         Returns:
             Dictionary with agreement score and discrepancies
         """
-        agreements = []
-        discrepancies = []
+        agreements: List[str] = []
+        discrepancies: List[Dict[str, Any]] = []
 
         # Compare common fields
         all_fields = set(manual.keys()) | set(automated.keys())

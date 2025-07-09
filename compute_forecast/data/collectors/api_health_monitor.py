@@ -6,7 +6,7 @@ Real implementation with request tracking and health status calculation
 import threading
 from collections import deque
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Literal
 from ..models import APIHealthStatus, APIError, HealthMonitoringConfig
 import logging
 
@@ -86,9 +86,9 @@ class APIHealthMonitor:
     def _is_successful_response(self, response) -> bool:
         """Determine if response indicates success"""
         if hasattr(response, "status_code"):
-            return 200 <= response.status_code < 300
+            return bool(200 <= response.status_code < 300)
         elif hasattr(response, "ok"):
-            return response.ok
+            return bool(response.ok)
         else:
             # Assume success if we can't determine
             return True
@@ -172,7 +172,7 @@ class APIHealthMonitor:
 
     def _determine_status_level(
         self, success_rate: float, avg_response_time: float, consecutive_errors: int
-    ) -> str:
+    ) -> Literal["healthy", "degraded", "critical", "offline"]:
         """Determine health status level based on metrics"""
 
         # Critical conditions

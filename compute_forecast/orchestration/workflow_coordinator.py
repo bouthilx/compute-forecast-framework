@@ -65,7 +65,7 @@ class WorkflowCoordinator:
             f"Starting workflow {workflow_id}: {len(venues)} venues x {len(years)} years"
         )
 
-        workflow_result = {
+        workflow_result: Dict[str, Any] = {
             "workflow_id": workflow_id,
             "session_id": session_id,
             "success": False,
@@ -196,10 +196,10 @@ class WorkflowCoordinator:
                 session_id=session_id,
                 checkpoint_type="workflow_complete",
                 timestamp=datetime.now(),
-                venues_completed=workflow_result["venues_completed"],
+                venues_completed=list(workflow_result["venues_completed"]),
                 venues_in_progress=[],
                 venues_not_started=[],
-                papers_collected=workflow_result["raw_papers_collected"],
+                papers_collected=int(workflow_result["raw_papers_collected"]),
                 papers_by_venue={
                     v: {y: 100 for y in years} for v in venues
                 },  # Simplified
@@ -412,12 +412,12 @@ class WorkflowCoordinator:
             + venue_normalization_quality * 0.2
         )
 
-        return quality_score
+        return float(quality_score)
 
     def get_workflow_status(self, workflow_id: str) -> Optional[Dict[str, Any]]:
         """Get current status of workflow"""
         if workflow_id == self.current_workflow_id:
-            return self.workflow_state.get(workflow_id, {})
+            return dict(self.workflow_state.get(workflow_id, {}))
 
         return None
 

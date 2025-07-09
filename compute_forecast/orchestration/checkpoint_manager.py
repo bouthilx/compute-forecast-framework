@@ -6,7 +6,7 @@ Implements intelligent checkpointing with automatic recovery point generation.
 import threading
 import uuid
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Literal
 import logging
 
 from compute_forecast.data.collectors.state_structures import (
@@ -47,7 +47,13 @@ class CheckpointManager:
     def create_checkpoint(
         self,
         session: CollectionSession,
-        checkpoint_type: str,
+        checkpoint_type: Literal[
+            "venue_completed",
+            "batch_completed",
+            "api_call_completed",
+            "error_occurred",
+            "session_started",
+        ],
         venues_completed: List[tuple],
         venues_in_progress: List[tuple],
         venues_not_started: List[tuple],
@@ -319,7 +325,7 @@ class CheckpointManager:
             )
 
             # Find checkpoint types
-            checkpoint_types = {}
+            checkpoint_types: Dict[str, int] = {}
             for checkpoint_id in checkpoint_ids:
                 checkpoint = self.persistence.load_checkpoint(checkpoint_id)
                 if checkpoint:

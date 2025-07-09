@@ -132,7 +132,7 @@ class AnalyzerErrorHandler:
         Returns:
             Available memory in MB
         """
-        return self._memory_state.available_mb
+        return float(self._memory_state.available_mb)
 
     def set_total_papers(self, count: int) -> None:
         """
@@ -154,7 +154,7 @@ class AnalyzerErrorHandler:
         Returns:
             Processing results
         """
-        results = {"processed": 0, "failed": 0, "errors": []}
+        results: Dict[str, Any] = {"processed": 0, "failed": 0, "errors": []}
 
         for i in range(batch_size):
             # Check memory pressure

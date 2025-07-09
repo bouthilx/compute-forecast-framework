@@ -104,7 +104,7 @@ class SimplePDFDownloader:
                     time.sleep(delay)
 
         # All retries exhausted
-        raise last_exception
+        raise last_exception or RuntimeError("All download retries failed")
 
     def download_batch(
         self,

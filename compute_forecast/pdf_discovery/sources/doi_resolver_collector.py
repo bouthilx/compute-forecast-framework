@@ -2,7 +2,7 @@
 DOI Resolver Collector - Orchestrates CrossRef and Unpaywall for DOI-based PDF discovery
 """
 
-from typing import List
+from typing import List, Optional
 import logging
 from datetime import datetime
 
@@ -94,6 +94,9 @@ class DOIResolverCollector(BasePDFCollector):
         )
 
         # Create PDFRecord
+        if not paper.paper_id:
+            raise Exception(f"Paper {paper.doi} has no paper_id")
+
         pdf_record = PDFRecord(
             paper_id=paper.paper_id,
             pdf_url=all_urls[0],  # Primary URL
@@ -219,7 +222,7 @@ class DOIResolverCollector(BasePDFCollector):
 
     def _determine_license(
         self, crossref_urls: List[str], unpaywall_urls: List[str]
-    ) -> str:
+    ) -> Optional[str]:
         """Determine license information based on sources.
 
         Args:

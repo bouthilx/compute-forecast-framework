@@ -158,7 +158,8 @@ class IEEEXplorePDFCollector(BasePDFCollector):
         )
 
         return PDFRecord(
-            paper_id=paper.paper_id,
+            paper_id=paper.paper_id
+            or f"ieee_{article.get('article_number', 'unknown')}",
             pdf_url=pdf_url,
             source=self.source_name,
             discovery_timestamp=datetime.now(),
