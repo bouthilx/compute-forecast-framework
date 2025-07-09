@@ -3,10 +3,12 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from compute_forecast.data.models import Paper, Author
-from compute_forecast.pdf_discovery.sources.core_collector import COREPDFCollector
-from compute_forecast.pdf_discovery.core.models import PDFRecord
-from compute_forecast.pdf_discovery.utils import (
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.core_collector import (
+    COREPDFCollector,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
+from compute_forecast.pipeline.pdf_acquisition.discovery.utils import (
     APIError,
     NoResultsError,
     NoPDFFoundError,

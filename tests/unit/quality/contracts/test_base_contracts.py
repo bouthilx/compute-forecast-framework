@@ -1,6 +1,6 @@
 """Unit tests for base contract classes."""
 
-from compute_forecast.quality.contracts.base_contracts import (
+from compute_forecast.core.contracts.base_contracts import (
     ContractViolationType,
     ContractViolation,
     ContractValidationResult,

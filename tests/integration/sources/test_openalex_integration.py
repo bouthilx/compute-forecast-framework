@@ -4,11 +4,11 @@ import pytest
 import os
 from unittest.mock import patch, Mock
 
-from compute_forecast.pdf_discovery.sources.openalex_collector import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.openalex_collector import (
     OpenAlexPDFCollector,
 )
-from compute_forecast.pdf_discovery import PDFDiscoveryFramework
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery import PDFDiscoveryFramework
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 class TestOpenAlexIntegration:

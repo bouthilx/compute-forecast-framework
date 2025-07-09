@@ -6,7 +6,7 @@ Following TDD approach - these tests should fail initially
 import pytest
 from unittest.mock import Mock
 
-from compute_forecast.data.models import (
+from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     Author,
     BatchCollectionResult,
@@ -23,11 +23,15 @@ class TestVenueCollectionEngine:
     def setup_method(self):
         """Setup test fixtures"""
         # This will fail until we create the actual classes
-        from compute_forecast.data.collectors.api_integration_layer import (
+        from compute_forecast.pipeline.metadata_collection.collectors.api_integration_layer import (
             VenueCollectionEngine,
         )
-        from compute_forecast.data.collectors.rate_limit_manager import RateLimitManager
-        from compute_forecast.data.collectors.api_health_monitor import APIHealthMonitor
+        from compute_forecast.pipeline.metadata_collection.collectors.rate_limit_manager import (
+            RateLimitManager,
+        )
+        from compute_forecast.pipeline.metadata_collection.collectors.api_health_monitor import (
+            APIHealthMonitor,
+        )
 
         self.mock_rate_limiter = Mock(spec=RateLimitManager)
         self.mock_health_monitor = Mock(spec=APIHealthMonitor)
@@ -131,7 +135,7 @@ class TestVenueCollectionEngine:
         # Use very short timeout for testing
         short_config = CollectionConfig(batch_timeout_seconds=1)
 
-        from compute_forecast.data.collectors.api_integration_layer import (
+        from compute_forecast.pipeline.metadata_collection.collectors.api_integration_layer import (
             VenueCollectionEngine,
         )
 
@@ -278,11 +282,15 @@ class TestVenueCollectionEngineIntegration:
         years = [2022, 2023, 2024]
 
         # This should fail until implementation exists
-        from compute_forecast.data.collectors.api_integration_layer import (
+        from compute_forecast.pipeline.metadata_collection.collectors.api_integration_layer import (
             VenueCollectionEngine,
         )
-        from compute_forecast.data.collectors.rate_limit_manager import RateLimitManager
-        from compute_forecast.data.collectors.api_health_monitor import APIHealthMonitor
+        from compute_forecast.pipeline.metadata_collection.collectors.rate_limit_manager import (
+            RateLimitManager,
+        )
+        from compute_forecast.pipeline.metadata_collection.collectors.api_health_monitor import (
+            APIHealthMonitor,
+        )
 
         config = CollectionConfig(max_venues_per_batch=6)
         rate_limiter = RateLimitManager({})  # Will fail until implemented
@@ -303,7 +311,7 @@ class TestVenueCollectionEngineIntegration:
         venues = [f"venue_{i}" for i in range(20)]  # 20 venues
         years = [2023]  # 1 year
 
-        from compute_forecast.data.collectors.api_integration_layer import (
+        from compute_forecast.pipeline.metadata_collection.collectors.api_integration_layer import (
             VenueCollectionEngine,
         )
 

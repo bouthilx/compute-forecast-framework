@@ -7,7 +7,7 @@ import pytest
 from unittest.mock import Mock
 import requests
 
-from compute_forecast.data.models import APIHealthStatus
+from compute_forecast.pipeline.metadata_collection.models import APIHealthStatus
 
 
 class TestAPIHealthMonitor:
@@ -15,7 +15,9 @@ class TestAPIHealthMonitor:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from compute_forecast.data.collectors.api_health_monitor import APIHealthMonitor
+        from compute_forecast.pipeline.metadata_collection.collectors.api_health_monitor import (
+            APIHealthMonitor,
+        )
 
         self.monitor = APIHealthMonitor()
 

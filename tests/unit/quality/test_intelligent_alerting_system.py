@@ -12,25 +12,28 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from compute_forecast.monitoring.intelligent_alerting_system import (
+from compute_forecast.monitoring.alerting.intelligent_alerting_system import (
     IntelligentAlertingSystem,
     create_intelligent_alerting_system,
 )
-from compute_forecast.monitoring.alerting_engine import (
+from compute_forecast.monitoring.alerting.alerting_engine import (
     AlertingEngine,
     Alert,
     AlertRule,
     AlertSeverity,
     AlertStatus,
 )
-from compute_forecast.monitoring.notification_channels import (
+from compute_forecast.monitoring.alerting.notification_channels import (
     ConsoleNotificationChannel,
     DashboardNotificationChannel,
     create_notification_channel,
 )
-from compute_forecast.monitoring.alert_rules import AlertRuleFactory, CustomAlertRule
-from compute_forecast.monitoring.metrics_collector import MetricsCollector
-from compute_forecast.monitoring.dashboard_metrics import (
+from compute_forecast.monitoring.alerting.alert_rules import (
+    AlertRuleFactory,
+    CustomAlertRule,
+)
+from compute_forecast.monitoring.metrics.metrics_collector import MetricsCollector
+from compute_forecast.monitoring.server.dashboard_metrics import (
     APIMetrics,
     SystemResourceMetrics,
 )
@@ -419,7 +422,7 @@ class TestAlertEscalation(unittest.TestCase):
 
     def test_escalation_rule_creation(self):
         """Test creation of escalation rules"""
-        from compute_forecast.monitoring.alerting_engine import EscalationRule
+        from compute_forecast.monitoring.alerting.alerting_engine import EscalationRule
 
         escalation_rule = EscalationRule(
             escalation_delay_minutes=5,

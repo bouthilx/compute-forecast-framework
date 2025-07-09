@@ -3,16 +3,20 @@
 import pytest
 from unittest.mock import Mock
 
-from compute_forecast.analysis.benchmark.quality_assurance import (
+from compute_forecast.pipeline.analysis.benchmark.quality_assurance import (
     ExtractionQualityAssurance,
 )
-from compute_forecast.analysis.benchmark.models import (
+from compute_forecast.pipeline.analysis.benchmark.models import (
     BenchmarkDomain,
     ExtractionBatch,
     BenchmarkPaper,
     ExtractionQA,
 )
-from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+    ComputationalAnalysis,
+    Author,
+)
 
 
 def create_mock_paper(extraction_confidence=0.8):

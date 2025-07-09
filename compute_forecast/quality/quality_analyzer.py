@@ -8,7 +8,10 @@ import numpy as np
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 
-from .quality_structures import QualityMetrics, QUALITY_SCORING_WEIGHTS
+from compute_forecast.quality.quality_structures import (
+    QualityMetrics,
+    QUALITY_SCORING_WEIGHTS,
+)
 
 logger = logging.getLogger(__name__)
 

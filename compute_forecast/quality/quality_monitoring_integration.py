@@ -7,10 +7,10 @@ import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 
-from .adaptive_thresholds import AdaptiveThresholdEngine
-from .quality_analyzer import QualityAnalyzer
-from .quality_filter import QualityFilter
-from .quality_structures import (
+from compute_forecast.quality.adaptive_thresholds import AdaptiveThresholdEngine
+from compute_forecast.quality.quality_analyzer import QualityAnalyzer
+from compute_forecast.quality.quality_filter import QualityFilter
+from compute_forecast.quality.quality_structures import (
     QualityMetrics,
     QualityThresholds,
     AdaptationConfig,

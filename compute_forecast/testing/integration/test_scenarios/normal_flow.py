@@ -25,7 +25,7 @@ from compute_forecast.testing.integration.phase_validators import (
     TransitionValidator,
 )
 from compute_forecast.testing.mock_data.generators import MockDataGenerator
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 @dataclass

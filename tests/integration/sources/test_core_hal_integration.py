@@ -3,10 +3,16 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from compute_forecast.data.models import Paper, Author
-from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
-from compute_forecast.pdf_discovery.sources.core_collector import COREPDFCollector
-from compute_forecast.pdf_discovery.sources.hal_collector import HALPDFCollector
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
+    PDFDiscoveryFramework,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.core_collector import (
+    COREPDFCollector,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.hal_collector import (
+    HALPDFCollector,
+)
 
 
 class TestCOREHALIntegration:

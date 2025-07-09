@@ -5,7 +5,7 @@ Provides system metrics collection, dashboard visualization, and proactive alert
 for 4-6 hour paper collection sessions.
 """
 
-from .dashboard_metrics import (
+from .server.dashboard_metrics import (
     SystemMetrics,
     CollectionProgressMetrics,
     APIMetrics,
@@ -18,11 +18,11 @@ from .dashboard_metrics import (
     MetricsBuffer,
 )
 
-from .metrics_collector import MetricsCollector
-from .dashboard_server import CollectionDashboard
+from .metrics.metrics_collector import MetricsCollector
+from .server.dashboard_server import CollectionDashboard
 
 # Intelligent Alerting System components
-from .alert_structures import (
+from .alerting.alert_structures import (
     Alert,
     AlertRule,
     AlertSeverity,
@@ -36,11 +36,11 @@ from .alert_structures import (
     BUILT_IN_SUPPRESSION_RULES,
 )
 
-from .alert_system import IntelligentAlertSystem, AlertRuleEvaluator
+from .alerting.alert_system import IntelligentAlertSystem, AlertRuleEvaluator
 
-from .alert_suppression import AlertSuppressionManager, SuppressionRuleManager
+from .alerting.alert_suppression import AlertSuppressionManager, SuppressionRuleManager
 
-from .notification_channels import (
+from .alerting.notification_channels import (
     NotificationChannel,
     ConsoleNotificationChannel,
     DashboardNotificationChannel,
@@ -49,7 +49,7 @@ from .notification_channels import (
 )
 
 # Advanced Analytics Dashboard components
-from .advanced_analytics_engine import (
+from .server.advanced_analytics_engine import (
     AdvancedAnalyticsEngine,
     AnalyticsTimeWindow,
     TrendAnalysis,
@@ -58,7 +58,7 @@ from .advanced_analytics_engine import (
     AnalyticsSummary,
 )
 
-from .advanced_dashboard_server import (
+from .server.advanced_dashboard_server import (
     AdvancedAnalyticsDashboard,
     create_advanced_analytics_dashboard,
     AnalyticsDashboardAdapter,

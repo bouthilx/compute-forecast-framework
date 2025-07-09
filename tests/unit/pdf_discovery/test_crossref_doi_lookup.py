@@ -4,7 +4,9 @@ import pytest
 from unittest.mock import Mock, patch
 import requests
 
-from compute_forecast.data.sources.enhanced_crossref import EnhancedCrossrefClient
+from compute_forecast.pipeline.metadata_collection.sources.enhanced_crossref import (
+    EnhancedCrossrefClient,
+)
 
 
 class TestCrossrefDOILookup:

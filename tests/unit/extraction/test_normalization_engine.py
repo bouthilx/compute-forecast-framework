@@ -1,7 +1,11 @@
 """Tests for normalization engine."""
 
-from compute_forecast.extraction.normalization_engine import NormalizationEngine
-from compute_forecast.extraction.template_engine import ExtractionField
+from compute_forecast.pipeline.content_extraction.templates.normalization_engine import (
+    NormalizationEngine,
+)
+from compute_forecast.pipeline.content_extraction.templates.template_engine import (
+    ExtractionField,
+)
 
 
 class TestNormalizationEngine:

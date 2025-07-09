@@ -4,10 +4,10 @@ import pytest
 from unittest.mock import Mock, patch
 import time
 
-from compute_forecast.pdf_discovery.sources.pubmed_central_collector import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector import (
     PubMedCentralCollector,
 )
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class TestPubMedCentralCollector:

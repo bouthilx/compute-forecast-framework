@@ -3,8 +3,8 @@
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
-from .validators.sanity_checker import SanityChecker
-from .validators.citation_validator import CitationValidator
+from compute_forecast.quality.validators.sanity_checker import SanityChecker
+from compute_forecast.quality.validators.citation_validator import CitationValidator
 
 
 class QualityAssessment:

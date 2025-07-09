@@ -3,8 +3,12 @@
 from unittest.mock import Mock, patch
 from pathlib import Path
 
-from compute_forecast.pdf_parser.core.processor import OptimizedPDFProcessor
-from compute_forecast.pdf_parser.extractors.pymupdf_extractor import PyMuPDFExtractor
+from compute_forecast.pipeline.content_extraction.parser.core.processor import (
+    OptimizedPDFProcessor,
+)
+from compute_forecast.pipeline.content_extraction.parser.extractors.pymupdf_extractor import (
+    PyMuPDFExtractor,
+)
 
 
 class TestPyMuPDFIntegration:

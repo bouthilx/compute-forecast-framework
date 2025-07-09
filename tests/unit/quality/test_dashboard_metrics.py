@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import threading
 import time
 
-from compute_forecast.monitoring.dashboard_metrics import (
+from compute_forecast.monitoring.server.dashboard_metrics import (
     SystemMetrics,
     CollectionProgressMetrics,
     APIMetrics,

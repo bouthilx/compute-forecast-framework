@@ -3,7 +3,7 @@
 import pytest
 from dataclasses import FrozenInstanceError
 
-from compute_forecast.extraction.template_engine import (
+from compute_forecast.pipeline.content_extraction.templates.template_engine import (
     ExtractionTemplate,
     ExtractionField,
 )

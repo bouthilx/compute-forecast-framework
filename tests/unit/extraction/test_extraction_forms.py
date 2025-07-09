@@ -10,13 +10,13 @@ from pathlib import Path
 import tempfile
 import shutil
 
-from compute_forecast.analysis.computational.extraction_forms import (
+from compute_forecast.pipeline.analysis.computational.extraction_forms import (
     ExtractionFormTemplate,
     FormValidator,
     FormValidationResult,
     FormManager,
 )
-from compute_forecast.analysis.computational.extraction_protocol import (
+from compute_forecast.pipeline.analysis.computational.extraction_protocol import (
     ExtractionResult,
     ExtractionMetadata,
     HardwareSpecs,

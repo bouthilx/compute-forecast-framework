@@ -6,11 +6,11 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from compute_forecast.data.collectors.enhanced_orchestrator import (
+from compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator import (
     EnhancedCollectionOrchestrator,
     CollectionResult,
 )
-from compute_forecast.data.models import (
+from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     Author,
     APIResponse,
@@ -27,16 +27,16 @@ class TestEnhancedCollectionOrchestrator:
         """Create orchestrator with mocked API clients"""
         with (
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
             ),
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
             ),
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
             ),
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.GoogleScholarClient"
             ),
         ):
             return EnhancedCollectionOrchestrator()
@@ -79,16 +79,16 @@ class TestEnhancedCollectionOrchestrator:
         """Test orchestrator initialization without API keys"""
         with (
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
             ) as mock_ss,
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
             ) as mock_oa,
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
             ) as mock_cr,
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.GoogleScholarClient"
             ) as mock_gs,
         ):
             orchestrator = EnhancedCollectionOrchestrator()
@@ -117,16 +117,16 @@ class TestEnhancedCollectionOrchestrator:
 
         with (
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.EnhancedSemanticScholarClient"
             ) as mock_ss,
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.EnhancedOpenAlexClient"
             ) as mock_oa,
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.EnhancedCrossrefClient"
             ) as mock_cr,
             patch(
-                "compute_forecast.data.collectors.enhanced_orchestrator.GoogleScholarClient"
+                "compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestrator.GoogleScholarClient"
             ) as mock_gs,
         ):
             EnhancedCollectionOrchestrator(api_keys)
@@ -383,7 +383,7 @@ class TestEnhancedCollectionOrchestrator:
     def test_get_source_statistics(self, orchestrator):
         """Test source statistics retrieval"""
         # Mock rate limiter usage
-        from compute_forecast.data.models import RateLimitStatus
+        from compute_forecast.pipeline.metadata_collection.models import RateLimitStatus
 
         mock_status = RateLimitStatus(
             api_name="semantic_scholar",

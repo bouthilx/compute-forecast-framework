@@ -10,13 +10,15 @@ from pathlib import Path
 from unittest.mock import patch
 from datetime import datetime
 
-from compute_forecast.data.processors import (
+from compute_forecast.pipeline.metadata_collection.processors import (
     VenueNormalizer,
     FuzzyVenueMatcher,
     VenueMappingLoader,
+)
+from compute_forecast.pipeline.metadata_collection.processors.venue_mapping_loader import (
     VenueConfig,
 )
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 class TestFuzzyVenueMatcher:
@@ -209,7 +211,7 @@ class TestVenueNormalizer:
 
     def _create_mock_load_result(self):
         """Create mock load result for testing"""
-        from compute_forecast.data.processors.venue_mapping_loader import (
+        from compute_forecast.pipeline.metadata_collection.processors.venue_mapping_loader import (
             VenueMappingLoadResult,
         )
 

@@ -4,9 +4,11 @@ import pytest
 from unittest.mock import Mock, patch
 import requests
 
-from compute_forecast.pdf_discovery.sources.aaai_collector import AAICollector
-from compute_forecast.pdf_discovery.core.models import PDFRecord
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.aaai_collector import (
+    AAICollector,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 class TestAAICollector:

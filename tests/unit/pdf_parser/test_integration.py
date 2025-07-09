@@ -4,8 +4,12 @@ from pathlib import Path
 from typing import Dict, List
 from unittest.mock import Mock, patch
 
-from compute_forecast.pdf_parser.core.processor import OptimizedPDFProcessor
-from compute_forecast.pdf_parser.core.base_extractor import BaseExtractor
+from compute_forecast.pipeline.content_extraction.parser.core.processor import (
+    OptimizedPDFProcessor,
+)
+from compute_forecast.pipeline.content_extraction.parser.core.base_extractor import (
+    BaseExtractor,
+)
 
 
 class MockComputationalExtractor(BaseExtractor):
@@ -169,7 +173,7 @@ class TestPDFParserIntegration:
         )
         assert is_valid is False
 
-    @patch("compute_forecast.pdf_parser.core.processor.logger")
+    @patch("compute_forecast.pipeline.content_extraction.parser.core.processor.logger")
     def test_error_handling_and_logging(self, mock_logger):
         """Test error handling and logging integration."""
         processor = OptimizedPDFProcessor({})

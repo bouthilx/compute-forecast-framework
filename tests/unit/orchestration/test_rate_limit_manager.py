@@ -9,7 +9,11 @@ import threading
 from unittest.mock import Mock
 from datetime import datetime, timedelta
 
-from compute_forecast.data.models import APIConfig, APIHealthStatus, RollingWindow
+from compute_forecast.pipeline.metadata_collection.models import (
+    APIConfig,
+    APIHealthStatus,
+    RollingWindow,
+)
 
 
 class TestRollingWindow:
@@ -95,7 +99,9 @@ class TestRateLimitManager:
     def setup_method(self):
         """Setup test fixtures"""
         # This will fail until we implement the real RateLimitManager
-        from compute_forecast.data.collectors.rate_limit_manager import RateLimitManager
+        from compute_forecast.pipeline.metadata_collection.collectors.rate_limit_manager import (
+            RateLimitManager,
+        )
 
         self.api_configs = {
             "semantic_scholar": APIConfig(
@@ -335,8 +341,12 @@ class TestRateLimitManagerIntegration:
 
     def setup_method(self):
         """Setup with health monitoring integration"""
-        from compute_forecast.data.collectors.rate_limit_manager import RateLimitManager
-        from compute_forecast.data.collectors.api_health_monitor import APIHealthMonitor
+        from compute_forecast.pipeline.metadata_collection.collectors.rate_limit_manager import (
+            RateLimitManager,
+        )
+        from compute_forecast.pipeline.metadata_collection.collectors.api_health_monitor import (
+            APIHealthMonitor,
+        )
 
         api_configs = {
             "semantic_scholar": APIConfig(
@@ -461,7 +471,9 @@ class TestRateLimitManagerPerformance:
 
     def setup_method(self):
         """Setup for performance testing"""
-        from compute_forecast.data.collectors.rate_limit_manager import RateLimitManager
+        from compute_forecast.pipeline.metadata_collection.collectors.rate_limit_manager import (
+            RateLimitManager,
+        )
 
         api_configs = {
             "test_api": APIConfig(

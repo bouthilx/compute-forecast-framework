@@ -13,9 +13,13 @@ from enum import Enum
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 
-from compute_forecast.data.models import Paper
-from compute_forecast.data.collectors.collection_executor import CollectionExecutor
-from compute_forecast.analysis.computational.analyzer import ComputationalAnalyzer
+from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.metadata_collection.collectors.collection_executor import (
+    CollectionExecutor,
+)
+from compute_forecast.pipeline.analysis.computational.analyzer import (
+    ComputationalAnalyzer,
+)
 from compute_forecast.quality.quality_analyzer import QualityAnalyzer
 
 

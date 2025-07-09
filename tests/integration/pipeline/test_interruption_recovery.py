@@ -7,10 +7,10 @@ from unittest.mock import patch
 from dataclasses import dataclass, field
 from typing import Dict, List, Any
 
-from compute_forecast.orchestration.venue_collection_orchestrator import (
+from compute_forecast.orchestration.orchestrators.venue_collection_orchestrator import (
     VenueCollectionOrchestrator,
 )
-from compute_forecast.data.models import CollectionConfig
+from compute_forecast.pipeline.metadata_collection.models import CollectionConfig
 
 
 @dataclass
@@ -506,7 +506,7 @@ class InterruptionRecoveryTest:
                 # Try to save checkpoint (should fail due to disk space)
                 try:
                     if orchestrator.state_manager:
-                        from compute_forecast.orchestration.state_manager import (
+                        from compute_forecast.orchestration.state.state_manager import (
                             CheckpointData,
                         )
                         from datetime import datetime
@@ -546,7 +546,7 @@ class InterruptionRecoveryTest:
             # Normal file operations should work now (no mock)
             if orchestrator.state_manager:
                 try:
-                    from compute_forecast.orchestration.state_manager import (
+                    from compute_forecast.orchestration.state.state_manager import (
                         CheckpointData,
                     )
                     from datetime import datetime

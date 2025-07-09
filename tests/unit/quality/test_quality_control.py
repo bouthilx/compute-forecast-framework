@@ -7,7 +7,7 @@ Tests quality assurance, validation, and consistency checking for extraction res
 import pytest
 from datetime import datetime
 
-from compute_forecast.analysis.computational.quality_control import (
+from compute_forecast.pipeline.analysis.computational.quality_control import (
     QualityController,
     QualityReport,
     QualityDashboard,
@@ -17,11 +17,18 @@ from compute_forecast.analysis.computational.quality_control import (
 )
 from compute_forecast.core.config import QualityConfig
 from compute_forecast.quality.quality_structures import QualityMetrics
-from compute_forecast.extraction.validation_rules import ValidationRule, ExtractionField
-from compute_forecast.data.collectors.state_structures import ValidationResult
-from compute_forecast.quality.extraction.outlier_detection import OutlierDetector
+from compute_forecast.pipeline.content_extraction.templates.validation_rules import (
+    ValidationRule,
+    ExtractionField,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
+    ValidationResult,
+)
+from compute_forecast.pipeline.content_extraction.quality.outlier_detection import (
+    OutlierDetector,
+)
 from compute_forecast.testing.integration.phase_validators import DataIntegrityChecker
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 @pytest.fixture

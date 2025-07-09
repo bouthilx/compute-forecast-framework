@@ -10,14 +10,21 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-from compute_forecast.data.collectors.checkpoint_manager import CheckpointManager
-from compute_forecast.data.collectors.state_persistence import StatePersistence
-from compute_forecast.data.collectors.state_structures import (
+from compute_forecast.pipeline.metadata_collection.collectors.checkpoint_manager import (
+    CheckpointManager,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.state_persistence import (
+    StatePersistence,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     CheckpointData,
     ErrorContext,
     CheckpointValidationResult,
 )
-from compute_forecast.data.models import APIHealthStatus, RateLimitStatus
+from compute_forecast.pipeline.metadata_collection.models import (
+    APIHealthStatus,
+    RateLimitStatus,
+)
 
 # Add package root to Python path
 package_root = Path(__file__).parent.parent.parent

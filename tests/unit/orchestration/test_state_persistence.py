@@ -14,8 +14,10 @@ from pathlib import Path
 from datetime import datetime
 from unittest.mock import patch
 
-from compute_forecast.data.collectors.state_persistence import StatePersistence
-from compute_forecast.data.collectors.state_structures import (
+from compute_forecast.pipeline.metadata_collection.collectors.state_persistence import (
+    StatePersistence,
+)
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     CheckpointData,
     CollectionSession,
     VenueConfig,

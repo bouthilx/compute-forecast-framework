@@ -4,19 +4,25 @@ import pytest
 from unittest.mock import patch
 import pandas as pd
 
-from compute_forecast.analysis.benchmark.workflow_manager import (
+from compute_forecast.pipeline.analysis.benchmark.workflow_manager import (
     ExtractionWorkflowManager,
 )
-from compute_forecast.analysis.benchmark.models import (
+from compute_forecast.pipeline.analysis.benchmark.models import (
     BenchmarkDomain,
     ExtractionBatch,
     BenchmarkPaper,
 )
-from compute_forecast.analysis.benchmark.extractor import AcademicBenchmarkExtractor
-from compute_forecast.analysis.benchmark.domain_extractors import (
+from compute_forecast.pipeline.analysis.benchmark.extractor import (
+    AcademicBenchmarkExtractor,
+)
+from compute_forecast.pipeline.analysis.benchmark.domain_extractors import (
     NLPBenchmarkExtractor,
 )
-from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+    ComputationalAnalysis,
+    Author,
+)
 
 
 class TestExtractionWorkflowManager:

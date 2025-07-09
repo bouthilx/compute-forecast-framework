@@ -4,14 +4,16 @@ from datetime import datetime
 import time
 from typing import List
 
-from compute_forecast.pdf_discovery import (
+from compute_forecast.pipeline.pdf_acquisition.discovery import (
     PDFRecord,
     DiscoveryResult,
     BasePDFCollector,
     PDFDiscoveryFramework,
 )
-from compute_forecast.data.models import Paper
-from compute_forecast.pdf_discovery.utils.exceptions import SourceNotApplicableError
+from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.pdf_acquisition.discovery.utils.exceptions import (
+    SourceNotApplicableError,
+)
 
 
 class ArxivCollector(BasePDFCollector):

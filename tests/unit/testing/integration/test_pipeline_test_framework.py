@@ -13,7 +13,7 @@ from compute_forecast.testing.integration.pipeline_test_framework import (
     PipelineConfig,
     EndToEndTestFramework,
 )
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class TestPipelinePhase:

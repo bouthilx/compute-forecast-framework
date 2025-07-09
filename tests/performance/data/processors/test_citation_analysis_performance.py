@@ -7,10 +7,16 @@ from unittest.mock import patch
 import psutil
 import os
 
-from compute_forecast.data.models import Paper, Author
-from compute_forecast.data.collectors.state_structures import VenueConfig
-from compute_forecast.data.processors.citation_analyzer import CitationAnalyzer
-from compute_forecast.data.processors.breakthrough_detector import BreakthroughDetector
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
+    VenueConfig,
+)
+from compute_forecast.pipeline.metadata_collection.processors.citation_analyzer import (
+    CitationAnalyzer,
+)
+from compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector import (
+    BreakthroughDetector,
+)
 
 
 class TestCitationAnalysisPerformance:
@@ -90,7 +96,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(50000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
@@ -125,7 +131,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(100000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
@@ -155,7 +161,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(1000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             detector = BreakthroughDetector()
@@ -185,7 +191,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(50000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
@@ -215,7 +221,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(10000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
@@ -256,7 +262,7 @@ class TestCitationAnalysisPerformance:
         memory_usage = []
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)
@@ -299,7 +305,7 @@ class TestCitationAnalysisPerformance:
         ]
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer([])
@@ -322,7 +328,7 @@ class TestCitationAnalysisPerformance:
         papers = self.generate_large_dataset(30000)
 
         with patch(
-            "compute_forecast.data.processors.breakthrough_detector.Path.exists",
+            "compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector.Path.exists",
             return_value=False,
         ):
             analyzer = CitationAnalyzer(large_venue_configs)

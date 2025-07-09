@@ -1,7 +1,11 @@
 """Tests for default extraction templates."""
 
-from compute_forecast.extraction.default_templates import DefaultTemplates
-from compute_forecast.extraction.template_engine import ExtractionField
+from compute_forecast.pipeline.content_extraction.templates.default_templates import (
+    DefaultTemplates,
+)
+from compute_forecast.pipeline.content_extraction.templates.template_engine import (
+    ExtractionField,
+)
 
 
 class TestDefaultTemplates:
@@ -152,7 +156,9 @@ class TestDefaultTemplates:
 
     def test_template_registration(self):
         """Test that templates can be registered with engine."""
-        from compute_forecast.extraction.template_engine import ExtractionTemplateEngine
+        from compute_forecast.pipeline.content_extraction.templates.template_engine import (
+            ExtractionTemplateEngine,
+        )
 
         engine = ExtractionTemplateEngine()
 

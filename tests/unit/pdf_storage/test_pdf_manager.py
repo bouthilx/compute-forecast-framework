@@ -7,7 +7,7 @@ import tempfile
 import json
 from datetime import datetime, timedelta
 
-from compute_forecast.pdf_storage.pdf_manager import PDFManager
+from compute_forecast.pipeline.pdf_acquisition.storage.pdf_manager import PDFManager
 
 
 class TestPDFManager(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestPDFManager(unittest.TestCase):
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
-    @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
+    @patch("compute_forecast.pipeline.pdf_acquisition.storage.pdf_manager.Path.home")
     def test_initialization(self, mock_home):
         """Test PDFManager initialization."""
         mock_home.return_value = self.temp_dir
@@ -37,7 +37,7 @@ class TestPDFManager(unittest.TestCase):
         # Metadata file is created on first save, not on initialization
         self.assertEqual(manager.metadata_file, manager.cache_dir / "pdf_metadata.json")
 
-    @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
+    @patch("compute_forecast.pipeline.pdf_acquisition.storage.pdf_manager.Path.home")
     def test_store_pdf_success(self, mock_home):
         """Test successful PDF storage."""
         mock_home.return_value = self.temp_dir
@@ -64,7 +64,7 @@ class TestPDFManager(unittest.TestCase):
             saved_metadata["test_paper_1"]["metadata"]["venue"], "Test Conference"
         )
 
-    @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
+    @patch("compute_forecast.pipeline.pdf_acquisition.storage.pdf_manager.Path.home")
     def test_store_pdf_failure(self, mock_home):
         """Test PDF storage failure."""
         mock_home.return_value = self.temp_dir
@@ -81,7 +81,7 @@ class TestPDFManager(unittest.TestCase):
 
         self.assertFalse(result)
 
-    @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
+    @patch("compute_forecast.pipeline.pdf_acquisition.storage.pdf_manager.Path.home")
     def test_get_pdf_for_analysis_cached(self, mock_home):
         """Test PDF retrieval from cache."""
         mock_home.return_value = self.temp_dir
@@ -105,7 +105,7 @@ class TestPDFManager(unittest.TestCase):
         self.assertEqual(result, cached_file)
         self.mock_drive_store.download_pdf.assert_not_called()  # Should not download from Drive
 
-    @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
+    @patch("compute_forecast.pipeline.pdf_acquisition.storage.pdf_manager.Path.home")
     def test_get_pdf_for_analysis_download(self, mock_home):
         """Test PDF download from Drive."""
         mock_home.return_value = self.temp_dir
@@ -136,7 +136,7 @@ class TestPDFManager(unittest.TestCase):
         self.assertTrue(result.exists())
         self.assertEqual(result.read_bytes(), b"downloaded pdf content")
 
-    @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
+    @patch("compute_forecast.pipeline.pdf_acquisition.storage.pdf_manager.Path.home")
     def test_get_pdf_for_analysis_not_found(self, mock_home):
         """Test PDF retrieval for non-existent paper."""
         mock_home.return_value = self.temp_dir
@@ -147,7 +147,7 @@ class TestPDFManager(unittest.TestCase):
 
         self.assertIsNone(result)
 
-    @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
+    @patch("compute_forecast.pipeline.pdf_acquisition.storage.pdf_manager.Path.home")
     def test_cleanup_cache(self, mock_home):
         """Test cache cleanup functionality."""
         mock_home.return_value = self.temp_dir
@@ -183,7 +183,7 @@ class TestPDFManager(unittest.TestCase):
         self.assertFalse(old_file.exists())
         self.assertTrue(recent_file.exists())
 
-    @patch("compute_forecast.pdf_storage.pdf_manager.Path.home")
+    @patch("compute_forecast.pipeline.pdf_acquisition.storage.pdf_manager.Path.home")
     def test_get_statistics(self, mock_home):
         """Test statistics generation."""
         mock_home.return_value = self.temp_dir

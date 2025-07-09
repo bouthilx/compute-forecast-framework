@@ -5,11 +5,11 @@ Unit tests for alert suppression functionality.
 import pytest
 from datetime import datetime, timedelta
 
-from compute_forecast.monitoring.alert_suppression import (
+from compute_forecast.monitoring.alerting.alert_suppression import (
     AlertSuppressionManager,
     SuppressionRuleManager,
 )
-from compute_forecast.monitoring.alert_structures import (
+from compute_forecast.monitoring.alerting.alert_structures import (
     Alert,
     SuppressionRule,
 )

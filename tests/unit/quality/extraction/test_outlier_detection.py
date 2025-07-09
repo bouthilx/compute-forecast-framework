@@ -4,12 +4,12 @@ Tests for OutlierDetector.
 
 import numpy as np
 
-from compute_forecast.quality.extraction.outlier_detection import (
+from compute_forecast.pipeline.content_extraction.quality.outlier_detection import (
     OutlierDetector,
     OutlierMethod,
     OutlierResult,
 )
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 class TestOutlierDetector:

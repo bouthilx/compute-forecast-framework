@@ -3,11 +3,13 @@
 import pytest
 from unittest.mock import patch, Mock
 
-from compute_forecast.pdf_discovery.sources.acl_anthology_collector import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.acl_anthology_collector import (
     ACLAnthologyCollector,
 )
-from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
+    PDFDiscoveryFramework,
+)
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 @pytest.mark.skip(reason="refactor: pdf_discovery modules not found")
@@ -63,7 +65,9 @@ class TestACLAnthologyIntegration:
         def mock_discover_single(paper):
             if paper.venue in ["NAACL", "EMNLP"]:
                 from datetime import datetime
-                from compute_forecast.pdf_discovery.core.models import PDFRecord
+                from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import (
+                    PDFRecord,
+                )
 
                 return PDFRecord(
                     paper_id=paper.paper_id,

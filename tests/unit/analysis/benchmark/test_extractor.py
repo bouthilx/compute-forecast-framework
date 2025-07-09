@@ -3,13 +3,19 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from compute_forecast.analysis.benchmark.extractor import AcademicBenchmarkExtractor
-from compute_forecast.analysis.benchmark.models import (
+from compute_forecast.pipeline.analysis.benchmark.extractor import (
+    AcademicBenchmarkExtractor,
+)
+from compute_forecast.pipeline.analysis.benchmark.models import (
     BenchmarkDomain,
     BenchmarkPaper,
     ExtractionBatch,
 )
-from compute_forecast.data.models import Paper, ComputationalAnalysis, Author
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+    ComputationalAnalysis,
+    Author,
+)
 
 
 class TestAcademicBenchmarkExtractor:
@@ -56,7 +62,7 @@ class TestAcademicBenchmarkExtractor:
     def extractor(self, mock_analyzer):
         """Create an extractor instance with mocked analyzer."""
         with patch(
-            "compute_forecast.analysis.benchmark.extractor.ComputationalAnalyzer"
+            "compute_forecast.pipeline.analysis.benchmark.extractor.ComputationalAnalyzer"
         ) as mock_cls:
             mock_cls.return_value = mock_analyzer
             return AcademicBenchmarkExtractor()

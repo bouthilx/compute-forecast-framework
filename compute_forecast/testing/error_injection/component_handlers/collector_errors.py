@@ -4,7 +4,7 @@ import logging
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 
-from ..injection_framework import ErrorType
+from compute_forecast.testing.error_injection.injection_framework import ErrorType
 
 logger = logging.getLogger(__name__)
 

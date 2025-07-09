@@ -7,7 +7,7 @@ import pytest
 from unittest.mock import Mock, patch
 import requests
 
-from compute_forecast.data.models import APIResponse
+from compute_forecast.pipeline.metadata_collection.models import APIResponse
 
 
 class TestEnhancedSemanticScholarClient:
@@ -15,7 +15,7 @@ class TestEnhancedSemanticScholarClient:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from compute_forecast.data.sources.enhanced_semantic_scholar import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_semantic_scholar import (
             EnhancedSemanticScholarClient,
         )
 
@@ -235,7 +235,7 @@ class TestEnhancedOpenAlexClient:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from compute_forecast.data.sources.enhanced_openalex import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_openalex import (
             EnhancedOpenAlexClient,
         )
 
@@ -345,7 +345,7 @@ class TestEnhancedCrossrefClient:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from compute_forecast.data.sources.enhanced_crossref import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_crossref import (
             EnhancedCrossrefClient,
         )
 
@@ -484,13 +484,13 @@ class TestAPIClientIntegration:
     @pytest.mark.skip(reason="refactor: Slow test")
     def test_all_clients_return_consistent_paper_format(self):
         """Test that all clients return papers in consistent format"""
-        from compute_forecast.data.sources.enhanced_semantic_scholar import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_semantic_scholar import (
             EnhancedSemanticScholarClient,
         )
-        from compute_forecast.data.sources.enhanced_openalex import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_openalex import (
             EnhancedOpenAlexClient,
         )
-        from compute_forecast.data.sources.enhanced_crossref import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_crossref import (
             EnhancedCrossrefClient,
         )
 
@@ -521,13 +521,13 @@ class TestAPIClientIntegration:
     @pytest.mark.skip(reason="refactor: Slow test")
     def test_all_clients_support_batch_venue_search(self):
         """Test that all clients support batch venue searching"""
-        from compute_forecast.data.sources.enhanced_semantic_scholar import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_semantic_scholar import (
             EnhancedSemanticScholarClient,
         )
-        from compute_forecast.data.sources.enhanced_openalex import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_openalex import (
             EnhancedOpenAlexClient,
         )
-        from compute_forecast.data.sources.enhanced_crossref import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_crossref import (
             EnhancedCrossrefClient,
         )
 
@@ -550,13 +550,13 @@ class TestAPIClientIntegration:
     @pytest.mark.skip(reason="refactor: Slow test")
     def test_client_error_recovery_patterns(self):
         """Test error recovery patterns across all clients"""
-        from compute_forecast.data.sources.enhanced_semantic_scholar import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_semantic_scholar import (
             EnhancedSemanticScholarClient,
         )
-        from compute_forecast.data.sources.enhanced_openalex import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_openalex import (
             EnhancedOpenAlexClient,
         )
-        from compute_forecast.data.sources.enhanced_crossref import (
+        from compute_forecast.pipeline.metadata_collection.sources.enhanced_crossref import (
             EnhancedCrossrefClient,
         )
 

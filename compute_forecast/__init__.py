@@ -12,17 +12,29 @@ __version__ = "0.1.0"
 __author__ = "Compute Forecast Team"
 
 # Core modules
-from . import data
-from . import pdf_parser
-from . import pdf_discovery
-from . import analysis
+from . import pipeline
 from . import core
+from . import monitoring
+from . import orchestration
+from . import quality
+from . import testing
+
+# Module aliases for backward compatibility and test imports
+from .pipeline.pdf_acquisition import discovery as pdf_discovery
+from .pipeline import metadata_collection
+from .pipeline import content_extraction as extraction
+from .pipeline.metadata_collection import processors as data
 
 __all__ = [
     "__version__",
-    "data",
-    "pdf_parser",
-    "pdf_discovery",
-    "analysis",
+    "pipeline",
     "core",
+    "monitoring",
+    "orchestration",
+    "quality",
+    "testing",
+    "pdf_discovery",
+    "metadata_collection",
+    "extraction",
+    "data",
 ]

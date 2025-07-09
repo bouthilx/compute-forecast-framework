@@ -5,8 +5,12 @@ from pathlib import Path
 from typing import Dict, List
 from unittest.mock import patch
 
-from compute_forecast.pdf_parser.core.processor import OptimizedPDFProcessor
-from compute_forecast.pdf_parser.core.base_extractor import BaseExtractor
+from compute_forecast.pipeline.content_extraction.parser.core.processor import (
+    OptimizedPDFProcessor,
+)
+from compute_forecast.pipeline.content_extraction.parser.core.base_extractor import (
+    BaseExtractor,
+)
 
 
 class MockExtractor(BaseExtractor):
@@ -76,7 +80,7 @@ class TestOptimizedPDFProcessor:
         paper_metadata = {"title": "Test Paper", "authors": ["Test Author"]}
 
         with patch(
-            "compute_forecast.pdf_parser.core.processor.datetime"
+            "compute_forecast.pipeline.content_extraction.parser.core.processor.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2023, 1, 1, 12, 0, 0)
 

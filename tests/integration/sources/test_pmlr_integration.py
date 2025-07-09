@@ -3,9 +3,13 @@
 import pytest
 from unittest.mock import patch, Mock
 
-from compute_forecast.pdf_discovery.core.framework import PDFDiscoveryFramework
-from compute_forecast.pdf_discovery.sources.pmlr_collector import PMLRCollector
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
+    PDFDiscoveryFramework,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.pmlr_collector import (
+    PMLRCollector,
+)
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 class TestPMLRIntegration:

@@ -1,10 +1,12 @@
 """Tests for validation rules engine."""
 
-from compute_forecast.extraction.validation_rules import (
+from compute_forecast.pipeline.content_extraction.templates.validation_rules import (
     ValidationRulesEngine,
     ValidationRule,
 )
-from compute_forecast.extraction.template_engine import ExtractionField
+from compute_forecast.pipeline.content_extraction.templates.template_engine import (
+    ExtractionField,
+)
 
 
 class TestValidationRule:

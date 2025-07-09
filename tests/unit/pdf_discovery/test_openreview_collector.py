@@ -3,8 +3,8 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from compute_forecast.data.models import Paper, Author
-from compute_forecast.pdf_discovery.sources.openreview_collector import (
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.openreview_collector import (
     OpenReviewPDFCollector,
 )
 

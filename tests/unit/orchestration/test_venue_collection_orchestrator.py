@@ -6,12 +6,12 @@ from datetime import datetime
 import threading
 from concurrent.futures import Future
 
-from compute_forecast.orchestration.venue_collection_orchestrator import (
+from compute_forecast.orchestration.orchestrators.venue_collection_orchestrator import (
     VenueCollectionOrchestrator,
     ComponentStatus,
 )
-from compute_forecast.data.models import CollectionConfig
-from compute_forecast.data.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import CollectionConfig
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 # Mock classes for testing
 from dataclasses import dataclass

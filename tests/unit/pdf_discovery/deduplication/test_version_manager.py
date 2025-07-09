@@ -3,11 +3,11 @@
 import pytest
 from datetime import datetime
 
-from compute_forecast.pdf_discovery.deduplication.version_manager import (
+from compute_forecast.pipeline.pdf_acquisition.discovery.deduplication.version_manager import (
     VersionManager,
     SourcePriority,
 )
-from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 
 
 class TestSourcePriority:

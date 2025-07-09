@@ -9,7 +9,7 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from compute_forecast.data.collectors.state_structures import (
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     CheckpointData,
     ErrorContext,
     InterruptionAnalysis,

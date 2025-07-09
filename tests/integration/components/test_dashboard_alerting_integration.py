@@ -8,15 +8,15 @@ import time
 from datetime import datetime
 from unittest.mock import Mock, patch
 
-from compute_forecast.monitoring.dashboard_server import CollectionDashboard
-from compute_forecast.monitoring.advanced_dashboard_server import (
+from compute_forecast.monitoring.server.dashboard_server import CollectionDashboard
+from compute_forecast.monitoring.server.advanced_dashboard_server import (
     AdvancedAnalyticsDashboard,
 )
-from compute_forecast.monitoring.intelligent_alerting_system import (
+from compute_forecast.monitoring.alerting.intelligent_alerting_system import (
     IntelligentAlertingSystem,
 )
-from compute_forecast.monitoring.metrics_collector import MetricsCollector
-from compute_forecast.monitoring.dashboard_metrics import (
+from compute_forecast.monitoring.metrics.metrics_collector import MetricsCollector
+from compute_forecast.monitoring.server.dashboard_metrics import (
     SystemMetrics,
     CollectionProgressMetrics,
     APIMetrics,
@@ -173,7 +173,7 @@ class TestDashboardAlertingIntegration:
         # Test integration
         try:
             # This would normally integrate via the adapter
-            from compute_forecast.monitoring.advanced_dashboard_server import (
+            from compute_forecast.monitoring.server.advanced_dashboard_server import (
                 AnalyticsDashboardAdapter,
             )
 
@@ -237,7 +237,7 @@ class TestDashboardAlertingIntegration:
     def test_notification_channel_integration(self):
         """Test notification channels can be integrated with dashboard"""
         try:
-            from compute_forecast.monitoring.notification_channels import (
+            from compute_forecast.monitoring.alerting.notification_channels import (
                 DashboardNotificationChannel,
             )
 

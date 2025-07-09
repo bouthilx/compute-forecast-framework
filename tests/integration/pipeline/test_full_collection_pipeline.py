@@ -8,10 +8,14 @@ import threading
 from dataclasses import dataclass, field
 from typing import Dict, List, Any
 
-from compute_forecast.orchestration.venue_collection_orchestrator import (
+from compute_forecast.orchestration.orchestrators.venue_collection_orchestrator import (
     VenueCollectionOrchestrator,
 )
-from compute_forecast.data.models import CollectionConfig, Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import (
+    CollectionConfig,
+    Paper,
+    Author,
+)
 
 
 @dataclass
@@ -650,7 +654,7 @@ class FullPipelineIntegrationTest:
 
         try:
             # Test metrics collection
-            from compute_forecast.orchestration.monitoring_components import (
+            from compute_forecast.orchestration.core.monitoring_components import (
                 SimpleMetricsCollector,
             )
 
@@ -665,7 +669,7 @@ class FullPipelineIntegrationTest:
             test_result.assertions_passed += 1
 
             # Test dashboard creation
-            from compute_forecast.orchestration.monitoring_components import (
+            from compute_forecast.orchestration.core.monitoring_components import (
                 SimpleDashboard,
             )
 
@@ -677,7 +681,7 @@ class FullPipelineIntegrationTest:
             test_result.assertions_passed += 1
 
             # Test alert system
-            from compute_forecast.orchestration.monitoring_components import (
+            from compute_forecast.orchestration.core.monitoring_components import (
                 SimpleAlertSystem,
             )
 

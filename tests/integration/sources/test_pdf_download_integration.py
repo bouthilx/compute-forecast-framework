@@ -8,8 +8,10 @@ from datetime import datetime
 import pytest
 import requests
 
-from compute_forecast.pdf_download.downloader import SimplePDFDownloader
-from compute_forecast.pdf_discovery.core.models import PDFRecord
+from compute_forecast.pipeline.pdf_acquisition.download.downloader import (
+    SimplePDFDownloader,
+)
+from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 
 
 class TestPDFDownloadIntegration:

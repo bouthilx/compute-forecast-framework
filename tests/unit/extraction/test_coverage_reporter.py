@@ -2,10 +2,14 @@
 
 import pytest
 
-from compute_forecast.extraction import (
+from compute_forecast.pipeline.content_extraction.templates.coverage_reporter import (
     CoverageReporter,
-    ExtractionField,
+)
+from compute_forecast.pipeline.content_extraction.templates.default_templates import (
     DefaultTemplates,
+)
+from compute_forecast.pipeline.content_extraction.templates.template_engine import (
+    ExtractionField,
 )
 
 

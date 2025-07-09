@@ -4,7 +4,9 @@ import pytest
 from unittest.mock import Mock, patch
 import requests
 
-from compute_forecast.pdf_discovery.sources.unpaywall_client import UnpaywallClient
+from compute_forecast.pipeline.pdf_acquisition.discovery.sources.unpaywall_client import (
+    UnpaywallClient,
+)
 
 
 class TestUnpaywallClient:

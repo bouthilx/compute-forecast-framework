@@ -2,7 +2,7 @@
 
 import argparse
 import sys
-from . import __version__
+from compute_forecast import __version__
 
 
 def main():

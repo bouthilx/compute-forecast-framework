@@ -1,9 +1,14 @@
 """Edge case tests for citation analyzer to ensure robust error handling."""
 
 from datetime import datetime
-from compute_forecast.data.models import Paper, Author
-from compute_forecast.data.collectors.state_structures import VenueConfig
-from compute_forecast.data.processors import CitationAnalyzer, CitationConfig
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
+    VenueConfig,
+)
+from compute_forecast.pipeline.metadata_collection.processors import (
+    CitationAnalyzer,
+    CitationConfig,
+)
 
 
 class TestCitationAnalyzerEdgeCases:
