@@ -91,118 +91,169 @@ class AAAIScraper(BaseScraper):
             # OAI-PMH endpoint URL
             oai_url = f"{self.base_url}/{journal_name}/oai"
             
-            # For AAAI, use smaller date ranges to avoid timeouts
-            # Split year into quarters
-            date_ranges = [
-                (f'{year}-01-01', f'{year}-03-31'),
-                (f'{year}-04-01', f'{year}-06-30'),
-                (f'{year}-07-01', f'{year}-09-30'),
-                (f'{year}-10-01', f'{year}-12-31')
-            ]
+            # For AAAI, use much smaller date ranges to avoid timeouts
+            # Conference-specific optimizations: only query months when conferences typically publish
+            conference_months = {
+                'aaai': [1, 2, 3, 4],     # AAAI is usually in Feb-March, papers appear Jan-Apr
+                'aies': list(range(1, 13)),  # AIES varies by year
+                'hcomp': [10, 11, 12],    # HCOMP is usually in October
+                'icwsm': [5, 6, 7],       # ICWSM is usually in June
+            }
+            
+            # Get relevant months for this venue
+            months_to_query = conference_months.get(venue_lower, list(range(1, 13)))
+            
+            # Build date ranges for relevant months only
+            date_ranges = []
+            for month in months_to_query:
+                if month == 12:
+                    # December ends on 31st
+                    date_ranges.append((f'{year}-{month:02d}-01', f'{year}-{month:02d}-31'))
+                elif month in [4, 6, 9, 11]:
+                    # April, June, September, November have 30 days
+                    date_ranges.append((f'{year}-{month:02d}-01', f'{year}-{month:02d}-30'))
+                elif month == 2:
+                    # February - use 28 to avoid leap year issues
+                    date_ranges.append((f'{year}-{month:02d}-01', f'{year}-{month:02d}-28'))
+                else:
+                    # January, March, May, July, August, October have 31 days
+                    date_ranges.append((f'{year}-{month:02d}-01', f'{year}-{month:02d}-31'))
             
             for from_date, until_date in date_ranges:
                 if len(papers) >= self.config.batch_size:
                     break
-                    
-                # Initial request parameters for this date range
-                params = {
-                    'verb': 'ListRecords',
-                    'metadataPrefix': 'oai_dc',
-                    'from': from_date,
-                    'until': until_date
-                }
                 
-                resumption_token = None
+                # Try weekly ranges if we're having trouble
+                use_weekly_ranges = len(errors) > 0  # Switch to weekly after first error
                 
-                while len(papers) < self.config.batch_size:
-                    # Use resumption token if available
-                    if resumption_token:
-                        params = {
-                            'verb': 'ListRecords',
-                            'resumptionToken': resumption_token
-                        }
+                if use_weekly_ranges and from_date != until_date:
+                    # Split month into weekly ranges
+                    from_day = int(from_date.split('-')[2])
+                    until_day = int(until_date.split('-')[2])
+                    year_month = from_date[:7]
                     
-                    self.logger.info(f"Querying OAI-PMH for {venue} papers from {from_date} to {until_date}")
-                    
-                    # Add retry logic for 503 errors
-                    max_retries = 3
-                    retry_count = 0
-                    
-                    while retry_count < max_retries:
-                        try:
-                            response = self.session.get(oai_url, params=params, timeout=60)
-                            if response.status_code == 503:
-                                # Check for Retry-After header
-                                retry_after = response.headers.get('Retry-After', 30)
-                                try:
-                                    retry_after = int(retry_after)
-                                except (ValueError, TypeError):
-                                    retry_after = 30
-                                
-                                self.logger.warning(f"Got 503 error, retrying after {retry_after} seconds")
-                                time.sleep(retry_after)
-                                retry_count += 1
-                                continue
-                            elif response.status_code != 200:
-                                raise Exception(f"OAI-PMH error: {response.status_code} - {response.text}")
-                            break
-                        except Exception as e:
-                            if retry_count < max_retries - 1:
-                                self.logger.warning(f"Request failed, retrying: {e}")
-                                time.sleep(10 * (retry_count + 1))  # Exponential backoff
-                                retry_count += 1
-                            else:
-                                raise
-                    
-                    # Parse XML response
-                    root = ET.fromstring(response.text)
-                    
-                    # Check for OAI-PMH errors
-                    error_elem = root.find('.//oai:error', self.namespaces)
-                    if error_elem is not None:
-                        error_code = error_elem.get('code', 'unknown')
-                        error_msg = error_elem.text or 'Unknown error'
-                        if error_code == 'noRecordsMatch':
-                            self.logger.info(f"No records found for {venue} from {from_date} to {until_date}")
-                            break
-                        else:
-                            raise Exception(f"OAI-PMH error {error_code}: {error_msg}")
-                    
-                    # Extract records
-                    records = root.findall('.//oai:record', self.namespaces)
-                    
-                    if not records:
-                        self.logger.info(f"No records found for {venue} from {from_date} to {until_date}")
+                    week_ranges = []
+                    for week_start in range(from_day, until_day + 1, 7):
+                        week_end = min(week_start + 6, until_day)
+                        week_ranges.append((f"{year_month}-{week_start:02d}", f"{year_month}-{week_end:02d}"))
+                else:
+                    week_ranges = [(from_date, until_date)]
+                
+                for week_from, week_until in week_ranges:
+                    if len(papers) >= self.config.batch_size:
                         break
+                        
+                    # Initial request parameters for this date range
+                    params = {
+                        'verb': 'ListRecords',
+                        'metadataPrefix': 'oai_dc',
+                        'from': week_from,
+                        'until': week_until
+                    }
+                
+                    resumption_token = None
                     
-                    for record in records:
-                        if len(papers) >= self.config.batch_size:
-                            break
-                            
-                        try:
-                            paper = self._parse_oai_record(record, venue_lower, year)
-                            if paper:
-                                papers.append(paper)
-                        except Exception as e:
-                            self.logger.warning(f"Failed to parse OAI record: {e}")
+                    while len(papers) < self.config.batch_size:
+                        # Use resumption token if available
+                        if resumption_token:
+                            params = {
+                                'verb': 'ListRecords',
+                                'resumptionToken': resumption_token
+                            }
+                        
+                        self.logger.info(f"Querying OAI-PMH for {venue} papers from {week_from} to {week_until}")
+                    
+                        # Add retry logic for 503 errors
+                        max_retries = 3
+                        retry_count = 0
+                        
+                        while retry_count < max_retries:
+                            try:
+                                # Use very short timeout to fail fast on hanging connections
+                                response = self.session.get(oai_url, params=params, timeout=5)
+                                if response.status_code == 503:
+                                    # Check for Retry-After header
+                                    retry_after = response.headers.get('Retry-After', 30)
+                                    try:
+                                        retry_after = int(retry_after)
+                                    except (ValueError, TypeError):
+                                        retry_after = 30
+                                    
+                                    self.logger.warning(f"Got 503 error, retrying after {retry_after} seconds")
+                                    time.sleep(min(retry_after, 30))  # Cap wait time
+                                    retry_count += 1
+                                    continue
+                                elif response.status_code != 200:
+                                    raise Exception(f"OAI-PMH error: {response.status_code}")
+                                break
+                            except Exception as e:
+                                if retry_count < max_retries - 1:
+                                    wait_time = min(5 * (retry_count + 1), 20)  # Shorter backoff
+                                    self.logger.warning(f"Request failed for {week_from} to {week_until}, retrying in {wait_time}s: {str(e)[:100]}")
+                                    time.sleep(wait_time)
+                                    retry_count += 1
+                                else:
+                                    # Skip this date range instead of failing entirely
+                                    self.logger.error(f"Skipping {week_from} to {week_until} after {max_retries} retries: {str(e)[:100]}")
+                                    errors.append(f"Timeout for {week_from} to {week_until}")
+                                    break  # Continue with next date range
+                    
+                        # Skip this date range if we couldn't get a response
+                        if retry_count >= max_retries:
                             continue
+                            
+                        # Parse XML response
+                        root = ET.fromstring(response.text)
                     
-                    # Check for resumption token
-                    resumption_elem = root.find('.//oai:resumptionToken', self.namespaces)
-                    if resumption_elem is not None and resumption_elem.text:
-                        resumption_token = resumption_elem.text
-                        # Add small delay before next request
-                        time.sleep(2)  # Increased delay to be more polite
-                    else:
-                        # No more records for this date range
-                        break
+                        # Check for OAI-PMH errors
+                        error_elem = root.find('.//oai:error', self.namespaces)
+                        if error_elem is not None:
+                            error_code = error_elem.get('code', 'unknown')
+                            error_msg = error_elem.text or 'Unknown error'
+                            if error_code == 'noRecordsMatch':
+                                self.logger.info(f"No records found for {venue} from {week_from} to {week_until}")
+                                break
+                            else:
+                                raise Exception(f"OAI-PMH error {error_code}: {error_msg}")
+                        
+                        # Extract records
+                        records = root.findall('.//oai:record', self.namespaces)
+                        
+                        if not records:
+                            self.logger.info(f"No records found for {venue} from {week_from} to {week_until}")
+                            break
+                        
+                        for record in records:
+                            if len(papers) >= self.config.batch_size:
+                                break
+                                
+                            try:
+                                paper = self._parse_oai_record(record, venue_lower, year)
+                                if paper:
+                                    papers.append(paper)
+                            except Exception as e:
+                                self.logger.warning(f"Failed to parse OAI record: {e}")
+                                continue
+                        
+                        # Check for resumption token
+                        resumption_elem = root.find('.//oai:resumptionToken', self.namespaces)
+                        if resumption_elem is not None and resumption_elem.text:
+                            resumption_token = resumption_elem.text
+                            # Add small delay before next request
+                            time.sleep(2)  # Increased delay to be more polite
+                        else:
+                            # No more records for this date range
+                            break
                     
             self.logger.info(f"Collected {len(papers)} papers for {venue} {year}")
             
+            # Consider it a success if we got any papers, even with some errors
+            success = len(papers) > 0 or (len(errors) < len(date_ranges))
+            
             return ScrapingResult(
-                success=True,
+                success=success,
                 papers_collected=len(papers),
-                errors=[],
+                errors=errors if errors else [],
                 metadata={"papers": papers},
                 timestamp=datetime.now()
             )

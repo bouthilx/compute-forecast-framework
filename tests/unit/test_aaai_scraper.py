@@ -6,9 +6,9 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 import time
 
-from compute_forecast.data.sources.scrapers.aaai import AAAIScraper
-from compute_forecast.data.sources.scrapers.models import SimplePaper
-from compute_forecast.data.sources.scrapers.base import ScrapingConfig
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.aaai import AAAIScraper
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import SimplePaper
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import ScrapingConfig
 
 
 class TestAAAIScraper:
