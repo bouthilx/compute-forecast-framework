@@ -80,7 +80,7 @@ ModuleNotFoundError: No module named 'compute_forecast.data'
 ### Step 6: Push changes and check PR
 ✓ Pushed all fixes to PR 185
 - Import errors are now fixed
-- Tests are running successfully  
+- Tests are running successfully
 - Pre-commit is still failing due to mypy type checking errors (49 errors across 11 files)
 - These mypy errors are pre-existing and require separate attention
 

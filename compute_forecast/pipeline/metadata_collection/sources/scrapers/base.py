@@ -92,7 +92,7 @@ class BaseScraper(ABC):
 
             # Set user agent
             session.headers.update({"User-Agent": self.config.user_agent})
-            
+
             self._session = session
 
         return self._session
@@ -189,7 +189,9 @@ class ConferenceProceedingsScraper(BaseScraper):
         pass
 
     @abstractmethod
-    def parse_proceedings_page(self, html: str, venue: str, year: int) -> List[SimplePaper]:
+    def parse_proceedings_page(
+        self, html: str, venue: str, year: int
+    ) -> List[SimplePaper]:
         """Parse proceedings page HTML to extract papers"""
         pass
 
