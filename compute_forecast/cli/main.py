@@ -14,9 +14,11 @@ app = typer.Typer(
 
 # Import commands
 from .commands.collect import main as collect_command
+from .commands.consolidate import main as consolidate_command
 
-# Register the collect command
+# Register the commands
 app.command(name="collect")(collect_command)
+app.command(name="consolidate")(consolidate_command)
 
 
 def version_callback(value: bool):
