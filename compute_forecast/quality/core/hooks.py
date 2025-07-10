@@ -61,7 +61,32 @@ def run_post_command_quality_check(
 
 
 def _show_quality_summary(report: QualityReport, context: Optional[Dict[str, Any]] = None):
-    """Show a concise quality summary in the console."""
+    """Show a detailed quality summary in the console."""
+    # For collection stage, show the rich formatted output
+    if report.stage == "collection":
+        from .formatters import format_report
+        
+        try:
+            # Use the text formatter to create rich output
+            formatted_report = format_report(report, "text", verbose=False)
+            
+            # Print the detailed report
+            console.print("\n" + formatted_report)
+            
+            # If there are critical issues, add a note about running verbose command
+            if report.has_critical_issues():
+                console.print(f"\n[red]Run [cyan]cf quality --stage {report.stage} --verbose {report.data_path}[/cyan] for detailed issue analysis.[/red]")
+        
+        except Exception:
+            # Fall back to minimal summary if formatting fails
+            _show_minimal_summary(report, context)
+    else:
+        # For other stages, use minimal summary until their formatters are implemented
+        _show_minimal_summary(report, context)
+
+
+def _show_minimal_summary(report: QualityReport, context: Optional[Dict[str, Any]] = None):
+    """Show a minimal quality summary as fallback."""
     # Determine overall quality grade
     grade = _score_to_grade(report.overall_score)
     grade_color = _grade_to_color(grade)
