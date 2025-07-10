@@ -196,7 +196,7 @@ class CVFScraper(ConferenceProceedingsScraper):
             if href:
                 if not href.startswith("http"):
                     href = urljoin(self.base_url, href)
-                return href
+                return str(href)
 
         return None
 

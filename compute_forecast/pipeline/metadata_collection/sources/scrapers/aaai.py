@@ -91,8 +91,8 @@ class AAAIScraper(BaseScraper):
 
     def scrape_venue_year(self, venue: str, year: int) -> ScrapingResult:
         """Scrape papers for a specific venue and year using OAI-PMH."""
-        papers = []
-        errors = []
+        papers: List[SimplePaper] = []
+        errors: List[str] = []
 
         venue_lower = venue.lower()
         journal_name = self._get_journal_name(venue_lower)
@@ -395,7 +395,9 @@ class AAAIScraper(BaseScraper):
             if header is not None:
                 identifier_elem = header.find("oai:identifier", self.namespaces)
                 if identifier_elem is not None and identifier_elem.text:
-                    paper_id = self._extract_article_id(identifier_elem.text)
+                    extracted_id = self._extract_article_id(identifier_elem.text)
+                    if extracted_id:
+                        paper_id = extracted_id
 
             # Extract publication year from date if available
             date_elem = metadata.find("dc:date", self.namespaces)

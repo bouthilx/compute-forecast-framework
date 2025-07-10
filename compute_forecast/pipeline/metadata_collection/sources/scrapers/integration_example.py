@@ -1,6 +1,6 @@
 """Integration example showing how to use error handling components with existing scrapers"""
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import logging
 from datetime import datetime
 
@@ -18,7 +18,7 @@ from ..models import Paper
 class EnhancedScraper(BaseScraper):
     """Enhanced scraper with integrated error handling and monitoring"""
 
-    def __init__(self, source_name: str, config: ScrapingConfig = None):
+    def __init__(self, source_name: str, config: Optional[ScrapingConfig] = None):
         super().__init__(source_name, config)
 
         # Initialize error handling components

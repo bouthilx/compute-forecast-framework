@@ -2,7 +2,7 @@
 
 import re
 import time
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Dict
 from datetime import datetime
 
 from .base import BasePaperoniAdapter
@@ -104,7 +104,7 @@ class NaturePortfolioAdapter(BasePaperoniAdapter):
 
             # Query Crossref for papers from the specified year
             url = f"{self.base_url}/journals/{issn}/works"
-            params = {
+            params: Dict[str, Any] = {
                 "filter": f"from-pub-date:{year}-01-01,until-pub-date:{year}-12-31,type:journal-article",
                 "rows": min(self.config.batch_size, 1000),  # Crossref max is 1000
                 "sort": "published",

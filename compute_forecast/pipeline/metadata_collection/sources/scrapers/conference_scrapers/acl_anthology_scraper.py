@@ -430,7 +430,7 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
             pdf_url = pdf_link.get("href", "")
             if not pdf_url.startswith("http"):
                 pdf_url = urljoin(self.base_url, pdf_url)
-            return pdf_url
+            return str(pdf_url)
 
         # ACL Anthology has predictable PDF URLs based on paper URL
         # Pattern 1: New format like /2024.acl-long.0/ -> /2024.acl-long.0.pdf
