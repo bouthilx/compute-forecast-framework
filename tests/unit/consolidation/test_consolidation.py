@@ -80,7 +80,7 @@ def test_paper_from_dict_datetime_deserialization():
         "authors": [],
         "venue": "ICML",
         "year": 2023,
-        "citations": 10,
+        "citations": [],
         "collection_timestamp": "2025-01-10T12:00:00"  # ISO format string
     }
     

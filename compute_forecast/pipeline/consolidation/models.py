@@ -16,7 +16,7 @@ class ProvenanceRecord:
     """Base class for tracking source and timing of enrichment data"""
     source: str
     timestamp: datetime
-    original: bool = False  # True if from original scraper, False if from enrichment API
+    original: bool  # True if from original scraper, False if from enrichment API
     
 
 @dataclass
