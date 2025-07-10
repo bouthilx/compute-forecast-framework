@@ -110,7 +110,7 @@ class TestCVFIntegration:
         assert any(year % 2 == 1 for year in wacv_years)
 
     @patch(
-        "compute_forecast.data.sources.scrapers.conference_scrapers.cvf_scraper.CVFScraper._make_request"
+        "compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.cvf_scraper.CVFScraper._make_request"
     )
     def test_end_to_end_scraping_flow(self, mock_make_request):
         """Test complete scraping flow from registry to results."""
