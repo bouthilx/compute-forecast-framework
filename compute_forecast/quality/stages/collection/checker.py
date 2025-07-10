@@ -7,7 +7,7 @@ from datetime import datetime
 
 from compute_forecast.quality.stages.base import StageQualityChecker
 from compute_forecast.quality.core.interfaces import (
-    QualityCheckResult, QualityConfig
+    QualityCheckResult, QualityConfig, QualityReport
 )
 from .validators import (
     CompletenessValidator,
@@ -127,6 +127,24 @@ class CollectionQualityChecker(StageQualityChecker):
         papers = data.get("papers", [])
         return self.coverage_validator.validate(papers, config)
     
+    def check(self, data_path: Path, config: QualityConfig) -> QualityReport:
+        """Run all quality checks for this stage and attach metrics."""
+        # Get the base report
+        report = super().check(data_path, config)
+        
+        # Load data again to generate metrics
+        data = self.load_data(data_path)
+        
+        # Generate metrics
+        metrics = self.generate_metrics(data, report.check_results)
+        
+        # Attach metrics to report - store in a way the formatter can find it
+        # We'll add it to the first check result for now
+        if report.check_results:
+            report.check_results[0].metrics["collection_metrics"] = metrics
+        
+        return report
+    
     def generate_metrics(self, data: Dict[str, Any], check_results: List[QualityCheckResult]) -> CollectionQualityMetrics:
         """Generate collection quality metrics."""
         papers = data.get("papers", [])
@@ -139,13 +157,13 @@ class CollectionQualityChecker(StageQualityChecker):
         
         # Extract metrics from check results
         for result in check_results:
-            if result.check_name == "completeness":
+            if result.check_name == "completeness_check":
                 self._extract_completeness_metrics(papers, result, metrics)
-            elif result.check_name == "consistency":
+            elif result.check_name == "consistency_check":
                 self._extract_consistency_metrics(papers, result, metrics)
-            elif result.check_name == "accuracy":
+            elif result.check_name == "accuracy_check":
                 self._extract_accuracy_metrics(papers, result, metrics)
-            elif result.check_name == "coverage":
+            elif result.check_name == "coverage_check":
                 self._extract_coverage_metrics(papers, result, metrics)
         
         return metrics
@@ -159,9 +177,12 @@ class CollectionQualityChecker(StageQualityChecker):
                                      if all(field in paper and paper[field] for field in ["title", "authors", "venue", "year"]))
         
         # Count papers with optional fields
-        papers_with_abstracts = sum(1 for paper in papers if paper.get("abstract"))
-        papers_with_pdfs = sum(1 for paper in papers if paper.get("pdf_url"))
-        papers_with_dois = sum(1 for paper in papers if paper.get("doi"))
+        papers_with_abstracts = sum(1 for paper in papers 
+                                   if paper.get("abstract") and str(paper["abstract"]).strip())
+        papers_with_pdfs = sum(1 for paper in papers 
+                              if paper.get("pdf_url") and str(paper["pdf_url"]).strip())
+        papers_with_dois = sum(1 for paper in papers 
+                              if paper.get("doi") and str(paper["doi"]).strip())
         
         # Calculate field completeness scores
         field_completeness = {}
@@ -191,12 +212,16 @@ class CollectionQualityChecker(StageQualityChecker):
         """Extract accuracy metrics from validation results."""
         # Count valid entries
         valid_years = sum(1 for paper in papers 
-                         if paper.get("year") and isinstance(paper["year"], (int, str)) 
-                         and str(paper["year"]).isdigit())
+                         if paper.get("year") and (
+                             isinstance(paper["year"], int) and 1900 <= paper["year"] <= 2100
+                             or isinstance(paper["year"], str) and paper["year"].isdigit() 
+                             and 1900 <= int(paper["year"]) <= 2100
+                         ))
         
         valid_authors = sum(1 for paper in papers 
                            if paper.get("authors") and isinstance(paper["authors"], list) 
-                           and all(isinstance(author, str) for author in paper["authors"]))
+                           and len(paper["authors"]) > 0
+                           and all(isinstance(author, str) and author.strip() for author in paper["authors"]))
         
         valid_urls = sum(1 for paper in papers 
                         if paper.get("pdf_url") and isinstance(paper["pdf_url"], str) 
