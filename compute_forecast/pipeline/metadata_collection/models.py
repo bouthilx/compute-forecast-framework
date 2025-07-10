@@ -128,9 +128,19 @@ class Paper:
         for author_data in data.get("authors", []):
             if isinstance(author_data, dict):
                 # Handle old format (affiliation as string) to new format (affiliations as list)
-                if "affiliation" in author_data and "affiliations" not in author_data:
+                if "affiliation" in author_data:
                     author_data = author_data.copy()
-                    author_data["affiliations"] = [author_data.pop("affiliation")] if author_data["affiliation"] else []
+                    affiliation_value = author_data.pop("affiliation")
+                    if "affiliations" not in author_data:
+                        author_data["affiliations"] = [affiliation_value] if affiliation_value else []
+                # Handle None affiliations
+                if author_data.get("affiliations") is None:
+                    author_data = author_data.copy()
+                    author_data["affiliations"] = []
+                # Handle None email
+                if author_data.get("email") is None:
+                    author_data = author_data.copy()
+                    author_data["email"] = ""
                 # Remove author_id if present (no longer part of model)
                 if "author_id" in author_data:
                     author_data = author_data.copy()
@@ -189,6 +199,12 @@ class Paper:
             paper_data["abstract"] = ""
         if paper_data.get("doi") is None:
             paper_data["doi"] = ""
+        
+        # Handle None values for list fields
+        if paper_data.get("keywords") is None:
+            paper_data["keywords"] = []
+        if paper_data.get("urls") is None:
+            paper_data["urls"] = []
         
         # Set default values for missing required fields
         if "citations" not in paper_data:
