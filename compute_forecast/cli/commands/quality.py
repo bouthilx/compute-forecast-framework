@@ -196,7 +196,11 @@ def _handle_single_stage_output(report: QualityReport, output_format: str, outpu
             save_report(report, output_file, output_format, verbose=verbose)
             console.print(f"[green]Report saved to: {output_file}[/green]")
         else:
-            console.print(formatted)
+            # For JSON format, print without adding extra newline
+            if output_format == "json":
+                print(formatted, end='')
+            else:
+                console.print(formatted)
     except ValueError as e:
         console.print(f"[red]Formatting error: {e}[/red]")
         # Fall back to basic text output
