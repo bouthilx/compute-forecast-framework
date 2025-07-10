@@ -185,7 +185,7 @@ def demonstration_workflow():
         timeout=30,
     )
 
-    scraper = EnhancedScaper("demo_scraper", config)
+    scraper = EnhancedScraper("demo_scraper", config)
 
     # Start collection
     scraper.start_collection()

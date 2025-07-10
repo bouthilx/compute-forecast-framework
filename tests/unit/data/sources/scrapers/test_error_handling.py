@@ -369,7 +369,6 @@ class TestRateLimiter:
         """Test basic rate limiting functionality"""
         limiter = RateLimiter(requests_per_second=10.0)  # 0.1 second interval
 
-        start_time = time.time()
         limiter.wait()
         first_wait_time = time.time()
 
@@ -499,8 +498,8 @@ class TestIntegration:
                 return "success"
 
         # Successful calls
-        result1 = mixed_function(should_fail=False)
-        result2 = mixed_function(should_fail=False)
+        mixed_function(should_fail=False)
+        mixed_function(should_fail=False)
 
         # Failed call
         with pytest.raises(ScrapingError):

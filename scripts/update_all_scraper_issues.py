@@ -23,7 +23,7 @@ for line in journal_content.split("\n"):
             issue_num = int(line.split(":")[0].replace("### Issue #", ""))
             current_issue = issue_num
             current_content = []
-        except:
+        except Exception:
             pass
     elif current_issue:
         current_content.append(line)

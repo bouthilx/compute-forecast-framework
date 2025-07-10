@@ -53,7 +53,7 @@ class TestCVFIntegration:
 
         assert scraper_lower is not None
         assert scraper_upper is not None
-        assert type(scraper_lower) == type(scraper_upper)
+        assert type(scraper_lower) is type(scraper_upper)
         assert isinstance(scraper_lower, CVFScraper)
         assert isinstance(scraper_upper, CVFScraper)
 
