@@ -5,7 +5,13 @@ from datetime import datetime
 from typing import Optional, List
 import logging
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.progress import (
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    BarColumn,
+    TaskProgressColumn,
+)
 
 from compute_forecast.pipeline.consolidation.sources.semantic_scholar import SemanticScholarSource
 from compute_forecast.pipeline.consolidation.sources.openalex import OpenAlexSource
@@ -63,6 +69,7 @@ def main(
     enrich: Optional[str] = typer.Option("citations,abstracts", "--enrich", help="Fields to enrich"),
     sources: Optional[str] = typer.Option("semantic_scholar,openalex", "--sources", help="Sources to use"),
     dry_run: bool = typer.Option(False, "--dry-run", help="Show what would be done"),
+    no_progress: bool = typer.Option(False, "--no-progress", help="Disable progress bars"),
     parallel: int = typer.Option(1, "--parallel", help="Number of parallel workers"),
     ss_api_key: Optional[str] = typer.Option(None, "--ss-api-key", help="Semantic Scholar API key", envvar="SEMANTIC_SCHOLAR_API_KEY"),
     openalex_email: Optional[str] = typer.Option(None, "--openalex-email", help="OpenAlex email", envvar="OPENALEX_EMAIL"),
@@ -119,23 +126,45 @@ def main(
     # Create paper lookup for efficient updates
     papers_by_id = {p.paper_id: p for p in papers if p.paper_id}
     
+    # Calculate total operations for progress tracking
+    total_operations = len(source_objects) * len(papers)
+    
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TaskProgressColumn(),
+        TextColumn(
+            "• {task.fields[citations_added]} citations • {task.fields[abstracts_added]} abstracts • {task.fields[urls_added]} URLs • {task.fields[api_calls]} API calls"
+        ),
         console=console,
+        disable=no_progress,
     ) as progress:
         
         # Single enrichment pass through all sources
-        task = progress.add_task("Enriching papers from all sources...", total=len(source_objects))
+        main_task = progress.add_task(
+            "Enriching papers from all sources...",
+            total=total_operations,
+            citations_added=0,
+            abstracts_added=0,
+            urls_added=0,
+            api_calls=0,
+        )
         
-        for source in source_objects:
-            console.print(f"[cyan]Enriching from {source.name}...[/cyan]")
+        for source_idx, source in enumerate(source_objects, 1):
+            # Update task description for current source
+            task_desc = f"Enriching from {source.name} ({source_idx}/{len(source_objects)})"
+            progress.update(main_task, description=task_desc)
             
             try:
                 # Get ALL enrichment data in one pass
                 enrichment_results = source.enrich_papers(papers)
                 
                 # Apply all enrichments to papers
+                batch_citations = 0
+                batch_abstracts = 0
+                batch_urls = 0
+                
                 for result in enrichment_results:
                     if result.paper_id in papers_by_id:
                         paper = papers_by_id[result.paper_id]
@@ -145,18 +174,38 @@ def main(
                         paper.abstracts.extend(result.abstracts)
                         paper.urls.extend(result.urls)
                         
-                        # Update statistics
-                        stats["citations_added"] += len(result.citations)
-                        stats["abstracts_added"] += len(result.abstracts)
-                        stats["urls_added"] += len(result.urls)
+                        # Track batch statistics
+                        batch_citations += len(result.citations)
+                        batch_abstracts += len(result.abstracts)
+                        batch_urls += len(result.urls)
+                    
+                    # Update progress for each paper processed
+                    progress.advance(main_task, 1)
                 
-                console.print(f"[green]✓[/green] Completed {source.name}")
+                # Update global statistics
+                stats["citations_added"] += batch_citations
+                stats["abstracts_added"] += batch_abstracts
+                stats["urls_added"] += batch_urls
+                
+                # Update progress bar statistics
+                total_api_calls = sum(s.api_calls for s in source_objects[:source_idx])
+                progress.update(
+                    main_task,
+                    citations_added=stats["citations_added"],
+                    abstracts_added=stats["abstracts_added"],
+                    urls_added=stats["urls_added"],
+                    api_calls=total_api_calls,
+                )
+                
+                console.print(f"[green]✓[/green] Completed {source.name}: +{batch_citations} citations, +{batch_abstracts} abstracts, +{batch_urls} URLs")
                 
             except Exception as e:
                 logger.error(f"Error enriching from {source.name}: {e}")
                 console.print(f"[red]✗[/red] Failed to enrich from {source.name}: {e}")
-            
-            progress.advance(task)
+                
+                # Still advance progress for remaining papers
+                remaining_papers = len(papers) - (progress.tasks[main_task].completed % len(papers))
+                progress.advance(main_task, remaining_papers)
     
     # Collect API call stats
     for source in source_objects:

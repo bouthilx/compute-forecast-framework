@@ -62,6 +62,7 @@ class EnrichmentResult:
     paper_id: str
     citations: List[CitationRecord] = field(default_factory=list)
     abstracts: List[AbstractRecord] = field(default_factory=list)
+    urls: List[URLRecord] = field(default_factory=list)
     errors: List[Dict[str, str]] = field(default_factory=list)
     
 
