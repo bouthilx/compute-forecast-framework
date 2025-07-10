@@ -43,33 +43,8 @@ def save_papers(papers: List[Paper], output_path: Path, stats: dict):
     # Convert papers to dict format with proper serialization
     papers_data = []
     for p in papers:
+        # to_dict() now handles all serialization including provenance records
         paper_dict = p.to_dict()
-        
-        # Convert CitationRecord objects to dicts
-        if hasattr(p, 'citations_history') and p.citations_history:
-            paper_dict['citations_history'] = [
-                {
-                    "source": record.source,
-                    "timestamp": record.timestamp.isoformat(),
-                    "data": {"count": record.data.count}
-                }
-                for record in p.citations_history
-            ]
-            
-        # Convert AbstractRecord objects to dicts
-        if hasattr(p, 'abstracts_history') and p.abstracts_history:
-            paper_dict['abstracts_history'] = [
-                {
-                    "source": record.source,
-                    "timestamp": record.timestamp.isoformat(),
-                    "data": {
-                        "text": record.data.text,
-                        "language": record.data.language
-                    }
-                }
-                for record in p.abstracts_history
-            ]
-            
         papers_data.append(paper_dict)
     
     output_data = {
@@ -158,7 +133,7 @@ def main(
             # Update papers
             for paper in papers:
                 if paper.paper_id in citation_records:
-                    paper.citations_history.extend(citation_records[paper.paper_id])
+                    paper.citations.extend(citation_records[paper.paper_id])
                     stats["citations_added"] += len(citation_records[paper.paper_id])
                     
             progress.update(task, completed=True)
@@ -174,7 +149,7 @@ def main(
             # Update papers
             for paper in papers:
                 if paper.paper_id in abstract_records:
-                    paper.abstracts_history.extend(abstract_records[paper.paper_id])
+                    paper.abstracts.extend(abstract_records[paper.paper_id])
                     stats["abstracts_added"] += len(abstract_records[paper.paper_id])
                     
             progress.update(task, completed=True)
