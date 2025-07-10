@@ -161,7 +161,8 @@ def load_checkpoint(venue: str, year: int) -> Optional[Dict[str, Any]]:
     checkpoint_path = get_checkpoint_path(venue, year)
     if checkpoint_path.exists():
         with open(checkpoint_path, "r") as f:
-            return json.load(f)
+            data: Dict[str, Any] = json.load(f)
+            return data
     return None
 
 
@@ -231,17 +232,17 @@ def main(
         venue_mappings = registry._venue_mapping
 
         # Group venues by scraper for better display
-        scraper_venues = {}
-        for venue, scraper in venue_mappings.items():
+        scraper_venues: Dict[str, List[str]] = {}
+        for venue, scraper_name in venue_mappings.items():
             if venue == "*":  # Skip the fallback entry
                 continue
-            if scraper not in scraper_venues:
-                scraper_venues[scraper] = []
-            scraper_venues[scraper].append(venue)
+            if scraper_name not in scraper_venues:
+                scraper_venues[scraper_name] = []
+            scraper_venues[scraper_name].append(venue)
 
         # Sort venues within each scraper
-        for scraper in scraper_venues:
-            scraper_venues[scraper].sort()
+        for scraper_name in scraper_venues:
+            scraper_venues[scraper_name].sort()
 
         # Create table
         table = Table(title="Available Venues and Scrapers")
@@ -264,10 +265,10 @@ def main(
         }
 
         # Add rows to table
-        for scraper in sorted(scraper_venues.keys()):
-            venues_str = ", ".join(scraper_venues[scraper])
-            description = scraper_descriptions.get(scraper, "")
-            table.add_row(scraper, venues_str, description)
+        for scraper_name in sorted(scraper_venues.keys()):
+            venues_str = ", ".join(scraper_venues[scraper_name])
+            description = scraper_descriptions.get(scraper_name, "")
+            table.add_row(scraper_name, venues_str, description)
 
         console.print(table)
         console.print()

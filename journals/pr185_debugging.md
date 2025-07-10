@@ -59,3 +59,9 @@ ModuleNotFoundError: No module named 'compute_forecast.data'
 ✓ Completed - Updated 13 test files to use correct import path:
 - Changed `compute_forecast.data.sources.scrapers` to `compute_forecast.pipeline.metadata_collection.sources.scrapers`
 - Changed `compute_forecast.data.models` to `compute_forecast.pipeline.metadata_collection.models`
+
+### Step 3: Fix type annotation issues
+✓ Fixed type annotation issues in collect.py:
+- Fixed variable name collision: renamed `scraper` to `scraper_name` in venue mapping loop
+- Added explicit type annotation for `scraper_venues: Dict[str, List[str]]`
+- Fixed JSON load return type by adding explicit type annotation
