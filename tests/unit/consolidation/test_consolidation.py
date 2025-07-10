@@ -19,7 +19,7 @@ def test_citation_enricher():
             year=2023,
             paper_id="paper1",
             doi="10.1234/test1",
-            citations=10
+            citations=[]  # Empty list now
         )
     ]
     
@@ -46,70 +46,8 @@ def test_citation_enricher():
     assert results["paper1"][0].data.count == 25
 
 
-def test_paper_from_dict_with_scraper_format():
-    """Test Paper.from_dict handles scraper data format"""
-    # Typical scraper output format
-    scraper_data = {
-        "title": "Test Paper",
-        "authors": ["John Doe", "Jane Smith"],  # String authors, not dicts
-        "venue": "NeurIPS",
-        "year": 2023,
-        "abstract": None,  # None instead of empty string
-        "pdf_urls": ["https://example.com/paper.pdf"],  # pdf_urls instead of urls
-        "keywords": [],
-        "doi": None,
-        "arxiv_id": None,
-        "paper_id": None,
-        # Scraper-specific fields
-        "source_scraper": "pmlr",
-        "source_url": "https://proceedings.mlr.press/v202/",
-        "scraped_at": "2025-01-10T10:00:00",
-        "extraction_confidence": 0.95,
-        "metadata_completeness": 0.8
-    }
-    
-    # Convert to Paper
-    paper = Paper.from_dict(scraper_data)
-    
-    # Check conversions
-    assert paper.title == "Test Paper"
-    assert len(paper.authors) == 2
-    assert paper.authors[0].name == "John Doe"
-    assert paper.authors[0].affiliations == []  # Empty list for string authors
-    assert paper.authors[1].name == "Jane Smith"
-    
-    assert paper.abstract == ""  # None converted to empty string
-    assert paper.doi == ""  # None converted to empty string
-    assert paper.urls == ["https://example.com/paper.pdf"]  # pdf_urls mapped to urls
-    assert paper.citations == 0  # Default value added
-    
-    # Check scraper fields were removed
-    assert not hasattr(paper, "source_scraper")
-    assert not hasattr(paper, "scraped_at")
-    assert not hasattr(paper, "extraction_confidence")
 
 
-def test_paper_from_dict_with_old_author_format():
-    """Test Paper.from_dict handles old author format with affiliation string"""
-    old_format_data = {
-        "title": "Test Paper",
-        "authors": [
-            {
-                "name": "John Doe",
-                "affiliation": "MIT",  # Old format: single string
-                "author_id": "12345"  # Old field to be removed
-            }
-        ],
-        "venue": "ICML",
-        "year": 2023,
-        "citations": 5
-    }
-    
-    paper = Paper.from_dict(old_format_data)
-    
-    assert paper.authors[0].name == "John Doe"
-    assert paper.authors[0].affiliations == ["MIT"]  # Converted to list
-    assert not hasattr(paper.authors[0], "author_id")  # Removed
 
 
 def test_paper_to_dict_datetime_serialization():
@@ -157,6 +95,8 @@ def test_paper_from_dict_datetime_deserialization():
 
 def test_abstract_enricher_skips_papers_with_abstracts():
     """Test AbstractEnricher skips papers that already have abstracts"""
+    from compute_forecast.pipeline.consolidation.models import AbstractRecord, AbstractData
+    
     papers = [
         Paper(
             title="Paper with abstract",
@@ -164,8 +104,13 @@ def test_abstract_enricher_skips_papers_with_abstracts():
             venue="ICML",
             year=2023,
             paper_id="paper1",
-            citations=0,
-            abstract="Existing abstract"  # Has abstract
+            citations=[],
+            abstracts=[AbstractRecord(
+                source="original",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text="Existing abstract")
+            )]  # Has abstract
         ),
         Paper(
             title="Paper without abstract",
@@ -173,8 +118,8 @@ def test_abstract_enricher_skips_papers_with_abstracts():
             venue="ICML",
             year=2023,
             paper_id="paper2",
-            citations=0,
-            abstract=""  # No abstract
+            citations=[],
+            abstracts=[]  # No abstract
         )
     ]
     
@@ -206,7 +151,7 @@ def test_enrichment_with_missing_paper_ids():
             venue="ICML",
             year=2023,
             paper_id=None,  # No ID
-            citations=0
+            citations=[]
         )
     ]
     

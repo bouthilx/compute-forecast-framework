@@ -21,7 +21,7 @@ class AbstractEnricher:
         all_abstracts = {}
         
         # Skip papers that already have abstracts
-        papers_needing_abstracts = [p for p in papers if not p.abstract]
+        papers_needing_abstracts = [p for p in papers if not p.abstracts]
         
         for source in self.sources:
             logger.info(f"Fetching abstracts from {source.name}")
