@@ -14,9 +14,13 @@ app = typer.Typer(
 
 # Import commands
 from .commands.collect import main as collect_command
+from .commands.quality import main as quality_command
 
 # Register the collect command
 app.command(name="collect")(collect_command)
+
+# Register the quality command
+app.command(name="quality")(quality_command)
 
 
 def version_callback(value: bool):
