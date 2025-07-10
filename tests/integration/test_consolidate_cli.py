@@ -73,7 +73,7 @@ def test_consolidate_command_with_scraper_format(tmp_path):
                 "abstracts": [{
                     "source": "original",
                     "timestamp": "2025-01-10T09:30:00",
-                    "original": true,
+                    "original": True,
                     "data": {"text": "Existing abstract", "language": "en"}
                 }],
                 "urls": [],
@@ -90,14 +90,14 @@ def test_consolidate_command_with_scraper_format(tmp_path):
                 "citations": [{
                     "source": "original",
                     "timestamp": "2025-01-10T08:00:00",
-                    "original": true,
+                    "original": True,
                     "data": {"count": 5}
                 }],
                 "abstracts": [],
                 "urls": [{
                     "source": "original",
                     "timestamp": "2025-01-10T08:00:00",
-                    "original": true,
+                    "original": True,
                     "data": {"url": "https://example.com/paper3.pdf"}
                 }],
                 "keywords": [],
