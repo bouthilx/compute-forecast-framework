@@ -15,15 +15,10 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import (
-    get_registry,
-)
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import (
-    ScrapingConfig,
-)
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
-    SimplePaper,
-)
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import get_registry
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import ScrapingConfig
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import SimplePaper
+from compute_forecast.quality.core.hooks import run_post_command_quality_check
 
 
 console = Console()
@@ -185,6 +180,9 @@ def main(
     ),
     list_venues: bool = typer.Option(
         False, "--list-venues", help="List available venues and their scrapers"
+    ),
+    skip_quality_check: bool = typer.Option(
+        False, "--skip-quality-check", help="Skip automatic quality checking after collection"
     ),
 ):
     """
@@ -543,6 +541,21 @@ def main(
                 console.print(f"  - {error}")
             if len(errors) > 5:
                 console.print(f"  ... and {len(errors) - 5} more")
+        
+        # Run quality checks if not skipped
+        if not skip_quality_check:
+            console.print("\n[cyan]Running quality checks on collected data...[/cyan]")
+            try:
+                run_post_command_quality_check(
+                    command_name="collect",
+                    data_path=output,
+                    stage="collection",
+                    console=console
+                )
+            except Exception as e:
+                console.print(f"[yellow]Warning: Quality check failed: {e}[/yellow]")
+                # Don't fail the entire command if quality check fails
+                pass
     else:
         console.print("[red]No papers collected![/red]")
         raise typer.Exit(1)
