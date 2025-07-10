@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Literal
+from typing import List, Optional, Dict, Any, Literal, TYPE_CHECKING
 from datetime import datetime, timedelta
 import threading
+
+if TYPE_CHECKING:
+    from ..consolidation.models import CitationRecord, AbstractRecord
 
 
 @dataclass
@@ -78,6 +81,30 @@ class Paper:
     collection_method: str = ""
     selection_rank: Optional[int] = None
     benchmark_type: str = ""  # 'academic' or 'industry'
+    
+    # Consolidation provenance fields (populated by consolidation)
+    citations_history: List["CitationRecord"] = field(default_factory=list)
+    abstracts_history: List["AbstractRecord"] = field(default_factory=list)
+
+    @property
+    def citation_count(self) -> int:
+        """Get highest citation count from all sources"""
+        if not self.citations_history:
+            return self.citations  # fallback to original field
+        max_count = max(
+            record.data.count 
+            for record in self.citations_history
+        )
+        return max(max_count, self.citations)
+
+    @property
+    def best_abstract(self) -> str:
+        """Get best abstract (original if available, else first found)"""
+        if self.abstract:  # Original abstract takes precedence
+            return self.abstract
+        if self.abstracts_history:
+            return self.abstracts_history[0].data.text
+        return ""
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert paper to dictionary for JSON serialization"""
@@ -121,12 +148,38 @@ class Paper:
         if data.get("venue_analysis"):
             venue_analysis = VenueAnalysis(**data["venue_analysis"])
 
+        # Handle consolidation provenance fields
+        citations_history = []
+        if data.get("citations_history"):
+            from ..consolidation.models import CitationRecord, CitationData
+            for record in data["citations_history"]:
+                citations_history.append(CitationRecord(
+                    source=record["source"],
+                    timestamp=datetime.fromisoformat(record["timestamp"]),
+                    data=CitationData(count=record["data"]["count"])
+                ))
+        
+        abstracts_history = []
+        if data.get("abstracts_history"):
+            from ..consolidation.models import AbstractRecord, AbstractData
+            for record in data["abstracts_history"]:
+                abstracts_history.append(AbstractRecord(
+                    source=record["source"],
+                    timestamp=datetime.fromisoformat(record["timestamp"]),
+                    data=AbstractData(
+                        text=record["data"]["text"],
+                        language=record["data"].get("language", "en")
+                    )
+                ))
+
         # Create paper with processed data
         paper_data = data.copy()
         paper_data["authors"] = authors
         paper_data["computational_analysis"] = comp_analysis
         paper_data["authorship_analysis"] = auth_analysis
         paper_data["venue_analysis"] = venue_analysis
+        paper_data["citations_history"] = citations_history
+        paper_data["abstracts_history"] = abstracts_history
 
         return cls(**paper_data)
 
