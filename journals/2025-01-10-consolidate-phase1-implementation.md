@@ -1,12 +1,12 @@
-# Phase 1 Implementation Plan: Citation and Abstract Enrichment
+# Phase 1 Implementation Plan: Unified Paper Enrichment
 
 **Date**: 2025-07-10
-**Time**: 05:00
-**Task**: Detailed implementation plan for Phase 1 of the consolidate command
+**Time**: 07:00
+**Task**: Revised implementation plan for Phase 1 with unified enrichment approach
 
 ## Executive Summary
 
-Phase 1 focuses on implementing the core enrichment functionality for citations and abstracts with full provenance tracking. This phase establishes the foundation for the consolidation pipeline, including the base source interface, data models, and the minimal CLI command to test the functionality.
+Phase 1 implements a unified paper enrichment approach that fetches all available fields (citations, abstracts, URLs) in a single API call per source, eliminating redundant queries. This establishes an efficient foundation for the consolidation pipeline with full provenance tracking.
 
 ## Implementation Steps
 
@@ -78,11 +78,22 @@ class AbstractRecord(ProvenanceRecord):
     data: AbstractData
 
 @dataclass
+class URLData:
+    """URL data"""
+    url: str
+    
+@dataclass
+class URLRecord(ProvenanceRecord):
+    """URL with provenance"""
+    data: URLData
+
+@dataclass
 class EnrichmentResult:
     """Result of enriching a single paper"""
     paper_id: str
     citations: List[CitationRecord] = field(default_factory=list)
     abstracts: List[AbstractRecord] = field(default_factory=list)
+    urls: List[URLRecord] = field(default_factory=list)
     errors: List[Dict[str, str]] = field(default_factory=list)
     
 @dataclass
@@ -135,13 +146,13 @@ def best_abstract(self) -> str:
 
 ```python
 from abc import ABC, abstractmethod
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Any
 from dataclasses import dataclass
 import time
 from datetime import datetime
 import logging
 
-from ..models import EnrichmentResult, CitationRecord, AbstractRecord
+from ..models import EnrichmentResult, CitationRecord, AbstractRecord, URLRecord, CitationData, AbstractData, URLData
 from ...metadata_collection.models import Paper
 
 @dataclass
@@ -171,14 +182,6 @@ class BaseConsolidationSource(ABC):
             time.sleep(sleep_time)
         self.last_request_time = time.time()
         
-    def _create_provenance(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Create provenance record"""
-        return {
-            "source": self.name,
-            "timestamp": datetime.now().isoformat(),
-            "data": data
-        }
-        
     @abstractmethod
     def find_papers(self, papers: List[Paper]) -> Dict[str, str]:
         """
@@ -188,63 +191,78 @@ class BaseConsolidationSource(ABC):
         pass
         
     @abstractmethod
-    def fetch_citations(self, paper_ids: List[str]) -> Dict[str, int]:
+    def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
         """
-        Fetch citation counts for papers.
-        Returns mapping of paper_id -> citation_count
-        """
-        pass
-        
-    @abstractmethod
-    def fetch_abstracts(self, paper_ids: List[str]) -> Dict[str, str]:
-        """
-        Fetch abstracts for papers.
-        Returns mapping of paper_id -> abstract_text
+        Fetch all available fields for papers in one go.
+        Returns mapping of source_id -> {
+            'citations': int,
+            'abstract': str,
+            'urls': List[str],
+            'authors': List[Dict],  # For future affiliation enrichment
+            ...other fields...
+        }
         """
         pass
         
     def enrich_papers(self, papers: List[Paper]) -> List[EnrichmentResult]:
-        """Main enrichment workflow"""
+        """Main enrichment workflow - single pass for all fields"""
         results = []
         
         # Process in batches
         for i in range(0, len(papers), self.config.batch_size):
             batch = papers[i:i + self.config.batch_size]
             
-            # Find papers in this source
+            # Find papers in this source ONCE
             id_mapping = self.find_papers(batch)
             source_ids = list(id_mapping.values())
             
             if not source_ids:
                 continue
                 
-            # Fetch enrichment data
-            citations = self.fetch_citations(source_ids)
-            abstracts = self.fetch_abstracts(source_ids)
+            # Fetch ALL enrichment data in one API call (or minimal calls)
+            try:
+                enrichment_data = self.fetch_all_fields(source_ids)
+            except Exception as e:
+                self.logger.error(f"Error fetching data: {e}")
+                continue
             
             # Create results with provenance
             for paper in batch:
                 result = EnrichmentResult(paper_id=paper.paper_id)
                 
                 source_id = id_mapping.get(paper.paper_id)
-                if source_id:
+                if source_id and source_id in enrichment_data:
+                    data = enrichment_data[source_id]
+                    
                     # Add citation if found
-                    if source_id in citations:
+                    if data.get('citations') is not None:
                         citation_record = CitationRecord(
                             source=self.name,
                             timestamp=datetime.now(),
-                            data=CitationData(count=citations[source_id])
+                            original=False,
+                            data=CitationData(count=data['citations'])
                         )
                         result.citations.append(citation_record)
                     
                     # Add abstract if found
-                    if source_id in abstracts:
+                    if data.get('abstract'):
                         abstract_record = AbstractRecord(
                             source=self.name,
                             timestamp=datetime.now(),
-                            data=AbstractData(text=abstracts[source_id])
+                            original=False,
+                            data=AbstractData(text=data['abstract'])
                         )
                         result.abstracts.append(abstract_record)
+                        
+                    # Add URLs if found
+                    for url in data.get('urls', []):
+                        url_record = URLRecord(
+                            source=self.name,
+                            timestamp=datetime.now(),
+                            original=False,
+                            data=URLData(url=url)
+                        )
+                        result.urls.append(url_record)
                 
                 results.append(result)
                 
@@ -257,7 +275,7 @@ class BaseConsolidationSource(ABC):
 
 ```python
 import requests
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 import time
 from urllib.parse import quote
 
@@ -343,53 +361,52 @@ class SemanticScholarSource(BaseConsolidationSource):
                         
         return mapping
         
-    def fetch_citations(self, paper_ids: List[str]) -> Dict[str, int]:
-        """Fetch citation counts in batch"""
-        citations = {}
+    def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
+        """Fetch all available fields in a single API call per batch"""
+        results = {}
+        
+        # All fields we want in one request
+        fields = "paperId,title,abstract,citationCount,year,authors,externalIds,openAccessPdf,fieldsOfStudy,venue"
         
         # Process in chunks of 500 (API limit)
-        for i in range(0, len(paper_ids), 500):
-            batch = paper_ids[i:i+500]
+        for i in range(0, len(source_ids), 500):
+            batch = source_ids[i:i+500]
             
             self._rate_limit()
             response = requests.post(
                 f"{self.graph_url}/paper/batch",
                 json={"ids": batch},
                 headers=self.headers,
-                params={"fields": "citationCount"}
+                params={"fields": fields}
             )
             self.api_calls += 1
             
             if response.status_code == 200:
                 for item in response.json():
-                    if item and "citationCount" in item:
-                        citations[item["paperId"]] = item["citationCount"]
+                    if item is None:
+                        continue
                         
-        return citations
-        
-    def fetch_abstracts(self, paper_ids: List[str]) -> Dict[str, str]:
-        """Fetch abstracts in batch"""
-        abstracts = {}
-        
-        # Process in chunks of 500 (API limit)
-        for i in range(0, len(paper_ids), 500):
-            batch = paper_ids[i:i+500]
-            
-            self._rate_limit()
-            response = requests.post(
-                f"{self.graph_url}/paper/batch",
-                json={"ids": batch},
-                headers=self.headers,
-                params={"fields": "abstract"}
-            )
-            self.api_calls += 1
-            
-            if response.status_code == 200:
-                for item in response.json():
-                    if item and item.get("abstract"):
-                        abstracts[item["paperId"]] = item["abstract"]
+                    paper_id = item.get("paperId")
+                    if not paper_id:
+                        continue
                         
-        return abstracts
+                    # Extract all data from single response
+                    paper_data = {
+                        'citations': item.get('citationCount'),
+                        'abstract': item.get('abstract'),
+                        'urls': [],
+                        'authors': item.get('authors', []),
+                        'venue': item.get('venue'),
+                        'fields_of_study': item.get('fieldsOfStudy', [])
+                    }
+                    
+                    # Add open access PDF URL if available
+                    if item.get('openAccessPdf') and item['openAccessPdf'].get('url'):
+                        paper_data['urls'].append(item['openAccessPdf']['url'])
+                        
+                    results[paper_id] = paper_data
+                    
+        return results
         
     def _similar_title(self, title1: str, title2: str) -> bool:
         """Check if two titles are similar enough"""
@@ -415,7 +432,7 @@ class SemanticScholarSource(BaseConsolidationSource):
 
 ```python
 import requests
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from urllib.parse import quote
 
 from .base import BaseConsolidationSource, SourceConfig
@@ -505,12 +522,15 @@ class OpenAlexSource(BaseConsolidationSource):
                         
         return mapping
         
-    def fetch_citations(self, paper_ids: List[str]) -> Dict[str, int]:
-        """Fetch citation counts"""
-        citations = {}
+    def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
+        """Fetch all available fields in minimal API calls"""
+        results = {}
         
         # Build OR filter for all IDs
-        id_filters = [f'openalex:"{id}"' for id in paper_ids]
+        id_filters = [f'openalex:"{id}"' for id in source_ids]
+        
+        # Select all fields we need in one request
+        select_fields = "id,title,abstract_inverted_index,cited_by_count,publication_year,authorships,primary_location,locations,concepts"
         
         # Process in batches (OpenAlex has URL length limits)
         batch_size = 50
@@ -524,7 +544,7 @@ class OpenAlexSource(BaseConsolidationSource):
                 params={
                     "filter": filter_str,
                     "per-page": len(batch),
-                    "select": "id,cited_by_count"
+                    "select": select_fields
                 },
                 headers=self.headers
             )
@@ -532,44 +552,44 @@ class OpenAlexSource(BaseConsolidationSource):
             
             if response.status_code == 200:
                 for work in response.json().get("results", []):
-                    citations[work["id"]] = work.get("cited_by_count", 0)
+                    work_id = work.get("id")
+                    if not work_id:
+                        continue
+                        
+                    # Extract all data from single response
+                    paper_data = {
+                        'citations': work.get("cited_by_count", 0),
+                        'abstract': None,
+                        'urls': [],
+                        'authors': [],
+                        'concepts': work.get('concepts', [])
+                    }
                     
-        return citations
-        
-    def fetch_abstracts(self, paper_ids: List[str]) -> Dict[str, str]:
-        """Fetch abstracts"""
-        abstracts = {}
-        
-        # Build OR filter for all IDs
-        id_filters = [f'openalex:"{id}"' for id in paper_ids]
-        
-        # Process in batches
-        batch_size = 50
-        for i in range(0, len(id_filters), batch_size):
-            batch = id_filters[i:i+batch_size]
-            filter_str = "|".join(batch)
-            
-            self._rate_limit()
-            response = requests.get(
-                f"{self.base_url}/works",
-                params={
-                    "filter": filter_str,
-                    "per-page": len(batch),
-                    "select": "id,abstract_inverted_index"
-                },
-                headers=self.headers
-            )
-            self.api_calls += 1
-            
-            if response.status_code == 200:
-                for work in response.json().get("results", []):
                     # Convert inverted index to text
                     inverted = work.get("abstract_inverted_index", {})
                     if inverted:
-                        abstract_text = self._inverted_to_text(inverted)
-                        abstracts[work["id"]] = abstract_text
+                        paper_data['abstract'] = self._inverted_to_text(inverted)
                         
-        return abstracts
+                    # Extract author information
+                    for authorship in work.get('authorships', []):
+                        author_info = {
+                            'name': authorship.get('author', {}).get('display_name'),
+                            'institutions': [inst.get('display_name') for inst in authorship.get('institutions', [])]
+                        }
+                        paper_data['authors'].append(author_info)
+                        
+                    # Extract URLs from locations
+                    if work.get('primary_location') and work['primary_location'].get('pdf_url'):
+                        paper_data['urls'].append(work['primary_location']['pdf_url'])
+                        
+                    # Check other locations for open access URLs
+                    for location in work.get('locations', []):
+                        if location.get('pdf_url') and location['pdf_url'] not in paper_data['urls']:
+                            paper_data['urls'].append(location['pdf_url'])
+                            
+                    results[work_id] = paper_data
+                    
+        return results
         
     def _inverted_to_text(self, inverted_index: Dict[str, List[int]]) -> str:
         """Convert OpenAlex inverted index to text"""
@@ -587,108 +607,7 @@ class OpenAlexSource(BaseConsolidationSource):
         return norm1 == norm2 or norm1 in norm2 or norm2 in norm1
 ```
 
-### Step 5: Create Enrichment Orchestrator (3 hours)
-
-#### 5.1 Create Citation Enricher (`compute_forecast/pipeline/consolidation/enrichment/citation_enricher.py`)
-
-```python
-from typing import List, Dict
-import logging
-
-from ..sources.base import BaseConsolidationSource
-from ...metadata_collection.models import Paper
-
-logger = logging.getLogger(__name__)
-
-class CitationEnricher:
-    """Handles citation enrichment from multiple sources"""
-    
-    def __init__(self, sources: List[BaseConsolidationSource]):
-        self.sources = sources
-        
-    def enrich(self, papers: List[Paper]) -> Dict[str, List[Dict]]:
-        """
-        Enrich papers with citations from all sources.
-        Returns mapping of paper_id -> list of citation records
-        """
-        all_citations = {}
-        
-        for source in self.sources:
-            logger.info(f"Fetching citations from {source.name}")
-            
-            try:
-                results = source.enrich_papers(papers)
-                
-                for result in results:
-                    if result.citations:
-                        if result.paper_id not in all_citations:
-                            all_citations[result.paper_id] = []
-                        
-                        # Keep as CitationRecord objects
-                        for citation in result.citations:
-                            all_citations[result.paper_id].append(citation)
-                            
-            except Exception as e:
-                logger.error(f"Error fetching from {source.name}: {e}")
-                continue
-                
-        return all_citations
-```
-
-#### 5.2 Create Abstract Enricher (`compute_forecast/pipeline/consolidation/enrichment/abstract_enricher.py`)
-
-```python
-from typing import List, Dict
-import logging
-
-from ..sources.base import BaseConsolidationSource
-from ...metadata_collection.models import Paper
-
-logger = logging.getLogger(__name__)
-
-class AbstractEnricher:
-    """Handles abstract enrichment from multiple sources"""
-    
-    def __init__(self, sources: List[BaseConsolidationSource]):
-        self.sources = sources
-        
-    def enrich(self, papers: List[Paper]) -> Dict[str, List[Dict]]:
-        """
-        Enrich papers with abstracts from all sources.
-        Returns mapping of paper_id -> list of abstract records
-        """
-        all_abstracts = {}
-        
-        # Skip papers that already have abstracts
-        papers_needing_abstracts = [p for p in papers if not p.abstract]
-        
-        for source in self.sources:
-            logger.info(f"Fetching abstracts from {source.name}")
-            
-            try:
-                results = source.enrich_papers(papers_needing_abstracts)
-                
-                for result in results:
-                    if result.abstracts:
-                        if result.paper_id not in all_abstracts:
-                            all_abstracts[result.paper_id] = []
-                        
-                        # Keep as AbstractRecord objects
-                        for abstract in result.abstracts:
-                            all_abstracts[result.paper_id].append(abstract)
-                            
-                        # Remove from list once we have an abstract
-                        papers_needing_abstracts = [
-                            p for p in papers_needing_abstracts 
-                            if p.paper_id != result.paper_id
-                        ]
-                        
-            except Exception as e:
-                logger.error(f"Error fetching from {source.name}: {e}")
-                continue
-                
-        return all_abstracts
-```
+### Step 5: Remove Separate Enrichers (Now Handled by Sources)
 
 ### Step 6: Implement CLI Command (3 hours)
 
@@ -699,7 +618,7 @@ import typer
 from pathlib import Path
 import json
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict
 import logging
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -707,8 +626,6 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 from compute_forecast.pipeline.consolidation.sources.semantic_scholar import SemanticScholarSource
 from compute_forecast.pipeline.consolidation.sources.openalex import OpenAlexSource
 from compute_forecast.pipeline.consolidation.sources.base import SourceConfig
-from compute_forecast.pipeline.consolidation.enrichment.citation_enricher import CitationEnricher
-from compute_forecast.pipeline.consolidation.enrichment.abstract_enricher import AbstractEnricher
 from compute_forecast.pipeline.metadata_collection.models import Paper
 
 console = Console()
@@ -729,37 +646,8 @@ def load_papers(input_path: Path) -> List[Paper]:
 
 def save_papers(papers: List[Paper], output_path: Path, stats: dict):
     """Save enriched papers to JSON file"""
-    # Convert papers to dict format with proper serialization
-    papers_data = []
-    for p in papers:
-        paper_dict = p.to_dict()
-        
-        # Convert CitationRecord objects to dicts
-        if hasattr(p, 'citations_history') and p.citations_history:
-            paper_dict['citations_history'] = [
-                {
-                    "source": record.source,
-                    "timestamp": record.timestamp.isoformat(),
-                    "data": {"count": record.data.count}
-                }
-                for record in p.citations_history
-            ]
-            
-        # Convert AbstractRecord objects to dicts
-        if hasattr(p, 'abstracts_history') and p.abstracts_history:
-            paper_dict['abstracts_history'] = [
-                {
-                    "source": record.source,
-                    "timestamp": record.timestamp.isoformat(),
-                    "data": {
-                        "text": record.data.text,
-                        "language": record.data.language
-                    }
-                }
-                for record in p.abstracts_history
-            ]
-            
-        papers_data.append(paper_dict)
+    # Paper.to_dict() already handles provenance record serialization
+    papers_data = [p.to_dict() for p in papers]
     
     output_data = {
         "consolidation_metadata": {
@@ -827,8 +715,12 @@ def main(
         "total_papers": len(papers),
         "citations_added": 0,
         "abstracts_added": 0,
+        "urls_added": 0,
         "api_calls": {}
     }
+    
+    # Create paper lookup for efficient updates
+    papers_by_id = {p.paper_id: p for p in papers if p.paper_id}
     
     with Progress(
         SpinnerColumn(),
@@ -836,37 +728,38 @@ def main(
         console=console,
     ) as progress:
         
-        # Enrich citations
-        if "citations" in enrich_fields:
-            task = progress.add_task("Enriching citations...", total=None)
-            
-            enricher = CitationEnricher(source_objects)
-            citation_records = enricher.enrich(papers)
-            
-            # Update papers
-            for paper in papers:
-                if paper.paper_id in citation_records:
-                    paper.citations_history.extend(citation_records[paper.paper_id])
-                    stats["citations_added"] += len(citation_records[paper.paper_id])
-                    
-            progress.update(task, completed=True)
-            console.print(f"[green]✓[/green] Added {stats['citations_added']} citation records")
+        # Single enrichment pass through all sources
+        task = progress.add_task("Enriching papers from all sources...", total=len(source_objects))
         
-        # Enrich abstracts
-        if "abstracts" in enrich_fields:
-            task = progress.add_task("Enriching abstracts...", total=None)
+        for source in source_objects:
+            console.print(f"[cyan]Enriching from {source.name}...[/cyan]")
             
-            enricher = AbstractEnricher(source_objects)
-            abstract_records = enricher.enrich(papers)
+            try:
+                # Get ALL enrichment data in one pass
+                enrichment_results = source.enrich_papers(papers)
+                
+                # Apply all enrichments to papers
+                for result in enrichment_results:
+                    if result.paper_id in papers_by_id:
+                        paper = papers_by_id[result.paper_id]
+                        
+                        # Add all enrichment data with provenance
+                        paper.citations.extend(result.citations)
+                        paper.abstracts.extend(result.abstracts)
+                        paper.urls.extend(result.urls)
+                        
+                        # Update statistics
+                        stats["citations_added"] += len(result.citations)
+                        stats["abstracts_added"] += len(result.abstracts)
+                        stats["urls_added"] += len(result.urls)
+                
+                console.print(f"[green]✓[/green] Completed {source.name}")
+                
+            except Exception as e:
+                logger.error(f"Error enriching from {source.name}: {e}")
+                console.print(f"[red]✗[/red] Failed to enrich from {source.name}: {e}")
             
-            # Update papers
-            for paper in papers:
-                if paper.paper_id in abstract_records:
-                    paper.abstracts_history.extend(abstract_records[paper.paper_id])
-                    stats["abstracts_added"] += len(abstract_records[paper.paper_id])
-                    
-            progress.update(task, completed=True)
-            console.print(f"[green]✓[/green] Added {stats['abstracts_added']} abstract records")
+            progress.advance(task)
     
     # Collect API call stats
     for source in source_objects:
@@ -881,6 +774,7 @@ def main(
     console.print(f"  Papers processed: {stats['total_papers']}")
     console.print(f"  Citations added: {stats['citations_added']}")
     console.print(f"  Abstracts added: {stats['abstracts_added']}")
+    console.print(f"  URLs added: {stats['urls_added']}")
     console.print(f"  API calls: {sum(stats['api_calls'].values())}")
 ```
 
@@ -907,42 +801,48 @@ from compute_forecast.pipeline.consolidation.sources.semantic_scholar import Sem
 from compute_forecast.pipeline.consolidation.enrichment.citation_enricher import CitationEnricher
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
-def test_citation_enricher():
-    """Test citation enrichment"""
+def test_unified_enrichment():
+    """Test unified paper enrichment"""
     # Create test papers
     papers = [
         Paper(
             title="Test Paper 1",
-            authors=[Author(name="John Doe")],
+            authors=[Author(name="John Doe", affiliations=[])],
             venue="ICML",
             year=2023,
             paper_id="paper1",
             doi="10.1234/test1",
-            citations=10
+            citations=[],
+            abstracts=[],
+            urls=[]
         )
     ]
     
-    # Mock source
+    # Mock source with unified fetch_all_fields
     mock_source = Mock()
     mock_source.name = "test_source"
-    mock_source.enrich_papers.return_value = [
-        Mock(
-            paper_id="paper1",
-            citations=[Mock(
-                source="test_source",
-                timestamp=datetime.now(),
-                data={"count": 25}
-            )]
-        )
-    ]
+    mock_source.find_papers.return_value = {"paper1": "source_id_1"}
+    mock_source.fetch_all_fields.return_value = {
+        "source_id_1": {
+            "citations": 25,
+            "abstract": "Test abstract",
+            "urls": ["https://example.com/paper.pdf"]
+        }
+    }
     
     # Test enrichment
-    enricher = CitationEnricher([mock_source])
-    results = enricher.enrich(papers)
+    results = mock_source.enrich_papers(papers)
     
-    assert "paper1" in results
-    assert len(results["paper1"]) == 1
-    assert results["paper1"][0].data.count == 25
+    # In real implementation, paper would be updated directly
+    # For test, we check the enrichment results
+    assert len(results) == 1
+    assert results[0].paper_id == "paper1"
+    assert len(results[0].citations) == 1
+    assert results[0].citations[0].data.count == 25
+    assert len(results[0].abstracts) == 1
+    assert results[0].abstracts[0].data.text == "Test abstract"
+    assert len(results[0].urls) == 1
+    assert results[0].urls[0].data.url == "https://example.com/paper.pdf"
 ```
 
 #### 7.3 Create Integration Test (`tests/integration/test_consolidate_cli.py`)
@@ -1020,9 +920,34 @@ def test_consolidate_command(tmp_path):
 
 - Citations enriched for 80%+ of papers
 - Abstracts found for 70%+ missing abstracts
-- API efficiency: <5 calls per paper average
-- Processing speed: >100 papers/minute
+- URLs collected for 60%+ of papers
+- API efficiency: <2 calls per paper average (unified approach)
+- Processing speed: >200 papers/minute (fewer API calls)
 - Zero data loss or corruption
+
+## Key Benefits of Unified Approach
+
+1. **Efficiency Gains**:
+   - Single API call per source fetches all fields
+   - No duplicate paper lookups
+   - Better rate limit utilization
+   - Reduced total API calls by ~60%
+
+2. **Simpler Architecture**:
+   - No separate enricher classes
+   - All logic contained in source implementations
+   - Easier to add new fields (just update fetch_all_fields)
+   - Less code duplication
+
+3. **Better Performance**:
+   - Parallel field fetching within each API call
+   - Fewer network round trips
+   - Lower latency overall
+
+4. **Extensibility**:
+   - Adding new fields requires minimal changes
+   - Sources can expose different fields without breaking interface
+   - Future fields (affiliations, references) easy to add
 
 ## Key Changes from Original Plan
 
@@ -1039,6 +964,13 @@ def test_consolidate_command(tmp_path):
 
 3. **Serialization Updates**:
    - Updated `save_papers()` to properly serialize the typed records to JSON
-   - Maintained backward compatibility in JSON format
+   - Removed backward compatibility requirements
 
-This implementation plan provides a solid foundation for Phase 1, establishing the core enrichment functionality with proper provenance tracking, type safety, and extensibility for future phases.
+4. **Unified Enrichment Approach** (major architectural change):
+   - Removed separate CitationEnricher and AbstractEnricher classes
+   - Added `fetch_all_fields()` abstract method to BaseConsolidationSource
+   - Each source now fetches all available fields in minimal API calls
+   - Added URL enrichment to Phase 1 (was Phase 2)
+   - Dramatically reduced API calls and improved performance
+
+This revised implementation plan provides a more efficient foundation for Phase 1, with unified enrichment that fetches all fields in single API calls per source, proper provenance tracking, and excellent extensibility for future phases.

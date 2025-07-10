@@ -209,6 +209,7 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
 - Unit tests must complete in less than 2 minutes on github actions.
 - Functional tests must complete in less than 5 minutes on github actions.
 - Long running tests should be limited to tests/performance.
+- No test in `tests/unit` and `tests/integration` should take more than 10 seconds.
 
 ## Code Organization
 [TODO]
