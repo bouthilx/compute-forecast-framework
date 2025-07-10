@@ -6,7 +6,9 @@ from unittest.mock import Mock, patch
 from compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.pmlr_scraper import (
     PMLRScraper,
 )
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import ScrapingConfig
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import (
+    ScrapingConfig,
+)
 
 
 class TestPMLRScraper:

@@ -7,7 +7,9 @@ from datetime import datetime
 from compute_forecast.pipeline.metadata_collection.sources.scrapers.paperoni_adapters.nature_portfolio import (
     NaturePortfolioAdapter,
 )
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import SimplePaper
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
+    SimplePaper,
+)
 
 
 class TestNaturePortfolioAdapter:
