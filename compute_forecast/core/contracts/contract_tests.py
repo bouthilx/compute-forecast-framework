@@ -96,7 +96,7 @@ class ContractTestSuite:
                 input_data=Paper(
                     paper_id="123",
                     title="Test Paper",
-                    authors=[Author(name="Test Author", affiliation="Test Uni")],
+                    authors=[Author(name="Test Author", affiliations=["Test Uni"])],
                     venue="ICML",
                     year=2024,
                     citations=10,

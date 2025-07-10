@@ -264,6 +264,9 @@ uv run pytest tests/unittest/test_player.py
 
 # Run with specific coverage target
 uv run pytest --cov-fail-under=90
+
+# Running some python script (**NEVER use python directly, ALWAYS use uv run python**)
+uv run python some_script.py
 ```
 
 ## Error Handling
