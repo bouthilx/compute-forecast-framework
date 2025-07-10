@@ -1,10 +1,9 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Literal, TYPE_CHECKING
+from typing import List, Optional, Dict, Any, Literal
 from datetime import datetime, timedelta
 import threading
 
-if TYPE_CHECKING:
-    from ..consolidation.models import CitationRecord, AbstractRecord
+from ..consolidation.models import CitationRecord, AbstractRecord, URLRecord
 
 
 @dataclass
@@ -47,10 +46,10 @@ class Paper:
     authors: List[Author]
     venue: str
     year: int
-    citations: int
-    abstract: str = ""
+    citations: List[CitationRecord] = field(default_factory=list)
+    abstracts: List[AbstractRecord] = field(default_factory=list)
     doi: str = ""
-    urls: List[str] = field(default_factory=list)
+    urls: List[URLRecord] = field(default_factory=list)
 
     # Core identifiers (at least one required)
     paper_id: Optional[str] = None  # Semantic Scholar ID
@@ -81,30 +80,36 @@ class Paper:
     collection_method: str = ""
     selection_rank: Optional[int] = None
     benchmark_type: str = ""  # 'academic' or 'industry'
-    
-    # Consolidation provenance fields (populated by consolidation)
-    citations_history: List["CitationRecord"] = field(default_factory=list)
-    abstracts_history: List["AbstractRecord"] = field(default_factory=list)
 
-    @property
-    def citation_count(self) -> int:
+    def get_latest_citations_count(self) -> int:
         """Get highest citation count from all sources"""
-        if not self.citations_history:
-            return self.citations  # fallback to original field
-        max_count = max(
-            record.data.count 
-            for record in self.citations_history
-        )
-        return max(max_count, self.citations)
+        if not self.citations:
+            return 0
+        return max(record.data.count for record in self.citations)
 
-    @property
-    def best_abstract(self) -> str:
+    def get_best_abstract(self) -> str:
         """Get best abstract (original if available, else first found)"""
-        if self.abstract:  # Original abstract takes precedence
-            return self.abstract
-        if self.abstracts_history:
-            return self.abstracts_history[0].data.text
+        # Prioritize original abstracts
+        for record in self.abstracts:
+            if record.original:
+                return record.data.text
+        # Fall back to first non-original
+        if self.abstracts:
+            return self.abstracts[0].data.text
         return ""
+    
+    def get_best_urls(self) -> List[str]:
+        """Get URLs (original if available, else all)"""
+        # Get original URLs first
+        original_urls = [
+            record.data.url 
+            for record in self.urls 
+            if record.original
+        ]
+        if original_urls:
+            return original_urls
+        # Fall back to all URLs
+        return [record.data.url for record in self.urls]
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert paper to dictionary for JSON serialization"""
@@ -112,6 +117,17 @@ class Paper:
         for key, value in self.__dict__.items():
             if isinstance(value, datetime):
                 result[key] = value.isoformat()
+            elif key in ["citations", "abstracts", "urls"] and isinstance(value, list):
+                # Special handling for provenance records
+                result[key] = []
+                for record in value:
+                    record_dict = {
+                        "source": record.source,
+                        "timestamp": record.timestamp.isoformat(),
+                        "original": record.original,
+                        "data": record.data.__dict__
+                    }
+                    result[key].append(record_dict)
             elif isinstance(value, list) and value and hasattr(value[0], "__dict__"):
                 result[key] = [item.__dict__ for item in value]
             elif hasattr(value, "__dict__"):
@@ -163,68 +179,74 @@ class Paper:
         if data.get("venue_analysis"):
             venue_analysis = VenueAnalysis(**data["venue_analysis"])
 
-        # Handle consolidation provenance fields
-        citations_history = []
-        if data.get("citations_history"):
+        # Handle provenance fields (citations, abstracts, urls)
+        citations = []
+        if data.get("citations"):
             from ..consolidation.models import CitationRecord, CitationData
-            for record in data["citations_history"]:
-                citations_history.append(CitationRecord(
+            for record in data["citations"]:
+                citations.append(CitationRecord(
                     source=record["source"],
                     timestamp=datetime.fromisoformat(record["timestamp"]),
+                    original=record.get("original", False),
                     data=CitationData(count=record["data"]["count"])
                 ))
         
-        abstracts_history = []
-        if data.get("abstracts_history"):
+        abstracts = []
+        if data.get("abstracts"):
             from ..consolidation.models import AbstractRecord, AbstractData
-            for record in data["abstracts_history"]:
-                abstracts_history.append(AbstractRecord(
+            for record in data["abstracts"]:
+                abstracts.append(AbstractRecord(
                     source=record["source"],
                     timestamp=datetime.fromisoformat(record["timestamp"]),
+                    original=record.get("original", False),
                     data=AbstractData(
                         text=record["data"]["text"],
                         language=record["data"].get("language", "en")
                     )
                 ))
+        
+        urls = []
+        if data.get("urls"):
+            from ..consolidation.models import URLRecord, URLData
+            for record in data["urls"]:
+                urls.append(URLRecord(
+                    source=record["source"],
+                    timestamp=datetime.fromisoformat(record["timestamp"]),
+                    original=record.get("original", False),
+                    data=URLData(url=record["data"]["url"])
+                ))
 
         # Create paper with processed data
         paper_data = data.copy()
         
-        # Handle field name differences from scrapers
-        if "pdf_urls" in paper_data and "urls" not in paper_data:
-            paper_data["urls"] = paper_data.pop("pdf_urls")
-        
         # Handle None values for string fields
-        if paper_data.get("abstract") is None:
-            paper_data["abstract"] = ""
         if paper_data.get("doi") is None:
             paper_data["doi"] = ""
         
         # Handle None values for list fields
         if paper_data.get("keywords") is None:
             paper_data["keywords"] = []
-        if paper_data.get("urls") is None:
-            paper_data["urls"] = []
-        
-        # Set default values for missing required fields
-        if "citations" not in paper_data:
-            paper_data["citations"] = 0
             
         # Handle datetime fields
         if "collection_timestamp" in paper_data and isinstance(paper_data["collection_timestamp"], str):
             paper_data["collection_timestamp"] = datetime.fromisoformat(paper_data["collection_timestamp"])
             
-        # Remove scraper-specific fields not in Paper model
-        scraper_fields = ["source_scraper", "source_url", "scraped_at", "extraction_confidence", "metadata_completeness"]
-        for field in scraper_fields:
-            paper_data.pop(field, None)
+        # Remove fields we'll set explicitly
+        paper_data.pop("authors", None)
+        paper_data.pop("citations", None)
+        paper_data.pop("abstracts", None)
+        paper_data.pop("urls", None)
+        paper_data.pop("computational_analysis", None)
+        paper_data.pop("authorship_analysis", None)
+        paper_data.pop("venue_analysis", None)
             
         paper_data["authors"] = authors
+        paper_data["citations"] = citations
+        paper_data["abstracts"] = abstracts
+        paper_data["urls"] = urls
         paper_data["computational_analysis"] = comp_analysis
         paper_data["authorship_analysis"] = auth_analysis
         paper_data["venue_analysis"] = venue_analysis
-        paper_data["citations_history"] = citations_history
-        paper_data["abstracts_history"] = abstracts_history
 
         return cls(**paper_data)
 
