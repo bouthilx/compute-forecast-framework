@@ -81,35 +81,19 @@ def load_venue_file(venue_file: Path) -> Dict[str, List[int]]:
 
 def save_papers(papers: List[SimplePaper], output_path: Path, metadata: Dict[str, Any]):
     """Save collected papers to JSON file."""
+    # Convert SimplePaper objects to Paper format
+    converted_papers = [p.to_package_paper() for p in papers]
+    
     output_data = {
         "collection_metadata": {
             "timestamp": datetime.now().isoformat(),
-            "venues": list(set(p.venue for p in papers)),
-            "years": sorted(list(set(p.year for p in papers))),
-            "total_papers": len(papers),
+            "venues": list(set(p.venue for p in converted_papers)),
+            "years": sorted(list(set(p.year for p in converted_papers))),
+            "total_papers": len(converted_papers),
             "scrapers_used": list(set(p.source_scraper for p in papers)),
             **metadata,
         },
-        "papers": [
-            {
-                "title": p.title,
-                "authors": p.authors,
-                "venue": p.venue,
-                "year": p.year,
-                "abstract": p.abstract,
-                "pdf_urls": p.pdf_urls,
-                "keywords": getattr(p, 'keywords', []),  # Include keywords if available
-                "doi": p.doi,
-                "arxiv_id": p.arxiv_id,
-                "paper_id": p.paper_id,
-                "source_scraper": p.source_scraper,
-                "source_url": p.source_url,
-                "scraped_at": p.scraped_at.isoformat(),
-                "extraction_confidence": p.extraction_confidence,
-                "metadata_completeness": p.metadata_completeness,
-            }
-            for p in papers
-        ],
+        "papers": [p.to_dict() for p in converted_papers],
     }
 
     # Ensure output directory exists
