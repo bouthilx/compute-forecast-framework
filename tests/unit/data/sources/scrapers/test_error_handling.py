@@ -235,7 +235,9 @@ class TestScrapingMonitor:
         assert len(recent_errors) == 1
         assert recent_errors[0] == recent_error
 
-    @patch("compute_forecast.pipeline.metadata_collection.sources.scrapers.error_handling.logging.getLogger")
+    @patch(
+        "compute_forecast.pipeline.metadata_collection.sources.scrapers.error_handling.logging.getLogger"
+    )
     def test_logging_integration(self, mock_get_logger):
         """Test that monitor integrates with logging"""
         mock_logger = MagicMock()
