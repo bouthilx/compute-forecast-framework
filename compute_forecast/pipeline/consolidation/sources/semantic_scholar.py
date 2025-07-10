@@ -1,5 +1,5 @@
 import requests
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 from .base import BaseConsolidationSource, SourceConfig
 from ...metadata_collection.models import Paper
@@ -84,53 +84,52 @@ class SemanticScholarSource(BaseConsolidationSource):
                         
         return mapping
         
-    def fetch_citations(self, paper_ids: List[str]) -> Dict[str, int]:
-        """Fetch citation counts in batch"""
-        citations = {}
+    def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
+        """Fetch all available fields in a single API call per batch"""
+        results = {}
+        
+        # All fields we want in one request
+        fields = "paperId,title,abstract,citationCount,year,authors,externalIds,openAccessPdf,fieldsOfStudy,venue"
         
         # Process in chunks of 500 (API limit)
-        for i in range(0, len(paper_ids), 500):
-            batch = paper_ids[i:i+500]
+        for i in range(0, len(source_ids), 500):
+            batch = source_ids[i:i+500]
             
             self._rate_limit()
             response = requests.post(
                 f"{self.graph_url}/paper/batch",
                 json={"ids": batch},
                 headers=self.headers,
-                params={"fields": "citationCount"}
+                params={"fields": fields}
             )
             self.api_calls += 1
             
             if response.status_code == 200:
                 for item in response.json():
-                    if item and "citationCount" in item:
-                        citations[item["paperId"]] = item["citationCount"]
+                    if item is None:
+                        continue
                         
-        return citations
-        
-    def fetch_abstracts(self, paper_ids: List[str]) -> Dict[str, str]:
-        """Fetch abstracts in batch"""
-        abstracts = {}
-        
-        # Process in chunks of 500 (API limit)
-        for i in range(0, len(paper_ids), 500):
-            batch = paper_ids[i:i+500]
-            
-            self._rate_limit()
-            response = requests.post(
-                f"{self.graph_url}/paper/batch",
-                json={"ids": batch},
-                headers=self.headers,
-                params={"fields": "abstract"}
-            )
-            self.api_calls += 1
-            
-            if response.status_code == 200:
-                for item in response.json():
-                    if item and item.get("abstract"):
-                        abstracts[item["paperId"]] = item["abstract"]
+                    paper_id = item.get("paperId")
+                    if not paper_id:
+                        continue
                         
-        return abstracts
+                    # Extract all data from single response
+                    paper_data = {
+                        'citations': item.get('citationCount'),
+                        'abstract': item.get('abstract'),
+                        'urls': [],
+                        'authors': item.get('authors', []),
+                        'venue': item.get('venue'),
+                        'fields_of_study': item.get('fieldsOfStudy', [])
+                    }
+                    
+                    # Add open access PDF URL if available
+                    if item.get('openAccessPdf') and item['openAccessPdf'].get('url'):
+                        paper_data['urls'].append(item['openAccessPdf']['url'])
+                        
+                    results[paper_id] = paper_data
+                    
+        return results
         
     def _similar_title(self, title1: str, title2: str) -> bool:
         """Check if two titles are similar enough"""

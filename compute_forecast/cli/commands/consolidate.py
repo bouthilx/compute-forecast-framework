@@ -10,8 +10,6 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 from compute_forecast.pipeline.consolidation.sources.semantic_scholar import SemanticScholarSource
 from compute_forecast.pipeline.consolidation.sources.openalex import OpenAlexSource
 from compute_forecast.pipeline.consolidation.sources.base import SourceConfig
-from compute_forecast.pipeline.consolidation.enrichment.citation_enricher import CitationEnricher
-from compute_forecast.pipeline.consolidation.enrichment.abstract_enricher import AbstractEnricher
 from compute_forecast.pipeline.metadata_collection.models import Paper
 
 console = Console()
@@ -114,8 +112,12 @@ def main(
         "total_papers": len(papers),
         "citations_added": 0,
         "abstracts_added": 0,
+        "urls_added": 0,
         "api_calls": {}
     }
+    
+    # Create paper lookup for efficient updates
+    papers_by_id = {p.paper_id: p for p in papers if p.paper_id}
     
     with Progress(
         SpinnerColumn(),
@@ -123,37 +125,38 @@ def main(
         console=console,
     ) as progress:
         
-        # Enrich citations
-        if "citations" in enrich_fields:
-            task = progress.add_task("Enriching citations...", total=None)
-            
-            enricher = CitationEnricher(source_objects)
-            citation_records = enricher.enrich(papers)
-            
-            # Update papers
-            for paper in papers:
-                if paper.paper_id in citation_records:
-                    paper.citations.extend(citation_records[paper.paper_id])
-                    stats["citations_added"] += len(citation_records[paper.paper_id])
-                    
-            progress.update(task, completed=True)
-            console.print(f"[green]✓[/green] Added {stats['citations_added']} citation records")
+        # Single enrichment pass through all sources
+        task = progress.add_task("Enriching papers from all sources...", total=len(source_objects))
         
-        # Enrich abstracts
-        if "abstracts" in enrich_fields:
-            task = progress.add_task("Enriching abstracts...", total=None)
+        for source in source_objects:
+            console.print(f"[cyan]Enriching from {source.name}...[/cyan]")
             
-            enricher = AbstractEnricher(source_objects)
-            abstract_records = enricher.enrich(papers)
+            try:
+                # Get ALL enrichment data in one pass
+                enrichment_results = source.enrich_papers(papers)
+                
+                # Apply all enrichments to papers
+                for result in enrichment_results:
+                    if result.paper_id in papers_by_id:
+                        paper = papers_by_id[result.paper_id]
+                        
+                        # Add all enrichment data with provenance
+                        paper.citations.extend(result.citations)
+                        paper.abstracts.extend(result.abstracts)
+                        paper.urls.extend(result.urls)
+                        
+                        # Update statistics
+                        stats["citations_added"] += len(result.citations)
+                        stats["abstracts_added"] += len(result.abstracts)
+                        stats["urls_added"] += len(result.urls)
+                
+                console.print(f"[green]✓[/green] Completed {source.name}")
+                
+            except Exception as e:
+                logger.error(f"Error enriching from {source.name}: {e}")
+                console.print(f"[red]✗[/red] Failed to enrich from {source.name}: {e}")
             
-            # Update papers
-            for paper in papers:
-                if paper.paper_id in abstract_records:
-                    paper.abstracts.extend(abstract_records[paper.paper_id])
-                    stats["abstracts_added"] += len(abstract_records[paper.paper_id])
-                    
-            progress.update(task, completed=True)
-            console.print(f"[green]✓[/green] Added {stats['abstracts_added']} abstract records")
+            progress.advance(task)
     
     # Collect API call stats
     for source in source_objects:
@@ -168,4 +171,5 @@ def main(
     console.print(f"  Papers processed: {stats['total_papers']}")
     console.print(f"  Citations added: {stats['citations_added']}")
     console.print(f"  Abstracts added: {stats['abstracts_added']}")
+    console.print(f"  URLs added: {stats['urls_added']}")
     console.print(f"  API calls: {sum(stats['api_calls'].values())}")

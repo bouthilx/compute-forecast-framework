@@ -1,5 +1,5 @@
 import requests
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 from .base import BaseConsolidationSource, SourceConfig
 from ...metadata_collection.models import Paper
@@ -89,12 +89,15 @@ class OpenAlexSource(BaseConsolidationSource):
                         
         return mapping
         
-    def fetch_citations(self, paper_ids: List[str]) -> Dict[str, int]:
-        """Fetch citation counts"""
-        citations = {}
+    def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
+        """Fetch all available fields in minimal API calls"""
+        results = {}
         
         # Build OR filter for all IDs
-        id_filters = [f'openalex:"{id}"' for id in paper_ids]
+        id_filters = [f'openalex:"{id}"' for id in source_ids]
+        
+        # Select all fields we need in one request
+        select_fields = "id,title,abstract_inverted_index,cited_by_count,publication_year,authorships,primary_location,locations,concepts"
         
         # Process in batches (OpenAlex has URL length limits)
         batch_size = 50
@@ -108,7 +111,7 @@ class OpenAlexSource(BaseConsolidationSource):
                 params={
                     "filter": filter_str,
                     "per-page": len(batch),
-                    "select": "id,cited_by_count"
+                    "select": select_fields
                 },
                 headers=self.headers
             )
@@ -116,44 +119,44 @@ class OpenAlexSource(BaseConsolidationSource):
             
             if response.status_code == 200:
                 for work in response.json().get("results", []):
-                    citations[work["id"]] = work.get("cited_by_count", 0)
+                    work_id = work.get("id")
+                    if not work_id:
+                        continue
+                        
+                    # Extract all data from single response
+                    paper_data = {
+                        'citations': work.get("cited_by_count", 0),
+                        'abstract': None,
+                        'urls': [],
+                        'authors': [],
+                        'concepts': work.get('concepts', [])
+                    }
                     
-        return citations
-        
-    def fetch_abstracts(self, paper_ids: List[str]) -> Dict[str, str]:
-        """Fetch abstracts"""
-        abstracts = {}
-        
-        # Build OR filter for all IDs
-        id_filters = [f'openalex:"{id}"' for id in paper_ids]
-        
-        # Process in batches
-        batch_size = 50
-        for i in range(0, len(id_filters), batch_size):
-            batch = id_filters[i:i+batch_size]
-            filter_str = "|".join(batch)
-            
-            self._rate_limit()
-            response = requests.get(
-                f"{self.base_url}/works",
-                params={
-                    "filter": filter_str,
-                    "per-page": len(batch),
-                    "select": "id,abstract_inverted_index"
-                },
-                headers=self.headers
-            )
-            self.api_calls += 1
-            
-            if response.status_code == 200:
-                for work in response.json().get("results", []):
                     # Convert inverted index to text
                     inverted = work.get("abstract_inverted_index", {})
                     if inverted:
-                        abstract_text = self._inverted_to_text(inverted)
-                        abstracts[work["id"]] = abstract_text
+                        paper_data['abstract'] = self._inverted_to_text(inverted)
                         
-        return abstracts
+                    # Extract author information
+                    for authorship in work.get('authorships', []):
+                        author_info = {
+                            'name': authorship.get('author', {}).get('display_name'),
+                            'institutions': [inst.get('display_name') for inst in authorship.get('institutions', [])]
+                        }
+                        paper_data['authors'].append(author_info)
+                        
+                    # Extract URLs from locations
+                    if work.get('primary_location') and work['primary_location'].get('pdf_url'):
+                        paper_data['urls'].append(work['primary_location']['pdf_url'])
+                        
+                    # Check other locations for open access URLs
+                    for location in work.get('locations', []):
+                        if location.get('pdf_url') and location['pdf_url'] not in paper_data['urls']:
+                            paper_data['urls'].append(location['pdf_url'])
+                            
+                    results[work_id] = paper_data
+                    
+        return results
         
     def _inverted_to_text(self, inverted_index: Dict[str, List[int]]) -> str:
         """Convert OpenAlex inverted index to text"""

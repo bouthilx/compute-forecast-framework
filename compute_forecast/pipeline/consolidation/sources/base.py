@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 import logging
 
-from ..models import EnrichmentResult, CitationRecord, AbstractRecord, CitationData, AbstractData
+from ..models import EnrichmentResult, CitationRecord, AbstractRecord, URLRecord, CitationData, AbstractData, URLData
 from ...metadata_collection.models import Paper
 
 
@@ -54,65 +54,78 @@ class BaseConsolidationSource(ABC):
         pass
         
     @abstractmethod
-    def fetch_citations(self, paper_ids: List[str]) -> Dict[str, int]:
+    def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
         """
-        Fetch citation counts for papers.
-        Returns mapping of paper_id -> citation_count
-        """
-        pass
-        
-    @abstractmethod
-    def fetch_abstracts(self, paper_ids: List[str]) -> Dict[str, str]:
-        """
-        Fetch abstracts for papers.
-        Returns mapping of paper_id -> abstract_text
+        Fetch all available fields for papers in one go.
+        Returns mapping of source_id -> {
+            'citations': int,
+            'abstract': str,
+            'urls': List[str],
+            'authors': List[Dict],  # For future affiliation enrichment
+            ...other fields...
+        }
         """
         pass
         
     def enrich_papers(self, papers: List[Paper]) -> List[EnrichmentResult]:
-        """Main enrichment workflow"""
+        """Main enrichment workflow - single pass for all fields"""
         results = []
         
         # Process in batches
         for i in range(0, len(papers), self.config.batch_size):
             batch = papers[i:i + self.config.batch_size]
             
-            # Find papers in this source
+            # Find papers in this source ONCE
             id_mapping = self.find_papers(batch)
             source_ids = list(id_mapping.values())
             
             if not source_ids:
                 continue
                 
-            # Fetch enrichment data
-            citations = self.fetch_citations(source_ids)
-            abstracts = self.fetch_abstracts(source_ids)
+            # Fetch ALL enrichment data in one API call (or minimal calls)
+            try:
+                enrichment_data = self.fetch_all_fields(source_ids)
+            except Exception as e:
+                self.logger.error(f"Error fetching data: {e}")
+                continue
             
             # Create results with provenance
             for paper in batch:
                 result = EnrichmentResult(paper_id=paper.paper_id)
                 
                 source_id = id_mapping.get(paper.paper_id)
-                if source_id:
+                if source_id and source_id in enrichment_data:
+                    data = enrichment_data[source_id]
+                    
                     # Add citation if found
-                    if source_id in citations:
+                    if data.get('citations') is not None:
                         citation_record = CitationRecord(
                             source=self.name,
                             timestamp=datetime.now(),
-                            original=False,  # This is from enrichment, not original scraper
-                            data=CitationData(count=citations[source_id])
+                            original=False,
+                            data=CitationData(count=data['citations'])
                         )
                         result.citations.append(citation_record)
                     
                     # Add abstract if found
-                    if source_id in abstracts:
+                    if data.get('abstract'):
                         abstract_record = AbstractRecord(
                             source=self.name,
                             timestamp=datetime.now(),
-                            original=False,  # This is from enrichment, not original scraper
-                            data=AbstractData(text=abstracts[source_id])
+                            original=False,
+                            data=AbstractData(text=data['abstract'])
                         )
                         result.abstracts.append(abstract_record)
+                        
+                    # Add URLs if found
+                    for url in data.get('urls', []):
+                        url_record = URLRecord(
+                            source=self.name,
+                            timestamp=datetime.now(),
+                            original=False,
+                            data=URLData(url=url)
+                        )
+                        result.urls.append(url_record)
                 
                 results.append(result)
                 
