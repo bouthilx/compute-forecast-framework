@@ -97,7 +97,7 @@ class ScrapingMonitor:
 
     def get_error_summary(self) -> Dict[str, int]:
         """Get summary of errors by type"""
-        summary = {}
+        summary: Dict[str, int] = {}
         for error in self.errors:
             error_type = error.error_type.value
             summary[error_type] = summary.get(error_type, 0) + 1
@@ -217,7 +217,7 @@ class RateLimiter:
         backoff_multiplier = min(
             2**self.consecutive_errors, self.max_backoff_multiplier
         )
-        return self.min_interval * backoff_multiplier
+        return float(self.min_interval * backoff_multiplier)
 
     def reset(self):
         """Reset the rate limiter state"""

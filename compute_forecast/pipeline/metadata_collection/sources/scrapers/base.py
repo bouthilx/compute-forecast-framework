@@ -11,6 +11,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from ...models import Paper
+from .models import SimplePaper
 
 
 @dataclass
@@ -38,7 +39,7 @@ class ScrapingResult:
     @classmethod
     def success_result(
         cls, papers_count: int, metadata: Optional[Dict[str, Any]] = None
-    ):
+    ) -> "ScrapingResult":
         """Create a successful result"""
         return cls(
             success=True,
@@ -51,7 +52,7 @@ class ScrapingResult:
     @classmethod
     def failure_result(
         cls, errors: List[str], metadata: Optional[Dict[str, Any]] = None
-    ):
+    ) -> "ScrapingResult":
         """Create a failure result"""
         return cls(
             success=False,
@@ -69,14 +70,14 @@ class BaseScraper(ABC):
         self.source_name = source_name
         self.config = config or ScrapingConfig()
         self.logger = logging.getLogger(f"scraper.{source_name}")
-        self._session = None
-        self._cache = {}
+        self._session: Optional[requests.Session] = None
+        self._cache: Dict[str, Any] = {}
 
     @property
     def session(self) -> requests.Session:
         """Get or create HTTP session with retry configuration"""
         if self._session is None:
-            self._session = requests.Session()
+            session = requests.Session()
 
             # Configure retries
             retry_strategy = Retry(
@@ -86,11 +87,13 @@ class BaseScraper(ABC):
                 backoff_factor=1,
             )
             adapter = HTTPAdapter(max_retries=retry_strategy)
-            self._session.mount("http://", adapter)
-            self._session.mount("https://", adapter)
+            session.mount("http://", adapter)
+            session.mount("https://", adapter)
 
             # Set user agent
-            self._session.headers.update({"User-Agent": self.config.user_agent})
+            session.headers.update({"User-Agent": self.config.user_agent})
+            
+            self._session = session
 
         return self._session
 
@@ -186,7 +189,7 @@ class ConferenceProceedingsScraper(BaseScraper):
         pass
 
     @abstractmethod
-    def parse_proceedings_page(self, html: str, venue: str, year: int) -> List[Paper]:
+    def parse_proceedings_page(self, html: str, venue: str, year: int) -> List[SimplePaper]:
         """Parse proceedings page HTML to extract papers"""
         pass
 
