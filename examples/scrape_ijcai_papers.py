@@ -191,7 +191,7 @@ def main():
         collector.save_to_json(papers, args.output)
         
         # Print summary
-        print(f"\nCollection Summary:")
+        print("\nCollection Summary:")
         print(f"- Venue: IJCAI {args.year}")
         print(f"- Papers collected: {len(papers)}")
         print(f"- Output file: {args.output}")

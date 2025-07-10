@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from rich.console import Console
 from rich.panel import Panel
-from rich.text import Text
 
 from .runner import QualityRunner
 from .interfaces import QualityReport, QualityConfig
@@ -96,25 +95,43 @@ def _show_quality_summary(report: QualityReport, context: Optional[Dict[str, Any
 
 def _score_to_grade(score: float) -> str:
     """Convert numeric score to letter grade."""
-    if score >= 0.97: return "A+"
-    elif score >= 0.93: return "A"
-    elif score >= 0.90: return "A-"
-    elif score >= 0.87: return "B+"
-    elif score >= 0.83: return "B"
-    elif score >= 0.80: return "B-"
-    elif score >= 0.77: return "C+"
-    elif score >= 0.73: return "C"
-    elif score >= 0.70: return "C-"
-    elif score >= 0.67: return "D+"
-    elif score >= 0.63: return "D"
-    elif score >= 0.60: return "D-"
-    else: return "F"
+    if score >= 0.97:
+        return "A+"
+    elif score >= 0.93:
+        return "A"
+    elif score >= 0.90:
+        return "A-"
+    elif score >= 0.87:
+        return "B+"
+    elif score >= 0.83:
+        return "B"
+    elif score >= 0.80:
+        return "B-"
+    elif score >= 0.77:
+        return "C+"
+    elif score >= 0.73:
+        return "C"
+    elif score >= 0.70:
+        return "C-"
+    elif score >= 0.67:
+        return "D+"
+    elif score >= 0.63:
+        return "D"
+    elif score >= 0.60:
+        return "D-"
+    else:
+        return "F"
 
 
 def _grade_to_color(grade: str) -> str:
     """Get color for grade display."""
-    if grade.startswith("A"): return "green"
-    elif grade.startswith("B"): return "cyan"
-    elif grade.startswith("C"): return "yellow"
-    elif grade.startswith("D"): return "magenta"
-    else: return "red"
+    if grade.startswith("A"):
+        return "green"
+    elif grade.startswith("B"):
+        return "cyan"
+    elif grade.startswith("C"):
+        return "yellow"
+    elif grade.startswith("D"):
+        return "magenta"
+    else:
+        return "red"

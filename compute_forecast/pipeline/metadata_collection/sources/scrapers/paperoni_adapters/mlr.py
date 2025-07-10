@@ -1,10 +1,8 @@
 """MLR adapter - simplified stub implementation."""
 
 from typing import List, Any
-from datetime import datetime
 
 from .base import BasePaperoniAdapter
-from ..models import SimplePaper
 
 
 class MLRAdapter(BasePaperoniAdapter):

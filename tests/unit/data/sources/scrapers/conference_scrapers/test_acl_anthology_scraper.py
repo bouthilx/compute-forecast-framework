@@ -1,13 +1,11 @@
 """Unit tests for ACL Anthology scraper"""
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from datetime import datetime
 
 from compute_forecast.data.sources.scrapers.conference_scrapers.acl_anthology_scraper import (
     ACLAnthologyScraper
 )
-from compute_forecast.data.sources.scrapers import ScrapingConfig, ScrapingResult
 
 
 class TestACLAnthologyScraper:

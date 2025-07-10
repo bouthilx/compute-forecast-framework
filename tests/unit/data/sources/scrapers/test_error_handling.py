@@ -2,7 +2,6 @@
 
 import pytest
 import time
-import logging
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
 import requests

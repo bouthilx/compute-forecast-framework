@@ -1,7 +1,7 @@
 """Quality check command for compute-forecast."""
 
 import typer
-from typing import Optional, List
+from typing import Optional
 from pathlib import Path
 from rich.console import Console
 

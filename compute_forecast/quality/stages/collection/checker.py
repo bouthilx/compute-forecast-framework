@@ -2,12 +2,12 @@
 
 import json
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 from datetime import datetime
 
 from compute_forecast.quality.stages.base import StageQualityChecker
 from compute_forecast.quality.core.interfaces import (
-    QualityCheckResult, QualityCheckType, QualityConfig
+    QualityCheckResult, QualityConfig
 )
 from .validators import (
     CompletenessValidator,
@@ -15,7 +15,7 @@ from .validators import (
     AccuracyValidator,
     CoverageValidator
 )
-from .models import CollectionQualityMetrics, CollectionContext
+from .models import CollectionQualityMetrics
 
 
 class CollectionQualityChecker(StageQualityChecker):

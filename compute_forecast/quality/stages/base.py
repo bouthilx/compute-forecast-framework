@@ -5,7 +5,7 @@ from typing import Any, List, Dict, Callable
 from pathlib import Path
 from datetime import datetime
 
-from ..core.interfaces import QualityReport, QualityConfig, QualityCheckResult
+from ..core.interfaces import QualityReport, QualityConfig
 
 
 class StageQualityChecker(ABC):
