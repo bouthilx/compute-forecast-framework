@@ -110,7 +110,9 @@ class Paper:
         """Convert paper to dictionary for JSON serialization"""
         result: Dict[str, Any] = {}
         for key, value in self.__dict__.items():
-            if isinstance(value, list) and value and hasattr(value[0], "__dict__"):
+            if isinstance(value, datetime):
+                result[key] = value.isoformat()
+            elif isinstance(value, list) and value and hasattr(value[0], "__dict__"):
                 result[key] = [item.__dict__ for item in value]
             elif hasattr(value, "__dict__"):
                 result[key] = value.__dict__ if value else None
@@ -134,6 +136,9 @@ class Paper:
                     author_data = author_data.copy()
                     author_data.pop("author_id", None)
                 authors.append(Author(**author_data))
+            elif isinstance(author_data, str):
+                # Handle simple string author names from scrapers
+                authors.append(Author(name=author_data, affiliations=[]))
 
         # Handle analysis objects
         comp_analysis = None
@@ -174,6 +179,30 @@ class Paper:
 
         # Create paper with processed data
         paper_data = data.copy()
+        
+        # Handle field name differences from scrapers
+        if "pdf_urls" in paper_data and "urls" not in paper_data:
+            paper_data["urls"] = paper_data.pop("pdf_urls")
+        
+        # Handle None values for string fields
+        if paper_data.get("abstract") is None:
+            paper_data["abstract"] = ""
+        if paper_data.get("doi") is None:
+            paper_data["doi"] = ""
+        
+        # Set default values for missing required fields
+        if "citations" not in paper_data:
+            paper_data["citations"] = 0
+            
+        # Handle datetime fields
+        if "collection_timestamp" in paper_data and isinstance(paper_data["collection_timestamp"], str):
+            paper_data["collection_timestamp"] = datetime.fromisoformat(paper_data["collection_timestamp"])
+            
+        # Remove scraper-specific fields not in Paper model
+        scraper_fields = ["source_scraper", "source_url", "scraped_at", "extraction_confidence", "metadata_completeness"]
+        for field in scraper_fields:
+            paper_data.pop(field, None)
+            
         paper_data["authors"] = authors
         paper_data["computational_analysis"] = comp_analysis
         paper_data["authorship_analysis"] = auth_analysis

@@ -24,9 +24,15 @@ def load_papers(input_path: Path) -> List[Paper]:
         data = json.load(f)
     
     papers = []
-    for paper_data in data.get("papers", []):
+    for i, paper_data in enumerate(data.get("papers", [])):
         # Convert to Paper object
         paper = Paper.from_dict(paper_data)
+        
+        # Generate a unique ID if none exists
+        if not paper.paper_id:
+            # Use a combination of venue, year, and index as temporary ID
+            paper.paper_id = f"{paper.venue}_{paper.year}_{i:04d}"
+            
         papers.append(paper)
         
     return papers
