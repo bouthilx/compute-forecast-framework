@@ -71,7 +71,10 @@ class QualityRunner:
                     data = json.load(f)
                     
                 # Collection stage detection
-                if 'collection_metadata' in data or 'papers' in data:
+                if isinstance(data, list):
+                    # If it's a list, assume it's a collection of papers
+                    applicable.append('collection')
+                elif isinstance(data, dict) and ('collection_metadata' in data or 'papers' in data):
                     applicable.append('collection')
                 
                 # Future: Add detection for other stages
