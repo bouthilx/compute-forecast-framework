@@ -11,6 +11,7 @@ from rich.progress import (
     TextColumn,
     BarColumn,
     TaskProgressColumn,
+    TimeRemainingColumn,
 )
 
 from compute_forecast.pipeline.consolidation.sources.semantic_scholar import SemanticScholarSource
@@ -131,8 +132,9 @@ def main(
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TaskProgressColumn(),
+        TimeRemainingColumn(),
         TextColumn(
-            "• {task.fields[citations_added]} citations • {task.fields[abstracts_added]} abstracts • {task.fields[urls_added]} URLs"
+            "• {task.fields[citations_pct]:.1f}% citations • {task.fields[abstracts_pct]:.1f}% abstracts • {task.fields[urls_pct]:.1f}% URLs"
         ),
         console=console,
         disable=no_progress,
@@ -147,6 +149,9 @@ def main(
                 citations_added=0,
                 abstracts_added=0,
                 urls_added=0,
+                citations_pct=0.0,
+                abstracts_pct=0.0,
+                urls_pct=0.0,
             )
             source_tasks[source.name] = task_id
         
@@ -157,9 +162,10 @@ def main(
             source_citations = 0
             source_abstracts = 0
             source_urls = 0
+            papers_processed = 0
             
             def update_progress(result):
-                nonlocal source_citations, source_abstracts, source_urls
+                nonlocal source_citations, source_abstracts, source_urls, papers_processed
                 
                 # Apply enrichments to papers
                 if result.paper_id in papers_by_id:
@@ -175,6 +181,13 @@ def main(
                     source_abstracts += len(result.abstracts)
                     source_urls += len(result.urls)
                 
+                papers_processed += 1
+                
+                # Calculate percentages based on papers processed so far
+                citations_pct = (source_citations / papers_processed * 100) if papers_processed > 0 else 0.0
+                abstracts_pct = (source_abstracts / papers_processed * 100) if papers_processed > 0 else 0.0
+                urls_pct = (source_urls / papers_processed * 100) if papers_processed > 0 else 0.0
+                
                 # Update progress for this paper in this source
                 progress.update(
                     task_id,
@@ -182,6 +195,9 @@ def main(
                     citations_added=source_citations,
                     abstracts_added=source_abstracts,
                     urls_added=source_urls,
+                    citations_pct=citations_pct,
+                    abstracts_pct=abstracts_pct,
+                    urls_pct=urls_pct,
                 )
             
             try:

@@ -169,8 +169,12 @@ def test_consolidate_command_with_scraper_format(tmp_path):
     assert papers[2]["paper_id"] == "existing-id"
     assert len(papers[2]["urls"]) == 1
     assert papers[2]["urls"][0]["data"]["url"] == "https://example.com/paper3.pdf"
-    assert len(papers[2]["citations"]) == 1
-    assert papers[2]["citations"][0]["data"]["count"] == 5
+    # Should have original citation plus any from enrichment
+    assert len(papers[2]["citations"]) >= 1
+    # First citation should be the original
+    original_citations = [c for c in papers[2]["citations"] if c["original"]]
+    assert len(original_citations) == 1
+    assert original_citations[0]["data"]["count"] == 5
 
 
 def test_consolidate_command_json_serialization(tmp_path):
