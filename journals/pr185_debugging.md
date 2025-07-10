@@ -65,3 +65,14 @@ ModuleNotFoundError: No module named 'compute_forecast.data'
 - Fixed variable name collision: renamed `scraper` to `scraper_name` in venue mapping loop
 - Added explicit type annotation for `scraper_venues: Dict[str, List[str]]`
 - Fixed JSON load return type by adding explicit type annotation
+
+### Step 4: Run tests locally
+✓ Tests are now running successfully - import errors are fixed
+
+### Step 5: Fix remaining pre-commit issues
+✓ Fixed ruff linting errors:
+- Fixed import order in cli/main.py
+- Fixed typo: EnhancedScaper -> EnhancedScraper
+- Replaced bare except with except Exception
+- Used 'is' for type comparison
+- Removed unused variables in tests
