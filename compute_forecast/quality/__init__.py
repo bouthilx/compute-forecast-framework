@@ -42,6 +42,10 @@ from .core.registry import get_registry, register_stage_checker
 from .core.hooks import run_post_command_quality_check
 from .stages.base import StageQualityChecker
 
+# Register all available checkers
+from .stages.collection.register import register_collection_checker
+register_collection_checker()
+
 __all__ = [
     # Existing components
     "AdaptiveThresholdEngine",
