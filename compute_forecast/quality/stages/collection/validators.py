@@ -128,8 +128,15 @@ class CompletenessValidator(BaseValidator):
         total_papers = len(papers)
         
         for field in self.OPTIONAL_FIELDS:
-            present_count = sum(1 for paper in papers if field in paper and paper[field] and 
-                             (not isinstance(paper[field], str) or paper[field].strip()))
+            if field == "pdf_url":
+                # Check both pdf_url and pdf_urls fields
+                present_count = sum(1 for paper in papers 
+                                  if (paper.get("pdf_urls") and paper["pdf_urls"]) or
+                                     (paper.get("pdf_url") and paper["pdf_url"] and 
+                                      (not isinstance(paper["pdf_url"], str) or paper["pdf_url"].strip())))
+            else:
+                present_count = sum(1 for paper in papers if field in paper and paper[field] and 
+                                 (not isinstance(paper[field], str) or paper[field].strip()))
             coverage[field] = present_count / total_papers if total_papers > 0 else 0.0
             
             if coverage[field] < 0.5:
