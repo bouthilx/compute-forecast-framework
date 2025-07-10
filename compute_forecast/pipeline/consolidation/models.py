@@ -16,6 +16,7 @@ class ProvenanceRecord:
     """Base class for tracking source and timing of enrichment data"""
     source: str
     timestamp: datetime
+    original: bool = False  # True if from original scraper, False if from enrichment API
     
 
 @dataclass
@@ -41,6 +42,18 @@ class AbstractData:
 class AbstractRecord(ProvenanceRecord):
     """Abstract text with provenance"""
     data: AbstractData
+
+
+@dataclass
+class URLData:
+    """URL data"""
+    url: str
+    
+
+@dataclass
+class URLRecord(ProvenanceRecord):
+    """URL with provenance"""
+    data: URLData
 
 
 @dataclass
