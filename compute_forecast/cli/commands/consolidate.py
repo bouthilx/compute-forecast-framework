@@ -18,6 +18,7 @@ from compute_forecast.pipeline.consolidation.sources.semantic_scholar import Sem
 from compute_forecast.pipeline.consolidation.sources.openalex import OpenAlexSource
 from compute_forecast.pipeline.consolidation.sources.base import SourceConfig
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.utils.profiling import PerformanceProfiler, set_profiler, profile_operation
 
 console = Console()
 logger = logging.getLogger(__name__)
@@ -74,6 +75,7 @@ def main(
     parallel: int = typer.Option(1, "--parallel", help="Number of parallel workers"),
     ss_api_key: Optional[str] = typer.Option(None, "--ss-api-key", help="Semantic Scholar API key", envvar="SEMANTIC_SCHOLAR_API_KEY"),
     openalex_email: Optional[str] = typer.Option(None, "--openalex-email", help="OpenAlex email", envvar="OPENALEX_EMAIL"),
+    profile: bool = typer.Option(False, "--profile", help="Enable performance profiling"),
 ):
     """
     Consolidate and enrich paper metadata from multiple sources.
@@ -89,12 +91,18 @@ def main(
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output = Path(f"data/consolidated_papers/papers_{timestamp}.json")
     
+    # Initialize profiler if requested
+    if profile:
+        profiler = PerformanceProfiler("consolidation")
+        set_profiler(profiler)
+    
     # Parse options
     enrich_fields = [f.strip() for f in enrich.split(",")]
     source_names = [s.strip() for s in sources.split(",")]
     
     console.print(f"[cyan]Loading papers from {input}...[/cyan]")
-    papers = load_papers(input)
+    with profile_operation('load_papers', file=str(input)):
+        papers = load_papers(input)
     console.print(f"[green]Loaded {len(papers)} papers[/green]")
     
     if dry_run:
@@ -109,6 +117,10 @@ def main(
     
     if "semantic_scholar" in source_names:
         config = SourceConfig(api_key=ss_api_key)
+        # Note: SemanticScholarSource automatically configures:
+        # - Without API key: 0.1 req/sec (conservative for shared pool)
+        # - With API key: 1.0 req/sec (introductory rate)
+        # - Batch sizes: 500 papers (API maximum)
         source_objects.append(SemanticScholarSource(config))
         
     if "openalex" in source_names:
@@ -127,12 +139,15 @@ def main(
     # Create paper lookup for efficient updates
     papers_by_id = {p.paper_id: p for p in papers if p.paper_id}
     
+    # Track timing for better ETA calculation
+    import time
+    
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TaskProgressColumn(),
-        TimeRemainingColumn(),
+        TextColumn("[cyan]{task.fields[time_remaining]}[/cyan]"),
         TextColumn(
             "• {task.fields[citations_pct]:.1f}% citations • {task.fields[abstracts_pct]:.1f}% abstracts • {task.fields[urls_pct]:.1f}% URLs"
         ),
@@ -152,6 +167,7 @@ def main(
                 citations_pct=0.0,
                 abstracts_pct=0.0,
                 urls_pct=0.0,
+                time_remaining="",
             )
             source_tasks[source.name] = task_id
         
@@ -163,6 +179,7 @@ def main(
             source_abstracts = 0
             source_urls = 0
             papers_processed = 0
+            start_time = time.time()
             
             def update_progress(result):
                 nonlocal source_citations, source_abstracts, source_urls, papers_processed
@@ -188,6 +205,25 @@ def main(
                 abstracts_pct = (source_abstracts / papers_processed * 100) if papers_processed > 0 else 0.0
                 urls_pct = (source_urls / papers_processed * 100) if papers_processed > 0 else 0.0
                 
+                # Calculate custom ETA based on actual processing rate
+                elapsed = time.time() - start_time
+                if papers_processed > 0 and elapsed > 0:
+                    rate = papers_processed / elapsed  # papers per second
+                    remaining_papers = len(papers) - papers_processed
+                    if rate > 0:
+                        remaining_seconds = remaining_papers / rate
+                        # Format as HH:MM:SS
+                        hours, remainder = divmod(int(remaining_seconds), 3600)
+                        minutes, seconds = divmod(remainder, 60)
+                        if hours > 0:
+                            time_remaining = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                        else:
+                            time_remaining = f"{minutes:02d}:{seconds:02d}"
+                    else:
+                        time_remaining = "--:--"
+                else:
+                    time_remaining = "--:--"
+                
                 # Update progress for this paper in this source
                 progress.update(
                     task_id,
@@ -198,6 +234,7 @@ def main(
                     citations_pct=citations_pct,
                     abstracts_pct=abstracts_pct,
                     urls_pct=urls_pct,
+                    time_remaining=time_remaining,
                 )
             
             try:
@@ -209,6 +246,8 @@ def main(
                 stats["abstracts_added"] += source_abstracts
                 stats["urls_added"] += source_urls
                 
+                # Mark as completed
+                progress.update(task_id, time_remaining="done")
                 console.print(f"[green]✓[/green] Completed {source.name}: +{source_citations} citations, +{source_abstracts} abstracts, +{source_urls} URLs")
                 
             except Exception as e:
@@ -224,7 +263,8 @@ def main(
     
     # Save results
     output.parent.mkdir(parents=True, exist_ok=True)
-    save_papers(papers, output, stats)
+    with profile_operation('save_papers', file=str(output)):
+        save_papers(papers, output, stats)
     
     console.print(f"\n[green]✓[/green] Saved enriched data to {output}")
     console.print("\n[bold]Summary:[/bold]")
@@ -233,3 +273,25 @@ def main(
     console.print(f"  Abstracts added: {stats['abstracts_added']}")
     console.print(f"  URLs added: {stats['urls_added']}")
     console.print(f"  API calls: {sum(stats['api_calls'].values())}")
+    
+    # Print profiling report if enabled
+    if profile:
+        profiler.print_report()
+        
+        # Also save detailed breakdown
+        breakdown = profiler.get_detailed_breakdown()
+        profile_path = output.parent / f"profile_{output.stem}.json"
+        with open(profile_path, "w") as f:
+            json.dump({
+                'summary': profiler.get_summary(),
+                'breakdown': breakdown,
+                'records': [
+                    {
+                        'name': r.name,
+                        'duration': r.duration,
+                        'metadata': r.metadata
+                    }
+                    for r in profiler.records if r.duration
+                ]
+            }, f, indent=2)
+        console.print(f"\n[dim]Detailed profile saved to {profile_path}[/dim]")

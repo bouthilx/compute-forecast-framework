@@ -11,6 +11,11 @@ class OpenAlexSource(BaseConsolidationSource):
     def __init__(self, config: Optional[SourceConfig] = None):
         if config is None:
             config = SourceConfig()
+        # Set optimal batch sizes for OpenAlex (limited by URL length)
+        if config.find_batch_size is None:
+            config.find_batch_size = 50  # URL length limit
+        if config.enrich_batch_size is None:
+            config.enrich_batch_size = 50  # URL length limit
         super().__init__("openalex", config)
         self.base_url = "https://api.openalex.org"
         
@@ -100,7 +105,7 @@ class OpenAlexSource(BaseConsolidationSource):
         select_fields = "id,title,abstract_inverted_index,cited_by_count,publication_year,authorships,primary_location,locations,concepts"
         
         # Process in batches (OpenAlex has URL length limits)
-        batch_size = 50
+        batch_size = self.config.enrich_batch_size or 50
         for i in range(0, len(id_filters), batch_size):
             batch = id_filters[i:i+batch_size]
             filter_str = "|".join(batch)

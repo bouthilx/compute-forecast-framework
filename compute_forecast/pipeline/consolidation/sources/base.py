@@ -7,6 +7,7 @@ import logging
 
 from ..models import EnrichmentResult, CitationRecord, AbstractRecord, URLRecord, CitationData, AbstractData, URLData
 from ...metadata_collection.models import Paper
+from ....utils.profiling import profile_operation
 
 
 @dataclass
@@ -17,6 +18,9 @@ class SourceConfig:
     batch_size: int = 50
     timeout: int = 30
     max_retries: int = 3
+    # Allow source-specific batch sizes for optimal performance
+    find_batch_size: Optional[int] = None  # For finding papers (ID lookup)
+    enrich_batch_size: Optional[int] = None  # For enrichment data fetching
 
 
 class BaseConsolidationSource(ABC):
@@ -31,11 +35,14 @@ class BaseConsolidationSource(ABC):
         
     def _rate_limit(self):
         """Enforce rate limiting"""
-        elapsed = time.time() - self.last_request_time
-        sleep_time = (1.0 / self.config.rate_limit) - elapsed
-        if sleep_time > 0:
-            time.sleep(sleep_time)
-        self.last_request_time = time.time()
+        with profile_operation('rate_limit', source=self.name) as prof:
+            elapsed = time.time() - self.last_request_time
+            sleep_time = (1.0 / self.config.rate_limit) - elapsed
+            if sleep_time > 0:
+                if prof:
+                    prof.metadata['sleep_time'] = sleep_time
+                time.sleep(sleep_time)
+            self.last_request_time = time.time()
         
     def _create_provenance(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Create provenance record"""
@@ -71,78 +78,87 @@ class BaseConsolidationSource(ABC):
         """Main enrichment workflow - single pass for all fields with optional progress tracking"""
         results = []
         
-        # Process in batches
-        for i in range(0, len(papers), self.config.batch_size):
-            batch = papers[i:i + self.config.batch_size]
+        with profile_operation('enrich_papers_total', source=self.name, paper_count=len(papers)):
+            # Use source-specific batch sizes for optimal performance
+            find_batch_size = self.config.find_batch_size or self.config.batch_size
+            enrich_batch_size = self.config.enrich_batch_size or self.config.batch_size
             
-            # Find papers in this source ONCE
-            id_mapping = self.find_papers(batch)
-            source_ids = list(id_mapping.values())
-            
-            if not source_ids:
-                # Still need to create empty results for progress tracking
-                for paper in batch:
-                    result = EnrichmentResult(paper_id=paper.paper_id)
-                    results.append(result)
-                    if progress_callback:
-                        progress_callback(result)
-                continue
+            # Process papers in optimal batch sizes for finding IDs
+            for i in range(0, len(papers), find_batch_size):
+                batch = papers[i:i + find_batch_size]
                 
-            # Fetch ALL enrichment data in one API call (or minimal calls)
-            try:
-                enrichment_data = self.fetch_all_fields(source_ids)
-            except Exception as e:
-                self.logger.error(f"Error fetching data: {e}")
-                # Still need to create empty results for progress tracking
-                for paper in batch:
-                    result = EnrichmentResult(paper_id=paper.paper_id)
-                    results.append(result)
-                    if progress_callback:
-                        progress_callback(result)
-                continue
+                with profile_operation('find_papers_batch', source=self.name, batch_size=len(batch)):
+                    # Find papers in this source ONCE
+                    id_mapping = self.find_papers(batch)
+                    source_ids = list(id_mapping.values())
             
-            # Create results with provenance
-            for paper in batch:
-                result = EnrichmentResult(paper_id=paper.paper_id)
+                if not source_ids:
+                    # Still need to create empty results for progress tracking
+                    for paper in batch:
+                        result = EnrichmentResult(paper_id=paper.paper_id)
+                        results.append(result)
+                        if progress_callback:
+                            progress_callback(result)
+                    continue
+                    
+                # Fetch ALL enrichment data in one API call (or minimal calls)
+                try:
+                    with profile_operation('fetch_all_fields_batch', source=self.name, 
+                                         id_count=len(source_ids)):
+                        enrichment_data = self.fetch_all_fields(source_ids)
+                except Exception as e:
+                    self.logger.error(f"Error fetching data: {e}")
+                    # Still need to create empty results for progress tracking
+                    for paper in batch:
+                        result = EnrichmentResult(paper_id=paper.paper_id)
+                        results.append(result)
+                        if progress_callback:
+                            progress_callback(result)
+                    continue
                 
-                source_id = id_mapping.get(paper.paper_id)
-                if source_id and source_id in enrichment_data:
-                    data = enrichment_data[source_id]
-                    
-                    # Add citation if found
-                    if data.get('citations') is not None:
-                        citation_record = CitationRecord(
-                            source=self.name,
-                            timestamp=datetime.now(),
-                            original=False,
-                            data=CitationData(count=data['citations'])
-                        )
-                        result.citations.append(citation_record)
-                    
-                    # Add abstract if found
-                    if data.get('abstract'):
-                        abstract_record = AbstractRecord(
-                            source=self.name,
-                            timestamp=datetime.now(),
-                            original=False,
-                            data=AbstractData(text=data['abstract'])
-                        )
-                        result.abstracts.append(abstract_record)
+                # Create results with provenance
+                with profile_operation('create_results', source=self.name, batch_size=len(batch)):
+                    for paper in batch:
+                        result = EnrichmentResult(paper_id=paper.paper_id)
                         
-                    # Add URLs if found
-                    for url in data.get('urls', []):
-                        url_record = URLRecord(
-                            source=self.name,
-                            timestamp=datetime.now(),
-                            original=False,
-                            data=URLData(url=url)
-                        )
-                        result.urls.append(url_record)
-                
-                results.append(result)
-                
-                # Call progress callback if provided
-                if progress_callback:
-                    progress_callback(result)
-                
+                        source_id = id_mapping.get(paper.paper_id)
+                        if source_id and source_id in enrichment_data:
+                            data = enrichment_data[source_id]
+                            
+                            # Add citation if found
+                            if data.get('citations') is not None:
+                                citation_record = CitationRecord(
+                                    source=self.name,
+                                    timestamp=datetime.now(),
+                                    original=False,
+                                    data=CitationData(count=data['citations'])
+                                )
+                                result.citations.append(citation_record)
+                            
+                            # Add abstract if found
+                            if data.get('abstract'):
+                                abstract_record = AbstractRecord(
+                                    source=self.name,
+                                    timestamp=datetime.now(),
+                                    original=False,
+                                    data=AbstractData(text=data['abstract'])
+                                )
+                                result.abstracts.append(abstract_record)
+                                
+                            # Add URLs if found
+                            for url in data.get('urls', []):
+                                url_record = URLRecord(
+                                    source=self.name,
+                                    timestamp=datetime.now(),
+                                    original=False,
+                                    data=URLData(url=url)
+                                )
+                                result.urls.append(url_record)
+                        
+                        results.append(result)
+                        
+                        # Call progress callback if provided
+                        if progress_callback:
+                            progress_callback(result)
+                    
         return results
