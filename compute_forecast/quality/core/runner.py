@@ -7,6 +7,7 @@ import json
 from .interfaces import QualityReport, QualityConfig
 from .registry import get_registry
 from .config import get_default_quality_config
+from .progress import QualityCheckProgress
 
 
 class QualityRunner:
@@ -23,13 +24,19 @@ class QualityRunner:
     ) -> QualityReport:
         """Run quality checks for a specific stage."""
         if config is None:
-            config = self._get_default_config(stage)
+            config = get_default_quality_config(stage)
         
         checker = self.registry.get_checker(stage)
         if not checker:
             raise ValueError(f"No quality checker registered for stage: {stage}")
         
-        return checker.check(data_path, config)
+        # Run with progress tracking if not verbose
+        if not config.verbose:
+            progress = QualityCheckProgress()
+            with progress.track_stage(stage):
+                return checker.check(data_path, config)
+        else:
+            return checker.check(data_path, config)
     
     def run_all_applicable_checks(
         self, 
