@@ -157,7 +157,7 @@ class CVFScraper(ConferenceProceedingsScraper):
 
     def _extract_authors_from_element(self, element) -> List[str]:
         """Extract authors from CVF author element with forms"""
-        authors = []
+        authors: List[str] = []
 
         if not element:
             return authors

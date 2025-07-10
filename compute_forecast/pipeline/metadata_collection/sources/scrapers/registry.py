@@ -1,7 +1,7 @@
 """Scraper registry for managing available scrapers."""
 
 import logging
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Type, Any
 
 from .base import BaseScraper, ScrapingConfig
 
@@ -139,8 +139,6 @@ class ScraperRegistry:
         # Instantiate scraper
         try:
             scraper = scraper_class(config or ScrapingConfig())
-            # Store original venue name for scrapers that need it
-            scraper._original_venue = venue
             return scraper
         except Exception as e:
             logger.error(f"Failed to instantiate scraper {scraper_name}: {e}")
@@ -162,11 +160,12 @@ class ScraperRegistry:
             venue_lower, self._venue_mapping.get("*", "SemanticScholarScraper")
         )
 
-        return {
+        result: Dict[str, Any] = {
             "venue": venue,
             "scraper": scraper_name,
             "is_fallback": venue_lower not in self._venue_mapping,
         }
+        return result
 
 
 # Global registry instance

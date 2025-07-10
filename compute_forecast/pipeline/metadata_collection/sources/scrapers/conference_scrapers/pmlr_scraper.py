@@ -228,7 +228,7 @@ class PMLRScraper(ConferenceProceedingsScraper):
             year=year,
             pdf_urls=[pdf_url] if pdf_url else [],
             source_scraper="pmlr",
-            source_url=paper_url or pdf_url,
+            source_url=paper_url or pdf_url or "",
             metadata_completeness=self._calculate_completeness(title, authors, pdf_url),
             extraction_confidence=0.9,
         )
@@ -285,7 +285,7 @@ class PMLRScraper(ConferenceProceedingsScraper):
             year=year,
             pdf_urls=[pdf_url] if pdf_url else [],
             source_scraper="pmlr",
-            source_url=paper_url or pdf_url,
+            source_url=paper_url or pdf_url or "",
             metadata_completeness=self._calculate_completeness(title, authors, pdf_url),
             extraction_confidence=0.85,
         )
