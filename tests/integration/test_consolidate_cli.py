@@ -40,17 +40,15 @@ def test_consolidate_command(tmp_path):
 
 
 def test_consolidate_command_with_scraper_format(tmp_path):
-    """Test consolidate CLI command with scraper data format"""
-    # Create test input with scraper format
-    input_file = tmp_path / "scraper_papers.json"
+    """Test consolidate CLI command with new format"""
+    # Create test input with new format
+    input_file = tmp_path / "papers.json"
     input_data = {
         "collection_metadata": {
             "timestamp": "2025-01-10T10:00:00",
             "venues": ["ICML", "NeurIPS"],
             "years": [2023],
-            "total_papers": 3,
-            "scrapers_used": ["pmlr", "paperoni_neurips"],
-            "errors": []
+            "total_papers": 3
         },
         "papers": [
             {
@@ -58,47 +56,54 @@ def test_consolidate_command_with_scraper_format(tmp_path):
                 "authors": ["John Doe", "Jane Smith"],  # String authors
                 "venue": "ICML",
                 "year": 2023,
-                "abstract": None,  # None abstract
-                "pdf_urls": ["https://example.com/paper1.pdf"],  # pdf_urls field
+                "citations": [],
+                "abstracts": [],
+                "urls": [],
                 "keywords": [],
-                "doi": None,
+                "doi": "",
                 "arxiv_id": None,
-                "paper_id": None,  # No ID
-                "source_scraper": "pmlr",
-                "source_url": "https://proceedings.mlr.press/",
-                "scraped_at": "2025-01-10T09:00:00",
-                "extraction_confidence": 0.95,
-                "metadata_completeness": 0.8
+                "paper_id": None  # No ID
             },
             {
-                "title": "Paper with mixed data",
-                "authors": [{"name": "Alice Brown", "affiliation": "MIT"}],  # Old author format
+                "title": "Paper with author objects",
+                "authors": [{"name": "Alice Brown", "affiliations": ["MIT"]}],
                 "venue": "NeurIPS",
                 "year": 2023,
-                "abstract": "Existing abstract",
-                "pdf_urls": [],
+                "citations": [],
+                "abstracts": [{
+                    "source": "original",
+                    "timestamp": "2025-01-10T09:30:00",
+                    "original": true,
+                    "data": {"text": "Existing abstract", "language": "en"}
+                }],
+                "urls": [],
                 "keywords": ["machine learning"],
                 "doi": "10.1234/test",
                 "arxiv_id": None,
-                "paper_id": None,
-                "source_scraper": "paperoni_neurips",
-                "source_url": "https://neurips.cc/",
-                "scraped_at": "2025-01-10T09:30:00",
-                "extraction_confidence": 0.9,
-                "metadata_completeness": 0.7
+                "paper_id": None
             },
             {
                 "title": "Complete paper",
-                "authors": [{"name": "Bob Wilson", "affiliations": ["Stanford"]}],  # New format
+                "authors": [{"name": "Bob Wilson", "affiliations": ["Stanford"]}],
                 "venue": "ICML",
                 "year": 2023,
-                "abstract": "",
-                "urls": ["https://example.com/paper3.pdf"],  # Already has urls field
+                "citations": [{
+                    "source": "original",
+                    "timestamp": "2025-01-10T08:00:00",
+                    "original": true,
+                    "data": {"count": 5}
+                }],
+                "abstracts": [],
+                "urls": [{
+                    "source": "original",
+                    "timestamp": "2025-01-10T08:00:00",
+                    "original": true,
+                    "data": {"url": "https://example.com/paper3.pdf"}
+                }],
                 "keywords": [],
                 "doi": "",
                 "arxiv_id": "",
                 "paper_id": "existing-id",
-                "citations": 5,
                 "collection_timestamp": "2025-01-10T08:00:00"
             }
         ]
@@ -146,21 +151,26 @@ def test_consolidate_command_with_scraper_format(tmp_path):
     # First paper should have generated ID
     assert papers[0]["paper_id"] is not None
     assert papers[0]["paper_id"].startswith("ICML_2023_")
-    assert papers[0]["abstract"] == ""  # None converted to empty string
-    assert papers[0]["doi"] == ""  # None converted to empty string
-    assert papers[0]["urls"] == ["https://example.com/paper1.pdf"]  # pdf_urls mapped
-    assert papers[0]["citations"] == 0  # Default added
+    assert papers[0]["abstracts"] == []  # Empty list
+    assert papers[0]["doi"] == ""
+    assert papers[0]["urls"] == []  # Empty list
+    assert papers[0]["citations"] == []  # Empty list
     assert len(papers[0]["authors"]) == 2
     assert papers[0]["authors"][0]["name"] == "John Doe"
     assert papers[0]["authors"][0]["affiliations"] == []
     
-    # Second paper should have affiliation converted
+    # Second paper should have abstract
     assert papers[1]["paper_id"].startswith("NeurIPS_2023_")
     assert papers[1]["authors"][0]["affiliations"] == ["MIT"]
+    assert len(papers[1]["abstracts"]) == 1
+    assert papers[1]["abstracts"][0]["data"]["text"] == "Existing abstract"
     
     # Third paper should keep existing ID
     assert papers[2]["paper_id"] == "existing-id"
-    assert papers[2]["urls"] == ["https://example.com/paper3.pdf"]  # Kept as-is
+    assert len(papers[2]["urls"]) == 1
+    assert papers[2]["urls"][0]["data"]["url"] == "https://example.com/paper3.pdf"
+    assert len(papers[2]["citations"]) == 1
+    assert papers[2]["citations"][0]["data"]["count"] == 5
 
 
 def test_consolidate_command_json_serialization(tmp_path):
@@ -174,7 +184,7 @@ def test_consolidate_command_json_serialization(tmp_path):
                 "venue": "ICML",
                 "year": 2023,
                 "paper_id": "test1",
-                "citations": 0,
+                "citations": [],
                 "collection_timestamp": "2025-01-10T12:00:00"  # ISO datetime string
             }
         ]
