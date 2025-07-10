@@ -43,6 +43,7 @@ dependencies = [
     "pymupdf>=1.24.0",
     "paperoni>=0.1.8",
     "typer[all]>=0.16.0",
+    "pydantic>=2.11.7",
 ]
 
 [project.urls]
