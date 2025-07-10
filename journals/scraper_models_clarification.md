@@ -22,7 +22,7 @@ After examining the codebase and related issues, I discovered:
   - Simple author representation (just names as strings)
   - Easy conversion to full Paper model
   - Source tracking for provenance
-  
+
 **Usage Flow**:
 ```
 Website → Scraper → SimplePaper → to_package_paper() → Paper → Analysis

@@ -203,7 +203,7 @@ class TestPaperoniAdapter:
 
         adapter = PaperoniAdapter()
         simple_paper = adapter.convert(mock_paper)
-        
+
         assert simple_paper.pdf_urls == []
 
     def test_paperoni_adapter_missing_fields(self):
@@ -240,7 +240,7 @@ class TestPaperoniAdapter:
 
         adapter = PaperoniAdapter()
         simple_paper = adapter.convert(mock_paper)
-        
+
         assert simple_paper.pdf_urls == ["https://example.com/paper.pdf"]
 
 

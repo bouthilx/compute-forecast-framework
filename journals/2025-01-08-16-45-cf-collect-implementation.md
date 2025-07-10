@@ -1,7 +1,7 @@
 # CF Collect Implementation Plan
 
-**Date**: 2025-01-08  
-**Time**: 16:45  
+**Date**: 2025-01-08
+**Time**: 16:45
 **Task**: Design and implement `cf collect` command for unified paper collection
 
 ## Executive Summary
@@ -45,7 +45,7 @@ VENUE_SCRAPER_MAPPING = {
     # Direct scrapers with dedicated implementations
     "neurips": "NeurIPSScraper",
     "icml": "MLRScraper",
-    "iclr": "OpenReviewScraper", 
+    "iclr": "OpenReviewScraper",
     "ijcai": "IJCAIScraper",
     "acl": "ACLAnthologyScraper",
     "emnlp": "ACLAnthologyScraper",
@@ -54,16 +54,16 @@ VENUE_SCRAPER_MAPPING = {
     "jmlr": "JMLRScraper",
     "aistats": "MLRScraper",
     "uai": "MLRScraper",
-    
+
     # Venues that require API search
     "cvpr": "SemanticScholarScraper",
     "iccv": "SemanticScholarScraper",
-    "eccv": "SemanticScholarScraper", 
+    "eccv": "SemanticScholarScraper",
     "aaai": "SemanticScholarScraper",
     "miccai": "SemanticScholarScraper",
     "kdd": "SemanticScholarScraper",
     "www": "SemanticScholarScraper",
-    
+
     # Default fallback
     "*": "SemanticScholarScraper"
 }
@@ -104,16 +104,16 @@ class SimplePaper:
     authors: List[str]  # Simple author names
     venue: str
     year: int
-    
+
     # Optional identifiers
     paper_id: Optional[str] = None
     doi: Optional[str] = None
     arxiv_id: Optional[str] = None
-    
+
     # Content
     abstract: Optional[str] = None
     pdf_urls: List[str] = field(default_factory=list)
-    
+
     # Tracking
     source_scraper: str = ""
     source_url: str = ""

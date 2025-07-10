@@ -1,7 +1,7 @@
 # Exhaustive Scraper-Venue-Paper Count List
 
-**Date**: January 9, 2025  
-**Task**: Complete mapping of all scrapers to venues with paper counts  
+**Date**: January 9, 2025
+**Task**: Complete mapping of all scrapers to venues with paper counts
 **Source**: venues_final_cumulative_coverage.csv top 50 analysis
 
 ## Complete Scraper List with Venues and Paper Counts

@@ -24,7 +24,7 @@
       position: int
       affiliation: Optional[str] = None
       orcid: Optional[str] = None
-  
+
   @dataclass
   class ScrapedPaper:
       paper_id: str

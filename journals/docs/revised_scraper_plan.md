@@ -57,15 +57,15 @@ Instead of building scrapers, implement:
 # comprehensive_paper_collector.py
 class ComprehensivePaperCollector:
     """Unified collector using existing PDF discovery framework"""
-    
+
     def __init__(self):
         self.framework = PDFDiscoveryFramework()
         self._setup_collectors()
         self._configure_venue_priorities()
-    
+
     def collect_by_venues(self, venues: List[str], years: List[int]):
         """Collect papers from specific venues using optimal collectors"""
-        
+
     def collect_by_institutions(self, institutions: List[str], years: List[int]):
         """Collect by institution with multi-source enrichment"""
 ```
@@ -87,13 +87,13 @@ venue_strategies = {
 ```python
 class InstitutionMatcher:
     """Dynamic institution matching beyond paperoni dataset"""
-    
+
     def extract_affiliations(self, paper: Paper) -> List[str]:
         """Extract affiliations from paper metadata"""
-        
+
     def is_mila_paper(self, paper: Paper) -> bool:
         """Check if paper has Mila affiliation"""
-        
+
     def get_benchmark_papers(self, institutions: List[str]) -> List[Paper]:
         """Get papers from benchmark institutions"""
 ```
@@ -102,10 +102,10 @@ class InstitutionMatcher:
 ```python
 class PaperAggregator:
     """Aggregate and deduplicate papers from multiple sources"""
-    
+
     def merge_sources(self, papers_by_source: Dict[str, List[Paper]]) -> List[Paper]:
         """Merge papers with source priority and deduplication"""
-        
+
     def enrich_metadata(self, papers: List[Paper]) -> List[Paper]:
         """Enrich with citations, affiliations, computational metadata"""
 ```

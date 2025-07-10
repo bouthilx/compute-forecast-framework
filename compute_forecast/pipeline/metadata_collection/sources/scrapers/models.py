@@ -16,17 +16,17 @@ class SimplePaper:
     authors: List[str]  # Simple list of author names
     venue: str
     year: int
-    
+
     # Paper identifier
     paper_id: Optional[str] = None
-    
+
     # Optional fields
     abstract: Optional[str] = None
     pdf_urls: List[str] = field(default_factory=list)  # Multiple PDF URLs
     doi: Optional[str] = None
     arxiv_id: Optional[str] = None
     keywords: List[str] = field(default_factory=list)  # Extracted keywords
-    
+
     # Source tracking
     source_scraper: str = ""
     source_url: str = ""
@@ -36,7 +36,7 @@ class SimplePaper:
     extraction_confidence: float = 1.0
 
     metadata_completeness: float = 0.0
-    
+
     def to_package_paper(self) -> Paper:
         """Convert to package's Paper model"""
         return Paper(
@@ -81,9 +81,9 @@ class PaperoniAdapter:
         # Extract PDF URLs from links
         pdf_urls = []
         for link in paperoni_paper.links:
-            if hasattr(link, 'type') and 'pdf' in str(link.type).lower():
+            if hasattr(link, "type") and "pdf" in str(link.type).lower():
                 pdf_urls.append(link.url)
-        
+
         # Safe extraction of DOI - only if attribute exists and is not a Mock
         doi = None
         if hasattr(paperoni_paper, "doi"):

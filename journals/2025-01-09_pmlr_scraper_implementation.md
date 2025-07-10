@@ -1,7 +1,7 @@
 # PMLR Scraper Implementation
 
-**Date**: January 9, 2025  
-**Task**: Implement PMLRScraper to support ICML, AISTATS, UAI, and CoLLAs  
+**Date**: January 9, 2025
+**Task**: Implement PMLRScraper to support ICML, AISTATS, UAI, and CoLLAs
 **Duration**: ~2 hours
 
 ## Summary

@@ -15,9 +15,15 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import get_registry
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import ScrapingConfig
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import SimplePaper
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import (
+    get_registry,
+)
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import (
+    ScrapingConfig,
+)
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
+    SimplePaper,
+)
 
 
 console = Console()
@@ -98,7 +104,7 @@ def save_papers(papers: List[SimplePaper], output_path: Path, metadata: Dict[str
                 "year": p.year,
                 "abstract": p.abstract,
                 "pdf_urls": p.pdf_urls,
-                "keywords": getattr(p, 'keywords', []),  # Include keywords if available
+                "keywords": getattr(p, "keywords", []),  # Include keywords if available
                 "doi": p.doi,
                 "arxiv_id": p.arxiv_id,
                 "paper_id": p.paper_id,
@@ -254,7 +260,7 @@ def main(
             "AAAIScraper": "AAAI proceedings via OAI-PMH protocol",
             "CVFScraper": "Computer Vision Foundation conferences",
             "PMLRScraper": "Proceedings of Machine Learning Research",
-            "SemanticScholarScraper": "API-based fallback for other venues"
+            "SemanticScholarScraper": "API-based fallback for other venues",
         }
 
         # Add rows to table

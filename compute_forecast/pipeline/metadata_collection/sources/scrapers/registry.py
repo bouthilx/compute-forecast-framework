@@ -40,7 +40,7 @@ class ScraperRegistry:
             self.register_scraper("ACLAnthologyScraper", ACLAnthologyScraper)
             self.register_scraper("CVFScraper", CVFScraper)
             self.register_scraper("PMLRScraper", PMLRScraper)
-            
+
         except ImportError as e:
             logger.warning(f"Failed to import package scrapers: {e}")
 
@@ -52,17 +52,17 @@ class ScraperRegistry:
                 MLRAdapter,
                 OpenReviewAdapter,
                 SemanticScholarAdapter,
-                NaturePortfolioAdapter
+                NaturePortfolioAdapter,
             )
             from .aaai import AAAIScraper
-            
+
             self.register_scraper("NeurIPSScraper", NeurIPSAdapter)
             self.register_scraper("MLRScraper", MLRAdapter)
             self.register_scraper("OpenReviewScraper", OpenReviewAdapter)
             self.register_scraper("SemanticScholarScraper", SemanticScholarAdapter)
             self.register_scraper("NaturePortfolioScraper", NaturePortfolioAdapter)
             self.register_scraper("AAAIScraper", AAAIScraper)
-            
+
         except ImportError as e:
             logger.warning(f"Failed to import paperoni adapters: {e}")
 
@@ -90,7 +90,6 @@ class ScraperRegistry:
             "iccv": "CVFScraper",
             "eccv": "CVFScraper",
             "wacv": "CVFScraper",
-            
             # Nature Portfolio journals
             "nature": "NaturePortfolioScraper",
             "scientific-reports": "NaturePortfolioScraper",
@@ -100,13 +99,11 @@ class ScraperRegistry:
             "nature-neuroscience": "NaturePortfolioScraper",
             "nature-methods": "NaturePortfolioScraper",
             "nature-biotechnology": "NaturePortfolioScraper",
-            
             # AAAI venues
             "aaai": "AAAIScraper",
             "aies": "AAAIScraper",
             "hcomp": "AAAIScraper",
             "icwsm": "AAAIScraper",
-            
             # Other venues with SemanticScholar fallback
             "miccai": "SemanticScholarScraper",
             "kdd": "SemanticScholarScraper",

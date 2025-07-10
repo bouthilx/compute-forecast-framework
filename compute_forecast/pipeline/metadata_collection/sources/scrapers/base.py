@@ -121,7 +121,7 @@ class BaseScraper(ABC):
 
     def estimate_paper_count(self, venue: str, year: int) -> Optional[int]:
         """Estimate the number of papers available for a venue/year.
-        
+
         Returns None if estimation is not possible.
         Override in subclasses to provide better estimates.
         """

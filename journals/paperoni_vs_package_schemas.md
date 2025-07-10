@@ -1,6 +1,6 @@
 # Paperoni vs Package Database Schema Comparison
 
-**Date**: 2025-01-06  
+**Date**: 2025-01-06
 **Purpose**: Visual comparison of data models between Paperoni and Compute Forecast Package
 
 ## Paperoni Database Schema
@@ -16,7 +16,7 @@ erDiagram
         datetime modified
         int citation_count
     }
-    
+
     PaperAuthor {
         string id PK
         string paper_id FK
@@ -24,7 +24,7 @@ erDiagram
         int position
         float[] quality
     }
-    
+
     Author {
         string id PK
         string name
@@ -32,21 +32,21 @@ erDiagram
         datetime created
         datetime modified
     }
-    
+
     AuthorName {
         string id PK
         string author_id FK
         string name
         float[] quality
     }
-    
+
     Institution {
         string id PK
         string name
         string category
         float[] quality
     }
-    
+
     Role {
         string id PK
         string author_id FK
@@ -55,7 +55,7 @@ erDiagram
         datetime end_date
         float[] quality
     }
-    
+
     Release {
         string id PK
         string paper_id FK
@@ -64,7 +64,7 @@ erDiagram
         string date_precision
         float[] quality
     }
-    
+
     Venue {
         string id PK
         string name
@@ -73,7 +73,7 @@ erDiagram
         string publisher
         float[] quality
     }
-    
+
     Link {
         string id PK
         string paper_id FK
@@ -81,21 +81,21 @@ erDiagram
         string type
         float[] quality
     }
-    
+
     Topic {
         string id PK
         string paper_id FK
         string topic
         float[] quality
     }
-    
+
     Flag {
         string id PK
         string paper_id FK
         string flag_type
         string comment
     }
-    
+
     Researcher {
         string id PK
         string author_id FK
@@ -104,21 +104,21 @@ erDiagram
         datetime start_date
         datetime end_date
     }
-    
+
     PaperMerge {
         string id PK
         string dest_id FK
         string src_id FK
         datetime created
     }
-    
+
     AuthorMerge {
         string id PK
         string dest_id FK
         string src_id FK
         datetime created
     }
-    
+
     ScraperData {
         string id PK
         string paper_id FK
@@ -126,7 +126,7 @@ erDiagram
         json data
         datetime created
     }
-    
+
     ScraperID {
         string id PK
         string name
@@ -140,20 +140,20 @@ erDiagram
     Paper ||--o{ Topic : has
     Paper ||--o{ Flag : has
     Paper ||--o{ ScraperData : tracked_by
-    
+
     PaperAuthor }o--|| Author : references
     Author ||--o{ AuthorName : has_names
     Author ||--o{ Role : has_roles
     Author ||--o{ Researcher : tracked_as
-    
+
     Role }o--|| Institution : at
     Release }o--|| Venue : published_in
-    
+
     PaperMerge }o--|| Paper : merges_into
     PaperMerge }o--|| Paper : merged_from
     AuthorMerge }o--|| Author : merges_into
     AuthorMerge }o--|| Author : merged_from
-    
+
     ScraperData }o--|| ScraperID : from_scraper
 ```
 
@@ -177,19 +177,19 @@ erDiagram
         string mila_affiliated
         string mila_domain
     }
-    
+
     Author {
         string author_id PK
         string name
         string affiliation
     }
-    
+
     PaperAuthor {
         string paper_id FK
         string author_id FK
         int position
     }
-    
+
     CollectionResult {
         string id PK
         string source
@@ -198,7 +198,7 @@ erDiagram
         int failed_count
         json errors
     }
-    
+
     CollectionQuery {
         string id PK
         string venue
@@ -209,7 +209,7 @@ erDiagram
         int max_results
         json keywords
     }
-    
+
     AnalysisResult {
         string id PK
         string paper_id FK
@@ -217,7 +217,7 @@ erDiagram
         json results
         datetime timestamp
     }
-    
+
     ComputationalAnalysis {
         string paper_id FK
         bool uses_gpu
@@ -230,7 +230,7 @@ erDiagram
         float compute_score
         string extraction_method
     }
-    
+
     AuthorshipAnalysis {
         string paper_id FK
         string primary_institution
@@ -238,7 +238,7 @@ erDiagram
         json affiliations
         float mila_affiliation_score
     }
-    
+
     VenueAnalysis {
         string venue_name PK
         string venue_type
@@ -246,7 +246,7 @@ erDiagram
         int total_papers
         float avg_citations
     }
-    
+
     CitationStatistics {
         string paper_id FK
         int raw_citations
@@ -254,7 +254,7 @@ erDiagram
         float impact_score
         string percentile_rank
     }
-    
+
     QualityReport {
         string id PK
         string paper_id FK
@@ -263,7 +263,7 @@ erDiagram
         json validation_errors
         datetime created_at
     }
-    
+
     ExtractionTemplate {
         string id PK
         string domain
@@ -271,7 +271,7 @@ erDiagram
         json patterns
         float confidence_threshold
     }
-    
+
     SuppressionIndicator {
         string paper_id FK
         string indicator_type
@@ -288,7 +288,7 @@ erDiagram
     Paper ||--|| CitationStatistics : has
     Paper ||--o{ QualityReport : validated_by
     Paper ||--o{ SuppressionIndicator : shows
-    
+
     CollectionQuery ||--o{ CollectionResult : produces
     VenueAnalysis ||--o{ Paper : contains
     ExtractionTemplate ||--o{ ComputationalAnalysis : guides
@@ -337,7 +337,7 @@ graph LR
     A[Complex Paperoni Schema] --> B[Enhanced Models]
     B --> C[Simple Package Schema]
     B --> D[Preserved Metadata]
-    
+
     style B fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

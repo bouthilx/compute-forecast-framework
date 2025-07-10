@@ -1,7 +1,7 @@
 # OpenReview Adapter Extension
 
-**Date**: January 9, 2025  
-**Task**: Extend OpenReviewAdapter to support TMLR, COLM, and RLC venues  
+**Date**: January 9, 2025
+**Task**: Extend OpenReviewAdapter to support TMLR, COLM, and RLC venues
 **Duration**: ~3 hours
 
 ## Summary

@@ -1,7 +1,7 @@
 # OpenReview API Troubleshooting
 
-**Date**: January 9, 2025  
-**Task**: Debug and fix OpenReview API integration returning 0 papers  
+**Date**: January 9, 2025
+**Task**: Debug and fix OpenReview API integration returning 0 papers
 **Duration**: ~1 hour
 
 ## Summary

@@ -33,7 +33,7 @@ Based on Mila publication volume and strategic importance for benchmarking:
 # Reusable base: ConferenceProceedingsScaper
 scrapers = [
     'CVFScraper',        # cvf.thecvf.com (CVPR/ICCV/ECCV)
-    'AAAIScraper',       # aaai.org proceedings  
+    'AAAIScraper',       # aaai.org proceedings
     'IJCAIScraper',      # ijcai.org proceedings
     'ACLAnthologyScraper' # aclanthology.org (ACL/EMNLP/NAACL/COLING)
 ]
@@ -52,7 +52,7 @@ scrapers = [
 
 ### Group C: Digital Libraries
 ```python
-# Reusable base: DigitalLibraryScraper  
+# Reusable base: DigitalLibraryScraper
 scrapers = [
     'IEEEXploreScraper', # ieeexplore.ieee.org
     'ACMDLScraper',      # dl.acm.org

@@ -8,8 +8,8 @@ from .nature_portfolio import NaturePortfolioAdapter
 
 __all__ = [
     "NeurIPSAdapter",
-    "MLRAdapter", 
+    "MLRAdapter",
     "OpenReviewAdapter",
     "SemanticScholarAdapter",
-    "NaturePortfolioAdapter"
+    "NaturePortfolioAdapter",
 ]

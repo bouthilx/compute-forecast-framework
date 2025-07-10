@@ -1,7 +1,7 @@
 # CF Collect Implementation
 
-**Date**: 2025-01-08  
-**Time**: 19:00  
+**Date**: 2025-01-08
+**Time**: 19:00
 **Task**: Implementation of `cf collect` command
 
 ## Summary
@@ -68,7 +68,7 @@ Successfully implemented the `cf collect` command as specified in the design doc
    - Successfully scraped papers from proceedings.neurips.cc
    - Extracted titles, authors, and PDF URLs
 
-2. **IJCAI Collection**: ✅ Working  
+2. **IJCAI Collection**: ✅ Working
    - Uses existing IJCAIScraper implementation
    - Case-insensitive venue matching added
 

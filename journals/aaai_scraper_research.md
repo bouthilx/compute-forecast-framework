@@ -83,16 +83,16 @@ Based on the research, I recommend implementing an **OAI-PMH-based scraper** for
 ```python
 class AAIScraper(BasePaperoniAdapter):
     """Adapter for AAAI proceedings using OAI-PMH protocol."""
-    
+
     def get_supported_venues(self) -> List[str]:
         return ["aaai", "aies", "hcomp", "icwsm"]
-    
+
     def get_available_years(self, venue: str) -> List[int]:
         # AAAI: 1980-present
-        # AIES: 2018-present  
+        # AIES: 2018-present
         # HCOMP: 2013-present
         # ICWSM: 2007-present
-        
+
     def _call_paperoni_scraper(self, scraper, venue: str, year: int):
         # Use OAI-PMH to harvest metadata
         # Filter by date range for specific year
@@ -115,7 +115,7 @@ class AAIScraper(BasePaperoniAdapter):
    - Some PDFs may be behind authentication
 
 2. **Venue Mapping**: Need to map our venue names to OJS journal names
-   - "aaai" → "AAAI" 
+   - "aaai" → "AAAI"
    - "aies" → "AIES"
    - etc.
 
