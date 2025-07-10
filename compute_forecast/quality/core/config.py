@@ -1,7 +1,7 @@
 """Configuration management for quality checks with defaults using Pydantic."""
 
 from typing import Dict, List, Optional, Literal, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 from .interfaces import QualityConfig
 
@@ -24,14 +24,14 @@ class QualityConfigModel(BaseModel):
     output_format: Literal["text", "json", "markdown"] = Field(default="text", description="Output format")
     verbose: bool = Field(default=False, description="Enable verbose output")
     
-    @validator("stage")
+    @field_validator("stage")
     def validate_stage(cls, v):
         """Validate stage name."""
         if not v or not v.strip():
             raise ValueError("Stage name cannot be empty")
         return v.strip().lower()
     
-    @validator("skip_checks")
+    @field_validator("skip_checks")
     def validate_skip_checks(cls, v):
         """Validate skip checks list."""
         return [check.strip() for check in v if check.strip()]

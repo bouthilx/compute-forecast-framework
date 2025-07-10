@@ -6,6 +6,7 @@ import json
 
 from .interfaces import QualityReport, QualityConfig
 from .registry import get_registry
+from .config import get_default_quality_config
 
 
 class QualityRunner:
@@ -43,7 +44,7 @@ class QualityRunner:
         
         for stage in applicable_stages:
             try:
-                stage_config = config or self._get_default_config(stage)
+                stage_config = config or get_default_quality_config(stage)
                 report = self.run_checks(stage, data_path, stage_config)
                 reports.append(report)
             except Exception as e:
@@ -80,23 +81,3 @@ class QualityRunner:
         
         return applicable
     
-    def _get_default_config(self, stage: str) -> QualityConfig:
-        """Get default configuration for a stage."""
-        # Default thresholds by stage
-        default_thresholds = {
-            'collection': {
-                'min_completeness': 0.8,
-                'min_coverage': 0.7,
-                'min_consistency': 0.9,
-                'min_accuracy': 0.85,
-            },
-            # Future stages...
-        }
-        
-        return QualityConfig(
-            stage=stage,
-            thresholds=default_thresholds.get(stage, {}),
-            skip_checks=[],
-            output_format='text',
-            verbose=False
-        )

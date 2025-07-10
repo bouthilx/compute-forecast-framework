@@ -7,6 +7,7 @@ from rich.panel import Panel
 
 from .runner import QualityRunner
 from .interfaces import QualityReport, QualityConfig
+from .config import get_default_quality_config
 
 
 console = Console()
@@ -36,7 +37,7 @@ def run_post_command_quality_check(
         
         # Use provided config or get defaults
         if config is None:
-            config = runner._get_default_config(stage)
+            config = get_default_quality_config(stage)
             config.verbose = False  # Keep integrated checks concise
         
         # Run the quality checks
