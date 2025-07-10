@@ -3,47 +3,59 @@ from datetime import datetime
 from unittest.mock import Mock
 import json
 
-from compute_forecast.pipeline.consolidation.enrichment.citation_enricher import CitationEnricher
-from compute_forecast.pipeline.consolidation.enrichment.abstract_enricher import AbstractEnricher
+from compute_forecast.pipeline.consolidation.sources.base import BaseConsolidationSource
+from compute_forecast.pipeline.consolidation.models import EnrichmentResult, CitationRecord, CitationData
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
-def test_citation_enricher():
-    """Test citation enrichment"""
+def test_unified_enrichment():
+    """Test unified paper enrichment approach"""
     # Create test papers
     papers = [
         Paper(
             title="Test Paper 1",
-            authors=[Author(name="John Doe")],
+            authors=[Author(name="John Doe", affiliations=[])],
             venue="ICML",
             year=2023,
             paper_id="paper1",
             doi="10.1234/test1",
-            citations=[]  # Empty list now
+            citations=[]
         )
     ]
     
-    # Mock source
+    # Mock source with unified fetch_all_fields
     mock_source = Mock()
     mock_source.name = "test_source"
-    mock_source.enrich_papers.return_value = [
-        Mock(
+    mock_source.find_papers.return_value = {"paper1": "source_id_1"}
+    mock_source.fetch_all_fields.return_value = {
+        "source_id_1": {
+            "citations": 25,
+            "abstract": "Test abstract",
+            "urls": ["https://example.com/paper.pdf"]
+        }
+    }
+    
+    # Create enrichment results
+    results = [
+        EnrichmentResult(
             paper_id="paper1",
-            citations=[Mock(
+            citations=[CitationRecord(
                 source="test_source",
                 timestamp=datetime.now(),
-                data=Mock(count=25)
+                original=False,
+                data=CitationData(count=25)
             )]
         )
     ]
+    mock_source.enrich_papers.return_value = results
     
     # Test enrichment
-    enricher = CitationEnricher([mock_source])
-    results = enricher.enrich(papers)
+    enrichment_results = mock_source.enrich_papers(papers)
     
-    assert "paper1" in results
-    assert len(results["paper1"]) == 1
-    assert results["paper1"][0].data.count == 25
+    assert len(enrichment_results) == 1
+    assert enrichment_results[0].paper_id == "paper1"
+    assert len(enrichment_results[0].citations) == 1
+    assert enrichment_results[0].citations[0].data.count == 25
 
 
 
@@ -93,8 +105,8 @@ def test_paper_from_dict_datetime_deserialization():
     assert paper.collection_timestamp.day == 10
 
 
-def test_abstract_enricher_skips_papers_with_abstracts():
-    """Test AbstractEnricher skips papers that already have abstracts"""
+def test_source_enriches_all_papers():
+    """Test that source enriches all papers in unified approach"""
     from compute_forecast.pipeline.consolidation.models import AbstractRecord, AbstractData
     
     papers = [
@@ -130,16 +142,17 @@ def test_abstract_enricher_skips_papers_with_abstracts():
     enriched_papers = []
     def capture_papers(papers):
         enriched_papers.extend(papers)
-        return []
+        return [EnrichmentResult(paper_id=p.paper_id) for p in papers]
     
     mock_source.enrich_papers.side_effect = capture_papers
     
-    enricher = AbstractEnricher([mock_source])
-    enricher.enrich(papers)
+    # Test enrichment
+    results = mock_source.enrich_papers(papers)
     
-    # Only paper2 should have been processed
-    assert len(enriched_papers) == 1
-    assert enriched_papers[0].paper_id == "paper2"
+    # All papers should be processed in unified approach
+    assert len(enriched_papers) == 2
+    assert enriched_papers[0].paper_id == "paper1"
+    assert enriched_papers[1].paper_id == "paper2"
 
 
 def test_enrichment_with_missing_paper_ids():
@@ -158,20 +171,22 @@ def test_enrichment_with_missing_paper_ids():
     mock_source = Mock()
     mock_source.name = "test_source"
     mock_source.enrich_papers.return_value = [
-        Mock(
+        EnrichmentResult(
             paper_id=None,  # None as key
-            citations=[Mock(
+            citations=[CitationRecord(
                 source="test_source",
                 timestamp=datetime.now(),
-                data=Mock(count=10)
+                original=False,
+                data=CitationData(count=10)
             )]
         )
     ]
     
-    enricher = CitationEnricher([mock_source])
-    results = enricher.enrich(papers)
+    # Test enrichment
+    results = mock_source.enrich_papers(papers)
     
     # Should handle None as key
-    assert None in results
-    assert len(results[None]) == 1
-    assert results[None][0].data.count == 10
+    assert len(results) == 1
+    assert results[0].paper_id is None
+    assert len(results[0].citations) == 1
+    assert results[0].citations[0].data.count == 10
