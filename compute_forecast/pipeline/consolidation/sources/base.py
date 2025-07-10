@@ -99,6 +99,7 @@ class BaseConsolidationSource(ABC):
                         citation_record = CitationRecord(
                             source=self.name,
                             timestamp=datetime.now(),
+                            original=False,  # This is from enrichment, not original scraper
                             data=CitationData(count=citations[source_id])
                         )
                         result.citations.append(citation_record)
@@ -108,6 +109,7 @@ class BaseConsolidationSource(ABC):
                         abstract_record = AbstractRecord(
                             source=self.name,
                             timestamp=datetime.now(),
+                            original=False,  # This is from enrichment, not original scraper
                             data=AbstractData(text=abstracts[source_id])
                         )
                         result.abstracts.append(abstract_record)
