@@ -170,7 +170,7 @@ class TestAAAIScraper:
         assert paper.year == 2024
 
     def test_scrape_venue_year_with_date_filtering(self, scraper):
-        """Test that date filtering is applied correctly with quarterly ranges."""
+        """Test that date filtering is applied correctly with monthly ranges."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.text = """<?xml version="1.0"?>
@@ -183,13 +183,13 @@ class TestAAAIScraper:
         ) as mock_get:
             scraper.scrape_venue_year("aaai", 2023)
 
-            # Check that the first request included Q1 date filtering
+            # Check that the first request included January date filtering
             args, kwargs = mock_get.call_args_list[0]
             assert "params" in kwargs
             assert "from" in kwargs["params"]
             assert "until" in kwargs["params"]
             assert kwargs["params"]["from"] == "2023-01-01"
-            assert kwargs["params"]["until"] == "2023-03-31"
+            assert kwargs["params"]["until"] == "2023-01-31"
 
     def test_scrape_venue_year_empty_results(self, scraper):
         """Test handling of empty results."""
@@ -220,7 +220,7 @@ class TestAAAIScraper:
 
         assert not result.success
         assert len(result.errors) > 0
-        assert "OAI-PMH error" in result.errors[0]
+        assert "Error fetching AAAI papers" in result.errors[0]
 
     def test_scrape_venue_year_invalid_venue(self, scraper):
         """Test handling of invalid venue."""

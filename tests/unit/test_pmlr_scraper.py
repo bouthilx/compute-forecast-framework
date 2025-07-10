@@ -152,7 +152,7 @@ class TestPMLRScraper:
         assert authors == ["John Doe", "Jane Smith"]
 
     @patch(
-        "compute_forecast.data.sources.scrapers.conference_scrapers.pmlr_scraper.PMLRScraper._make_request"
+        "compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.pmlr_scraper.PMLRScraper._make_request"
     )
     def test_scrape_venue_year_success(self, mock_request, scraper):
         """Test successful scraping"""

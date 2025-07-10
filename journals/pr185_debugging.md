@@ -123,3 +123,29 @@ The remaining 85 MyPy errors are mostly in:
 - PDF acquisition modules (not affecting core functionality)
 - Numpy/scientific computing type annotations
 - These can be addressed in a separate PR focused on complete type coverage
+
+## Continued Progress - 2025-07-10 (Continuation)
+
+### Current Test Results
+Running tests revealed:
+- Unit tests: 7 failed, 1469 passed, 53 skipped
+- Integration tests: timing out on AAAI scraper live collection test
+
+### Failing Unit Tests:
+1. `test_ijcai_scraper.py::TestIJCAIScraper::test_get_supported_venues` - Expecting ['IJCAI'] but getting ['IJCAI', 'ijcai']
+2. `test_cvf_scraper.py` (2 tests) - AttributeError: module has no attribute 'sources'
+3. `test_error_handling.py` - AttributeError: module has no attribute 'sources'
+4. `test_aaai_scraper.py::test_scrape_venue_year_with_date_filtering` - Date mismatch (expects 2023-03-31, got 2023-01-31)
+5. `test_aaai_scraper.py::test_scrape_venue_year_api_error` - Error message mismatch
+6. `test_pmlr_scraper.py` - AttributeError: module has no attribute 'sources'
+
+### TODO List Update:
+1. [x] Fix pre-commit formatting issues
+2. [x] Update all test imports from `compute_forecast.data` to `compute_forecast.pipeline.metadata_collection`
+3. [x] Fix type annotation issues in `compute_forecast/cli/commands/collect.py`
+4. [x] Run all tests locally with `uv run pytest tests/ -v --durations=50 --ignore=tests/performance`
+5. [x] Ensure pre-commit passes with `uv run --group dev pre-commit run --all`
+6. [x] Commit each fix separately
+7. [ ] Fix remaining unit test failures
+8. [ ] Fix integration test timeout issue
+9. [ ] Push changes and verify PR checks pass

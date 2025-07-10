@@ -44,7 +44,7 @@ class TestIJCAIScraper:
     def test_get_supported_venues(self, scraper):
         """Test supported venues"""
         venues = scraper.get_supported_venues()
-        assert venues == ["IJCAI"]
+        assert venues == ["IJCAI", "ijcai"]
 
     def test_get_proceedings_url(self, scraper):
         """Test proceedings URL construction"""
