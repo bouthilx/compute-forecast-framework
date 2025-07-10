@@ -138,7 +138,8 @@ class ScraperRegistry:
 
         # Instantiate scraper
         try:
-            scraper = scraper_class(config or ScrapingConfig())
+            # All scrapers take config as their parameter
+            scraper = scraper_class(config or ScrapingConfig())  # type: ignore[call-arg]
             return scraper
         except Exception as e:
             logger.error(f"Failed to instantiate scraper {scraper_name}: {e}")
