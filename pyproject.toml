@@ -51,7 +51,8 @@ dependencies = [
 "Documentation" = "https://compute-forecast.readthedocs.io"
 
 [project.scripts]
-compute-forecast = "compute_forecast.cli:main"
+compute-forecast = "compute_forecast.cli.main:main"
+cf = "compute_forecast.cli.main:main"
 
 [tool.setuptools]
 packages = ["compute_forecast"]
