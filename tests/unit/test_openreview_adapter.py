@@ -4,11 +4,11 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from compute_forecast.data.sources.scrapers.paperoni_adapters.openreview import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.paperoni_adapters.openreview import (
     OpenReviewAdapter,
 )
-from compute_forecast.data.sources.scrapers.models import SimplePaper
-from compute_forecast.data.sources.scrapers.base import ScrapingConfig
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import SimplePaper
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import ScrapingConfig
 
 
 class TestOpenReviewAdapter:

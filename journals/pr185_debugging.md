@@ -54,3 +54,8 @@ ModuleNotFoundError: No module named 'compute_forecast.data'
 - Trailing whitespace in multiple files
 - Missing newlines at end of files
 - However, MyPy errors still need to be fixed manually
+
+### Step 2: Update test imports
+✓ Completed - Updated 13 test files to use correct import path:
+- Changed `compute_forecast.data.sources.scrapers` to `compute_forecast.pipeline.metadata_collection.sources.scrapers`
+- Changed `compute_forecast.data.models` to `compute_forecast.pipeline.metadata_collection.models`

@@ -2,11 +2,11 @@
 
 from unittest.mock import Mock, patch
 
-from compute_forecast.data.sources.scrapers.conference_scrapers.cvf_scraper import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.cvf_scraper import (
     CVFScraper,
 )
-from compute_forecast.data.sources.scrapers.models import SimplePaper
-from compute_forecast.data.sources.scrapers.base import ScrapingResult
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import SimplePaper
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import ScrapingResult
 
 
 class TestCVFScraper:

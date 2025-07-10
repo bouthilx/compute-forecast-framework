@@ -3,7 +3,7 @@
 Test GoogleScholarSource initialization within package structure
 """
 
-from compute_forecast.data.sources.google_scholar import GoogleScholarSource
+from compute_forecast.pipeline.metadata_collection.sources.google_scholar import GoogleScholarSource
 from compute_forecast.core.config import ConfigManager
 import os
 

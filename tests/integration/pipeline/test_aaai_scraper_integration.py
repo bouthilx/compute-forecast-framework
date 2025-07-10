@@ -1,8 +1,8 @@
 """Integration tests for AAAI scraper."""
 
 import pytest
-from compute_forecast.data.sources.scrapers.registry import get_registry
-from compute_forecast.data.sources.scrapers.base import ScrapingConfig
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import get_registry
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import ScrapingConfig
 
 
 class TestAAAIScraperIntegration:

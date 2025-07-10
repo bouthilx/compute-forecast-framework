@@ -6,7 +6,7 @@ from datetime import datetime
 import requests
 from typing import List, Dict
 
-from compute_forecast.data.sources.scrapers.base import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import (
     ScrapingConfig,
     ScrapingResult,
     BaseScraper,
@@ -14,7 +14,7 @@ from compute_forecast.data.sources.scrapers.base import (
     JournalPublisherScraper,
     APIEnhancedScraper,
 )
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 # Test implementations for abstract classes

@@ -6,10 +6,10 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-from compute_forecast.data.sources.scrapers.conference_scrapers.ijcai_scraper import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.ijcai_scraper import (
     IJCAIScraper,
 )
-from compute_forecast.data.sources.scrapers import ScrapingConfig, SimplePaper
+from compute_forecast.pipeline.metadata_collection.sources.scrapers import ScrapingConfig, SimplePaper
 
 
 class TestIJCAIScraper:

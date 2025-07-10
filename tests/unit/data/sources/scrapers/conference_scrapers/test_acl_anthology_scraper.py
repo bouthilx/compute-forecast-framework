@@ -3,7 +3,7 @@
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from compute_forecast.data.sources.scrapers.conference_scrapers.acl_anthology_scraper import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.acl_anthology_scraper import (
     ACLAnthologyScraper,
 )
 

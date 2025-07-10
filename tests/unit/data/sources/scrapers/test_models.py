@@ -3,12 +3,12 @@
 from datetime import datetime
 from unittest.mock import Mock
 
-from compute_forecast.data.sources.scrapers.models import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
     SimplePaper,
     PaperoniAdapter,
     ScrapingBatch,
 )
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 class TestSimplePaper:

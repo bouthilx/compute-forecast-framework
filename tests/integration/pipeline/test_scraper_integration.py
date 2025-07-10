@@ -2,12 +2,12 @@
 
 from unittest.mock import Mock
 
-from compute_forecast.data.sources.scrapers import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers import (
     SimplePaper,
     PaperoniAdapter,
     ScrapingBatch,
 )
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 def test_simple_paper_to_package_integration():

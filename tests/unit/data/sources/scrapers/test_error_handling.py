@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
 import requests
 
-from compute_forecast.data.sources.scrapers.error_handling import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.error_handling import (
     ErrorType,
     ScrapingError,
     ScrapingMonitor,

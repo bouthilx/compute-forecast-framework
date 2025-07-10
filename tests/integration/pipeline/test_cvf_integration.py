@@ -2,8 +2,8 @@
 
 from unittest.mock import Mock, patch
 
-from compute_forecast.data.sources.scrapers.registry import ScraperRegistry
-from compute_forecast.data.sources.scrapers.conference_scrapers.cvf_scraper import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import ScraperRegistry
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.cvf_scraper import (
     CVFScraper,
 )
 
