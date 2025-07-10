@@ -320,10 +320,13 @@ class MarkdownReportFormatter(CollectionReportFormatter):
         lines.append("| Metric | Count | Percentage |")
         lines.append("|--------|-------|------------|")
         total = metrics.total_papers_collected
-        lines.append(f"| Papers with all required fields | {metrics.papers_with_all_required_fields} | {metrics.papers_with_all_required_fields/total*100:.1f}% |")
-        lines.append(f"| Papers with abstracts | {metrics.papers_with_abstracts} | {metrics.papers_with_abstracts/total*100:.1f}% |")
-        lines.append(f"| Papers with PDFs | {metrics.papers_with_pdfs} | {metrics.papers_with_pdfs/total*100:.1f}% |")
-        lines.append(f"| Papers with DOIs | {metrics.papers_with_dois} | {metrics.papers_with_dois/total*100:.1f}% |")
+        if total > 0:
+            lines.append(f"| Papers with all required fields | {metrics.papers_with_all_required_fields} | {metrics.papers_with_all_required_fields/total*100:.1f}% |")
+            lines.append(f"| Papers with abstracts | {metrics.papers_with_abstracts} | {metrics.papers_with_abstracts/total*100:.1f}% |")
+            lines.append(f"| Papers with PDFs | {metrics.papers_with_pdfs} | {metrics.papers_with_pdfs/total*100:.1f}% |")
+            lines.append(f"| Papers with DOIs | {metrics.papers_with_dois} | {metrics.papers_with_dois/total*100:.1f}% |")
+        else:
+            lines.append("| No papers to analyze | - | - |")
         lines.append("")
         
         # Consistency
@@ -339,9 +342,12 @@ class MarkdownReportFormatter(CollectionReportFormatter):
         lines.append("")
         lines.append("| Metric | Count | Percentage |")
         lines.append("|--------|-------|------------|")
-        lines.append(f"| Valid years | {metrics.valid_years_count} | {metrics.valid_years_count/total*100:.1f}% |")
-        lines.append(f"| Valid authors | {metrics.valid_authors_count} | {metrics.valid_authors_count/total*100:.1f}% |")
-        lines.append(f"| Valid URLs | {metrics.valid_urls_count} | {metrics.valid_urls_count/total*100:.1f}% |")
+        if total > 0:
+            lines.append(f"| Valid years | {metrics.valid_years_count} | {metrics.valid_years_count/total*100:.1f}% |")
+            lines.append(f"| Valid authors | {metrics.valid_authors_count} | {metrics.valid_authors_count/total*100:.1f}% |")
+            lines.append(f"| Valid URLs | {metrics.valid_urls_count} | {metrics.valid_urls_count/total*100:.1f}% |")
+        else:
+            lines.append("| No papers to analyze | - | - |")
         lines.append("")
         
         # Coverage

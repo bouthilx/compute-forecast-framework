@@ -1,13 +1,15 @@
 """Quality check command for compute-forecast."""
 
 import typer
-from typing import Optional
+import json
+from typing import Optional, List
 from pathlib import Path
 from rich.console import Console
 
 from compute_forecast.quality.core.runner import QualityRunner
-from compute_forecast.quality.core.interfaces import QualityConfig
+from compute_forecast.quality.core.interfaces import QualityConfig, QualityReport
 from compute_forecast.quality.core.registry import get_registry
+from compute_forecast.quality.core.formatters import format_report, save_report
 
 
 console = Console()
@@ -58,6 +60,37 @@ def main(
         "--list-checks",
         help="List available checks for a stage and exit"
     ),
+    # Custom threshold options
+    min_completeness: Optional[float] = typer.Option(
+        None,
+        "--min-completeness",
+        help="Minimum completeness score (0.0-1.0)"
+    ),
+    min_coverage: Optional[float] = typer.Option(
+        None,
+        "--min-coverage",
+        help="Minimum coverage score (0.0-1.0)"
+    ),
+    min_accuracy: Optional[float] = typer.Option(
+        None,
+        "--min-accuracy",
+        help="Minimum accuracy score (0.0-1.0)"
+    ),
+    min_consistency: Optional[float] = typer.Option(
+        None,
+        "--min-consistency",
+        help="Minimum consistency score (0.0-1.0)"
+    ),
+    min_overall: Optional[float] = typer.Option(
+        None,
+        "--min-overall",
+        help="Minimum overall quality score (0.0-1.0)"
+    ),
+    fail_on_critical: bool = typer.Option(
+        True,
+        "--fail-on-critical/--no-fail-on-critical",
+        help="Exit with error code if critical issues found"
+    ),
 ):
     """Run quality checks on compute-forecast data."""
     
@@ -98,10 +131,23 @@ def main(
     if skip_checks:
         skip_checks_list = [s.strip() for s in skip_checks.split(",")]
     
+    # Build custom thresholds
+    thresholds = {}
+    if min_completeness is not None:
+        thresholds["completeness"] = min_completeness
+    if min_coverage is not None:
+        thresholds["coverage"] = min_coverage
+    if min_accuracy is not None:
+        thresholds["accuracy"] = min_accuracy
+    if min_consistency is not None:
+        thresholds["consistency"] = min_consistency
+    if min_overall is not None:
+        thresholds["overall"] = min_overall
+    
     # Prepare configuration
     config = QualityConfig(
         stage=stage or "all",
-        thresholds={},  # Will use defaults
+        thresholds=thresholds,
         skip_checks=skip_checks_list,
         output_format=output_format,
         verbose=verbose
@@ -121,11 +167,17 @@ def main(
         else:
             report = runner.run_checks(stage, data_path, config)
         
-        # Output results (basic text format for now)
-        if output_format == "text":
-            _print_text_report(report, verbose)
+        # Handle output formatting and saving
+        if all_stages:
+            _handle_multi_stage_output(reports, output_format, output_file, verbose)
         else:
-            console.print(f"[yellow]Format '{output_format}' not yet implemented[/yellow]")
+            _handle_single_stage_output(report, output_format, output_file, verbose)
+        
+        # Check for critical issues and exit code
+        has_critical = any(r.has_critical_issues() for r in reports) if all_stages else report.has_critical_issues()
+        if has_critical and fail_on_critical:
+            console.print("\n[red]Quality check failed due to critical issues[/red]")
+            raise typer.Exit(1)
             
     except ValueError as e:
         console.print(f"[red]Error: {e}[/red]")
@@ -135,12 +187,106 @@ def main(
         raise typer.Exit(1)
 
 
-def _print_text_report(report, verbose: bool):
-    """Print basic text report (placeholder for Phase 1)."""
-    console.print(f"\nQuality Report: {report.stage.title()} Stage")
-    console.print("=" * 50)
-    console.print(f"Data: {report.data_path}")
-    console.print(f"Overall Score: {report.overall_score:.2f}")
-    console.print(f"Critical Issues: {len(report.critical_issues)}")
-    console.print(f"Warnings: {len(report.warnings)}")
-    console.print("\n[yellow]Detailed reporting will be implemented in Phase 4[/yellow]")
+def _handle_single_stage_output(report: QualityReport, output_format: str, output_file: Optional[Path], verbose: bool):
+    """Handle output for a single stage report."""
+    try:
+        formatted = format_report(report, output_format, verbose=verbose)
+        
+        if output_file:
+            save_report(report, output_file, output_format, verbose=verbose)
+            console.print(f"[green]Report saved to: {output_file}[/green]")
+        else:
+            console.print(formatted)
+    except ValueError as e:
+        console.print(f"[red]Formatting error: {e}[/red]")
+        # Fall back to basic text output
+        console.print("\n[yellow]Falling back to basic text format[/yellow]")
+        _print_basic_report(report, verbose)
+
+
+def _handle_multi_stage_output(reports: list, output_format: str, output_file: Optional[Path], verbose: bool):
+    """Handle output for multiple stage reports."""
+    if output_format == "json":
+        # Combine all reports into a single JSON
+        combined_data = {
+            "reports": []
+        }
+        for report in reports:
+            try:
+                formatted = format_report(report, "json", verbose=verbose)
+                report_data = json.loads(formatted)
+                combined_data["reports"].append(report_data)
+            except Exception as e:
+                console.print(f"[yellow]Warning: Failed to format {report.stage} report: {e}[/yellow]")
+        
+        output = json.dumps(combined_data, indent=2)
+        if output_file:
+            output_file.write_text(output)
+            console.print(f"[green]Combined report saved to: {output_file}[/green]")
+        else:
+            console.print(output)
+    
+    elif output_format == "markdown":
+        # Combine all reports into a single Markdown document
+        lines = ["# Quality Check Report - All Stages", ""]
+        
+        for report in reports:
+            try:
+                formatted = format_report(report, "markdown", verbose=verbose)
+                lines.append(formatted)
+                lines.append("")
+                lines.append("---")
+                lines.append("")
+            except Exception as e:
+                console.print(f"[yellow]Warning: Failed to format {report.stage} report: {e}[/yellow]")
+        
+        output = "\n".join(lines)
+        if output_file:
+            output_file.write_text(output)
+            console.print(f"[green]Combined report saved to: {output_file}[/green]")
+        else:
+            console.print(output)
+    
+    else:  # text format
+        # Output each report separately
+        outputs = []
+        for report in reports:
+            try:
+                formatted = format_report(report, output_format, verbose=verbose)
+                outputs.append(formatted)
+            except Exception as e:
+                console.print(f"[yellow]Warning: Failed to format {report.stage} report: {e}[/yellow]")
+                # Fall back to basic format
+                basic = _get_basic_report_text(report, verbose)
+                outputs.append(basic)
+        
+        output = "\n\n".join(outputs)
+        if output_file:
+            output_file.write_text(output)
+            console.print(f"[green]Combined report saved to: {output_file}[/green]")
+        else:
+            console.print(output)
+
+
+def _print_basic_report(report: QualityReport, verbose: bool):
+    """Print basic text report as fallback."""
+    console.print(_get_basic_report_text(report, verbose))
+
+
+def _get_basic_report_text(report: QualityReport, verbose: bool) -> str:
+    """Get basic text report as fallback."""
+    lines = []
+    lines.append(f"\nQuality Report: {report.stage.title()} Stage")
+    lines.append("=" * 50)
+    lines.append(f"Data: {report.data_path}")
+    lines.append(f"Overall Score: {report.overall_score:.2f}")
+    lines.append(f"Critical Issues: {len(report.critical_issues)}")
+    lines.append(f"Warnings: {len(report.warnings)}")
+    
+    if verbose:
+        lines.append("\nCheck Results:")
+        for result in report.check_results:
+            status = "PASS" if result.passed else "FAIL"
+            lines.append(f"  {result.check_name}: {result.score:.2f} [{status}]")
+    
+    return "\n".join(lines)

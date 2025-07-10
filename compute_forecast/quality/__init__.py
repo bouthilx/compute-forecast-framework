@@ -42,9 +42,21 @@ from .core.registry import get_registry, register_stage_checker
 from .core.hooks import run_post_command_quality_check
 from .stages.base import StageQualityChecker
 
-# Register all available checkers
-from .stages.collection.register import register_collection_checker
+# Register all available checkers and formatters
+from .stages.collection.register import register_collection_checker, register_collection_formatters
+from .core.formatters import FormatterRegistry
+from .core.generic_formatters import GenericTextFormatter, GenericJSONFormatter, GenericMarkdownFormatter
+
+# Register checkers
 register_collection_checker()
+
+# Register formatters
+register_collection_formatters()
+
+# Register generic formatters as fallback
+FormatterRegistry.register("text", GenericTextFormatter)
+FormatterRegistry.register("json", GenericJSONFormatter)
+FormatterRegistry.register("markdown", GenericMarkdownFormatter)
 
 __all__ = [
     # Existing components

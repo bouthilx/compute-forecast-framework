@@ -11,6 +11,7 @@ from .interfaces import (
 from .runner import QualityRunner
 from .registry import get_registry, register_stage_checker
 from .hooks import run_post_command_quality_check
+from .formatters import format_report, save_report, FormatterRegistry
 
 __all__ = [
     "QualityCheckResult",
@@ -23,4 +24,7 @@ __all__ = [
     "get_registry", 
     "register_stage_checker",
     "run_post_command_quality_check",
+    "format_report",
+    "save_report",
+    "FormatterRegistry",
 ]
