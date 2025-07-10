@@ -36,8 +36,8 @@ class IJCAIScraper(ConferenceProceedingsScraper):
 
             # Look for year links in proceedings index
             for link in soup.find_all("a", href=True):
-                href = link["href"]
-                year_match = re.search(r"proceedings/(\d{4})", href)
+                href = link.get("href", "")
+                year_match = re.search(r"proceedings/(\d{4})", str(href))
                 if year_match:
                     years.append(int(year_match.group(1)))
 

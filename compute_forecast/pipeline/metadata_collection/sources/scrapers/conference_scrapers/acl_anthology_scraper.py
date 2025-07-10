@@ -186,13 +186,13 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
         ]
 
         for link in soup.find_all("a", href=True):
-            href = link["href"]
+            href = link.get("href", "")
             for pattern in volume_patterns:
-                match = re.search(pattern, href)
+                match = re.search(pattern, str(href))
                 if match:
                     volume_type = match.group(1)
-                    full_url = urljoin(self.base_url, href)
-                    volumes[volume_type] = full_url
+                    full_url = urljoin(self.base_url, str(href))
+                    volumes[volume_type] = str(full_url)
 
         return volumes
 
