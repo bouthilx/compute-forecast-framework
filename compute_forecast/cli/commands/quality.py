@@ -14,8 +14,8 @@ console = Console()
 
 
 def main(
-    data_path: Path = typer.Argument(
-        ...,
+    data_path: Optional[Path] = typer.Argument(
+        None,
         help="Path to data file or directory to check"
     ),
     stage: Optional[str] = typer.Option(
@@ -81,6 +81,10 @@ def main(
         raise typer.Exit()
     
     # Validate arguments
+    if not data_path:
+        console.print("[red]Error: DATA_PATH is required unless using --list-stages or --list-checks[/red]")
+        raise typer.Exit(1)
+        
     if not all_stages and not stage:
         console.print("[red]Error: Must specify either --stage or --all[/red]")
         raise typer.Exit(1)
