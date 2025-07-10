@@ -41,7 +41,7 @@ class SimplePaper:
         """Convert to package's Paper model"""
         return Paper(
             title=self.title,
-            authors=[Author(name=name, affiliation="") for name in self.authors],
+            authors=[Author(name=name, affiliations=[]) for name in self.authors],
             venue=self.venue,
             year=self.year,
             abstract=self.abstract or "",

@@ -372,7 +372,7 @@ class WorkflowCoordinator:
         for i in range(count):
             paper = Paper(
                 title=f"{venue} Paper {i + 1} {year}",
-                authors=[Author(name=f"Author {i + 1}", affiliation="Test University")],
+                authors=[Author(name=f"Author {i + 1}", affiliations=["Test University"])],
                 venue=venue,
                 year=year,
                 citations=max(0, 50 - i),  # Decreasing citations

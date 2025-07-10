@@ -7,13 +7,8 @@ import threading
 @dataclass
 class Author:
     name: str
-    affiliation: str = ""
-    author_id: str = ""
+    affiliations: List[str] = field(default_factory=list)
     email: str = ""
-
-    def normalize_affiliation(self) -> str:
-        """Get normalized affiliation string"""
-        return self.affiliation.lower().strip()
 
 
 @dataclass
@@ -99,8 +94,19 @@ class Paper:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Paper":
         """Create Paper from dictionary"""
-        # Handle authors
-        authors = [Author(**author_data) for author_data in data.get("authors", [])]
+        # Handle authors with backward compatibility
+        authors = []
+        for author_data in data.get("authors", []):
+            if isinstance(author_data, dict):
+                # Handle old format (affiliation as string) to new format (affiliations as list)
+                if "affiliation" in author_data and "affiliations" not in author_data:
+                    author_data = author_data.copy()
+                    author_data["affiliations"] = [author_data.pop("affiliation")] if author_data["affiliation"] else []
+                # Remove author_id if present (no longer part of model)
+                if "author_id" in author_data:
+                    author_data = author_data.copy()
+                    author_data.pop("author_id", None)
+                authors.append(Author(**author_data))
 
         # Handle analysis objects
         comp_analysis = None
