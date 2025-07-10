@@ -1,10 +1,9 @@
 """Report formatters for collection quality reports."""
 
 import json
-from typing import Dict, List, Any
-from datetime import datetime
+from typing import List
 
-from compute_forecast.quality.core.interfaces import QualityReport, QualityIssueLevel
+from compute_forecast.quality.core.interfaces import QualityReport
 from .models import CollectionQualityMetrics
 
 
@@ -25,7 +24,7 @@ class TextReportFormatter(CollectionReportFormatter):
         
         # Header
         lines.append("=" * 70)
-        lines.append(f"COLLECTION QUALITY REPORT")
+        lines.append("COLLECTION QUALITY REPORT")
         lines.append("=" * 70)
         lines.append(f"Generated: {report.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
         lines.append(f"Data Path: {report.data_path}")

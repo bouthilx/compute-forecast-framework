@@ -13,7 +13,6 @@ from compute_forecast.quality.core.interfaces import (
     QualityIssueLevel,
     QualityConfig
 )
-from .models import CollectionQualityMetrics
 
 
 class BaseValidator(ABC):

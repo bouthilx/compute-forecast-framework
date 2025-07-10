@@ -3,7 +3,6 @@
 import json
 import pytest
 from pathlib import Path
-from datetime import datetime
 from tempfile import TemporaryDirectory
 
 from compute_forecast.quality.core.interfaces import QualityConfig

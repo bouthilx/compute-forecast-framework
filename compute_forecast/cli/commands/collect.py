@@ -546,11 +546,18 @@ def main(
         if not skip_quality_check:
             console.print("\n[cyan]Running quality checks on collected data...[/cyan]")
             try:
+                context = {
+                    "total_papers": len(all_papers),
+                    "venues": list(set(p.venue for p in all_papers)),
+                    "years": sorted(list(set(p.year for p in all_papers))),
+                    "errors": errors
+                }
                 run_post_command_quality_check(
-                    command_name="collect",
-                    data_path=output,
                     stage="collection",
-                    console=console
+                    output_path=output,
+                    context=context,
+                    config=None,
+                    show_summary=True
                 )
             except Exception as e:
                 console.print(f"[yellow]Warning: Quality check failed: {e}[/yellow]")
