@@ -177,7 +177,7 @@ Identified that the AAAI OAI-PMH servers are down, not a CI-specific issue. Test
 
 ✓ GitHub Actions status:
 - PR Validation: SUCCESS
-- Security: SUCCESS  
+- Security: SUCCESS
 - CI: IN PROGRESS (tests running)
 
 The main issues have been resolved:
