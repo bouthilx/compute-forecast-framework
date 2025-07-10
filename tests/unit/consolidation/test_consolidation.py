@@ -1,8 +1,6 @@
-import pytest
 from datetime import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
-from compute_forecast.pipeline.consolidation.sources.semantic_scholar import SemanticScholarSource
 from compute_forecast.pipeline.consolidation.enrichment.citation_enricher import CitationEnricher
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 

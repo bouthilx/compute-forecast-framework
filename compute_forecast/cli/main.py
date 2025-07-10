@@ -3,6 +3,8 @@
 import typer
 from typing import Optional
 from .. import __version__
+from .commands.collect import main as collect_command
+from .commands.consolidate import main as consolidate_command
 
 app = typer.Typer(
     name="compute-forecast",
@@ -11,10 +13,6 @@ app = typer.Typer(
          "to project future infrastructure needs.",
     add_completion=False,
 )
-
-# Import commands
-from .commands.collect import main as collect_command
-from .commands.consolidate import main as consolidate_command
 
 # Register the commands
 app.command(name="collect")(collect_command)

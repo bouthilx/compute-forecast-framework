@@ -1,6 +1,5 @@
 """Integration tests for CVF scraper with CLI and registry."""
 
-import pytest
 from unittest.mock import Mock, patch
 
 from compute_forecast.data.sources.scrapers.registry import ScraperRegistry

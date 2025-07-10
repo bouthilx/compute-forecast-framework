@@ -3,7 +3,7 @@
 import re
 import time
 import xml.etree.ElementTree as ET
-from typing import List, Any, Optional
+from typing import List, Optional
 from datetime import datetime
 
 from .base import BaseScraper, ScrapingResult, ScrapingConfig

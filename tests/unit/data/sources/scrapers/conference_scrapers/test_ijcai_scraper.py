@@ -1,13 +1,13 @@
 """Tests for IJCAI conference proceedings scraper"""
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
 from compute_forecast.data.sources.scrapers.conference_scrapers.ijcai_scraper import IJCAIScraper
-from compute_forecast.data.sources.scrapers import ScrapingConfig, ScrapingResult, SimplePaper
+from compute_forecast.data.sources.scrapers import ScrapingConfig, SimplePaper
 
 
 class TestIJCAIScraper:
@@ -98,7 +98,6 @@ class TestIJCAIScraper:
     
     def test_dynamic_year_fallback(self, scraper):
         """Test dynamic year range in fallback"""
-        from datetime import datetime
         with patch('requests.Session.get') as mock_get:
             mock_get.side_effect = requests.RequestException("Network error")
             

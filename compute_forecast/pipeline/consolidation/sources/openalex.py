@@ -1,6 +1,5 @@
 import requests
 from typing import List, Dict, Optional
-from urllib.parse import quote
 
 from .base import BaseConsolidationSource, SourceConfig
 from ...metadata_collection.models import Paper

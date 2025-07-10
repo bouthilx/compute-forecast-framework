@@ -74,7 +74,7 @@ def scrape_limited_papers(scraper, venue: str, year: int, max_papers: int):
                     continue
         else:
             # Fallback: try direct volume URLs and stop when limit reached
-            print(f"   📖 Trying direct volume URLs...")
+            print("   📖 Trying direct volume URLs...")
             vol_papers = scraper._try_direct_volume_urls(venue, year)
             collected_papers = vol_papers[:max_papers]
             
@@ -94,7 +94,7 @@ def scrape_acl_papers(year: int, max_papers: int = None, display_limit: int = 10
         max_papers: Maximum number of papers to scrape (None for all)
         display_limit: Maximum number of papers to display in terminal (default: 10)
     """
-    print(f"🔍 Initializing ACL Anthology scraper...")
+    print("🔍 Initializing ACL Anthology scraper...")
     
     # Configure scraper with reasonable rate limiting
     config = ScrapingConfig(
@@ -106,7 +106,7 @@ def scrape_acl_papers(year: int, max_papers: int = None, display_limit: int = 10
     scraper = ACLAnthologyScraper(config)
     
     # Check if the year is available
-    print(f"📅 Checking available years for ACL...")
+    print("📅 Checking available years for ACL...")
     available_years = scraper.get_available_years("ACL")
     
     if available_years and year not in available_years:
@@ -146,7 +146,7 @@ def scrape_acl_papers(year: int, max_papers: int = None, display_limit: int = 10
         if paper.pdf_urls:
             print(f"   PDF URL: {paper.pdf_urls[0]}")
         else:
-            print(f"   PDF URL: ❌ Not found")
+            print("   PDF URL: ❌ Not found")
         print(f"   Metadata completeness: {paper.metadata_completeness:.0%}")
         print()
     
@@ -181,7 +181,7 @@ def scrape_acl_papers(year: int, max_papers: int = None, display_limit: int = 10
     print(f"✅ Results saved to {output_file}")
     
     # Show statistics
-    print(f"\n📊 Statistics:")
+    print("\n📊 Statistics:")
     print(f"   Total papers: {len(papers)}")
     
     papers_with_pdf = sum(1 for p in papers if p.pdf_urls)

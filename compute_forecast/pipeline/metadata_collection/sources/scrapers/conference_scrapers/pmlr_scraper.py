@@ -2,9 +2,8 @@
 
 import re
 from bs4 import BeautifulSoup
-from typing import List, Dict, Optional
+from typing import List, Optional
 from urllib.parse import urljoin
-from datetime import datetime
 
 from ..base import ConferenceProceedingsScraper, ScrapingConfig, ScrapingResult
 from ..models import SimplePaper

@@ -1,6 +1,6 @@
 """Semantic Scholar adapter using the semanticscholar package."""
 
-from typing import List, Any, Optional
+from typing import List, Any
 import os
 from datetime import datetime
 from semanticscholar import SemanticScholar as S2API
