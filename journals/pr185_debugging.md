@@ -146,6 +146,16 @@ Running tests revealed:
 4. [x] Run all tests locally with `uv run pytest tests/ -v --durations=50 --ignore=tests/performance`
 5. [x] Ensure pre-commit passes with `uv run --group dev pre-commit run --all`
 6. [x] Commit each fix separately
-7. [ ] Fix remaining unit test failures
+7. [x] Fix remaining unit test failures
 8. [ ] Fix integration test timeout issue
 9. [ ] Push changes and verify PR checks pass
+
+### Step 7: Fix remaining unit test failures
+✓ Fixed all 7 unit test failures:
+1. Fixed IJCAI test to expect both "IJCAI" and "ijcai" venues
+2. Fixed CVF scraper test mock paths from old import structure
+3. Fixed error handling test mock path 
+4. Fixed PMLR scraper test mock path
+5. Fixed AAAI test date filtering (expects monthly not quarterly ranges)
+6. Fixed AAAI test error message assertion
+7. Committed all fixes

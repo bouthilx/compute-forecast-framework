@@ -1,5 +1,6 @@
 """Integration tests for AAAI scraper."""
 
+import os
 import pytest
 from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import (
     get_registry,
@@ -42,6 +43,10 @@ class TestAAAIScraperIntegration:
 
     @pytest.mark.integration
     @pytest.mark.slow
+    @pytest.mark.skipif(
+        os.environ.get("CI", "false").lower() == "true",
+        reason="Skip live API tests in CI to avoid timeouts",
+    )
     def test_aaai_scraper_live_collection(self, registry, config):
         """Test actual paper collection from AAAI (requires internet)."""
         # Get AAAI scraper
