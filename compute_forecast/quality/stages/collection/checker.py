@@ -180,14 +180,21 @@ class CollectionQualityChecker(StageQualityChecker):
         papers_with_abstracts = sum(1 for paper in papers 
                                    if paper.get("abstract") and str(paper["abstract"]).strip())
         papers_with_pdfs = sum(1 for paper in papers 
-                              if paper.get("pdf_url") and str(paper["pdf_url"]).strip())
+                              if (paper.get("pdf_urls") and paper["pdf_urls"]) or 
+                                 (paper.get("pdf_url") and str(paper["pdf_url"]).strip()))
         papers_with_dois = sum(1 for paper in papers 
                               if paper.get("doi") and str(paper["doi"]).strip())
         
         # Calculate field completeness scores
         field_completeness = {}
         for field in ["title", "authors", "venue", "year", "abstract", "pdf_url", "doi"]:
-            present_count = sum(1 for paper in papers if paper.get(field))
+            if field == "pdf_url":
+                # Check both pdf_url and pdf_urls
+                present_count = sum(1 for paper in papers 
+                                  if (paper.get("pdf_urls") and paper["pdf_urls"]) or 
+                                     (paper.get("pdf_url") and paper["pdf_url"]))
+            else:
+                present_count = sum(1 for paper in papers if paper.get(field))
             field_completeness[field] = present_count / total_papers if total_papers > 0 else 0.0
         
         # Update metrics
@@ -224,8 +231,10 @@ class CollectionQualityChecker(StageQualityChecker):
                            and all(isinstance(author, str) and author.strip() for author in paper["authors"]))
         
         valid_urls = sum(1 for paper in papers 
-                        if paper.get("pdf_url") and isinstance(paper["pdf_url"], str) 
-                        and paper["pdf_url"].startswith("http"))
+                        if (paper.get("pdf_urls") and isinstance(paper["pdf_urls"], list) 
+                            and any(isinstance(url, str) and url.startswith("http") for url in paper["pdf_urls"])) or
+                           (paper.get("pdf_url") and isinstance(paper["pdf_url"], str) 
+                            and paper["pdf_url"].startswith("http")))
         
         # Update metrics
         metrics.valid_years_count = valid_years
