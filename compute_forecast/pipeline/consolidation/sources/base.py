@@ -67,8 +67,8 @@ class BaseConsolidationSource(ABC):
         """
         pass
         
-    def enrich_papers(self, papers: List[Paper]) -> List[EnrichmentResult]:
-        """Main enrichment workflow - single pass for all fields"""
+    def enrich_papers(self, papers: List[Paper], progress_callback=None) -> List[EnrichmentResult]:
+        """Main enrichment workflow - single pass for all fields with optional progress tracking"""
         results = []
         
         # Process in batches
@@ -80,6 +80,12 @@ class BaseConsolidationSource(ABC):
             source_ids = list(id_mapping.values())
             
             if not source_ids:
+                # Still need to create empty results for progress tracking
+                for paper in batch:
+                    result = EnrichmentResult(paper_id=paper.paper_id)
+                    results.append(result)
+                    if progress_callback:
+                        progress_callback(result)
                 continue
                 
             # Fetch ALL enrichment data in one API call (or minimal calls)
@@ -87,6 +93,12 @@ class BaseConsolidationSource(ABC):
                 enrichment_data = self.fetch_all_fields(source_ids)
             except Exception as e:
                 self.logger.error(f"Error fetching data: {e}")
+                # Still need to create empty results for progress tracking
+                for paper in batch:
+                    result = EnrichmentResult(paper_id=paper.paper_id)
+                    results.append(result)
+                    if progress_callback:
+                        progress_callback(result)
                 continue
             
             # Create results with provenance
@@ -128,5 +140,9 @@ class BaseConsolidationSource(ABC):
                         result.urls.append(url_record)
                 
                 results.append(result)
+                
+                # Call progress callback if provided
+                if progress_callback:
+                    progress_callback(result)
                 
         return results
