@@ -83,7 +83,9 @@ def test_paperoni_adapter_integration():
     assert simple_paper.authors == ["Alice Johnson", "Bob Williams"]
     assert simple_paper.venue == "NeurIPS"
     assert simple_paper.year == 2023
-    assert simple_paper.pdf_urls == ["https://papers.nips.cc/paper/2023/file/abc123.pdf"]
+    assert simple_paper.pdf_urls == [
+        "https://papers.nips.cc/paper/2023/file/abc123.pdf"
+    ]
     assert simple_paper.source_scraper == "paperoni"
 
     # Convert to package format

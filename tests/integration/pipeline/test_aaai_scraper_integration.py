@@ -1,6 +1,5 @@
 """Integration tests for AAAI scraper."""
 
-import os
 import pytest
 from unittest.mock import Mock, patch
 from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import (
@@ -43,14 +42,14 @@ class TestAAAIScraperIntegration:
         assert scraper.__class__.__name__ == "AAAIScraper"
 
     @pytest.mark.integration
-    @patch('requests.Session.get')
+    @patch("requests.Session.get")
     def test_aaai_scraper_live_collection(self, mock_get, registry, config):
         """Test paper collection from AAAI with mocked responses."""
         # Mock OAI-PMH response
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.text = '''<?xml version="1.0" encoding="UTF-8"?>
-<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+        mock_response.text = """<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
          http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
@@ -63,7 +62,7 @@ class TestAAAIScraperIntegration:
         <datestamp>2024-01-15</datestamp>
       </header>
       <metadata>
-        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
                    xmlns:dc="http://purl.org/dc/elements/1.1/">
           <dc:title>Test Paper: Advances in AI Research</dc:title>
           <dc:creator>Smith, John</dc:creator>
@@ -83,7 +82,7 @@ class TestAAAIScraperIntegration:
         <datestamp>2024-01-16</datestamp>
       </header>
       <metadata>
-        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
                    xmlns:dc="http://purl.org/dc/elements/1.1/">
           <dc:title>Another Test Paper: Machine Learning Applications</dc:title>
           <dc:creator>Johnson, Alice</dc:creator>
@@ -98,9 +97,9 @@ class TestAAAIScraperIntegration:
       </metadata>
     </record>
   </ListRecords>
-</OAI-PMH>'''
+</OAI-PMH>"""
         mock_get.return_value = mock_response
-        
+
         # Get AAAI scraper
         scraper = registry.get_scraper_for_venue("aaai", config=config)
 
@@ -128,7 +127,7 @@ class TestAAAIScraperIntegration:
         assert paper.doi or paper.paper_id, "Paper missing both DOI and paper_id"
 
     @pytest.mark.integration
-    @patch('requests.Session.get')
+    @patch("requests.Session.get")
     def test_aaai_scraper_error_handling(self, mock_get, registry, config):
         """Test error handling for invalid venue/year."""
         scraper = registry.get_scraper_for_venue("aaai", config=config)
@@ -141,15 +140,15 @@ class TestAAAIScraperIntegration:
         # Test with very old year (before AAAI started) - mock empty response
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.text = '''<?xml version="1.0" encoding="UTF-8"?>
+        mock_response.text = """<?xml version="1.0" encoding="UTF-8"?>
 <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
   <responseDate>2024-01-01T00:00:00Z</responseDate>
   <request verb="ListRecords" metadataPrefix="oai_dc">https://ojs.aaai.org/index.php/AAAI/oai</request>
   <ListRecords>
   </ListRecords>
-</OAI-PMH>'''
+</OAI-PMH>"""
         mock_get.return_value = mock_response
-        
+
         result = scraper.scrape_venue_year("aaai", 1970)
         # Should either return no papers or handle gracefully
         assert result.success or len(result.errors) > 0

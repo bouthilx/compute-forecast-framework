@@ -131,6 +131,35 @@ Running tests revealed:
 - Unit tests: 7 failed, 1469 passed, 53 skipped
 - Integration tests: timing out on AAAI scraper live collection test
 
+## Second Continuation - 2025-07-10
+
+### Status Check After Previous Fixes
+Ran individual test files to verify all previous fixes are still working:
+- ✓ AAAI scraper tests: All 18 tests passing
+- ✓ IJCAI scraper tests: All tests passing
+- ✓ CVF scraper tests: All 16 tests passing
+- ✓ PMLR scraper tests: All 12 tests passing
+- ✓ Error handling tests: All 29 tests passing
+- ✓ Pre-commit checks: All passing (trailing whitespace, end of files, yaml, toml, json, large files, case conflicts, merge conflicts, private key, mixed line ending, ruff, ruff format, mypy)
+
+### Critical Fix: AAAI Integration Tests
+Identified that the AAAI OAI-PMH servers are down, not a CI-specific issue. Tests should not depend on external server availability.
+
+✓ Replaced live server calls with mocked responses:
+- Added proper XML OAI-PMH response mocks
+- Removed skipif CI decorator (was a workaround, not a fix)
+- All 4 AAAI integration tests now pass reliably
+- Tests no longer depend on external server availability
+
+### Additional Integration Test Fixes
+✓ Fixed CVF integration test:
+- Updated import paths from old structure to new pipeline structure
+- Fixed mock patch path for CVFScraper
+
+✓ Fixed scraper integration tests:
+- Changed pdf_url to pdf_urls (plural) to match SimplePaper model
+- All 3 scraper integration tests now pass
+
 ### Failing Unit Tests:
 1. `test_ijcai_scraper.py::TestIJCAIScraper::test_get_supported_venues` - Expecting ['IJCAI'] but getting ['IJCAI', 'ijcai']
 2. `test_cvf_scraper.py` (2 tests) - AttributeError: module has no attribute 'sources'
