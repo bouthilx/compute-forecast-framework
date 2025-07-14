@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 import logging
 
-from ..models import EnrichmentResult, CitationRecord, AbstractRecord, URLRecord, CitationData, AbstractData, URLData
+from ..models import EnrichmentResult, CitationRecord, AbstractRecord, URLRecord, IdentifierRecord, CitationData, AbstractData, URLData, IdentifierData
 from ...metadata_collection.models import Paper
 from ....utils.profiling import profile_operation
 
@@ -68,6 +68,7 @@ class BaseConsolidationSource(ABC):
             'citations': int,
             'abstract': str,
             'urls': List[str],
+            'identifiers': List[Dict[str, str]],  # {'type': 'doi', 'value': '10.1234/...'}
             'authors': List[Dict],  # For future affiliation enrichment
             ...other fields...
         }
@@ -81,7 +82,6 @@ class BaseConsolidationSource(ABC):
         with profile_operation('enrich_papers_total', source=self.name, paper_count=len(papers)):
             # Use source-specific batch sizes for optimal performance
             find_batch_size = self.config.find_batch_size or self.config.batch_size
-            enrich_batch_size = self.config.enrich_batch_size or self.config.batch_size
             
             # Process papers in optimal batch sizes for finding IDs
             for i in range(0, len(papers), find_batch_size):
@@ -154,6 +154,19 @@ class BaseConsolidationSource(ABC):
                                     data=URLData(url=url)
                                 )
                                 result.urls.append(url_record)
+                            
+                            # Add identifiers if found
+                            for identifier in data.get('identifiers', []):
+                                identifier_record = IdentifierRecord(
+                                    source=self.name,
+                                    timestamp=datetime.now(),
+                                    original=False,
+                                    data=IdentifierData(
+                                        identifier_type=identifier['type'],
+                                        identifier_value=identifier['value']
+                                    )
+                                )
+                                result.identifiers.append(identifier_record)
                         
                         results.append(result)
                         

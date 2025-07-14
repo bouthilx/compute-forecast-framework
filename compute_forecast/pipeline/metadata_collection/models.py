@@ -3,7 +3,7 @@ from typing import List, Optional, Dict, Any, Literal
 from datetime import datetime, timedelta
 import threading
 
-from ..consolidation.models import CitationRecord, AbstractRecord, URLRecord
+from ..consolidation.models import CitationRecord, AbstractRecord, URLRecord, IdentifierRecord
 
 
 @dataclass
@@ -50,6 +50,7 @@ class Paper:
     abstracts: List[AbstractRecord] = field(default_factory=list)
     doi: str = ""
     urls: List[URLRecord] = field(default_factory=list)
+    identifiers: List[IdentifierRecord] = field(default_factory=list)
 
     # Core identifiers (at least one required)
     paper_id: Optional[str] = None  # Semantic Scholar ID
@@ -117,7 +118,7 @@ class Paper:
         for key, value in self.__dict__.items():
             if isinstance(value, datetime):
                 result[key] = value.isoformat()
-            elif key in ["citations", "abstracts", "urls"] and isinstance(value, list):
+            elif key in ["citations", "abstracts", "urls", "identifiers"] and isinstance(value, list):
                 # Special handling for provenance records
                 result[key] = []
                 for record in value:
@@ -135,6 +136,26 @@ class Paper:
             else:
                 result[key] = value
         return result
+    
+    def update_identifiers_from_records(self):
+        """Update individual identifier fields from identifier records"""
+        for record in self.identifiers:
+            id_type = record.data.identifier_type
+            id_value = record.data.identifier_value
+            
+            if id_type == 'doi' and not self.doi:
+                self.doi = id_value
+            elif id_type == 'arxiv' and not self.arxiv_id:
+                self.arxiv_id = id_value
+            elif id_type == 'openalex' and not self.openalex_id:
+                self.openalex_id = id_value
+            elif id_type == 's2_paper' and not self.paper_id:
+                self.paper_id = id_value
+            # Store new identifier types in processing_flags
+            else:
+                if 'discovered_identifiers' not in self.processing_flags:
+                    self.processing_flags['discovered_identifiers'] = {}
+                self.processing_flags['discovered_identifiers'][id_type] = id_value
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Paper":
@@ -215,6 +236,20 @@ class Paper:
                     original=record.get("original", False),
                     data=URLData(url=record["data"]["url"])
                 ))
+        
+        identifiers = []
+        if data.get("identifiers"):
+            from ..consolidation.models import IdentifierRecord, IdentifierData
+            for record in data["identifiers"]:
+                identifiers.append(IdentifierRecord(
+                    source=record["source"],
+                    timestamp=datetime.fromisoformat(record["timestamp"]),
+                    original=record.get("original", False),
+                    data=IdentifierData(
+                        identifier_type=record["data"]["identifier_type"],
+                        identifier_value=record["data"]["identifier_value"]
+                    )
+                ))
 
         # Create paper with processed data
         paper_data = data.copy()
@@ -236,6 +271,7 @@ class Paper:
         paper_data.pop("citations", None)
         paper_data.pop("abstracts", None)
         paper_data.pop("urls", None)
+        paper_data.pop("identifiers", None)
         paper_data.pop("computational_analysis", None)
         paper_data.pop("authorship_analysis", None)
         paper_data.pop("venue_analysis", None)
@@ -244,6 +280,7 @@ class Paper:
         paper_data["citations"] = citations
         paper_data["abstracts"] = abstracts
         paper_data["urls"] = urls
+        paper_data["identifiers"] = identifiers
         paper_data["computational_analysis"] = comp_analysis
         paper_data["authorship_analysis"] = auth_analysis
         paper_data["venue_analysis"] = venue_analysis

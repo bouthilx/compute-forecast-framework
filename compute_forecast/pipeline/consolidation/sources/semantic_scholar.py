@@ -165,8 +165,8 @@ class SemanticScholarSource(BaseConsolidationSource):
         """Fetch all available fields in a single API call per batch"""
         results = {}
         
-        # All fields we want in one request
-        fields = "paperId,title,abstract,citationCount,year,authors,externalIds,openAccessPdf,fieldsOfStudy,venue"
+        # All fields we want in one request (added corpusId)
+        fields = "paperId,title,abstract,citationCount,year,authors,externalIds,corpusId,openAccessPdf,fieldsOfStudy,venue"
         
         # Process in chunks of 500 (API limit)
         for i in range(0, len(source_ids), 500):
@@ -205,6 +205,7 @@ class SemanticScholarSource(BaseConsolidationSource):
                                 'citations': item.get('citationCount'),
                                 'abstract': item.get('abstract'),
                                 'urls': [],
+                                'identifiers': [],
                                 'authors': item.get('authors', []),
                                 'venue': item.get('venue'),
                                 'fields_of_study': item.get('fieldsOfStudy', [])
@@ -213,6 +214,37 @@ class SemanticScholarSource(BaseConsolidationSource):
                             # Add open access PDF URL if available
                             if item.get('openAccessPdf') and item['openAccessPdf'].get('url'):
                                 paper_data['urls'].append(item['openAccessPdf']['url'])
+                            
+                            # Extract all identifiers
+                            # Add Semantic Scholar IDs
+                            if item.get('paperId'):
+                                paper_data['identifiers'].append({
+                                    'type': 's2_paper',
+                                    'value': item['paperId']
+                                })
+                            
+                            if item.get('corpusId'):
+                                paper_data['identifiers'].append({
+                                    'type': 's2_corpus',
+                                    'value': str(item['corpusId'])
+                                })
+                            
+                            # Extract external identifiers
+                            ext_ids = item.get('externalIds', {})
+                            id_mappings = {
+                                'DOI': 'doi',
+                                'ArXiv': 'arxiv',
+                                'PubMed': 'pmid',
+                                'ACL': 'acl',
+                                'MAG': 'mag'
+                            }
+                            
+                            for ext_type, our_type in id_mappings.items():
+                                if ext_type in ext_ids:
+                                    paper_data['identifiers'].append({
+                                        'type': our_type,
+                                        'value': ext_ids[ext_type]
+                                    })
                                 
                             results[paper_id] = paper_data
                     

@@ -11,7 +11,6 @@ from rich.progress import (
     TextColumn,
     BarColumn,
     TaskProgressColumn,
-    TimeRemainingColumn,
 )
 
 from compute_forecast.pipeline.consolidation.sources.semantic_scholar import SemanticScholarSource
@@ -133,6 +132,7 @@ def main(
         "citations_added": 0,
         "abstracts_added": 0,
         "urls_added": 0,
+        "identifiers_added": 0,
         "api_calls": {}
     }
     
@@ -149,7 +149,7 @@ def main(
         TaskProgressColumn(),
         TextColumn("[cyan]{task.fields[time_remaining]}[/cyan]"),
         TextColumn(
-            "• {task.fields[citations_pct]:.1f}% citations • {task.fields[abstracts_pct]:.1f}% abstracts • {task.fields[urls_pct]:.1f}% URLs"
+            "• {task.fields[citations_pct]:.1f}% citations • {task.fields[abstracts_pct]:.1f}% abstracts • {task.fields[urls_pct]:.1f}% URLs • {task.fields[identifiers_pct]:.1f}% IDs"
         ),
         console=console,
         disable=no_progress,
@@ -164,9 +164,11 @@ def main(
                 citations_added=0,
                 abstracts_added=0,
                 urls_added=0,
+                identifiers_added=0,
                 citations_pct=0.0,
                 abstracts_pct=0.0,
                 urls_pct=0.0,
+                identifiers_pct=0.0,
                 time_remaining="",
             )
             source_tasks[source.name] = task_id
@@ -178,11 +180,12 @@ def main(
             source_citations = 0
             source_abstracts = 0
             source_urls = 0
+            source_identifiers = 0
             papers_processed = 0
             start_time = time.time()
             
             def update_progress(result):
-                nonlocal source_citations, source_abstracts, source_urls, papers_processed
+                nonlocal source_citations, source_abstracts, source_urls, source_identifiers, papers_processed
                 
                 # Apply enrichments to papers
                 if result.paper_id in papers_by_id:
@@ -192,11 +195,13 @@ def main(
                     paper.citations.extend(result.citations)
                     paper.abstracts.extend(result.abstracts)
                     paper.urls.extend(result.urls)
+                    paper.identifiers.extend(result.identifiers)
                     
                     # Track statistics for this source
                     source_citations += len(result.citations)
                     source_abstracts += len(result.abstracts)
                     source_urls += len(result.urls)
+                    source_identifiers += len(result.identifiers)
                 
                 papers_processed += 1
                 
@@ -204,6 +209,7 @@ def main(
                 citations_pct = (source_citations / papers_processed * 100) if papers_processed > 0 else 0.0
                 abstracts_pct = (source_abstracts / papers_processed * 100) if papers_processed > 0 else 0.0
                 urls_pct = (source_urls / papers_processed * 100) if papers_processed > 0 else 0.0
+                identifiers_pct = (source_identifiers / papers_processed * 100) if papers_processed > 0 else 0.0
                 
                 # Calculate custom ETA based on actual processing rate
                 elapsed = time.time() - start_time
@@ -231,24 +237,27 @@ def main(
                     citations_added=source_citations,
                     abstracts_added=source_abstracts,
                     urls_added=source_urls,
+                    identifiers_added=source_identifiers,
                     citations_pct=citations_pct,
                     abstracts_pct=abstracts_pct,
                     urls_pct=urls_pct,
+                    identifiers_pct=identifiers_pct,
                     time_remaining=time_remaining,
                 )
             
             try:
                 # Get ALL enrichment data with progress tracking
-                enrichment_results = source.enrich_papers(papers, progress_callback=update_progress)
+                source.enrich_papers(papers, progress_callback=update_progress)
                 
                 # Update global statistics
                 stats["citations_added"] += source_citations
                 stats["abstracts_added"] += source_abstracts
                 stats["urls_added"] += source_urls
+                stats["identifiers_added"] += source_identifiers
                 
                 # Mark as completed
                 progress.update(task_id, time_remaining="done")
-                console.print(f"[green]✓[/green] Completed {source.name}: +{source_citations} citations, +{source_abstracts} abstracts, +{source_urls} URLs")
+                console.print(f"[green]✓[/green] Completed {source.name}: +{source_citations} citations, +{source_abstracts} abstracts, +{source_urls} URLs, +{source_identifiers} identifiers")
                 
             except Exception as e:
                 logger.error(f"Error enriching from {source.name}: {e}")
@@ -272,6 +281,7 @@ def main(
     console.print(f"  Citations added: {stats['citations_added']}")
     console.print(f"  Abstracts added: {stats['abstracts_added']}")
     console.print(f"  URLs added: {stats['urls_added']}")
+    console.print(f"  Identifiers added: {stats['identifiers_added']}")
     console.print(f"  API calls: {sum(stats['api_calls'].values())}")
     
     # Print profiling report if enabled

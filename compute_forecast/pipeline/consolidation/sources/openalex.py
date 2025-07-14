@@ -36,24 +36,24 @@ class OpenAlexSource(BaseConsolidationSource):
                 continue
                 
         # Batch search by DOI
-        doi_filter_parts = []
+        dois = []
         doi_to_paper = {}
         
         for paper in papers:
             if paper.paper_id not in mapping and paper.doi:
-                doi_filter_parts.append(f'doi:"{paper.doi}"')
+                dois.append(paper.doi)
                 doi_to_paper[paper.doi] = paper.paper_id
                 
-        if doi_filter_parts:
-            # OpenAlex OR filter syntax
-            filter_str = "|".join(doi_filter_parts)
+        if dois:
+            # OpenAlex OR filter syntax: doi:value1|value2|value3
+            filter_str = "doi:" + "|".join(dois)
             
             self._rate_limit()
             response = requests.get(
                 f"{self.base_url}/works",
                 params={
                     "filter": filter_str,
-                    "per-page": len(doi_filter_parts),
+                    "per-page": len(dois),
                     "select": "id,doi"
                 },
                 headers=self.headers
@@ -98,17 +98,19 @@ class OpenAlexSource(BaseConsolidationSource):
         """Fetch all available fields in minimal API calls"""
         results = {}
         
-        # Build OR filter for all IDs
-        id_filters = [f'openalex:"{id}"' for id in source_ids]
+        # Build OR filter for all IDs using correct syntax
+        # OpenAlex supports OR within a single filter: openalex:id1|id2|id3
         
         # Select all fields we need in one request
-        select_fields = "id,title,abstract_inverted_index,cited_by_count,publication_year,authorships,primary_location,locations,concepts"
+        select_fields = "id,title,abstract_inverted_index,cited_by_count,ids,publication_year,authorships,primary_location,locations,concepts"
         
         # Process in batches (OpenAlex has URL length limits)
         batch_size = self.config.enrich_batch_size or 50
-        for i in range(0, len(id_filters), batch_size):
-            batch = id_filters[i:i+batch_size]
-            filter_str = "|".join(batch)
+        for i in range(0, len(source_ids), batch_size):
+            batch = source_ids[i:i+batch_size]
+            
+            # Build filter string: openalex:id1|id2|id3
+            filter_str = "openalex:" + "|".join(batch)
             
             self._rate_limit()
             response = requests.get(
@@ -127,12 +129,13 @@ class OpenAlexSource(BaseConsolidationSource):
                     work_id = work.get("id")
                     if not work_id:
                         continue
-                        
+                    
                     # Extract all data from single response
                     paper_data = {
                         'citations': work.get("cited_by_count", 0),
                         'abstract': None,
                         'urls': [],
+                        'identifiers': [],
                         'authors': [],
                         'concepts': work.get('concepts', [])
                     }
@@ -158,7 +161,38 @@ class OpenAlexSource(BaseConsolidationSource):
                     for location in work.get('locations', []):
                         if location.get('pdf_url') and location['pdf_url'] not in paper_data['urls']:
                             paper_data['urls'].append(location['pdf_url'])
+                    
+                    # Extract all identifiers
+                    # Add OpenAlex ID
+                    if work_id:
+                        paper_data['identifiers'].append({
+                            'type': 'openalex',
+                            'value': work_id
+                        })
+                    
+                    # Extract other identifiers from 'ids' field
+                    ids = work.get('ids', {})
+                    
+                    # Map OpenAlex identifier types to our types
+                    id_mappings = {
+                        'doi': 'doi',
+                        'pmid': 'pmid',
+                        'mag': 'mag'  # OpenAlex includes MAG IDs
+                    }
+                    
+                    for oa_type, our_type in id_mappings.items():
+                        if oa_type in ids and ids[oa_type]:
+                            # Handle DOI format (OpenAlex returns full URL)
+                            value = ids[oa_type]
+                            if our_type == 'doi' and value.startswith('https://doi.org/'):
+                                value = value.replace('https://doi.org/', '')
                             
+                            paper_data['identifiers'].append({
+                                'type': our_type,
+                                'value': str(value)
+                            })
+                            
+                    # Use the work_id as key to match what find_papers returned
                     results[work_id] = paper_data
                     
         return results
