@@ -47,6 +47,8 @@ class ConsolidationWorker(ABC, threading.Thread):
         self.papers_enriched = 0
         self.api_calls = 0
         self.start_time = None
+        self.citations_found = 0
+        self.abstracts_found = 0
         
     def stop(self):
         """Signal the worker to stop."""
@@ -116,6 +118,12 @@ class ConsolidationWorker(ABC, threading.Thread):
             if enrichment_results:
                 paper, enrichment_data = enrichment_results[0]
                 if enrichment_data:
+                    # Track citation and abstract counts
+                    if enrichment_data.get('citations') is not None:
+                        self.citations_found += 1
+                    if enrichment_data.get('abstract'):
+                        self.abstracts_found += 1
+                    
                     self.output_queue.put({
                         'paper': paper,
                         'enrichment': enrichment_data,

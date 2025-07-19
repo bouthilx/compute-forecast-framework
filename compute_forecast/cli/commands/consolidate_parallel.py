@@ -174,11 +174,15 @@ def main(
         )
         
         # Define progress callback
-        def update_progress(source: str, count: int):
+        def update_progress(source: str, count: int, citations: int, abstracts: int):
             if source == 'openalex':
                 progress.advance(openalex_task, count)
+                progress.update(openalex_task, 
+                              description=f"[cyan]OpenAlex[/cyan] [citations:{citations} abstracts:{abstracts}]")
             elif source == 'semantic_scholar':
                 progress.advance(ss_task, count)
+                progress.update(ss_task, 
+                              description=f"[green]Semantic Scholar[/green] [citations:{citations} abstracts:{abstracts}]")
         
         # Process papers
         console.print("\n[bold cyan]Starting Parallel Consolidation[/bold cyan]")

@@ -171,7 +171,7 @@ class ParallelConsolidator:
         
         return merged_papers
     
-    def _monitor_progress(self, total_papers: int, progress_callback: Optional[Callable[[str, int], None]]):
+    def _monitor_progress(self, total_papers: int, progress_callback: Optional[Callable[[str, int, int, int], None]]):
         """Monitor progress by watching enrichment queue."""
         expected_enrichments = total_papers * 2  # Each paper processed by 2 workers
         
@@ -199,11 +199,15 @@ class ParallelConsolidator:
                     
                     # Update progress if changed
                     if oa_processed > source_progress['openalex']:
-                        progress_callback('openalex', oa_processed - source_progress['openalex'])
+                        progress_callback('openalex', oa_processed - source_progress['openalex'],
+                                        self.openalex_worker.citations_found,
+                                        self.openalex_worker.abstracts_found)
                         source_progress['openalex'] = oa_processed
                         
                     if ss_processed > source_progress['semantic_scholar']:
-                        progress_callback('semantic_scholar', ss_processed - source_progress['semantic_scholar'])
+                        progress_callback('semantic_scholar', ss_processed - source_progress['semantic_scholar'],
+                                        self.semantic_scholar_worker.citations_found,
+                                        self.semantic_scholar_worker.abstracts_found)
                         source_progress['semantic_scholar'] = ss_processed
                         
                     last_progress_update = time.time()
