@@ -414,9 +414,10 @@ class ConsolidationCheckpointManager:
                         logger.warning(f"Unexpected string value for sources in {session_dir.name}: {sources_status}")
                         sources_status = {"phase": sources_status}
                     
-                    # Handle two different checkpoint formats:
+                    # Handle three different checkpoint formats:
                     # 1. Old format: sources with status (e.g., {"semantic_scholar": {"status": "completed"}})
-                    # 2. New format: phase tracking (e.g., {"phase": "id_harvesting"})
+                    # 2. Two-phase format: phase tracking (e.g., {"phase": "id_harvesting"})
+                    # 3. Parallel format: sources with papers_processed counts
                     
                     if "phase" in sources_status:
                         # New two-phase format
@@ -429,6 +430,13 @@ class ConsolidationCheckpointManager:
                             status = "interrupted"  # Between phases
                         else:
                             status = "pending"
+                    elif any("papers_processed" in s for s in sources_status.values() if isinstance(s, dict)):
+                        # Parallel consolidation format
+                        # Check if still processing (always consider resumable unless explicitly complete)
+                        status = "interrupted"
+                        
+                        # Could add logic to determine if complete based on merge counts
+                        # For now, always consider parallel consolidations as resumable
                     else:
                         # Old format with source statuses
                         if all(isinstance(s, dict) and s.get("status") == "completed" for s in sources_status.values()):
