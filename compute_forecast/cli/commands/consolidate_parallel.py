@@ -164,25 +164,26 @@ def main(
         
         # Create progress bars
         openalex_task = progress.add_task(
-            "[cyan]OpenAlex[/cyan]",
+            "[cyan]OpenAlex[/cyan] [dim][citations:0 abstracts:0][/dim]",
             total=len(papers)
         )
         
         ss_task = progress.add_task(
-            "[green]Semantic Scholar[/green]",
+            "[green]Semantic Scholar[/green] [dim][citations:0 abstracts:0][/dim]",
             total=len(papers)
         )
         
         # Define progress callback
         def update_progress(source: str, count: int, citations: int, abstracts: int):
+            logger.debug(f"Progress update: {source} - count:{count}, citations:{citations}, abstracts:{abstracts}")
             if source == 'openalex':
                 progress.advance(openalex_task, count)
                 progress.update(openalex_task, 
-                              description=f"[cyan]OpenAlex[/cyan] [citations:{citations} abstracts:{abstracts}]")
+                              description=f"[cyan]OpenAlex[/cyan] [dim][citations:{citations} abstracts:{abstracts}][/dim]")
             elif source == 'semantic_scholar':
                 progress.advance(ss_task, count)
                 progress.update(ss_task, 
-                              description=f"[green]Semantic Scholar[/green] [citations:{citations} abstracts:{abstracts}]")
+                              description=f"[green]Semantic Scholar[/green] [dim][citations:{citations} abstracts:{abstracts}][/dim]")
         
         # Process papers
         console.print("\n[bold cyan]Starting Parallel Consolidation[/bold cyan]")
