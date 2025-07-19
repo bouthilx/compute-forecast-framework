@@ -13,8 +13,12 @@ from rich.progress import (
     TextColumn,
     BarColumn,
     TaskProgressColumn,
+    ProgressColumn,
+    Task,
 )
+from rich.text import Text
 from rich.live import Live
+from datetime import timedelta
 
 from compute_forecast.pipeline.consolidation.parallel.consolidator import ParallelConsolidator
 from compute_forecast.pipeline.consolidation.checkpoint_manager import ConsolidationCheckpointManager
@@ -22,10 +26,62 @@ from compute_forecast.pipeline.consolidation.models_extended import Consolidatio
 from compute_forecast.pipeline.metadata_collection.models import Paper
 from compute_forecast.utils.profiling import PerformanceProfiler, set_profiler
 from compute_forecast.cli.utils.logging_handler import RichConsoleHandler
-from compute_forecast.cli.commands.consolidate import DetailedProgressColumn, load_papers, save_papers
+from compute_forecast.cli.commands.consolidate import load_papers, save_papers
 
 console = Console()
 logger = logging.getLogger(__name__)
+
+
+class ParallelProgressColumn(ProgressColumn):
+    """Custom progress column showing: <progress>%, (<n done>/<total>) DD HH:MM:SS (YYYY-MM-DD HH:MM:SS ETA) [citations:<n> abstracts:<n>]"""
+    
+    def __init__(self):
+        super().__init__()
+        # Store citation/abstract counts per task
+        self.task_stats = {}
+    
+    def update_stats(self, task_id, citations: int, abstracts: int):
+        """Update citation/abstract stats for a task."""
+        self.task_stats[task_id] = {'citations': citations, 'abstracts': abstracts}
+    
+    def render(self, task: Task) -> Text:
+        """Render the progress details."""
+        if task.total is None:
+            return Text("")
+        
+        # Calculate percentage
+        percentage = (task.completed / task.total) * 100 if task.total > 0 else 0
+        
+        # Format elapsed time
+        elapsed = task.elapsed
+        if elapsed is None:
+            elapsed_str = "00:00:00"
+        else:
+            days = int(elapsed // 86400)
+            hours = int((elapsed % 86400) // 3600)
+            minutes = int((elapsed % 3600) // 60)
+            seconds = int(elapsed % 60)
+            
+            if days > 0:
+                elapsed_str = f"{days:02d} {hours:02d}:{minutes:02d}:{seconds:02d}"
+            else:
+                elapsed_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        
+        # Calculate ETA
+        if task.speed and task.remaining:
+            eta_seconds = task.remaining / task.speed
+            eta_time = datetime.now() + timedelta(seconds=eta_seconds)
+            eta_str = eta_time.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            eta_str = "Unknown"
+        
+        # Get citation/abstract stats
+        stats = self.task_stats.get(task.id, {'citations': 0, 'abstracts': 0})
+        
+        # Format the complete string
+        text = f"{percentage:5.1f}%, ({task.completed}/{task.total}) {elapsed_str} ({eta_str} ETA) [citations:{stats['citations']} abstracts:{stats['abstracts']}]"
+        
+        return Text(text, style="cyan")
 
 
 def main(
@@ -146,12 +202,15 @@ def main(
     if resume and phase_state:
         existing_papers = consolidator.load_checkpoint(phase_state)
     
+    # Create custom progress column
+    progress_column = ParallelProgressColumn()
+    
     # Create progress display with two bars
     progress = Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
-        DetailedProgressColumn(),
+        progress_column,
         console=console,
         disable=no_progress,
     )
@@ -164,12 +223,12 @@ def main(
         
         # Create progress bars
         openalex_task = progress.add_task(
-            "[cyan]OpenAlex[/cyan] [dim][citations:0 abstracts:0][/dim]",
+            "[cyan]OpenAlex[/cyan]",
             total=len(papers)
         )
         
         ss_task = progress.add_task(
-            "[green]Semantic Scholar[/green] [dim][citations:0 abstracts:0][/dim]",
+            "[green]Semantic Scholar[/green]",
             total=len(papers)
         )
         
@@ -178,12 +237,10 @@ def main(
             logger.debug(f"Progress update: {source} - count:{count}, citations:{citations}, abstracts:{abstracts}")
             if source == 'openalex':
                 progress.advance(openalex_task, count)
-                progress.update(openalex_task, 
-                              description=f"[cyan]OpenAlex[/cyan] [dim][citations:{citations} abstracts:{abstracts}][/dim]")
+                progress_column.update_stats(openalex_task, citations, abstracts)
             elif source == 'semantic_scholar':
                 progress.advance(ss_task, count)
-                progress.update(ss_task, 
-                              description=f"[green]Semantic Scholar[/green] [dim][citations:{citations} abstracts:{abstracts}][/dim]")
+                progress_column.update_stats(ss_task, citations, abstracts)
         
         # Process papers
         console.print("\n[bold cyan]Starting Parallel Consolidation[/bold cyan]")
