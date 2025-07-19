@@ -5,6 +5,7 @@ from typing import Optional
 from .. import __version__
 from .commands.collect import main as collect_command
 from .commands.consolidate import main as consolidate_command
+from .commands.consolidate_sessions import list_sessions, clean_sessions
 
 app = typer.Typer(
     name="compute-forecast",
@@ -17,6 +18,12 @@ app = typer.Typer(
 # Register the commands
 app.command(name="collect")(collect_command)
 app.command(name="consolidate")(consolidate_command)
+
+# Create a subcommand group for consolidation sessions
+consolidate_sessions_app = typer.Typer(help="Manage consolidation sessions")
+consolidate_sessions_app.command(name="list")(list_sessions)
+consolidate_sessions_app.command(name="clean")(clean_sessions)
+app.add_typer(consolidate_sessions_app, name="consolidate-sessions")
 
 
 def version_callback(value: bool):
