@@ -134,7 +134,7 @@ class OpenAlexSource(BaseConsolidationSource):
                         "search": paper.title,
                         "filter": f"publication_year:{paper.year}",
                         "per-page": 1,
-                        "select": "id,title,publication_year"
+                        "select": "id,title,publication_year,authorships"
                     }
                 )
                 
@@ -142,13 +142,22 @@ class OpenAlexSource(BaseConsolidationSource):
                     results = response.json().get("results", [])
                     if results:
                         work = results[0]
+                        # Extract authors from the work
+                        work_authors = []
+                        for authorship in work.get("authorships", []):
+                            author = authorship.get("author", {})
+                            if author and author.get("display_name"):
+                                work_authors.append(author["display_name"])
+                        
                         # Verify match using fuzzy matching with year and author info
                         work_year = work.get("publication_year")
                         if self._similar_title(
                             paper.title, 
                             work.get("title", ""),
                             paper.year,
-                            work_year
+                            work_year,
+                            paper.authors,  # Pass paper authors
+                            work_authors    # Pass work authors
                         ):
                             mapping[paper.paper_id] = work["id"]
             except Exception as e:
