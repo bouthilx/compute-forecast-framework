@@ -44,6 +44,10 @@ class LoggingSourceWrapper(BaseConsolidationSource):
                 self.logger.info(f"Rate limiting: waiting {sleep_time:.2f}s before next request")
             original_rate_limit()
         self.wrapped_source._rate_limit = logged_rate_limit
+    
+    def __getattr__(self, name):
+        """Forward attribute access to wrapped source."""
+        return getattr(self.wrapped_source, name)
         
         
     def find_papers(self, papers: List[Paper]) -> Dict[str, str]:

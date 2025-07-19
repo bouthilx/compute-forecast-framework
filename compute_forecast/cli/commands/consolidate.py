@@ -1,10 +1,14 @@
 import typer
 from pathlib import Path
 import json
-from datetime import datetime
-from typing import Optional, List
+from datetime import datetime, timedelta
+from typing import Optional, List, Dict, Any, Set
 import logging
 import uuid
+import requests
+import time
+import re
+import hashlib
 from rich.console import Console
 from rich.progress import (
     Progress,
@@ -12,22 +16,149 @@ from rich.progress import (
     TextColumn,
     BarColumn,
     TaskProgressColumn,
+    ProgressColumn,
+    Task,
 )
+from rich.text import Text
 from rich.live import Live
-import sys
-import io
 
 from compute_forecast.pipeline.consolidation.sources.semantic_scholar import SemanticScholarSource
 from compute_forecast.pipeline.consolidation.sources.openalex import OpenAlexSource
 from compute_forecast.pipeline.consolidation.sources.base import SourceConfig
 from compute_forecast.pipeline.consolidation.sources.logging_wrapper import LoggingSourceWrapper
 from compute_forecast.pipeline.consolidation.checkpoint_manager import ConsolidationCheckpointManager
+from compute_forecast.pipeline.consolidation.models_extended import PaperIdentifiers, ConsolidationPhaseState
+from compute_forecast.pipeline.consolidation.models import EnrichmentResult
 from compute_forecast.pipeline.metadata_collection.models import Paper
 from compute_forecast.utils.profiling import PerformanceProfiler, set_profiler, profile_operation
 from compute_forecast.cli.utils.logging_handler import RichConsoleHandler
 
 console = Console()
 logger = logging.getLogger(__name__)
+
+
+def get_paper_hash(paper: Paper) -> str:
+    """Generate a unique hash for a paper based on title, authors, venue, and year."""
+    # Normalize title
+    title = paper.title.lower().strip() if paper.title else ""
+    
+    # Sort and normalize author names
+    authors = []
+    if hasattr(paper, 'authors') and paper.authors:
+        for author in paper.authors:
+            if isinstance(author, dict):
+                name = author.get('name', '').lower().strip()
+            else:
+                name = str(author).lower().strip()
+            if name:
+                authors.append(name)
+    authors.sort()
+    authors_str = ";".join(authors)
+    
+    # Normalize venue
+    venue = paper.venue.lower().strip() if paper.venue else ""
+    
+    # Year
+    year = str(paper.year) if paper.year else ""
+    
+    # Create hash
+    content = f"{title}|{authors_str}|{venue}|{year}"
+    return hashlib.sha256(content.encode()).hexdigest()
+
+
+class DetailedProgressColumn(ProgressColumn):
+    """Custom progress column showing: <progress>%, (<n done>/<total>) DD HH:MM:SS (YYYY-MM-DD HH:MM:SS ETA)"""
+    
+    def render(self, task: Task) -> Text:
+        """Render the progress details."""
+        if task.total is None:
+            return Text("")
+        
+        # Calculate percentage
+        percentage = (task.completed / task.total) * 100 if task.total > 0 else 0
+        
+        # Format elapsed time
+        elapsed = task.elapsed
+        if elapsed is None:
+            elapsed_str = "00:00:00"
+        else:
+            days = int(elapsed // 86400)
+            hours = int((elapsed % 86400) // 3600)
+            minutes = int((elapsed % 3600) // 60)
+            seconds = int(elapsed % 60)
+            
+            if days > 0:
+                elapsed_str = f"{days:02d} {hours:02d}:{minutes:02d}:{seconds:02d}"
+            else:
+                elapsed_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        
+        # Calculate ETA
+        if task.speed and task.remaining:
+            eta_seconds = task.remaining / task.speed
+            eta_time = datetime.now() + timedelta(seconds=eta_seconds)
+            eta_str = eta_time.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            eta_str = "Unknown"
+        
+        # Format the complete string
+        text = f"{percentage:5.1f}%, ({task.completed}/{task.total}) {elapsed_str} ({eta_str} ETA)"
+        
+        return Text(text, style="cyan")
+
+
+class Phase1ProgressColumn(ProgressColumn):
+    """Custom progress column for Phase 1 showing ID type percentages"""
+    
+    def __init__(self):
+        self.identifiers = {}
+        super().__init__()
+    
+    def set_identifiers(self, identifiers_dict: Dict[str, PaperIdentifiers]):
+        """Update the identifiers dictionary reference"""
+        self.identifiers = identifiers_dict
+    
+    def render(self, task: Task) -> Text:
+        """Render the progress details with ID type percentages."""
+        if task.total is None or task.total == 0:
+            return Text("")
+        
+        # Calculate percentage
+        percentage = (task.completed / task.total) * 100 if task.total > 0 else 0
+        
+        # Format elapsed time
+        elapsed = task.elapsed
+        if elapsed is None:
+            elapsed_str = "00:00:00"
+        else:
+            days = int(elapsed // 86400)
+            hours = int((elapsed % 86400) // 3600)
+            minutes = int((elapsed % 3600) // 60)
+            seconds = int(elapsed % 60)
+            
+            if days > 0:
+                elapsed_str = f"{days:02d} {hours:02d}:{minutes:02d}:{seconds:02d}"
+            else:
+                elapsed_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        
+        # Calculate ETA
+        if task.speed and task.remaining:
+            eta_seconds = task.remaining / task.speed
+            eta_time = datetime.now() + timedelta(seconds=eta_seconds)
+            eta_str = eta_time.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            eta_str = "Unknown"
+        
+        # Calculate ID type counts
+        doi_count = sum(1 for ids in self.identifiers.values() if ids.doi)
+        arxiv_count = sum(1 for ids in self.identifiers.values() if ids.arxiv_id)
+        oa_count = sum(1 for ids in self.identifiers.values() if ids.openalex_id)
+        s2_count = sum(1 for ids in self.identifiers.values() if ids.semantic_scholar_id)
+        pmid_count = sum(1 for ids in self.identifiers.values() if ids.pmid)
+        
+        # Format the complete string
+        text = f"{percentage:5.1f}% ({task.completed}/{task.total}) {elapsed_str} ({eta_str}) [DOI:{doi_count} ArXiv:{arxiv_count} OA:{oa_count} S2:{s2_count} PM:{pmid_count}]"
+        
+        return Text(text, style="cyan")
 
 
 def load_papers(input_path: Path) -> List[Paper]:
@@ -63,6 +194,8 @@ def save_papers(papers: List[Paper], output_path: Path, stats: dict):
         "consolidation_metadata": {
             "timestamp": datetime.now().isoformat(),
             "stats": stats,
+            "method": "two-phase",
+            "phases": ["openalex_id_harvesting", "semantic_scholar_batch_enrichment", "openalex_full_enrichment"]
         },
         "papers": papers_data
     }
@@ -71,28 +204,533 @@ def save_papers(papers: List[Paper], output_path: Path, stats: dict):
         json.dump(output_data, f, indent=2)
 
 
+def harvest_identifiers_openalex(
+    papers: List[Paper], 
+    openalex_source: OpenAlexSource,
+    progress_callback=None,
+    checkpoint_callback=None,
+    existing_identifiers: Optional[Dict[str, PaperIdentifiers]] = None,
+    processed_hashes: Optional[Set[str]] = None,
+    batch_size: int = 1
+) -> Dict[str, PaperIdentifiers]:
+    """
+    Phase 1: Fast first-pass to collect all identifiers using OpenAlex.
+    
+    Args:
+        papers: List of papers to process
+        openalex_source: OpenAlex source instance
+        progress_callback: Optional callback(count) for progress updates
+        checkpoint_callback: Optional callback(identifiers, hashes) for checkpointing
+        existing_identifiers: Optional dict of already processed identifiers for resume
+        processed_hashes: Optional set of already processed paper hashes
+        batch_size: Batch size for processing papers (default 1 for title searches)
+    
+    Returns mapping of paper_id -> PaperIdentifiers
+    """
+    identifiers = existing_identifiers or {}
+    processed_hashes = processed_hashes or set()
+    
+    # Filter out papers we've already processed based on hash
+    papers_to_process = []
+    skipped_count = 0
+    for p in papers:
+        paper_hash = get_paper_hash(p)
+        if paper_hash not in processed_hashes:
+            papers_to_process.append(p)
+        else:
+            skipped_count += 1
+            # Paper already processed, update progress
+            if progress_callback:
+                progress_callback(1)
+    
+    logger.info(f"Skipping {skipped_count} papers already processed (hashes: {len(processed_hashes)})")
+    
+    if not papers_to_process:
+        logger.info("All papers already have identifiers from checkpoint")
+        return identifiers
+    
+    # First, use find_papers to get OpenAlex IDs
+    logger.info("Finding papers in OpenAlex...")
+    
+    # Process in batches for find_papers
+    # Use the batch_size parameter passed to the function, not the config value
+    oa_mapping = {}
+    
+    for i in range(0, len(papers_to_process), batch_size):
+        batch = papers_to_process[i:i + batch_size]
+        batch_mapping = openalex_source.find_papers(batch)
+        oa_mapping.update(batch_mapping)
+        
+        # Create PaperIdentifiers for papers found in OpenAlex
+        for paper_id, oa_id in batch_mapping.items():
+            if oa_id and paper_id not in identifiers:
+                identifiers[paper_id] = PaperIdentifiers(
+                    paper_id=paper_id,
+                    openalex_id=oa_id
+                )
+        
+        if progress_callback:
+            progress_callback(len(batch))
+            
+        # Mark ALL papers in batch as processed (found or not)
+        for paper in batch:
+            processed_hashes.add(get_paper_hash(paper))
+        
+        if checkpoint_callback:
+            checkpoint_callback(identifiers, processed_hashes)
+    
+    logger.info(f"Found {len(oa_mapping)} papers in OpenAlex")
+    
+    # Now fetch minimal data to extract identifiers
+    if oa_mapping:
+        # We need to fetch just the identifiers from OpenAlex
+        # Use a custom select to minimize data transfer
+        select_fields = "id,ids,doi,primary_location"
+        
+        oa_ids = list(oa_mapping.values())
+        
+        # Process in batches
+        for i in range(0, len(oa_ids), batch_size):
+            batch_ids = oa_ids[i:i + batch_size]
+            
+            # Build filter string
+            filter_str = "openalex:" + "|".join(batch_ids)
+            
+            openalex_source._rate_limit()
+            response = requests.get(
+                f"{openalex_source.base_url}/works",
+                params={
+                    "filter": filter_str,
+                    "per-page": len(batch_ids),
+                    "select": select_fields
+                },
+                headers=openalex_source.headers
+            )
+            openalex_source.api_calls += 1
+            
+            if response.status_code == 200:
+                for work in response.json().get("results", []):
+                    work_id = work.get("id")
+                    if not work_id:
+                        continue
+                    
+                    # Find which paper this corresponds to
+                    paper_id = None
+                    for pid, oa_id in oa_mapping.items():
+                        if oa_id == work_id:
+                            paper_id = pid
+                            break
+                    
+                    if not paper_id:
+                        continue
+                    
+                    # Extract identifiers
+                    ids = work.get('ids', {})
+                    
+                    # Extract ArXiv ID from various sources
+                    arxiv_id = None
+                    
+                    # Method 1: Check if DOI contains arxiv
+                    doi = ids.get('doi', '')
+                    if 'arxiv' in doi.lower():
+                        match = re.search(r'arxiv\.(\d{4}\.\d{4,5})', doi.lower())
+                        if match:
+                            arxiv_id = match.group(1)
+                    
+                    # Method 2: Check primary location
+                    if not arxiv_id:
+                        primary_loc = work.get('primary_location', {})
+                        landing_url = primary_loc.get('landing_page_url', '')
+                        pdf_url = primary_loc.get('pdf_url', '')
+                        
+                        # Check if it's an ArXiv URL
+                        for url in [landing_url, pdf_url]:
+                            if url and 'arxiv.org' in url:
+                                # Extract ArXiv ID from URL like https://arxiv.org/abs/1706.03762
+                                # Handle both old format (1234.5678) and new format (2301.12345)
+                                match = re.search(r'arxiv\.org/(?:pdf|abs)/(\d{4}\.\d{4,5})', url)
+                                if match:
+                                    arxiv_id = match.group(1)
+                                    break
+                    
+                    # Method 3: Check all locations
+                    if not arxiv_id:
+                        for location in work.get('locations', []):
+                            landing_url = location.get('landing_page_url', '')
+                            if landing_url and 'arxiv.org' in landing_url:
+                                match = re.search(r'arxiv\.org/(?:pdf|abs)/(\d{4}\.\d{4,5})', landing_url)
+                                if match:
+                                    arxiv_id = match.group(1)
+                                    break
+                    
+                    # Update existing PaperIdentifiers object or create new one
+                    if paper_id in identifiers:
+                        paper_ids = identifiers[paper_id]
+                        # Update with additional identifiers
+                        if ids.get('doi'):
+                            paper_ids.doi = ids.get('doi', '').replace('https://doi.org/', '')
+                        if arxiv_id:
+                            paper_ids.arxiv_id = arxiv_id
+                        if ids.get('pmid'):
+                            # Extract PMID number from URL like https://pubmed.ncbi.nlm.nih.gov/34265844
+                            pmid = str(ids.get('pmid'))
+                            if 'pubmed.ncbi.nlm.nih.gov/' in pmid:
+                                paper_ids.pmid = pmid.split('/')[-1]
+                            else:
+                                paper_ids.pmid = pmid
+                        if ids.get('pmcid'):
+                            # Extract PMCID from URL like https://www.ncbi.nlm.nih.gov/pmc/articles/8371605
+                            pmcid = str(ids.get('pmcid'))
+                            if '/pmc/articles/' in pmcid:
+                                paper_ids.pmcid = 'PMC' + pmcid.split('/')[-1]
+                            else:
+                                paper_ids.pmcid = pmcid
+                        if ids.get('mag'):
+                            paper_ids.mag_id = str(ids.get('mag'))
+                    else:
+                        # Create new PaperIdentifiers object
+                        # Extract PMID
+                        pmid = None
+                        if ids.get('pmid'):
+                            pmid = str(ids.get('pmid'))
+                            if 'pubmed.ncbi.nlm.nih.gov/' in pmid:
+                                pmid = pmid.split('/')[-1]
+                        
+                        # Extract PMCID
+                        pmcid = None
+                        if ids.get('pmcid'):
+                            pmcid = str(ids.get('pmcid'))
+                            if '/pmc/articles/' in pmcid:
+                                pmcid = 'PMC' + pmcid.split('/')[-1]
+                        
+                        paper_ids = PaperIdentifiers(
+                            paper_id=paper_id,
+                            openalex_id=work_id,
+                            doi=ids.get('doi', '').replace('https://doi.org/', '') if ids.get('doi') else None,
+                            arxiv_id=arxiv_id,
+                            pmid=pmid,
+                            pmcid=pmcid,
+                            mag_id=str(ids.get('mag')) if ids.get('mag') else None
+                        )
+                        identifiers[paper_id] = paper_ids
+            
+            # Add processed papers to hash set
+            for paper_id in oa_mapping:
+                paper = next((p for p in papers if p.paper_id == paper_id), None)
+                if paper:
+                    processed_hashes.add(get_paper_hash(paper))
+            
+            # Checkpoint after batch if callback provided
+            if checkpoint_callback:
+                checkpoint_callback(identifiers, processed_hashes)
+    
+    return identifiers
+
+
+def enrich_papers_with_identifiers(papers: List[Paper], identifiers: Dict[str, PaperIdentifiers]) -> List[Paper]:
+    """Add discovered identifiers to Paper objects."""
+    for paper in papers:
+        if paper.paper_id in identifiers:
+            ids = identifiers[paper.paper_id]
+            
+            # Add identifiers to paper object
+            if ids.doi and not paper.doi:
+                paper.doi = ids.doi
+            if ids.arxiv_id and not paper.arxiv_id:
+                paper.arxiv_id = ids.arxiv_id
+            if ids.openalex_id and not paper.openalex_id:
+                paper.openalex_id = ids.openalex_id
+            
+            # Initialize external_ids if needed
+            if not hasattr(paper, 'external_ids'):
+                paper.external_ids = {}
+            
+            if ids.semantic_scholar_id:
+                paper.external_ids['semantic_scholar'] = ids.semantic_scholar_id
+            if ids.pmid:
+                paper.external_ids['pmid'] = ids.pmid
+            if ids.pmcid:
+                paper.external_ids['pmcid'] = ids.pmcid
+            if ids.mag_id:
+                paper.external_ids['mag'] = ids.mag_id
+    
+    return papers
+
+
+def enrich_semantic_scholar_batch(
+    papers: List[Paper],
+    identifiers: Dict[str, PaperIdentifiers],
+    semantic_scholar_source: SemanticScholarSource,
+    progress_callback=None,
+    checkpoint_callback=None,
+    batch_progress: Optional[Dict[str, Any]] = None,
+    processed_hashes: Optional[Set[str]] = None,
+    batch_size: int = 500
+) -> Dict[str, Any]:
+    """
+    Phase 2: Efficient batch enrichment from Semantic Scholar using discovered IDs.
+    
+    Returns enrichment statistics.
+    """
+    stats = {
+        "papers_enriched": 0,
+        "citations_added": 0,
+        "abstracts_added": 0,
+        "urls_added": 0,
+        "identifiers_added": 0
+    }
+    
+    # Build lists of external IDs for batch lookup
+    external_ids = []
+    id_to_paper = {}
+    papers_by_id = {p.paper_id: p for p in papers}
+    processed_hashes = processed_hashes or set()
+    
+    # Filter out already processed papers
+    papers_to_process = []
+    skipped_count = 0
+    for paper in papers:
+        paper_hash = get_paper_hash(paper)
+        if paper_hash not in processed_hashes:
+            papers_to_process.append(paper)
+        else:
+            skipped_count += 1
+            if progress_callback:
+                progress_callback(1)
+    
+    logger.info(f"Phase 2: Skipping {skipped_count} papers already processed")
+    
+    if not papers_to_process:
+        logger.info("All papers already processed in Phase 2")
+        return stats
+    
+    for paper in papers_to_process:
+        paper_ids = identifiers.get(paper.paper_id)
+        if not paper_ids:
+            # Mark paper as processed even if no IDs
+            processed_hashes.add(get_paper_hash(paper))
+            continue
+            
+        # Add all available external IDs
+        if paper_ids.doi:
+            external_ids.append(f"DOI:{paper_ids.doi}")
+            id_to_paper[f"DOI:{paper_ids.doi}"] = paper.paper_id
+        if paper_ids.arxiv_id:
+            external_ids.append(f"ARXIV:{paper_ids.arxiv_id}")
+            id_to_paper[f"ARXIV:{paper_ids.arxiv_id}"] = paper.paper_id
+        if paper_ids.pmid:
+            external_ids.append(f"PMID:{paper_ids.pmid}")
+            id_to_paper[f"PMID:{paper_ids.pmid}"] = paper.paper_id
+        if paper_ids.semantic_scholar_id:
+            external_ids.append(paper_ids.semantic_scholar_id)
+            id_to_paper[paper_ids.semantic_scholar_id] = paper.paper_id
+    
+    if not external_ids:
+        logger.warning("No external IDs found for Semantic Scholar lookup")
+        return stats
+    
+    logger.info(f"Looking up {len(external_ids)} external IDs in Semantic Scholar")
+    
+    # Process in batches (S2 API limit is 500)
+    for i in range(0, len(external_ids), batch_size):
+        batch = external_ids[i:i + batch_size]
+        
+        try:
+            # Use S2 batch endpoint with retry logic
+            max_retries = 3
+            retry_delay = 1
+            last_exception = None
+            
+            for attempt in range(max_retries):
+                try:
+                    semantic_scholar_source._rate_limit()
+                    response = requests.post(
+                        f"{semantic_scholar_source.graph_url}/paper/batch",
+                        json={"ids": batch},
+                        headers=semantic_scholar_source.headers,
+                        params={"fields": "paperId,externalIds"},
+                        timeout=30
+                    )
+                    semantic_scholar_source.api_calls += 1
+                    break  # Success, exit retry loop
+                except (ConnectionError, ConnectionResetError, requests.exceptions.Timeout) as e:
+                    last_exception = e
+                    if attempt < max_retries - 1:
+                        logger.warning(
+                            f"S2 connection error on attempt {attempt + 1}/{max_retries}: {str(e)}. "
+                            f"Retrying in {retry_delay} seconds..."
+                        )
+                        time.sleep(retry_delay)
+                        retry_delay *= 2  # Exponential backoff
+                    else:
+                        logger.error(f"S2 connection error after {max_retries} attempts: {str(e)}")
+                        raise
+            
+            if response.status_code != 200:
+                logger.warning(f"Failed to lookup batch: {response.status_code}")
+                continue
+                
+            # Map external IDs to S2 paper IDs
+            s2_ids = []
+            s2_to_paper = {}
+            
+            for item in response.json():
+                if not item or "paperId" not in item:
+                    continue
+                    
+                s2_id = item["paperId"]
+                ext_ids = item.get("externalIds", {})
+                
+                # Find which paper this corresponds to
+                paper_id = None
+                
+                # Check DOI
+                doi = ext_ids.get("DOI")
+                if doi and f"DOI:{doi}" in id_to_paper:
+                    paper_id = id_to_paper[f"DOI:{doi}"]
+                # Check ArXiv
+                elif ext_ids.get("ArXiv") and f"ARXIV:{ext_ids['ArXiv']}" in id_to_paper:
+                    paper_id = id_to_paper[f"ARXIV:{ext_ids['ArXiv']}"]
+                # Check PMID
+                elif ext_ids.get("PubMed") and f"PMID:{ext_ids['PubMed']}" in id_to_paper:
+                    paper_id = id_to_paper[f"PMID:{ext_ids['PubMed']}"]
+                # Check S2 ID directly
+                elif s2_id in id_to_paper:
+                    paper_id = id_to_paper[s2_id]
+                    
+                if paper_id:
+                    s2_ids.append(s2_id)
+                    s2_to_paper[s2_id] = paper_id
+            
+            if not s2_ids:
+                continue
+                
+            # Now fetch full enrichment data
+            enrichment_data = semantic_scholar_source.fetch_all_fields(s2_ids)
+            
+            # Create EnrichmentResult objects and merge with papers
+            for s2_id, data in enrichment_data.items():
+                paper_id = s2_to_paper.get(s2_id)
+                if not paper_id or paper_id not in papers_by_id:
+                    continue
+                    
+                paper = papers_by_id[paper_id]
+                
+                # Create EnrichmentResult
+                result = EnrichmentResult(paper_id=paper_id)
+                
+                # Add citations
+                if data.get('citations') is not None:
+                    from compute_forecast.pipeline.consolidation.models import CitationRecord, CitationData
+                    citation_record = CitationRecord(
+                        source="semantic_scholar",
+                        timestamp=datetime.now(),
+                        original=False,
+                        data=CitationData(count=data['citations'])
+                    )
+                    result.citations.append(citation_record)
+                
+                # Add abstract
+                if data.get('abstract'):
+                    from compute_forecast.pipeline.consolidation.models import AbstractRecord, AbstractData
+                    abstract_record = AbstractRecord(
+                        source="semantic_scholar",
+                        timestamp=datetime.now(),
+                        original=False,
+                        data=AbstractData(text=data['abstract'])
+                    )
+                    result.abstracts.append(abstract_record)
+                
+                # Add URLs
+                for url in data.get('urls', []):
+                    from compute_forecast.pipeline.consolidation.models import URLRecord, URLData
+                    url_record = URLRecord(
+                        source="semantic_scholar",
+                        timestamp=datetime.now(),
+                        original=False,
+                        data=URLData(url=url)
+                    )
+                    result.urls.append(url_record)
+                
+                # Add identifiers
+                for identifier in data.get('identifiers', []):
+                    from compute_forecast.pipeline.consolidation.models import IdentifierRecord, IdentifierData
+                    identifier_record = IdentifierRecord(
+                        source="semantic_scholar",
+                        timestamp=datetime.now(),
+                        original=False,
+                        data=IdentifierData(
+                            identifier_type=identifier['type'],
+                            identifier_value=identifier['value']
+                        )
+                    )
+                    result.identifiers.append(identifier_record)
+                
+                # Merge enrichment with paper using checkpoint manager's method
+                from compute_forecast.pipeline.consolidation.checkpoint_manager import ConsolidationCheckpointManager
+                checkpoint_manager = ConsolidationCheckpointManager()
+                checkpoint_manager.merge_enrichments(paper, result)
+                
+                # Update statistics
+                stats["papers_enriched"] += 1
+                stats["citations_added"] += len(result.citations)
+                stats["abstracts_added"] += len(result.abstracts)
+                stats["urls_added"] += len(result.urls)
+                stats["identifiers_added"] += len(result.identifiers)
+                
+                if progress_callback:
+                    progress_callback(1)
+                    
+        except Exception as e:
+            logger.error(f"Error enriching batch from Semantic Scholar: {e}")
+        
+        # Mark all papers in this batch as processed
+        batch_paper_ids = set()
+        for ext_id in batch:
+            if ext_id in id_to_paper:
+                batch_paper_ids.add(id_to_paper[ext_id])
+        
+        for paper_id in batch_paper_ids:
+            if paper_id in papers_by_id:
+                paper = papers_by_id[paper_id]
+                processed_hashes.add(get_paper_hash(paper))
+        
+        # Checkpoint after batch if callback provided
+        if checkpoint_callback:
+            checkpoint_callback(processed_hashes)
+    
+    # Mark any remaining papers without external IDs as processed
+    for paper in papers_to_process:
+        processed_hashes.add(get_paper_hash(paper))
+    
+    return stats
+
+
 def main(
     input: Path = typer.Option(..., "--input", "-i", help="Input JSON file from collect"),
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file path"),
-    enrich: Optional[str] = typer.Option("citations,abstracts", "--enrich", help="Fields to enrich"),
-    sources: Optional[str] = typer.Option("semantic_scholar,openalex", "--sources", help="Sources to use"),
     dry_run: bool = typer.Option(False, "--dry-run", help="Show what would be done"),
     no_progress: bool = typer.Option(False, "--no-progress", help="Disable progress bars"),
-    parallel: int = typer.Option(1, "--parallel", help="Number of parallel workers"),
     ss_api_key: Optional[str] = typer.Option(None, "--ss-api-key", help="Semantic Scholar API key", envvar="SEMANTIC_SCHOLAR_API_KEY"),
     openalex_email: Optional[str] = typer.Option(None, "--openalex-email", help="OpenAlex email", envvar="OPENALEX_EMAIL"),
     profile: bool = typer.Option(False, "--profile", help="Enable performance profiling"),
     resume: bool = typer.Option(False, "--resume", help="Resume from previous checkpoint if available"),
     checkpoint_interval: float = typer.Option(5.0, "--checkpoint-interval", help="Minutes between checkpoints (0 to disable)"),
+    phase1_batch_size: int = typer.Option(1, "--phase1-batch-size", help="Batch size for Phase 1 (OpenAlex ID harvesting)"),
+    phase2_batch_size: int = typer.Option(500, "--phase2-batch-size", help="Batch size for Phase 2 (Semantic Scholar enrichment)"),
+    phase3_batch_size: int = typer.Option(50, "--phase3-batch-size", help="Batch size for Phase 3 (OpenAlex enrichment)"),
     verbose: int = typer.Option(0, "--verbose", "-v", count=True, help="Increase verbosity level (-v for INFO, -vv for DEBUG)"),
 ):
     """
-    Consolidate and enrich paper metadata from multiple sources.
+    Two-phase consolidation and enrichment of paper metadata.
+    
+    This command uses an optimized two-phase approach:
+    1. OpenAlex ID harvesting - Discovers DOIs, ArXiv IDs, and other identifiers
+    2. Semantic Scholar batch enrichment - Uses discovered IDs for efficient lookups
+    3. OpenAlex full enrichment - Comprehensive data including affiliations
     
     Examples:
         cf consolidate --input papers.json --output enriched.json
-        cf consolidate --input papers.json --enrich citations
-        cf consolidate --input papers.json --sources semantic_scholar
         cf consolidate --input papers.json --resume  # Resume from checkpoint
         cf consolidate --input papers.json -v     # INFO level logging
         cf consolidate --input papers.json -vv    # DEBUG level logging
@@ -122,128 +760,77 @@ def main(
         profiler = PerformanceProfiler("consolidation")
         set_profiler(profiler)
     
-    # Parse options
-    enrich_fields = [f.strip() for f in enrich.split(",")]
-    source_names = [s.strip() for s in sources.split(",")]
-    
-    # Handle session management for resume
+    # Initialize checkpoint manager
     session_id = None
     if resume:
-        # Try to find existing session for this input file
+        # Find existing session for this input file
         session_id = ConsolidationCheckpointManager.get_latest_resumable_session(str(input))
-        if session_id:
-            console.print(f"[cyan]Found resumable session: {session_id}[/cyan]")
-        else:
-            # Check if there are any resumable sessions
-            sessions = ConsolidationCheckpointManager.find_resumable_sessions()
-            if sessions:
-                console.print("[yellow]No resumable session found for this input file.[/yellow]")
-                console.print("\nAvailable sessions:")
-                for s in sessions[:5]:  # Show last 5
-                    console.print(f"  • {s['session_id']} - {s['input_file']} ({s['status']})")
-                if not typer.confirm("\nStart a new session?"):
-                    return
+        if not session_id:
+            console.print(f"[yellow]No resumable session found for {input}[/yellow]")
+            resume = False
     
-    # Initialize checkpoint manager (will generate session ID if needed)
     checkpoint_manager = ConsolidationCheckpointManager(
         session_id=session_id,
         checkpoint_interval_minutes=checkpoint_interval
     )
     
-    # Initialize sources state tracking
-    sources_state = {name: {
-        "status": "pending",
-        "batches_completed": 0,
-        "total_batches": 0,
-        "papers_processed": 0,
-        "enrichments": {
-            "citations": 0,
-            "abstracts": 0,
-            "urls": 0,
-            "identifiers": 0
-        }
-    } for name in source_names}
+    # Initialize phase state
+    phase_state = ConsolidationPhaseState(phase="id_harvesting")
     
     # Check for resume
     checkpoint_data = None
+    papers = None
+    
     if resume:
         checkpoint_result = checkpoint_manager.load_checkpoint()
         if checkpoint_result:
             checkpoint_data, papers = checkpoint_result
             console.print(f"[green]Resuming from checkpoint: {checkpoint_data.session_id}[/green]")
             console.print(f"  Papers loaded: {len(papers)}")
-            console.print(f"  Sources state: {list(checkpoint_data.sources.keys())}")
             
-            # Restore sources state (only for requested sources)
-            saved_sources = checkpoint_data.sources
-            for name in source_names:
-                if name in saved_sources:
-                    sources_state[name] = saved_sources[name]
-                else:
-                    # New source added since checkpoint
-                    console.print(f"[yellow]Note: Source '{name}' was not in the original run[/yellow]")
-            
-            # Check for sources that were in checkpoint but not requested now
-            removed_sources = set(saved_sources.keys()) - set(source_names)
-            if removed_sources:
-                console.print(f"[yellow]Warning: Sources {removed_sources} were in checkpoint but not requested now[/yellow]")
-            
-            # Validate input file matches
-            if str(input) != checkpoint_data.input_file:
-                console.print(f"[yellow]Warning: Input file changed from {checkpoint_data.input_file} to {input}[/yellow]")
-                if not typer.confirm("Continue with resume anyway?"):
-                    return
-                    
-            # Validate paper count hasn't changed dramatically
-            if checkpoint_data.total_papers != len(papers):
-                diff = abs(checkpoint_data.total_papers - len(papers))
-                console.print(f"[yellow]Warning: Paper count changed from {checkpoint_data.total_papers} to {len(papers)} (diff: {diff})[/yellow]")
-                if diff > checkpoint_data.total_papers * 0.1:  # More than 10% change
-                    console.print("[red]Paper count changed by more than 10% - this might indicate a different dataset[/red]")
-                    if not typer.confirm("Continue anyway?"):
-                        return
+            # Restore phase state if available
+            if hasattr(checkpoint_data, 'phase_state') and checkpoint_data.phase_state:
+                phase_state = ConsolidationPhaseState.from_dict(checkpoint_data.phase_state)
+                console.print(f"  Current phase: {phase_state.phase}")
+                console.print(f"  Phase completed: {phase_state.phase_completed}")
+                console.print(f"  Papers with external IDs: {phase_state.papers_with_external_ids}")
+                if phase_state.batch_progress:
+                    console.print(f"  Batch progress: {phase_state.batch_progress}")
         else:
-            console.print("[yellow]No valid checkpoint found, starting fresh[/yellow]")
+            console.print("[yellow]No valid checkpoint found, starting from beginning[/yellow]")
     
     # Load papers if not resuming
-    if not checkpoint_data:
+    if papers is None:
         console.print(f"[cyan]Loading papers from {input}...[/cyan]")
         with profile_operation('load_papers', file=str(input)):
             papers = load_papers(input)
         console.print(f"[green]Loaded {len(papers)} papers[/green]")
     
     if dry_run:
-        console.print("\n[yellow]DRY RUN - Would enrich:[/yellow]")
-        console.print(f"  Fields: {', '.join(enrich_fields)}")
-        console.print(f"  Sources: {', '.join(source_names)}")
+        console.print("\n[yellow]DRY RUN - Two-phase consolidation:[/yellow]")
+        console.print("  Phase 1: OpenAlex ID harvesting")
+        console.print("  Phase 2: Semantic Scholar enrichment (using discovered IDs)")
+        console.print("  Phase 3: OpenAlex full enrichment")
         console.print(f"  Papers: {len(papers)}")
         return
     
     # Initialize sources
-    source_objects = []
+    openalex_config = SourceConfig(
+        api_key=openalex_email,
+        batch_size=phase3_batch_size,  # Default batch size for enrich_papers
+        find_batch_size=phase1_batch_size  # Batch size for finding papers in Phase 1
+    )
+    openalex_source = OpenAlexSource(openalex_config)
     
-    if "semantic_scholar" in source_names:
-        config = SourceConfig(api_key=ss_api_key)
-        # Note: SemanticScholarSource automatically configures:
-        # - Without API key: 0.1 req/sec (conservative for shared pool)
-        # - With API key: 1.0 req/sec (introductory rate)
-        # - Batch sizes: 500 papers (API maximum)
-        source_objects.append(SemanticScholarSource(config))
-        
-    if "openalex" in source_names:
-        config = SourceConfig(api_key=openalex_email)  # Email in api_key field
-        source_objects.append(OpenAlexSource(config))
-    
-    # Wrap sources with logging
-    logged_sources = []
-    for source in source_objects:
-        logged_source = LoggingSourceWrapper(source)
-        logged_sources.append(logged_source)
-    source_objects = logged_sources
+    ss_config = SourceConfig(api_key=ss_api_key)
+    semantic_scholar_source = SemanticScholarSource(ss_config)
     
     # Track statistics
     stats = {
         "total_papers": len(papers),
+        "phase1_identifiers_found": 0,
+        "phase2_papers_enriched": 0,
+        "phase3_papers_enriched": 0,
         "citations_added": 0,
         "abstracts_added": 0,
         "urls_added": 0,
@@ -251,285 +838,326 @@ def main(
         "api_calls": {}
     }
     
-    # Create paper lookup for efficient updates
-    papers_by_id = {p.paper_id: p for p in papers if p.paper_id}
-    
-    # Track timing for better ETA calculation
-    import time
-    
-    # Create progress bars
+    # Create progress display
     progress = Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
-        TaskProgressColumn(),
-        TextColumn("[cyan]{task.fields[time_remaining]}[/cyan]"),
-        TextColumn(
-            "• {task.fields[citations_pct]:.1f}% citations • {task.fields[abstracts_pct]:.1f}% abstracts • {task.fields[urls_pct]:.1f}% URLs • {task.fields[identifiers_pct]:.1f}% IDs"
-        ),
+        DetailedProgressColumn(),
         console=console,
         disable=no_progress,
     )
     
-    # Set up custom logging handler that works with Live display
     with Live(progress, console=console, refresh_per_second=4, vertical_overflow="visible", transient=True) as live:
-        # Add our custom handler to root logger
+        # Add custom logging handler
         rich_handler = RichConsoleHandler(console, live)
         rich_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         logging.getLogger().addHandler(rich_handler)
         
-        # Log initial info
-        logger.info(f"Starting consolidation with {len(papers)} papers from {len(source_objects)} sources")
-        
-        # Create a progress task for each source
-        source_tasks = {}
-        for source in source_objects:
-            task_id = progress.add_task(
-                f"[cyan]{source.name}[/cyan]",
-                total=len(papers),
-                citations_added=0,
-                abstracts_added=0,
-                urls_added=0,
-                identifiers_added=0,
-                citations_pct=0.0,
-                abstracts_pct=0.0,
-                urls_pct=0.0,
-                identifiers_pct=0.0,
-                time_remaining="",
+        # Phase 1: OpenAlex ID Harvesting (if not completed)
+        if not phase_state.phase_completed or phase_state.phase == "id_harvesting":
+            console.print("\n[bold cyan]Phase 1: OpenAlex ID Harvesting[/bold cyan]")
+            phase_state.phase = "id_harvesting"
+            phase_state.phase_start_time = datetime.now()
+            
+            # Create a separate progress bar for Phase 1 with custom column
+            phase1_column = Phase1ProgressColumn()
+            
+            # If resuming, set existing identifiers
+            if phase_state.identifiers_collected:
+                phase1_column.set_identifiers(phase_state.identifiers_collected)
+            
+            phase1_progress_display = Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(),
+                phase1_column,
+                console=console,
+                disable=no_progress,
             )
-            source_tasks[source.name] = task_id
+            
+            # Replace the main progress with phase1 progress
+            live.update(phase1_progress_display)
+            
+            phase1_task = phase1_progress_display.add_task(
+                "[cyan]Harvesting identifiers[/cyan]",
+                total=len(papers)
+            )
+            
+            def phase1_progress(count):
+                phase1_progress_display.advance(phase1_task, count)
+            
+            # Wrap source with logging
+            logged_openalex = LoggingSourceWrapper(openalex_source)
+            
+            # Create checkpoint callback for Phase 1 that will receive identifiers and hashes
+            def phase1_checkpoint(current_identifiers, current_hashes):
+                # Update the progress column with current identifiers
+                phase1_column.set_identifiers(current_identifiers)
+                
+                # Only checkpoint if enough time has passed
+                if checkpoint_manager.should_checkpoint():
+                    # Update phase state with current identifiers and hashes
+                    phase_state.identifiers_collected = current_identifiers
+                    phase_state.processed_paper_hashes = current_hashes
+                    checkpoint_manager.save_checkpoint(
+                        input_file=str(input),
+                        total_papers=len(papers),
+                        sources_state={"phase": "id_harvesting"},
+                        papers=papers,
+                        phase_state=phase_state.to_dict()
+                    )
+            
+            # Harvest identifiers
+            start_time = time.time()
+            identifiers = harvest_identifiers_openalex(
+                papers, 
+                logged_openalex, 
+                phase1_progress,
+                phase1_checkpoint,
+                phase_state.identifiers_collected,  # Pass existing identifiers for resume
+                phase_state.processed_paper_hashes,  # Pass processed hashes for resume
+                batch_size=phase1_batch_size
+            )
+            phase1_time = time.time() - start_time
+            
+            # Update phase state with final identifiers
+            phase_state.identifiers_collected = identifiers
+            phase_state.phase_completed = True
+            phase_state.phase_end_time = datetime.now()
+            
+            # Ensure all processed papers are in the hash set
+            for paper in papers:
+                if paper.paper_id in identifiers:
+                    phase_state.processed_paper_hashes.add(get_paper_hash(paper))
+            
+            # Count statistics
+            for paper_ids in identifiers.values():
+                if paper_ids.doi:
+                    phase_state.papers_with_dois += 1
+                if paper_ids.arxiv_id:
+                    phase_state.papers_with_arxiv += 1
+                if paper_ids.has_external_ids():
+                    phase_state.papers_with_external_ids += 1
+            
+            stats["phase1_identifiers_found"] = len(identifiers)
+            stats["api_calls"]["openalex_phase1"] = logged_openalex.api_calls
+            
+            phase1_progress_display.update(phase1_task, completed=len(papers))  # Ensure it shows 100%
+            
+            # Restore main progress display
+            live.update(progress)
+            
+            console.print(f"\n[green]Phase 1 Complete:[/green]")
+            console.print(f"  Time: {phase1_time:.1f}s")
+            console.print(f"  Papers found in OpenAlex: {len(identifiers)}/{len(papers)} ({len(identifiers)/len(papers)*100:.1f}%)")
+            console.print(f"  Papers with DOIs: {phase_state.papers_with_dois}")
+            console.print(f"  Papers with ArXiv IDs: {phase_state.papers_with_arxiv}")
+            console.print(f"  Papers with external IDs: {phase_state.papers_with_external_ids}")
+            
+            # Save checkpoint
+            checkpoint_manager.save_checkpoint(
+                input_file=str(input),
+                total_papers=len(papers),
+                sources_state={"phase": "id_harvesting_complete"},
+                papers=papers,
+                phase_state=phase_state.to_dict(),
+                force=True
+            )
+            
+            # Enrich papers with discovered identifiers
+            papers = enrich_papers_with_identifiers(papers, identifiers)
         
-        for source in source_objects:
-            # Skip completed sources if resuming
-            if sources_state[source.name]["status"] == "completed":
-                task_id = source_tasks[source.name]
-                progress.update(task_id, completed=len(papers))
-                logger.info(f"Skipping completed source: {source.name}")
-                continue
-                
-            task_id = source_tasks[source.name]
+        # Phase 2: Semantic Scholar Enrichment (using discovered IDs)
+        if phase_state.phase_completed and (phase_state.phase == "id_harvesting" or phase_state.phase == "semantic_scholar_enrichment"):
+            console.print("\n[bold cyan]Phase 2: Semantic Scholar Enrichment[/bold cyan]")
+            phase_state.phase = "semantic_scholar_enrichment"
+            phase_state.phase_start_time = datetime.now()
+            phase_state.phase_completed = False
             
-            # Update source status
-            sources_state[source.name]["status"] = "in_progress"
+            # Filter papers that have external IDs for efficient S2 lookup
+            papers_with_ids = []
+            papers_without_ids = []
             
-            # Calculate total batches for this source
-            batch_size = source.config.find_batch_size or source.config.batch_size
-            total_batches = (len(papers) + batch_size - 1) // batch_size
-            sources_state[source.name]["total_batches"] = total_batches
-            
-            # Log source start
-            logger.info(f"Starting {source.name} - {total_batches} batches @ {batch_size} papers/batch")
-            logger.info(f"Rate limit: {source.config.rate_limit:.2f} req/s, API key: {'Yes' if source.config.api_key else 'No'}")
-            
-            # Restore progress if resuming
-            if checkpoint_data and source.name in sources_state and sources_state[source.name]["status"] != "pending":
-                source_state = sources_state[source.name]
-                papers_processed = source_state["papers_processed"]
-                source_citations = source_state["enrichments"]["citations"]
-                source_abstracts = source_state["enrichments"]["abstracts"] 
-                source_urls = source_state["enrichments"]["urls"]
-                source_identifiers = source_state["enrichments"]["identifiers"]
-                
-                # Update progress bar to resumed position
-                progress.update(task_id, completed=papers_processed)
-                
-                # Show resume statistics
-                console.print(f"[dim]  Resuming with: {papers_processed} papers processed, "
-                            f"{source_citations} citations, {source_abstracts} abstracts, "
-                            f"{source_urls} URLs, {source_identifiers} identifiers[/dim]")
-                
-                # Adjust start time to account for previous processing
-                # This gives more accurate ETA calculations
-                if papers_processed > 0 and batch_size > 0:
-                    # Estimate previous processing time based on checkpoint interval
-                    estimated_previous_time = (papers_processed / batch_size) * 30  # Rough estimate
-                    start_time = time.time() - estimated_previous_time
+            for paper in papers:
+                paper_ids = phase_state.identifiers_collected.get(paper.paper_id)
+                if paper_ids and paper_ids.has_external_ids():
+                    papers_with_ids.append(paper)
                 else:
-                    start_time = time.time()
-            else:
-                # Track statistics for this source
-                source_citations = 0
-                source_abstracts = 0
-                source_urls = 0
-                source_identifiers = 0
-                papers_processed = 0
-                start_time = time.time()
+                    papers_without_ids.append(paper)
             
-            def update_progress(result):
-                nonlocal source_citations, source_abstracts, source_urls, source_identifiers, papers_processed
-                
-                # Apply enrichments to papers
-                if result.paper_id in papers_by_id:
-                    paper = papers_by_id[result.paper_id]
-                    
-                    # Use merge to avoid duplicates (important for resume)
-                    checkpoint_manager.merge_enrichments(paper, result)
-                    
-                    # Track statistics for this source
-                    source_citations += len(result.citations)
-                    source_abstracts += len(result.abstracts)
-                    source_urls += len(result.urls)
-                    source_identifiers += len(result.identifiers)
-                
-                papers_processed += 1
-                
-                # Calculate percentages based on papers processed so far
-                citations_pct = (source_citations / papers_processed * 100) if papers_processed > 0 else 0.0
-                abstracts_pct = (source_abstracts / papers_processed * 100) if papers_processed > 0 else 0.0
-                urls_pct = (source_urls / papers_processed * 100) if papers_processed > 0 else 0.0
-                identifiers_pct = (source_identifiers / papers_processed * 100) if papers_processed > 0 else 0.0
-                
-                # Calculate custom ETA based on actual processing rate
-                elapsed = time.time() - start_time
-                if papers_processed > 0 and elapsed > 0:
-                    rate = papers_processed / elapsed  # papers per second
-                    remaining_papers = len(papers) - papers_processed
-                    if rate > 0:
-                        remaining_seconds = remaining_papers / rate
-                        # Format as HH:MM:SS
-                        hours, remainder = divmod(int(remaining_seconds), 3600)
-                        minutes, seconds = divmod(remainder, 60)
-                        if hours > 0:
-                            time_remaining = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-                        else:
-                            time_remaining = f"{minutes:02d}:{seconds:02d}"
-                    else:
-                        time_remaining = "--:--"
-                else:
-                    time_remaining = "--:--"
-                
-                # Update progress for this paper in this source
-                progress.update(
-                    task_id,
-                    advance=1,
-                    citations_added=source_citations,
-                    abstracts_added=source_abstracts,
-                    urls_added=source_urls,
-                    identifiers_added=source_identifiers,
-                    citations_pct=citations_pct,
-                    abstracts_pct=abstracts_pct,
-                    urls_pct=urls_pct,
-                    identifiers_pct=identifiers_pct,
-                    time_remaining=time_remaining,
+            console.print(f"  Papers with external IDs: {len(papers_with_ids)}")
+            console.print(f"  Papers without external IDs: {len(papers_without_ids)}")
+            
+            if papers_with_ids:
+                phase2_task = progress.add_task(
+                    f"[cyan]Semantic Scholar enrichment ({len(papers_with_ids)} papers with IDs)[/cyan]",
+                    total=len(papers_with_ids)
                 )
-            
-            try:
-                # Custom batch processing with checkpoint support
-                batch_size = source.config.find_batch_size or source.config.batch_size
                 
-                # Determine starting batch if resuming
-                start_batch = 0
-                if checkpoint_data and source.name in sources_state:
-                    batches_completed = sources_state[source.name]["batches_completed"]
-                    start_batch = batches_completed
-                    console.print(f"[cyan]Resuming {source.name} from batch {start_batch + 1}/{total_batches}[/cyan]")
+                def phase2_progress(count):
+                    progress.advance(phase2_task, count)
                 
-                # Process papers in batches with checkpoint support
-                batch_start_idx = start_batch * batch_size
-                
-                # Validate resume position
-                if batch_start_idx >= len(papers):
-                    console.print(f"[yellow]Warning: Resume position beyond paper count for {source.name}, starting from beginning[/yellow]")
-                    batch_start_idx = 0
-                    start_batch = 0
-                    sources_state[source.name]["batches_completed"] = 0
-                
-                for batch_idx, i in enumerate(range(batch_start_idx, len(papers), batch_size)):
-                    batch = papers[i:i + batch_size]
-                    actual_batch_idx = start_batch + batch_idx
-                    
-                    # Log batch start
-                    logger.info(f"Starting batch {actual_batch_idx + 1}/{total_batches} ({len(batch)} papers)")
-                    
-                    try:
-                        # Call the source's enrich_papers for this batch
-                        logger.debug(f"Calling {source.name}.enrich_papers() for batch...")
-                        
-                        batch_results = source.enrich_papers(batch, progress_callback=update_progress)
-                        
-                        # Update batch completion only after successful processing
-                        sources_state[source.name]["batches_completed"] = actual_batch_idx + 1
-                        sources_state[source.name]["papers_processed"] = min(i + len(batch), len(papers))
-                        sources_state[source.name]["enrichments"]["citations"] = source_citations
-                        sources_state[source.name]["enrichments"]["abstracts"] = source_abstracts
-                        sources_state[source.name]["enrichments"]["urls"] = source_urls
-                        sources_state[source.name]["enrichments"]["identifiers"] = source_identifiers
-                        
-                        # Check if we should checkpoint
-                        checkpoint_saved = checkpoint_manager.save_checkpoint(
-                            input_file=str(input),
-                            total_papers=len(papers),
-                            sources_state=sources_state,
-                            papers=papers,
-                            force=False  # Will only save if 5+ minutes elapsed
-                        )
-                        
-                        if checkpoint_saved:
-                            logger.info(f"✓ Checkpoint saved at batch {actual_batch_idx + 1}/{total_batches}")
-                            
-                    except Exception as e:
-                        logger.error(f"Error processing batch {actual_batch_idx + 1} for {source.name}: {e}")
-                        console.print(f"[red]Error in batch {actual_batch_idx + 1}: {e}[/red]")
-                        
-                        # Save checkpoint before re-raising
+                # Create checkpoint callback for Phase 2
+                def phase2_checkpoint(current_hashes):
+                    # Only checkpoint if enough time has passed
+                    if checkpoint_manager.should_checkpoint():
+                        phase_state.processed_paper_hashes = current_hashes
                         checkpoint_manager.save_checkpoint(
                             input_file=str(input),
                             total_papers=len(papers),
-                            sources_state=sources_state,
+                            sources_state={"phase": "semantic_scholar_enrichment"},
                             papers=papers,
-                            force=True
+                            phase_state=phase_state.to_dict()
                         )
-                        raise
                 
-                # Mark source as completed
-                sources_state[source.name]["status"] = "completed"
+                # Wrap source with logging
+                logged_ss = LoggingSourceWrapper(semantic_scholar_source)
                 
-                # Log source completion
-                logger.info(f"✓ Completed {source.name}: +{source_citations} citations, "
-                           f"+{source_abstracts} abstracts, +{source_urls} URLs, +{source_identifiers} identifiers")
-                
-                # Force checkpoint after source completion
-                checkpoint_manager.save_checkpoint(
-                    input_file=str(input),
-                    total_papers=len(papers),
-                    sources_state=sources_state,
-                    papers=papers,
-                    force=True
+                # Perform batch enrichment
+                start_time = time.time()
+                phase2_stats = enrich_semantic_scholar_batch(
+                    papers_with_ids,
+                    phase_state.identifiers_collected,
+                    logged_ss,
+                    phase2_progress,
+                    phase2_checkpoint,
+                    phase_state.batch_progress,
+                    phase_state.processed_paper_hashes,
+                    batch_size=phase2_batch_size
                 )
+                phase2_time = time.time() - start_time
                 
-                logger.info(f"✓ Checkpoint saved after {source.name} completion")
+                stats["phase2_papers_enriched"] = phase2_stats["papers_enriched"]
+                stats["citations_added"] += phase2_stats["citations_added"]
+                stats["abstracts_added"] += phase2_stats["abstracts_added"]
+                stats["urls_added"] += phase2_stats["urls_added"]
+                stats["identifiers_added"] += phase2_stats["identifiers_added"]
+                stats["api_calls"]["semantic_scholar"] = logged_ss.api_calls
                 
-                # Update global statistics
-                stats["citations_added"] += source_citations
-                stats["abstracts_added"] += source_abstracts
-                stats["urls_added"] += source_urls
-                stats["identifiers_added"] += source_identifiers
+                progress.update(phase2_task, completed=len(papers_with_ids))  # Ensure it shows 100%
                 
-                # Mark as completed
-                progress.update(task_id, time_remaining="done")
+                console.print(f"\n[green]Phase 2 Complete:[/green]")
+                console.print(f"  Time: {phase2_time:.1f}s")
+                console.print(f"  Papers enriched: {phase2_stats['papers_enriched']}")
+                console.print(f"  Citations added: {phase2_stats['citations_added']}")
+                console.print(f"  Abstracts added: {phase2_stats['abstracts_added']}")
+                console.print(f"  URLs added: {phase2_stats['urls_added']}")
+                console.print(f"  Identifiers added: {phase2_stats['identifiers_added']}")
+                console.print(f"  API calls: {logged_ss.api_calls}")
                 
-            except Exception as e:
-                logger.error(f"Error enriching from {source.name}: {e}")
-                console.print(f"[red]✗[/red] Failed to enrich from {source.name}: {e}")
-                
-                # Update source status
-                sources_state[source.name]["status"] = "failed"
-                
-                # Save checkpoint on error
-                checkpoint_manager.save_checkpoint(
-                    input_file=str(input),
-                    total_papers=len(papers),
-                    sources_state=sources_state,
-                    papers=papers,
-                    force=True
-                )
-                
-                # Complete the progress bar even on failure
-                progress.update(task_id, completed=len(papers))
-    
-    # Collect API call stats
-    for source in source_objects:
-        stats["api_calls"][source.name] = source.api_calls
+                # Ensure all papers from Phase 2 are marked as processed
+                for paper in papers_with_ids:
+                    phase_state.processed_paper_hashes.add(get_paper_hash(paper))
+            
+            # Mark papers without IDs as processed too (they won't be retried)
+            for paper in papers_without_ids:
+                phase_state.processed_paper_hashes.add(get_paper_hash(paper))
+            
+            phase_state.phase_completed = True
+            phase_state.phase_end_time = datetime.now()
+            
+            # Save checkpoint
+            checkpoint_manager.save_checkpoint(
+                input_file=str(input),
+                total_papers=len(papers),
+                sources_state={"phase": "semantic_scholar_complete"},
+                papers=papers,
+                phase_state=phase_state.to_dict(),
+                force=True
+            )
+        
+        # Phase 3: OpenAlex Full Enrichment
+        if phase_state.phase_completed and (phase_state.phase == "semantic_scholar_enrichment" or phase_state.phase == "openalex_enrichment"):
+            console.print("\n[bold cyan]Phase 3: OpenAlex Full Enrichment[/bold cyan]")
+            phase_state.phase = "openalex_enrichment"
+            phase_state.phase_start_time = datetime.now()
+            phase_state.phase_completed = False
+            
+            # Use all papers for OpenAlex enrichment
+            phase3_task = progress.add_task(
+                f"[cyan]OpenAlex full enrichment ({len(papers)} papers)[/cyan]",
+                total=len(papers)
+            )
+            
+            def phase3_progress(result):
+                progress.advance(phase3_task, 1)
+            
+            # Wrap source with logging
+            logged_oa = LoggingSourceWrapper(openalex_source)
+            
+            # Perform full enrichment using the standard enrich_papers method
+            start_time = time.time()
+            
+            # Track statistics
+            phase3_citations = 0
+            phase3_abstracts = 0
+            phase3_urls = 0
+            phase3_identifiers = 0
+            phase3_enriched = 0
+            
+            # Use the source's enrich_papers method which handles batching internally
+            enrichment_results = logged_oa.enrich_papers(papers, progress_callback=phase3_progress)
+            
+            # Apply enrichments and track statistics
+            for result in enrichment_results:
+                if result.paper_id in {p.paper_id for p in papers}:
+                    # Find the paper
+                    paper = next(p for p in papers if p.paper_id == result.paper_id)
+                    
+                    # Merge enrichments
+                    checkpoint_manager.merge_enrichments(paper, result)
+                    
+                    # Track statistics
+                    if result.citations:
+                        phase3_citations += len(result.citations)
+                    if result.abstracts:
+                        phase3_abstracts += len(result.abstracts)
+                    if result.urls:
+                        phase3_urls += len(result.urls)
+                    if result.identifiers:
+                        phase3_identifiers += len(result.identifiers)
+                    
+                    if any([result.citations, result.abstracts, result.urls, result.identifiers]):
+                        phase3_enriched += 1
+            
+            phase3_time = time.time() - start_time
+            
+            stats["phase3_papers_enriched"] = phase3_enriched
+            stats["citations_added"] += phase3_citations
+            stats["abstracts_added"] += phase3_abstracts
+            stats["urls_added"] += phase3_urls
+            stats["identifiers_added"] += phase3_identifiers
+            stats["api_calls"]["openalex_phase3"] = logged_oa.api_calls
+            
+            progress.update(phase3_task, completed=len(papers))  # Ensure it shows 100%
+            
+            console.print(f"\n[green]Phase 3 Complete:[/green]")
+            console.print(f"  Time: {phase3_time:.1f}s")
+            console.print(f"  Papers enriched: {phase3_enriched}")
+            console.print(f"  Citations added: {phase3_citations}")
+            console.print(f"  Abstracts added: {phase3_abstracts}")
+            console.print(f"  URLs added: {phase3_urls}")
+            console.print(f"  Identifiers added: {phase3_identifiers}")
+            console.print(f"  API calls: {logged_oa.api_calls}")
+            
+            # Mark all papers as processed in Phase 3
+            for paper in papers:
+                phase_state.processed_paper_hashes.add(get_paper_hash(paper))
+            
+            phase_state.phase_completed = True
+            phase_state.phase_end_time = datetime.now()
+            phase_state.phase = "completed"
+            
+            # Save final checkpoint
+            checkpoint_manager.save_checkpoint(
+                input_file=str(input),
+                total_papers=len(papers),
+                sources_state={"phase": "completed"},
+                papers=papers,
+                phase_state=phase_state.to_dict(),
+                force=True
+            )
     
     # Save results
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -538,12 +1166,17 @@ def main(
     
     console.print(f"\n[green]✓[/green] Saved enriched data to {output}")
     console.print("\n[bold]Summary:[/bold]")
-    console.print(f"  Papers processed: {stats['total_papers']}")
-    console.print(f"  Citations added: {stats['citations_added']}")
-    console.print(f"  Abstracts added: {stats['abstracts_added']}")
-    console.print(f"  URLs added: {stats['urls_added']}")
-    console.print(f"  Identifiers added: {stats['identifiers_added']}")
-    console.print(f"  API calls: {sum(stats['api_calls'].values())}")
+    console.print(f"  Total papers: {stats['total_papers']}")
+    console.print(f"  Phase 1 identifiers found: {stats['phase1_identifiers_found']}")
+    console.print(f"  Phase 2 papers enriched: {stats['phase2_papers_enriched']}")
+    console.print(f"  Phase 3 papers enriched: {stats['phase3_papers_enriched']}")
+    console.print(f"  Total citations added: {stats['citations_added']}")
+    console.print(f"  Total abstracts added: {stats['abstracts_added']}")
+    console.print(f"  Total URLs added: {stats['urls_added']}")
+    console.print(f"  Total identifiers added: {stats['identifiers_added']}")
+    console.print(f"  Total API calls: {sum(stats['api_calls'].values())}")
+    for source, calls in stats['api_calls'].items():
+        console.print(f"    {source}: {calls}")
     
     # Clean up checkpoint files after successful completion
     checkpoint_manager.cleanup()

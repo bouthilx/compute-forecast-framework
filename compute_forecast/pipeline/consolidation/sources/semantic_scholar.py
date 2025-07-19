@@ -1,10 +1,48 @@
 import requests
 import time
 from typing import List, Dict, Optional, Any
+import logging
+from requests.exceptions import ConnectionError, Timeout, RequestException
 
 from .base import BaseConsolidationSource, SourceConfig
 from ...metadata_collection.models import Paper
 from ....utils.profiling import profile_operation
+
+logger = logging.getLogger(__name__)
+
+
+def retry_on_connection_error(max_retries=3, backoff_factor=2, initial_delay=1):
+    """Decorator to retry requests on connection errors with exponential backoff."""
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            delay = initial_delay
+            last_exception = None
+            
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except (ConnectionError, ConnectionResetError, Timeout) as e:
+                    last_exception = e
+                    if attempt < max_retries - 1:
+                        logger.warning(
+                            f"Connection error on attempt {attempt + 1}/{max_retries}: {str(e)}. "
+                            f"Retrying in {delay} seconds..."
+                        )
+                        time.sleep(delay)
+                        delay *= backoff_factor
+                    else:
+                        logger.error(f"Connection error after {max_retries} attempts: {str(e)}")
+                except RequestException as e:
+                    # For other request exceptions, log but don't retry
+                    logger.error(f"Request error: {str(e)}")
+                    raise
+                    
+            # If we've exhausted all retries, raise the last exception
+            if last_exception:
+                raise last_exception
+                
+        return wrapper
+    return decorator
 
 
 class SemanticScholarSource(BaseConsolidationSource):
@@ -37,6 +75,16 @@ class SemanticScholarSource(BaseConsolidationSource):
         self.headers = {}
         if self.config.api_key:
             self.headers["x-api-key"] = self.config.api_key
+    
+    @retry_on_connection_error(max_retries=3, backoff_factor=2, initial_delay=1)
+    def _make_get_request(self, url: str, params: dict, headers: dict, timeout: int = 30) -> requests.Response:
+        """Make GET request with retry logic for connection errors."""
+        return requests.get(url, params=params, headers=headers, timeout=timeout)
+    
+    @retry_on_connection_error(max_retries=3, backoff_factor=2, initial_delay=1)
+    def _make_post_request(self, url: str, json: dict, headers: dict, params: dict = None, timeout: int = 30) -> requests.Response:
+        """Make POST request with retry logic for connection errors."""
+        return requests.post(url, json=json, headers=headers, params=params, timeout=timeout)
             
     def find_papers(self, papers: List[Paper]) -> Dict[str, str]:
         """Find papers using multiple identifiers"""
@@ -73,7 +121,7 @@ class SemanticScholarSource(BaseConsolidationSource):
                 
                 # Track API response time separately
                 api_start = time.time()
-                response = requests.post(
+                response = self._make_post_request(
                     f"{self.graph_url}/paper/batch",
                     json={"ids": id_batch},  # Already formatted with prefixes
                     headers=self.headers,
@@ -124,7 +172,7 @@ class SemanticScholarSource(BaseConsolidationSource):
                         
                         # Track API response time
                         api_start = time.time()
-                        response = requests.get(
+                        response = self._make_get_request(
                             f"{self.graph_url}/paper/search",
                             params={
                                 "query": query,
