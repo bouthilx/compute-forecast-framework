@@ -75,6 +75,10 @@ class TextReportFormatter(CollectionReportFormatter):
         # Coverage
         lines.append("Coverage:")
         lines.append(f"  Coverage rate: {metrics.coverage_rate:.1%}")
+        if metrics.papers_by_venue:
+            lines.append("  Papers by venue:")
+            for venue, count in sorted(metrics.papers_by_venue.items()):
+                lines.append(f"    {venue}: {count}")
         if metrics.papers_by_scraper:
             lines.append("  Papers by scraper:")
             for scraper, count in metrics.papers_by_scraper.items():
@@ -100,6 +104,33 @@ class TextReportFormatter(CollectionReportFormatter):
                     lines.append(f"  • {issue.message}")
                     if issue.suggested_action:
                         lines.append(f"    → {issue.suggested_action}")
+                    
+                    # Show duplicate summary statistics
+                    if issue.field == "duplicate_summary" and "cross_venue_statistics" in issue.details:
+                        lines.append(f"    Total duplicates: {issue.details['total_duplicates']}")
+                        lines.append(f"    Cross-venue: {issue.details['cross_venue_duplicates']}")
+                        lines.append(f"    Same-venue: {issue.details['same_venue_duplicates']}")
+                        if issue.details['cross_venue_statistics']:
+                            lines.append("    Cross-venue duplicate rates:")
+                            for stat in issue.details['cross_venue_statistics']:
+                                lines.append(f"      - {stat}")
+                    
+                    # Show author issues with details
+                    elif issue.field == "author_missing_name" and "author_data" in issue.details:
+                        lines.append(f"    Paper: \"{issue.details.get('paper_title', 'Unknown')}\"")
+                        lines.append(f"    Author data: {issue.details['author_data']}")
+                        if len(issue.details.get('all_authors', [])) <= 5:
+                            lines.append(f"    All authors: {issue.details.get('all_authors', [])}")
+                    
+                    # Show duplicate details if available
+                    elif issue.field == "duplicates" and "paper_1" in issue.details and "paper_2" in issue.details:
+                        p1 = issue.details["paper_1"]
+                        p2 = issue.details["paper_2"]
+                        lines.append(f"    Paper 1: \"{p1['title']}\"")
+                        lines.append(f"             {p1['venue']} ({p1['year']})")
+                        lines.append(f"    Paper 2: \"{p2['title']}\"")
+                        lines.append(f"             {p2['venue']} ({p2['year']})")
+                        lines.append(f"    Detection: {issue.details.get('detection_method', 'Unknown')}")
                 lines.append("")
         
         # Recommendations
@@ -219,6 +250,7 @@ class JSONReportFormatter(CollectionReportFormatter):
                 },
                 "coverage": {
                     "coverage_rate": metrics.coverage_rate,
+                    "papers_by_venue": metrics.papers_by_venue,
                     "papers_by_scraper": metrics.papers_by_scraper,
                     "scraper_success_rates": metrics.scraper_success_rates
                 }
@@ -354,6 +386,12 @@ class MarkdownReportFormatter(CollectionReportFormatter):
         lines.append("### Coverage")
         lines.append("")
         lines.append(f"- **Coverage Rate:** {metrics.coverage_rate:.1%}")
+        if metrics.papers_by_venue:
+            lines.append("")
+            lines.append("**Papers by Venue:**")
+            lines.append("")
+            for venue, count in sorted(metrics.papers_by_venue.items()):
+                lines.append(f"- {venue}: {count}")
         if metrics.papers_by_scraper:
             lines.append("")
             lines.append("**Papers by Scraper:**")
@@ -383,6 +421,26 @@ class MarkdownReportFormatter(CollectionReportFormatter):
                     lines.append(f"- **{issue.message}**")
                     if issue.suggested_action:
                         lines.append(f"  - *Action:* {issue.suggested_action}")
+                    
+                    # Show duplicate summary statistics
+                    if issue.field == "duplicate_summary" and "cross_venue_statistics" in issue.details:
+                        lines.append(f"  - **Total duplicates:** {issue.details['total_duplicates']}")
+                        lines.append(f"  - **Cross-venue:** {issue.details['cross_venue_duplicates']}")
+                        lines.append(f"  - **Same-venue:** {issue.details['same_venue_duplicates']}")
+                        if issue.details['cross_venue_statistics']:
+                            lines.append("  - **Cross-venue duplicate rates:**")
+                            for stat in issue.details['cross_venue_statistics']:
+                                lines.append(f"    - {stat}")
+                    
+                    # Show duplicate details if available
+                    elif issue.field == "duplicates" and "paper_1" in issue.details and "paper_2" in issue.details:
+                        p1 = issue.details["paper_1"]
+                        p2 = issue.details["paper_2"]
+                        lines.append(f"  - **Paper 1:** \"{p1['title']}\"")
+                        lines.append(f"    - {p1['venue']} ({p1['year']})")
+                        lines.append(f"  - **Paper 2:** \"{p2['title']}\"")
+                        lines.append(f"    - {p2['venue']} ({p2['year']})")
+                        lines.append(f"  - **Detection method:** {issue.details.get('detection_method', 'Unknown')}")
                 lines.append("")
         
         # Recommendations

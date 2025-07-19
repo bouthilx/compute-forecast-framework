@@ -36,6 +36,7 @@ class CollectionQualityMetrics:
     # Source metrics
     papers_by_scraper: Dict[str, int] = field(default_factory=dict)
     scraper_success_rates: Dict[str, float] = field(default_factory=dict)
+    papers_by_venue: Dict[str, int] = field(default_factory=dict)
     
     # Timing
     collection_timestamp: Optional[datetime] = None

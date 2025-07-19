@@ -194,23 +194,132 @@ class ConsistencyValidator(BaseValidator):
     def _check_duplicates(self, papers: List[Dict[str, Any]], issues: List[QualityIssue]) -> float:
         """Check for duplicate papers."""
         seen_titles = {}
-        duplicates = []
+        all_duplicates = []
+        duplicate_pairs = []
         
+        # First pass: collect all duplicates
         for i, paper in enumerate(papers):
-            title = paper.get("title", "").strip().lower()
-            if title and title in seen_titles:
-                duplicates.append((i, seen_titles[title], title))
-                issues.append(self._create_issue(
-                    QualityIssueLevel.WARNING,
-                    "duplicates",
-                    f"Possible duplicate: papers {i+1} and {seen_titles[title]+1} have similar titles",
-                    "Review and remove duplicate papers",
-                    {"paper_indices": [i, seen_titles[title]], "title": paper.get("title", "Unknown")}
-                ))
-            elif title:
-                seen_titles[title] = i
+            title = paper.get("title", "").strip()
+            title_lower = title.lower()
+            
+            if title_lower and title_lower in seen_titles:
+                prev_idx, prev_paper = seen_titles[title_lower]
+                
+                # Get venues and years for both papers
+                current_venue = paper.get("venue", "Unknown")
+                previous_venue = prev_paper.get("venue", "Unknown")
+                current_year = str(paper.get("year", "Unknown"))
+                previous_year = str(prev_paper.get("year", "Unknown"))
+                
+                duplicate_pairs.append({
+                    "indices": (i, prev_idx),
+                    "papers": (paper, prev_paper),
+                    "venue_year_1": f"{current_venue} {current_year}",
+                    "venue_year_2": f"{previous_venue} {previous_year}",
+                    "cross_venue": current_venue != previous_venue
+                })
+                all_duplicates.append((i, prev_idx))
+            elif title_lower:
+                seen_titles[title_lower] = (i, paper)
         
-        duplicate_rate = len(duplicates) / len(papers) if papers else 0.0
+        # Calculate cross-venue duplicate statistics
+        venue_year_counts = {}
+        cross_venue_pairs = {}
+        
+        for paper in papers:
+            venue_year = f"{paper.get('venue', 'Unknown')} {paper.get('year', 'Unknown')}"
+            venue_year_counts[venue_year] = venue_year_counts.get(venue_year, 0) + 1
+        
+        for dup in duplicate_pairs:
+            if dup["cross_venue"]:
+                key = tuple(sorted([dup["venue_year_1"], dup["venue_year_2"]]))
+                if key not in cross_venue_pairs:
+                    cross_venue_pairs[key] = 0
+                cross_venue_pairs[key] += 1
+        
+        # Create summary statistics
+        total_duplicates = len(duplicate_pairs)
+        cross_venue_duplicates = sum(1 for d in duplicate_pairs if d["cross_venue"])
+        
+        # Add summary issue if there are duplicates
+        if total_duplicates > 0:
+            # Calculate cross-venue statistics
+            cross_venue_stats = []
+            
+            # Sort by venue_name, year, other_venue_name, other_year
+            def sort_key(item):
+                (venue_year_1, venue_year_2), count = item
+                # Parse venue and year from "VENUE YEAR" format
+                parts1 = venue_year_1.rsplit(' ', 1)
+                venue1 = parts1[0] if len(parts1) > 1 else venue_year_1
+                year1 = parts1[1] if len(parts1) > 1 else "0"
+                
+                parts2 = venue_year_2.rsplit(' ', 1)
+                venue2 = parts2[0] if len(parts2) > 1 else venue_year_2
+                year2 = parts2[1] if len(parts2) > 1 else "0"
+                
+                # Ensure consistent ordering (smaller venue name first)
+                if venue1 > venue2 or (venue1 == venue2 and year1 > year2):
+                    venue1, venue2 = venue2, venue1
+                    year1, year2 = year2, year1
+                
+                return (venue1, year1, venue2, year2)
+            
+            sorted_pairs = sorted(cross_venue_pairs.items(), key=sort_key)
+            
+            for (venue_year_1, venue_year_2), count in sorted_pairs:
+                total_1 = venue_year_counts.get(venue_year_1, 1)
+                total_2 = venue_year_counts.get(venue_year_2, 1)
+                percentage = (count * 2) / (total_1 + total_2) * 100  # *2 because each duplicate affects both venues
+                cross_venue_stats.append(f"{venue_year_1} and {venue_year_2}: {count} duplicates ({percentage:.1f}%)")
+            
+            issues.append(self._create_issue(
+                QualityIssueLevel.WARNING,
+                "duplicate_summary",
+                f"Found {total_duplicates} duplicate titles ({cross_venue_duplicates} cross-venue)",
+                "Review duplicate papers - cross-venue duplicates may indicate data collection issues",
+                {
+                    "total_duplicates": total_duplicates,
+                    "cross_venue_duplicates": cross_venue_duplicates,
+                    "same_venue_duplicates": total_duplicates - cross_venue_duplicates,
+                    "cross_venue_statistics": cross_venue_stats
+                }
+            ))
+        
+        # Add individual duplicate examples (limit to 5)
+        for idx, dup in enumerate(duplicate_pairs[:5]):
+            i, prev_idx = dup["indices"]
+            paper, prev_paper = dup["papers"]
+            
+            # Get paper IDs if available
+            current_id = paper.get("id", f"index_{i}")
+            previous_id = prev_paper.get("id", f"index_{prev_idx}")
+            
+            issues.append(self._create_issue(
+                QualityIssueLevel.WARNING,
+                "duplicates",
+                f"Duplicate example {idx+1}/{min(5, total_duplicates)}: Papers {current_id} and {previous_id}",
+                "Review papers for duplicates - same title may be valid if different venues/years",
+                {
+                    "detection_method": "exact_match_lowercase",
+                    "paper_1": {
+                        "id": current_id,
+                        "index": i,
+                        "title": paper.get("title", "Unknown"),
+                        "venue": paper.get("venue", "Unknown"),
+                        "year": paper.get("year", "Unknown")
+                    },
+                    "paper_2": {
+                        "id": previous_id,
+                        "index": prev_idx,
+                        "title": prev_paper.get("title", "Unknown"),
+                        "venue": prev_paper.get("venue", "Unknown"),
+                        "year": prev_paper.get("year", "Unknown")
+                    }
+                }
+            ))
+        
+        duplicate_rate = len(all_duplicates) / len(papers) if papers else 0.0
         return max(0.0, 1.0 - duplicate_rate * 2)  # Penalize duplicates heavily
     
     def _check_venue_consistency(self, papers: List[Dict[str, Any]], issues: List[QualityIssue]) -> float:
@@ -322,36 +431,60 @@ class AccuracyValidator(BaseValidator):
         
         for i, paper in enumerate(papers):
             authors = paper.get("authors", [])
-            if isinstance(authors, str):
-                authors = [authors]
+            if not isinstance(authors, list):
+                authors = []
             
             for j, author in enumerate(authors):
-                if not isinstance(author, str):
+                if not isinstance(author, dict):
                     invalid_authors.append((i, j, author))
                     issues.append(self._create_issue(
                         QualityIssueLevel.WARNING,
                         "author_format",
-                        f"Paper {i+1} has non-string author: {author}",
-                        "Ensure authors are stored as strings",
+                        f"Paper {i+1} has non-dict author: {author}",
+                        "Ensure authors are stored as dicts with 'name' field",
                         {"paper_index": i, "author_index": j, "author": str(author)}
                     ))
-                elif len(author.strip()) < 2:
+                    continue
+                
+                # Extract author name from dict
+                author_name = author.get("name", "")
+                if not author_name:
+                    invalid_authors.append((i, j, author))
+                    paper_id = paper.get("id", f"index_{i}")
+                    paper_title = paper.get("title", "Unknown title")[:50] + "..." if len(paper.get("title", "")) > 50 else paper.get("title", "Unknown title")
+                    issues.append(self._create_issue(
+                        QualityIssueLevel.WARNING,
+                        "author_missing_name",
+                        f"Paper {paper_id} has empty author name",
+                        "Check author extraction - found author dict with empty 'name' field",
+                        {
+                            "paper_index": i,
+                            "paper_id": paper_id,
+                            "paper_title": paper_title,
+                            "author_index": j, 
+                            "author_data": author,
+                            "all_authors": paper.get("authors", [])
+                        }
+                    ))
+                    continue
+                
+                if len(author_name.strip()) < 2:
                     invalid_authors.append((i, j, author))
                     issues.append(self._create_issue(
                         QualityIssueLevel.WARNING,
                         "author_length",
-                        f"Paper {i+1} has suspiciously short author name: '{author}'",
+                        f"Paper {i+1} has suspiciously short author name: '{author_name}'",
                         "Review author extraction accuracy",
-                        {"paper_index": i, "author_index": j, "author": author}
+                        {"paper_index": i, "author_index": j, "author": author_name}
                     ))
-                elif not author_pattern.match(author.strip()):
+                elif not author_pattern.match(author_name.strip()):
                     invalid_authors.append((i, j, author))
                     issues.append(self._create_issue(
                         QualityIssueLevel.INFO,
                         "author_pattern",
-                        f"Paper {i+1} has unusual author name pattern: '{author}'",
+                        f"Paper {i+1} has unusual author name pattern: '{author_name}'",
                         "Verify author name accuracy",
-                        {"paper_index": i, "author_index": j, "author": author}
+                        {"paper_index": i, "author_index": j, "author": author_name}
                     ))
         
         total_authors = sum(len(paper.get("authors", [])) for paper in papers)
@@ -582,7 +715,8 @@ class CoverageValidator(BaseValidator):
         scraper_counts = {}
         
         for paper in papers:
-            scraper = paper.get("scraper_source", "Unknown")
+            # Try both possible field names
+            scraper = paper.get("collection_source") or paper.get("scraper_source", "Unknown")
             scraper_counts[scraper] = scraper_counts.get(scraper, 0) + 1
         
         if not scraper_counts:

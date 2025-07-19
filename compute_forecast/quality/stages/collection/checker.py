@@ -228,7 +228,7 @@ class CollectionQualityChecker(StageQualityChecker):
         valid_authors = sum(1 for paper in papers 
                            if paper.get("authors") and isinstance(paper["authors"], list) 
                            and len(paper["authors"]) > 0
-                           and all(isinstance(author, str) and author.strip() for author in paper["authors"]))
+                           and all(isinstance(author, dict) and author.get("name", "").strip() for author in paper["authors"]))
         
         valid_urls = sum(1 for paper in papers 
                         if (paper.get("pdf_urls") and isinstance(paper["pdf_urls"], list) 
@@ -255,8 +255,15 @@ class CollectionQualityChecker(StageQualityChecker):
         # Count papers by scraper source
         scraper_counts = {}
         for paper in papers:
-            scraper = paper.get("scraper_source", "Unknown")
+            # Try both possible field names
+            scraper = paper.get("collection_source") or paper.get("scraper_source", "Unknown")
             scraper_counts[scraper] = scraper_counts.get(scraper, 0) + 1
+        
+        # Count papers by venue
+        venue_counts = {}
+        for paper in papers:
+            venue = paper.get("venue", "Unknown")
+            venue_counts[venue] = venue_counts.get(venue, 0) + 1
         
         # Calculate success rates (simplified)
         scraper_success_rates = {}
@@ -267,6 +274,7 @@ class CollectionQualityChecker(StageQualityChecker):
         # Update metrics
         metrics.papers_by_scraper = scraper_counts
         metrics.scraper_success_rates = scraper_success_rates
+        metrics.papers_by_venue = venue_counts
         
         # Calculate coverage rate (simplified)
         if len(papers) > 0:
