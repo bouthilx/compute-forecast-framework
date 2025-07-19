@@ -252,12 +252,17 @@ class ConsolidationCheckpointManager:
             except Exception as e:
                 logger.warning(f"Failed to create checkpoint backup: {e}")
         
-        # Convert to dict
-        data = asdict(checkpoint)
-        
-        # Convert datetime objects to ISO format
-        data["last_checkpoint_time"] = checkpoint.last_checkpoint_time.isoformat()
-        data["timestamp"] = checkpoint.timestamp.isoformat()
+        # Manually convert to dict to handle datetime serialization
+        data = {
+            "session_id": checkpoint.session_id,
+            "input_file": checkpoint.input_file,
+            "total_papers": checkpoint.total_papers,
+            "sources": checkpoint.sources,
+            "last_checkpoint_time": checkpoint.last_checkpoint_time.isoformat(),
+            "timestamp": checkpoint.timestamp.isoformat(),
+            "checksum": checkpoint.checksum,
+            "phase_state": checkpoint.phase_state
+        }
         
         # Write to temp file
         temp_file = self.checkpoint_file.with_suffix(".tmp")

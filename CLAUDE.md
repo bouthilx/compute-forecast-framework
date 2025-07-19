@@ -237,6 +237,7 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
 
 ## Package-Specific Guidelines
 [TODO]
+- Avoid relative imports as much as possible.
 
 ## Multi-Environment Testing
 - Supports Python 3.10-3.10 via tox

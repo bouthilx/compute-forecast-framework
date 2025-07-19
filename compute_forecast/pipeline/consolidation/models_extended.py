@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Any, Set
 from datetime import datetime
 
-from ..metadata_collection.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper
 
 
 @dataclass
@@ -47,7 +47,7 @@ class PaperIdentifiers:
 @dataclass
 class ConsolidationPhaseState:
     """Tracks the state of two-phase consolidation."""
-    phase: str  # "id_harvesting", "semantic_scholar_enrichment", "openalex_enrichment", "completed"
+    phase: str  # "id_harvesting", "semantic_scholar_enrichment", "openalex_enrichment", "parallel_consolidation", "completed"
     phase_completed: bool = False
     phase_start_time: Optional[datetime] = None
     phase_end_time: Optional[datetime] = None
@@ -65,9 +65,16 @@ class ConsolidationPhaseState:
     # Simple set of processed paper hashes for efficient resume
     processed_paper_hashes: Set[str] = field(default_factory=set)
     
+    # Parallel consolidation state
+    openalex_processed_hashes: Set[str] = field(default_factory=set)
+    semantic_scholar_processed_hashes: Set[str] = field(default_factory=set)
+    merged_papers: List[Paper] = field(default_factory=list)
+    papers_processed: int = 0
+    papers_enriched: int = 0
+    
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for checkpointing."""
-        return {
+        result = {
             'phase': self.phase,
             'phase_completed': self.phase_completed,
             'phase_start_time': self.phase_start_time.isoformat() if self.phase_start_time else None,
@@ -80,6 +87,16 @@ class ConsolidationPhaseState:
             'batch_progress': self.batch_progress,
             'processed_paper_hashes': list(self.processed_paper_hashes)
         }
+        
+        # Add parallel consolidation fields if in that phase
+        if self.phase == "parallel_consolidation":
+            result['openalex_processed_hashes'] = list(self.openalex_processed_hashes)
+            result['semantic_scholar_processed_hashes'] = list(self.semantic_scholar_processed_hashes)
+            # Don't serialize merged_papers - they'll be saved separately
+            result['papers_processed'] = self.papers_processed
+            result['papers_enriched'] = self.papers_enriched
+            
+        return result
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'ConsolidationPhaseState':
@@ -94,7 +111,9 @@ class ConsolidationPhaseState:
             papers_with_s2_ids=data.get('papers_with_s2_ids', 0),
             papers_with_external_ids=data.get('papers_with_external_ids', 0),
             batch_progress=data.get('batch_progress', {}),
-            processed_paper_hashes=set(data.get('processed_paper_hashes', []))
+            processed_paper_hashes=set(data.get('processed_paper_hashes', [])),
+            papers_processed=data.get('papers_processed', 0),
+            papers_enriched=data.get('papers_enriched', 0)
         )
         
         # Restore identifiers
@@ -103,5 +122,11 @@ class ConsolidationPhaseState:
                 k: PaperIdentifiers.from_dict(v) 
                 for k, v in data['identifiers_collected'].items()
             }
+        
+        # Restore parallel consolidation state
+        if data['phase'] == 'parallel_consolidation':
+            state.openalex_processed_hashes = set(data.get('openalex_processed_hashes', []))
+            state.semantic_scholar_processed_hashes = set(data.get('semantic_scholar_processed_hashes', []))
+            # merged_papers will be loaded separately
         
         return state
