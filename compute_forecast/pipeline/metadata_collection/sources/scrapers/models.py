@@ -37,6 +37,9 @@ class SimplePaper:
     source_url: str = ""
     scraped_at: datetime = field(default_factory=datetime.now)
 
+    # Paper acceptance decision
+    decision: Optional[str] = None  # 'oral', 'poster', 'spotlight', or None
+    
     # Quality indicators
     extraction_confidence: float = 1.0
 
