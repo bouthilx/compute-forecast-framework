@@ -6,6 +6,7 @@ from requests.exceptions import ConnectionError, Timeout, RequestException
 
 from .base import BaseConsolidationSource, SourceConfig
 from ...metadata_collection.models import Paper
+from .title_matcher import TitleMatcher
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +64,13 @@ class OpenAlexSource(BaseConsolidationSource):
         self.headers = {"User-Agent": "ConsolidationBot/1.0"}
         if email:
             self.headers["User-Agent"] += f" (mailto:{email})"
+            
+        # Initialize fuzzy title matcher with conservative settings
+        self.title_matcher = TitleMatcher(
+            high_confidence_threshold=0.90,  # Conservative for OpenAlex
+            medium_confidence_threshold=0.85,
+            require_safety_checks=True
+        )
     
     @retry_on_connection_error(max_retries=3, backoff_factor=2, initial_delay=1)
     def _make_request(self, url: str, params: dict) -> requests.Response:
@@ -134,8 +142,14 @@ class OpenAlexSource(BaseConsolidationSource):
                     results = response.json().get("results", [])
                     if results:
                         work = results[0]
-                        # Verify match
-                        if self._similar_title(paper.title, work.get("title", "")):
+                        # Verify match using fuzzy matching with year and author info
+                        work_year = work.get("publication_year")
+                        if self._similar_title(
+                            paper.title, 
+                            work.get("title", ""),
+                            paper.year,
+                            work_year
+                        ):
                             mapping[paper.paper_id] = work["id"]
             except Exception as e:
                 logger.error(f"Failed to lookup paper '{paper.title}' after retries: {str(e)}")
@@ -256,8 +270,21 @@ class OpenAlexSource(BaseConsolidationSource):
         words.sort()
         return " ".join(word for _, word in words)
         
-    def _similar_title(self, title1: str, title2: str) -> bool:
-        """Check if two titles are similar"""
-        norm1 = title1.lower().strip()
-        norm2 = title2.lower().strip()
-        return norm1 == norm2 or norm1 in norm2 or norm2 in norm1
+    def _similar_title(
+        self, 
+        title1: str, 
+        title2: str,
+        year1: Optional[int] = None,
+        year2: Optional[int] = None,
+        authors1: Optional[List] = None,
+        authors2: Optional[List] = None
+    ) -> bool:
+        """Check if two titles are similar using fuzzy matching."""
+        return self.title_matcher.is_similar(
+            title1, title2, 
+            year1=year1, 
+            year2=year2,
+            authors1=authors1,
+            authors2=authors2,
+            min_confidence="high_confidence"  # Conservative threshold
+        )

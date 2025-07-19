@@ -7,6 +7,7 @@ from requests.exceptions import ConnectionError, Timeout, RequestException
 from .base import BaseConsolidationSource, SourceConfig
 from ...metadata_collection.models import Paper
 from ....utils.profiling import profile_operation
+from .title_matcher import TitleMatcher
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +76,13 @@ class SemanticScholarSource(BaseConsolidationSource):
         self.headers = {}
         if self.config.api_key:
             self.headers["x-api-key"] = self.config.api_key
+            
+        # Initialize fuzzy title matcher with slightly higher threshold for S2
+        self.title_matcher = TitleMatcher(
+            high_confidence_threshold=0.92,  # Slightly higher threshold for S2
+            medium_confidence_threshold=0.87,
+            require_safety_checks=True
+        )
     
     @retry_on_connection_error(max_retries=3, backoff_factor=2, initial_delay=1)
     def _make_get_request(self, url: str, params: dict, headers: dict, timeout: int = 30) -> requests.Response:
@@ -177,7 +185,7 @@ class SemanticScholarSource(BaseConsolidationSource):
                             params={
                                 "query": query,
                                 "limit": 1,
-                                "fields": "paperId,title,year"
+                                "fields": "paperId,title,year,authors"
                             },
                             headers=self.headers,
                             timeout=30
@@ -194,9 +202,19 @@ class SemanticScholarSource(BaseConsolidationSource):
                             data = response.json()
                             if data.get("data"):
                                 result = data["data"][0]
-                                # Verify it's the same paper (title similarity and year)
-                                if (self._similar_title(paper.title, result["title"]) and 
-                                    result.get("year") == paper.year):
+                                # Verify it's the same paper using fuzzy matching
+                                # Extract authors from result if available
+                                result_authors = [a.get("name") for a in result.get("authors", [])] if "authors" in result else None
+                                paper_authors = [a.name for a in paper.authors] if paper.authors else None
+                                
+                                if self._similar_title(
+                                    paper.title, 
+                                    result["title"],
+                                    paper.year,
+                                    result.get("year"),
+                                    paper_authors,
+                                    result_authors
+                                ):
                                     mapping[paper.paper_id] = result["paperId"]
                                     if prof:
                                         prof.metadata['match_found'] = True
@@ -298,19 +316,21 @@ class SemanticScholarSource(BaseConsolidationSource):
                     
         return results
         
-    def _similar_title(self, title1: str, title2: str) -> bool:
-        """Check if two titles are similar enough"""
-        # Simple normalization and comparison
-        norm1 = title1.lower().strip()
-        norm2 = title2.lower().strip()
-        
-        # Exact match after normalization
-        if norm1 == norm2:
-            return True
-            
-        # Check if one is substring of other (handling subtitles)
-        if norm1 in norm2 or norm2 in norm1:
-            return True
-            
-        # Could add more sophisticated matching here
-        return False
+    def _similar_title(
+        self, 
+        title1: str, 
+        title2: str,
+        year1: Optional[int] = None,
+        year2: Optional[int] = None,
+        authors1: Optional[List[str]] = None,
+        authors2: Optional[List[str]] = None
+    ) -> bool:
+        """Check if two titles are similar using fuzzy matching."""
+        return self.title_matcher.is_similar(
+            title1, title2, 
+            year1=year1, 
+            year2=year2,
+            authors1=authors1,
+            authors2=authors2,
+            min_confidence="high_confidence"  # Conservative threshold
+        )
