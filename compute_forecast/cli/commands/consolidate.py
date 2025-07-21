@@ -35,7 +35,11 @@ from compute_forecast.pipeline.consolidation.models_extended import (
     PaperIdentifiers,
     ConsolidationPhaseState,
 )
-from compute_forecast.pipeline.consolidation.models import EnrichmentResult
+from compute_forecast.pipeline.consolidation.models import (
+    EnrichmentResult,
+    IdentifierRecord,
+    IdentifierData,
+)
 from compute_forecast.pipeline.metadata_collection.models import Paper
 from compute_forecast.utils.profiling import (
     PerformanceProfiler,
@@ -319,7 +323,7 @@ def harvest_identifiers_openalex(
                 f"{openalex_source.base_url}/works",
                 params={
                     "filter": filter_str,
-                    "per-page": len(batch_ids),
+                    "per-page": str(len(batch_ids)),
                     "select": select_fields,
                 },
                 headers=openalex_source.headers,
@@ -333,7 +337,7 @@ def harvest_identifiers_openalex(
                         continue
 
                     # Find which paper this corresponds to
-                    paper_id = None
+                    paper_id: Optional[str] = None
                     for pid, oa_id in oa_mapping.items():
                         if oa_id == work_id:
                             paper_id = pid
@@ -470,18 +474,55 @@ def enrich_papers_with_identifiers(
             if ids.openalex_id and not paper.openalex_id:
                 paper.openalex_id = ids.openalex_id
 
-            # Initialize external_ids if needed
-            if not hasattr(paper, "external_ids"):
-                paper.external_ids = {}
-
+            # Add identifiers as IdentifierRecord objects
             if ids.semantic_scholar_id:
-                paper.external_ids["semantic_scholar"] = ids.semantic_scholar_id
+                paper.identifiers.append(
+                    IdentifierRecord(
+                        source="consolidation",
+                        timestamp=datetime.now(),
+                        original=False,
+                        data=IdentifierData(
+                            identifier_type="s2_paper",
+                            identifier_value=ids.semantic_scholar_id,
+                        ),
+                    )
+                )
             if ids.pmid:
-                paper.external_ids["pmid"] = ids.pmid
+                paper.identifiers.append(
+                    IdentifierRecord(
+                        source="consolidation",
+                        timestamp=datetime.now(),
+                        original=False,
+                        data=IdentifierData(
+                            identifier_type="pmid",
+                            identifier_value=ids.pmid,
+                        ),
+                    )
+                )
             if ids.pmcid:
-                paper.external_ids["pmcid"] = ids.pmcid
+                paper.identifiers.append(
+                    IdentifierRecord(
+                        source="consolidation",
+                        timestamp=datetime.now(),
+                        original=False,
+                        data=IdentifierData(
+                            identifier_type="pmcid",
+                            identifier_value=ids.pmcid,
+                        ),
+                    )
+                )
             if ids.mag_id:
-                paper.external_ids["mag"] = ids.mag_id
+                paper.identifiers.append(
+                    IdentifierRecord(
+                        source="consolidation",
+                        timestamp=datetime.now(),
+                        original=False,
+                        data=IdentifierData(
+                            identifier_type="mag",
+                            identifier_value=ids.mag_id,
+                        ),
+                    )
+                )
 
     return papers
 

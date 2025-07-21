@@ -332,3 +332,19 @@ Reduced errors from 30 to 25. Fixed the following issues:
 - This is legacy code that uses the old Paper model with external_ids
 - All active code has been successfully migrated to the new Paper/Author models
 - PR #187 should now pass all pre-commit checks for the files it modifies
+
+### Fixes Applied - Round 5 (Partial):
+
+Started fixing the legacy consolidate.py errors:
+
+30. **consolidate.py** - Replaced external_ids with IdentifierRecord list
+31. **consolidate.py** - Fixed params dict type issue (per-page as string)
+32. **consolidate.py** - Added Optional type annotation for paper_id
+
+### Final Summary:
+- Total reduction: 112 → 23 (89 errors fixed, 79.5% reduction)
+- Fixed all Paper/Author model migration issues across the codebase
+- Updated all sources to use proper AbstractData, CitationData, URLData types
+- Remaining 23 errors are all in the legacy consolidate.py command
+- These remaining errors are mostly type annotation issues that don't affect functionality
+- The consolidate.py command is being replaced by the new parallel consolidation system
