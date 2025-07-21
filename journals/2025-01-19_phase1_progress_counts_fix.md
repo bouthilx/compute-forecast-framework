@@ -8,7 +8,7 @@ The Phase1ProgressColumn was initialized with a reference to an empty dictionary
 
 ## Solution
 1. **Changed to absolute counts**: Replaced percentages with raw counts for each ID type
-2. **Fixed reference issue**: 
+2. **Fixed reference issue**:
    - Modified Phase1ProgressColumn to not require identifiers in constructor
    - Added `set_identifiers()` method to update the reference
    - Updated the checkpoint callback to call `phase1_column.set_identifiers()` with current identifiers

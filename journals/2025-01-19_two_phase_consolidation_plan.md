@@ -49,18 +49,18 @@ def consolidate(papers: List[Paper]) -> List[Paper]:
     # Phase 1: OpenAlex ID Harvesting
     print("Phase 1: Collecting identifiers from OpenAlex...")
     identifiers = harvest_identifiers_openalex(papers)
-    
+
     # Enrich papers with discovered identifiers
     papers = add_identifiers_to_papers(papers, identifiers)
-    
+
     # Phase 2: Semantic Scholar Enrichment (using discovered IDs)
     print("Phase 2: Enriching from Semantic Scholar using collected IDs...")
     enrichments = enrich_semantic_scholar(papers)
-    
+
     # Phase 3: Final OpenAlex Enrichment
     print("Phase 3: Final enrichment from OpenAlex...")
     final_enrichments = enrich_openalex_full(papers)
-    
+
     # Merge all enrichments
     return merge_enrichments(papers, enrichments, final_enrichments)
 ```
@@ -72,20 +72,20 @@ Optimize OpenAlex to fetch only identifiers in the first pass:
 ```python
 def harvest_identifiers_openalex(papers: List[Paper]) -> Dict[str, PaperIdentifiers]:
     """Fast first-pass to collect all identifiers"""
-    
+
     # Use OpenAlex's select parameter to fetch minimal data
     # Fields needed: id, doi, ids (contains external IDs)
-    
+
     identifiers = {}
-    
+
     # Process in batches of 50 (OpenAlex optimal)
     for batch in batches(papers, 50):
         # Use title search to find OpenAlex IDs
         oa_ids = openalex_source.find_papers(batch)
-        
+
         # Fetch just identifier fields
         id_data = fetch_minimal_fields(oa_ids, fields=['id', 'doi', 'ids'])
-        
+
         # Extract all identifiers
         for paper_id, data in id_data.items():
             identifiers[paper_id] = PaperIdentifiers(
@@ -95,7 +95,7 @@ def harvest_identifiers_openalex(papers: List[Paper]) -> Dict[str, PaperIdentifi
                 arxiv_id=extract_arxiv_id(data),
                 semantic_scholar_id=data.get('ids', {}).get('semantic_scholar')
             )
-    
+
     return identifiers
 ```
 
@@ -106,12 +106,12 @@ Use collected identifiers for efficient batch processing:
 ```python
 def enrich_semantic_scholar(papers: List[Paper]) -> List[EnrichmentResult]:
     """Use discovered IDs for efficient S2 enrichment"""
-    
+
     # Build ID lists for batch lookup
     doi_batch = []
     arxiv_batch = []
     s2_batch = []
-    
+
     for paper in papers:
         if paper.doi:
             doi_batch.append(f"DOI:{paper.doi}")
@@ -119,22 +119,22 @@ def enrich_semantic_scholar(papers: List[Paper]) -> List[EnrichmentResult]:
             arxiv_batch.append(f"ARXIV:{paper.arxiv_id}")
         if hasattr(paper, 'semantic_scholar_id'):
             s2_batch.append(paper.semantic_scholar_id)
-    
+
     # Single batch API call (or minimal calls for 500+ papers)
     all_ids = doi_batch + arxiv_batch + s2_batch
-    
+
     # Process in chunks of 500
     results = []
     for chunk in chunks(all_ids, 500):
         batch_data = s2_source.fetch_by_ids(chunk)
         results.extend(batch_data)
-    
+
     return results
 ```
 
 ### 5. Benefits of This Approach
 
-1. **Performance**: 
+1. **Performance**:
    - Current: 500 papers = ~83 minutes (500 API calls)
    - New: 500 papers = ~2 minutes (10-20 API calls total)
    - Speedup: ~40-50x faster

@@ -26,12 +26,12 @@ def parallel_enrich(papers: List[Paper], identifiers: Dict):
     # Split papers into optimal groups:
     arxiv_papers = [p for p in papers if identifiers[p.id].get('arxiv_id')]
     doi_only_papers = [p for p in papers if identifiers[p.id].get('doi') and not identifiers[p.id].get('arxiv_id')]
-    
+
     # Run in parallel:
     # Worker 1: Semantic Scholar batch process ArXiv papers (500/batch, use ArXiv ID lookup)
     # Worker 2: OpenAlex batch process all papers (50/batch, use OpenAlex ID)
     # Worker 3: Semantic Scholar process high-value DOI papers (100/batch)
-    
+
     # Merge results, preferring:
     # - Semantic Scholar for ArXiv papers (better citation data)
     # - OpenAlex for everything else (better affiliations)
@@ -65,14 +65,14 @@ class SmartConsolidationRouter:
     def __init__(self):
         self.openalex = OpenAlexSource()
         self.s2 = SemanticScholarSource()
-        
+
     def route_papers(self, papers: List[Paper]) -> List[EnrichmentResult]:
         # Categorize papers
         arxiv_papers = []
         cs_papers = []  # Computer Science papers (by venue/keywords)
         recent_papers = []  # Papers from last 2 years
         other_papers = []
-        
+
         for paper in papers:
             if paper.arxiv_id:
                 arxiv_papers.append(paper)
@@ -82,23 +82,23 @@ class SmartConsolidationRouter:
                 recent_papers.append(paper)
             else:
                 other_papers.append(paper)
-        
+
         # Process in parallel with optimal source selection
         results = []
         with ThreadPoolExecutor(max_workers=4) as executor:
             # ArXiv papers -> Semantic Scholar first, OpenAlex fallback
-            future1 = executor.submit(self._process_with_fallback, 
+            future1 = executor.submit(self._process_with_fallback,
                                     arxiv_papers, self.s2, self.openalex)
-            
+
             # CS papers -> Try both in parallel, merge results
             future2 = executor.submit(self._process_both_merge, cs_papers)
-            
+
             # Recent papers -> OpenAlex (better coverage of new papers)
             future3 = executor.submit(self.openalex.enrich_papers, recent_papers)
-            
+
             # Other papers -> OpenAlex only
             future4 = executor.submit(self.openalex.enrich_papers, other_papers)
-            
+
         return self._merge_all_results(futures)
 ```
 
@@ -136,7 +136,7 @@ class SpeculativeConsolidator:
             'openalex': OpenAlexSource(),
             'semantic_scholar': SemanticScholarSource()
         }
-        
+
     async def consolidate_papers(self, papers: List[Paper]) -> List[EnrichmentResult]:
         # Create tasks for both sources for all papers
         tasks = []
@@ -144,16 +144,16 @@ class SpeculativeConsolidator:
             # Create competing tasks
             oa_task = self._fetch_with_timeout(self.sources['openalex'], paper, timeout=3.0)
             s2_task = self._fetch_with_timeout(self.sources['semantic_scholar'], paper, timeout=5.0)
-            
+
             # Race condition: first to return valid data wins
             tasks.append(self._race_sources(paper, oa_task, s2_task))
-        
+
         # Process all papers concurrently
         results = await asyncio.gather(*tasks)
-        
+
         # Post-process: fill missing fields from slower source if available
         return self._backfill_missing_fields(results)
-    
+
     async def _race_sources(self, paper, oa_task, s2_task):
         # First valid result wins
         for task in asyncio.as_completed([oa_task, s2_task]):
@@ -252,11 +252,11 @@ async with aiohttp.ClientSession() as session:
 def merge_results(oa_result, s2_result):
     # Priority rules based on testing
     merged = {}
-    
+
     # Prefer S2 for: citations, fields_of_study
     # Prefer OA for: affiliations, concepts, abstract
     # Merge both: authors, venues, URLs
-    
+
     return merged
 ```
 
@@ -265,7 +265,7 @@ def merge_results(oa_result, s2_result):
 All three strategies can achieve >99% coverage with sub-30 second performance for 1000 papers. The choice depends on:
 
 - **Strategy 1**: Best for getting started, good balance
-- **Strategy 2**: Best for heterogeneous datasets with mixed venues/years  
+- **Strategy 2**: Best for heterogeneous datasets with mixed venues/years
 - **Strategy 3**: Best for absolute minimum latency
 
 For the compute forecast project, I recommend implementing Strategy 1 first, then adding Strategy 2's intelligent routing as an enhancement. Strategy 3 is overkill unless real-time performance becomes critical.

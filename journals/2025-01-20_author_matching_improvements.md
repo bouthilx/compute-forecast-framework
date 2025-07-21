@@ -20,13 +20,13 @@ The user identified that the author penalty was not being applied correctly in t
 - Match authors flexibly: same last name + compatible first initial
 - Return proper sets that correctly represent the overlap count
 
-**Result**: 
+**Result**:
 - "Jacob Devlin" and "J. Devlin" now correctly match (100% overlap)
 - "John Smith" and "Jane Smith" correctly don't match (different first initials)
 
 ### 2. Proportional Author Penalty System
 
-**Implementation**: 
+**Implementation**:
 - Full author overlap (100%) = no penalty (multiply by 1.0)
 - No author overlap (0%) = strong penalty (multiply by 0.3)
 - Partial overlap = linear interpolation: penalty = 0.3 + 0.7 × overlap_ratio
@@ -48,7 +48,7 @@ The user identified that the author penalty was not being applied correctly in t
 #### Problematic Cases:
 ✗ "Efficient Transformers: A Survey" vs "A Review" (different author teams)
   - Base similarity: 0.903
-  - With 0% author penalty: 0.909 
+  - With 0% author penalty: 0.909
   - Still matches as "medium_confidence" (threshold 0.85)
 
 ✗ Generic titles like "Deep Learning for Natural Language Processing"

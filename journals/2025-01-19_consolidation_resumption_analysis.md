@@ -68,7 +68,7 @@ Users currently have limited options for handling interruptions:
 If resumption functionality is needed for consolidation:
 
 1. **Reuse existing infrastructure**: The checkpoint system from metadata collection is well-tested and could be adapted
-2. **Minimal changes needed**: 
+2. **Minimal changes needed**:
    - Add checkpoint saving to `enrich_papers()` method
    - Modify consolidate command to check for and load checkpoints
    - Store enrichment results incrementally

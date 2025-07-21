@@ -1,6 +1,6 @@
 # Two-Phase Consolidation Checkpoint Plan
 
-**Date**: 2025-01-19  
+**Date**: 2025-01-19
 **Title**: Checkpoint System for Two-Phase Consolidation Implementation
 
 ## Overview
@@ -10,7 +10,7 @@ Add checkpoint support to the new two-phase consolidation implementation to enab
 
 ### Three-Phase Structure
 1. **Phase 1**: OpenAlex ID Harvesting
-   - Batch title searches (50 papers/batch) 
+   - Batch title searches (50 papers/batch)
    - Batch ID lookups for discovered OpenAlex IDs
    - Returns Dict[paper_id, PaperIdentifiers]
 
@@ -34,7 +34,7 @@ Add checkpoint support to the new two-phase consolidation implementation to enab
 ```json
 {
     "session_id": "consolidate_20250119_123456_abc123",
-    "input_file": "papers.json", 
+    "input_file": "papers.json",
     "total_papers": 500,
     "phase_state": {
         "phase": "id_harvesting|semantic_scholar_enrichment|openalex_enrichment|completed",
@@ -80,7 +80,7 @@ Add checkpoint support to the new two-phase consolidation implementation to enab
 - Save partial identifier mappings
 - Track batch progress for mid-phase resume
 
-#### Phase 2 Checkpointing  
+#### Phase 2 Checkpointing
 - Checkpoint after each 500-paper batch in `enrich_semantic_scholar_batch()`
 - Papers already modified in-place, so just save current state
 - Track which paper IDs have been processed

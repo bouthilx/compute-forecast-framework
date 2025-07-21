@@ -50,7 +50,7 @@ from typing import Optional, Tuple, List
 
 class TitleMatcher:
     """Fuzzy title matching for consolidation with safety mechanisms."""
-    
+
     def __init__(
         self,
         exact_threshold: float = 1.0,
@@ -62,7 +62,7 @@ class TitleMatcher:
         self.high_confidence_threshold = high_confidence_threshold
         self.medium_confidence_threshold = medium_confidence_threshold
         self.require_safety_checks = require_safety_checks
-        
+
         # Title normalization patterns
         self.title_suffixes = [
             r"\s*\(extended abstract\)",
@@ -72,29 +72,29 @@ class TitleMatcher:
             # ArXiv-specific patterns
             r"\s*\[.*\]$",  # Remove bracketed content at end
         ]
-        
+
     def normalize_title(self, title: str) -> str:
         """Normalize title for comparison."""
         if not title:
             return ""
-            
+
         normalized = title.lower().strip()
-        
+
         # Remove common suffixes
         for suffix_pattern in self.title_suffixes:
             normalized = re.sub(suffix_pattern, "", normalized, flags=re.IGNORECASE)
-            
+
         # Normalize punctuation
         normalized = re.sub(r'[^\w\s]', ' ', normalized)
-        
+
         # Remove extra whitespace
         normalized = " ".join(normalized.split())
-        
+
         return normalized
-        
+
     def calculate_similarity(
-        self, 
-        title1: str, 
+        self,
+        title1: str,
         title2: str,
         year1: Optional[int] = None,
         year2: Optional[int] = None,
@@ -103,27 +103,27 @@ class TitleMatcher:
     ) -> Tuple[float, str]:
         """
         Calculate title similarity with safety checks.
-        
+
         Returns:
             (similarity_score, match_type)
             match_type: "exact", "high_confidence", "medium_confidence", "low_confidence", "no_match"
         """
         if not title1 or not title2:
             return 0.0, "no_match"
-            
+
         norm1 = self.normalize_title(title1)
         norm2 = self.normalize_title(title2)
-        
+
         # Exact match
         if norm1 == norm2:
             return 1.0, "exact"
-            
+
         # Calculate multiple similarity measures
         token_sort = fuzz.token_sort_ratio(norm1, norm2) / 100.0
         token_set = fuzz.token_set_ratio(norm1, norm2) / 100.0
         partial = fuzz.partial_ratio(norm1, norm2) / 100.0
         ratio = fuzz.ratio(norm1, norm2) / 100.0
-        
+
         # Weighted combination (favor token-based for academic titles)
         similarity = (
             token_sort * 0.4 +
@@ -131,13 +131,13 @@ class TitleMatcher:
             partial * 0.2 +
             ratio * 0.1
         )
-        
+
         # Apply safety checks if enabled
         if self.require_safety_checks and similarity < self.exact_threshold:
             # Require year match for fuzzy matches
             if year1 and year2 and abs(year1 - year2) > 1:
                 return similarity * 0.5, "low_confidence"
-                
+
             # Check author overlap for medium confidence matches
             if similarity >= self.medium_confidence_threshold:
                 if authors1 and authors2:
@@ -147,7 +147,7 @@ class TitleMatcher:
                     overlap = len(authors1_normalized & authors2_normalized)
                     if overlap == 0:
                         return similarity * 0.7, "low_confidence"
-                        
+
         # Determine match type
         if similarity >= self.high_confidence_threshold:
             return similarity, "high_confidence"

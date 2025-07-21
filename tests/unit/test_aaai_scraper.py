@@ -4,9 +4,12 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 import xml.etree.ElementTree as ET
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.aaai import AAAIScraper
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import SimplePaper
-
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.aaai import (
+    AAAIScraper,
+)
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
+    SimplePaper,
+)
 
 
 class TestAAAIScraper:

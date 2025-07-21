@@ -24,7 +24,7 @@ I examined `paperoni/src/paperoni/sources/scrapers/openreview.py` and discovered
 
 **Decision Extraction Heuristics (by priority):**
 1. Rank 5: Withdrawn papers (highest priority)
-2. Rank 10-20: Decision invitations 
+2. Rank 10-20: Decision invitations
 3. Rank 30-40: Accept/general decision fields
 4. Rank 50: Meta-review recommendations (lowest priority)
 
@@ -381,10 +381,10 @@ I have thoroughly analyzed the implementation against the detailed plan. Here is
 4. OpenReview-specific error handling
 
 **Implementation Status:**
-- ✓ **Rate limiting**: 
+- ✓ **Rate limiting**:
   - Pre-emptive delay (line 149)
   - Rate limit detection and 60s wait (lines 171-173)
-- ✓ **Graceful degradation**: 
+- ✓ **Graceful degradation**:
   - Never re-raises exceptions (lines 174, 180)
   - Per-paper error handling (lines 222-224, 257-259, 335-337, 398-400)
   - Returns empty list on major failures

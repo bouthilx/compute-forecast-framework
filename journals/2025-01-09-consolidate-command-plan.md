@@ -1,7 +1,7 @@
 # Consolidate Command Implementation Plan
 
-**Date**: 2025-01-09  
-**Time**: 10:30  
+**Date**: 2025-01-09
+**Time**: 10:30
 **Task**: Design comprehensive plan for `cf consolidate` command to enrich collected paper metadata
 
 ## Executive Summary
@@ -70,7 +70,7 @@ compute_forecast/pipeline/consolidation/
 
 #### Code to Reuse:
 - Rate limiting from PDF collectors
-- Batch API handling from enhanced metadata sources  
+- Batch API handling from enhanced metadata sources
 - Retry logic and error handling patterns
 - Existing affiliation parser and normalizer
 
@@ -155,7 +155,7 @@ cf consolidate --input data.json --parallel 4
 [@bouthilx We won't merge duplicate papers but rather create duplicates entries which refer to both
 papers with a similarity score and detailed metrics for computing that similarity score]
 2. **Deduplication Phase**: Identify and merge duplicate papers
-3. **Enrichment Phase**: 
+3. **Enrichment Phase**:
    - Batch papers by venue/year for efficiency
    [@bouthilx try to batch papers in queries to reduce the number of overall queries]
    - Query sources in parallel

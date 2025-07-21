@@ -1,6 +1,6 @@
 # Phase 3 Implementation - Advanced Resume Logic
 
-**Date**: 2025-01-19  
+**Date**: 2025-01-19
 **Title**: Implementation of Advanced Resume Logic and Edge Case Handling
 
 ## Implementation Summary
@@ -53,7 +53,7 @@ if batch_start_idx >= len(papers):
 
 **Resume Statistics Display:**
 ```
-Resuming with: 750 papers processed, 
+Resuming with: 750 papers processed,
 600 citations, 550 abstracts, 400 URLs, 750 identifiers
 ```
 

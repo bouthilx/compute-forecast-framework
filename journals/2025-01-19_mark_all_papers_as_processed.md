@@ -34,7 +34,7 @@ for paper in batch:
     processed_hashes.add(get_paper_hash(paper))
 ```
 
-2. **Phase 2**: 
+2. **Phase 2**:
 - Added hash-based tracking with `processed_hashes` parameter
 - Filter papers before processing
 - Mark all papers in batch as processed after API calls

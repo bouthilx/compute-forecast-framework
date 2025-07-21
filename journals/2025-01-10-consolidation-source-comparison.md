@@ -25,7 +25,7 @@ I conducted a comprehensive comparison of four academic data sources (Semantic S
 
 **API Performance:**
 - Title search: 0.964s average
-- DOI lookup: 0.465s average  
+- DOI lookup: 0.465s average
 - ArXiv lookup: 0.471s average
 - Rate limit: 100 requests/5min without API key (very restrictive)
 
@@ -182,7 +182,7 @@ I conducted a comprehensive comparison of four academic data sources (Semantic S
 1. **Semantic Scholar** for ArXiv papers specifically
    - Use when you have ArXiv IDs
    - Use with API key to avoid rate limits
-   
+
 2. **Crossref** for missing DOIs/venues
    - Only use DOI lookup (not title search)
    - Good for publisher/venue information

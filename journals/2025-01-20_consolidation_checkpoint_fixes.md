@@ -20,7 +20,7 @@
 
 **Problem**: When resuming from checkpoint, progress bars started at 0% instead of showing completed work.
 
-**Solution**: 
+**Solution**:
 - Added logic to set initial progress when creating progress bars
 - Extract statistics from checkpoint and update progress bars
 - Update the custom progress column with citation/abstract counts
@@ -47,7 +47,7 @@ for paper in merged_papers:
     # Check if paper has OpenAlex data
     if paper.openalex_id or any(r.source == 'openalex' for r in getattr(paper, 'citations', [])):
         openalex_enriched += 1
-    
+
     # Check if paper has Semantic Scholar data
     if hasattr(paper, 'external_ids') and paper.external_ids.get('semantic_scholar'):
         ss_enriched += 1
@@ -62,15 +62,15 @@ for paper in merged_papers:
 if resume and checkpoint_data and hasattr(checkpoint_data, 'sources'):
     oa_stats = checkpoint_data.sources.get('openalex', {})
     ss_stats = checkpoint_data.sources.get('semantic_scholar', {})
-    
+
     # Set initial progress
     oa_processed = oa_stats.get('papers_processed', 0)
     ss_processed = ss_stats.get('papers_processed', 0)
-    
+
     if oa_processed > 0:
         progress.update(openalex_task, completed=oa_processed)
         progress_column.update_stats(
-            openalex_task, 
+            openalex_task,
             oa_stats.get('citations_found', 0),
             oa_stats.get('abstracts_found', 0)
         )

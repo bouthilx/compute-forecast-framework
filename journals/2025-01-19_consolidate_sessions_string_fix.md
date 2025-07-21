@@ -21,7 +21,7 @@ Added two fixes:
 ## Result
 The consolidate-sessions list command now works correctly:
 ```
-                             Consolidation Sessions                             
+                             Consolidation Sessions
 ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┓
 ┃ Session   ┃           ┃ Input     ┃        ┃          ┃           ┃ Last     ┃
 ┃ ID        ┃ Status    ┃ File      ┃ Papers ┃ Sources  ┃ Created   ┃ Checkpo… ┃

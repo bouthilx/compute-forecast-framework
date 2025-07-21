@@ -33,7 +33,7 @@ def retry_on_connection_error(max_retries=3, backoff_factor=2, initial_delay=1):
         def wrapper(*args, **kwargs):
             delay = initial_delay
             last_exception = None
-            
+
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)

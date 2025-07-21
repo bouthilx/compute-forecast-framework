@@ -87,7 +87,7 @@ for source in source_objects:
 2. **Network latency**: ~0.1-0.2 seconds per request (beyond rate limit)
    - 155 requests × 0.15s average = **23 seconds**
 
-3. **Data processing**: 
+3. **Data processing**:
    - JSON parsing, paper matching, result building
    - ~0.05 seconds per paper = **22.5 seconds**
 
@@ -128,7 +128,7 @@ The actual implementation shows much longer times due to:
    Per 10-paper batch:
    - Semantic Scholar: 1 (DOI batch) + 2 (title searches) + 1 (enrich) = 4 calls
    - OpenAlex: 1 (DOI search) + 1 (title search) + 1 (enrich) = 3 calls
-   
+
    45 batches × 7 calls = 315 API calls
    315 calls × 1 second = 315 seconds (5.25 minutes)
    ```
@@ -144,12 +144,12 @@ The actual implementation shows much longer times due to:
 
 ## Optimization Opportunities
 
-1. **Increase rate limits**: 
+1. **Increase rate limits**:
    - Semantic Scholar: API key allows 100 requests/second
    - OpenAlex: Polite pool allows 10 requests/second
    - Could reduce time to ~2-3 minutes
 
-2. **Larger batch sizes**: 
+2. **Larger batch sizes**:
    - Process 50-100 papers per progress update
    - Reduce total API calls by 70%
 

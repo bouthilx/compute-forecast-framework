@@ -89,7 +89,7 @@ def save_papers(papers: List[SimplePaper], output_path: Path, metadata: Dict[str
     """Save collected papers to JSON file."""
     # Convert SimplePaper objects to Paper format
     converted_papers = [p.to_package_paper() for p in papers]
-    
+
     output_data = {
         "collection_metadata": {
             "timestamp": datetime.now().isoformat(),
@@ -271,7 +271,9 @@ def main(
             "[cyan]Override scraper:[/cyan] cf collect --venue iclr --year 2024 --scraper OpenReviewScraperV2"
         )
         console.print()
-        console.print("[yellow]Note:[/yellow] OpenReviewScraperV2 provides improved decision extraction and filtering.")
+        console.print(
+            "[yellow]Note:[/yellow] OpenReviewScraperV2 provides improved decision extraction and filtering."
+        )
 
         return
 
@@ -348,11 +350,11 @@ def main(
             scraper_info = registry.get_scraper_for_venue_info(venue_name)
             scraper_name = scraper_info["scraper"]
             is_override = False
-        
+
         display_name = scraper_name
         if is_override:
             display_name += " (override)"
-        
+
         table.add_row(
             venue_name,
             ", ".join(str(y) for y in venue_year_list),
@@ -378,7 +380,7 @@ def main(
                 estimate_scraper = None
         else:
             estimate_scraper = registry.get_scraper_for_venue(venue_name, config)
-            
+
         if estimate_scraper:
             for year in venue_year_list:
                 estimate = estimate_scraper.estimate_paper_count(venue_name, year)

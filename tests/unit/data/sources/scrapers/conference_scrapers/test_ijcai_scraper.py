@@ -99,8 +99,7 @@ class TestIJCAIScraper:
 
     def test_dynamic_year_fallback(self, scraper):
         """Test dynamic year range in fallback"""
-        with patch('requests.Session.get') as mock_get:
-
+        with patch("requests.Session.get") as mock_get:
             mock_get.side_effect = requests.RequestException("Network error")
 
             years = scraper.get_available_years("IJCAI")

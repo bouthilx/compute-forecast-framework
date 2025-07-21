@@ -36,7 +36,7 @@
 ### Performance Bottlenecks Breakdown
 
 1. **Rate Limiting Impact**: 315 API calls × 1 second = 5.25 minutes minimum
-2. **Excessive API Calls**: 
+2. **Excessive API Calls**:
    - Current: 45 batches × 7 calls/batch = 315 total calls
    - Optimal: ~12 calls total (using max batch sizes)
 3. **Sequential Processing**: Sources processed one after another

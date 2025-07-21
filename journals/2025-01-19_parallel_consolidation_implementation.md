@@ -47,7 +47,7 @@ Created a parallel processing architecture with:
 
 3. **Dual Progress Bars**: Show real-time progress for both OpenAlex and Semantic Scholar sources.
 
-4. **Proper Merge Rules**: 
+4. **Proper Merge Rules**:
    - IDs only override if None (first source wins)
    - Records append with source attribution and timestamps
 

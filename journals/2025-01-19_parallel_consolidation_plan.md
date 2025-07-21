@@ -33,7 +33,7 @@ Input Papers ──┬─→ OpenAlex Worker ─────→ Queue ──┐
 - Processes papers in configurable batches
 - Sends complete enrichment data to merge queue
 
-#### 2. Semantic Scholar Worker  
+#### 2. Semantic Scholar Worker
 - Attempts batch lookup by existing IDs (DOI, ArXiv)
 - Falls back to title search for unfound papers
 - Extracts ALL identifiers from responses
@@ -88,7 +88,7 @@ Semantic Scholar: [██████████----------] 50% (500/1000) 04:1
 
 4. **Merged Result**:
    - `paper.doi` = '10.1038/nature14539' (from OpenAlex, first to set)
-   - `paper.openalex_id` = 'W2964298273' 
+   - `paper.openalex_id` = 'W2964298273'
    - `paper.citations` = [CitationRecord(OpenAlex, 50000), CitationRecord(S2, 48500)]
    - `paper.abstracts` = [AbstractRecord(OpenAlex), AbstractRecord(S2)]
    - `paper.identifiers` = [4 IdentifierRecords from both sources]
@@ -105,7 +105,7 @@ Semantic Scholar: [██████████----------] 50% (500/1000) 04:1
 ### Implementation Plan
 
 1. Create base `ConsolidationWorker` class with common functionality
-2. Implement `OpenAlexWorker` and `SemanticScholarWorker` 
+2. Implement `OpenAlexWorker` and `SemanticScholarWorker`
 3. Create `MergeWorker` with correct merge rules
 4. Build `ParallelConsolidator` orchestrator with queues
 5. Implement dual progress bar display using Rich
@@ -117,7 +117,7 @@ Semantic Scholar: [██████████----------] 50% (500/1000) 04:1
 ```python
 checkpoint_state = {
     'openalex_processed_hashes': set(),
-    'semantic_scholar_processed_hashes': set(), 
+    'semantic_scholar_processed_hashes': set(),
     'merged_papers': [],
     'timestamp': datetime.now()
 }

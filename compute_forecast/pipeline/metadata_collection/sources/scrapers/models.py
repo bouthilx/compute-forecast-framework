@@ -6,9 +6,12 @@ from typing import List, Optional
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 from compute_forecast.pipeline.consolidation.models import (
-    CitationRecord, CitationData,
-    AbstractRecord, AbstractData,
-    URLRecord, URLData
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+    URLRecord,
+    URLData,
 )
 
 
@@ -39,7 +42,7 @@ class SimplePaper:
 
     # Paper acceptance decision
     decision: Optional[str] = None  # 'oral', 'poster', 'spotlight', or None
-    
+
     # Quality indicators
     extraction_confidence: float = 1.0
 
@@ -49,32 +52,38 @@ class SimplePaper:
         """Convert to package's Paper model"""
         # Create provenance records for scraped data
         citations = []
-        if hasattr(self, 'citations') and self.citations is not None:
-            citations.append(CitationRecord(
-                source=self.source_scraper,
-                timestamp=self.scraped_at,
-                original=True,  # This is from original scraper
-                data=CitationData(count=self.citations)
-            ))
-        
+        if hasattr(self, "citations") and self.citations is not None:
+            citations.append(
+                CitationRecord(
+                    source=self.source_scraper,
+                    timestamp=self.scraped_at,
+                    original=True,  # This is from original scraper
+                    data=CitationData(count=self.citations),
+                )
+            )
+
         abstracts = []
         if self.abstract:
-            abstracts.append(AbstractRecord(
-                source=self.source_scraper,
-                timestamp=self.scraped_at,
-                original=True,  # This is from original scraper
-                data=AbstractData(text=self.abstract, language="en")
-            ))
-        
+            abstracts.append(
+                AbstractRecord(
+                    source=self.source_scraper,
+                    timestamp=self.scraped_at,
+                    original=True,  # This is from original scraper
+                    data=AbstractData(text=self.abstract, language="en"),
+                )
+            )
+
         urls = []
         for url in self.pdf_urls:
-            urls.append(URLRecord(
-                source=self.source_scraper,
-                timestamp=self.scraped_at,
-                original=True,  # This is from original scraper
-                data=URLData(url=url)
-            ))
-        
+            urls.append(
+                URLRecord(
+                    source=self.source_scraper,
+                    timestamp=self.scraped_at,
+                    original=True,  # This is from original scraper
+                    data=URLData(url=url),
+                )
+            )
+
         return Paper(
             title=self.title,
             authors=[Author(name=name, affiliations=[]) for name in self.authors],

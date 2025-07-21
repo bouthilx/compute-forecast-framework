@@ -36,7 +36,7 @@ This plan outlines how to extend the consolidation process to capture and store 
 @dataclass
 class Paper:
     # Existing fields...
-    
+
     # Extended identifier fields
     s2_corpus_id: Optional[str] = None  # Semantic Scholar Corpus ID
     pmid: Optional[str] = None          # PubMed ID
@@ -76,7 +76,7 @@ class EnrichmentResult:
 def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
     # Existing fields + request corpusId
     fields = "paperId,title,abstract,citationCount,year,authors,externalIds,corpusId,openAccessPdf,fieldsOfStudy,venue"
-    
+
     # In response parsing:
     paper_data = {
         'citations': item.get('citationCount'),
@@ -85,23 +85,23 @@ def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
         'identifiers': [],  # NEW
         # ... other fields
     }
-    
+
     # Extract all external IDs
     ext_ids = item.get('externalIds', {})
-    
+
     # Add Semantic Scholar IDs
     if item.get('paperId'):
         paper_data['identifiers'].append({
             'type': 's2_paper',
             'value': item['paperId']
         })
-    
+
     if item.get('corpusId'):
         paper_data['identifiers'].append({
             'type': 's2_corpus',
             'value': str(item['corpusId'])
         })
-    
+
     # Add external identifiers
     id_mappings = {
         'DOI': 'doi',
@@ -110,7 +110,7 @@ def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
         'ACL': 'acl',
         'MAG': 'mag'
     }
-    
+
     for ext_type, our_type in id_mappings.items():
         if ext_type in ext_ids:
             paper_data['identifiers'].append({
@@ -124,30 +124,30 @@ def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
 def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
     # Request additional ID fields
     select_fields = "id,title,abstract_inverted_index,cited_by_count,ids,publication_year,..."
-    
+
     # In response parsing:
     paper_data = {
         # ... existing fields
         'identifiers': []  # NEW
     }
-    
+
     # Extract all IDs from OpenAlex
     ids = work.get('ids', {})
-    
+
     # OpenAlex ID (already in URL format)
     if work.get('id'):
         paper_data['identifiers'].append({
             'type': 'openalex',
             'value': work['id']
         })
-    
+
     # Other identifiers
     id_mappings = {
         'doi': 'doi',
         'pmid': 'pmid',
         'mag': 'mag'  # OpenAlex has MAG IDs
     }
-    
+
     for oa_type, our_type in id_mappings.items():
         if oa_type in ids:
             paper_data['identifiers'].append({
@@ -162,10 +162,10 @@ def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
 # In consolidate.py main()
 def update_progress(result):
     # ... existing code ...
-    
+
     # Add identifier enrichments
     paper.identifiers.extend(result.identifiers)  # NEW
-    
+
     # Track statistics
     source_identifiers += len(result.identifiers)  # NEW
 
@@ -191,7 +191,7 @@ def update_identifiers_from_records(self):
     for record in self.identifiers:
         id_type = record.data.identifier_type
         id_value = record.data.identifier_value
-        
+
         if id_type == 'doi' and not self.doi:
             self.doi = id_value
         elif id_type == 'arxiv' and not self.arxiv_id:

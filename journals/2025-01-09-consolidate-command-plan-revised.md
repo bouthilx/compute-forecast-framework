@@ -1,7 +1,7 @@
 # Consolidate Command Implementation Plan (Revised)
 
 **Date**: 2025-07-10
-**Time**: 11:00 
+**Time**: 11:00
 **Task**: Revised plan for `cf consolidate` command based on discussion feedback
 
 ## Executive Summary
@@ -62,7 +62,7 @@ compute_forecast/cli/commands/
 
 #### Code to Reuse:
 - Rate limiting from PDF collectors
-- Batch API handling from enhanced metadata sources  
+- Batch API handling from enhanced metadata sources
 - Retry logic and error handling patterns
 - Existing affiliation parser (if affiliations available via API)
 
@@ -97,7 +97,7 @@ All enriched fields will be stored as lists with source tracking:
     },
     {
         "source": "openalex",
-        "timestamp": "2025-01-09T10:31:00Z", 
+        "timestamp": "2025-01-09T10:31:00Z",
         "data": {"count": 43}
     }
 ]
@@ -125,7 +125,7 @@ All enriched fields will be stored as lists with source tracking:
 #### Keywords:
 - **Storage**: Separate lists for:
   - `keywords_original`: From paper metadata
-  - `keywords_api`: From API sources  
+  - `keywords_api`: From API sources
   - `keywords_inferred`: Extracted from title/abstract
 - **Processing**: Keep source separation for analysis
 
@@ -192,7 +192,7 @@ cf consolidate --input data.json --parallel 4
 
 1. **Load Phase**: Read collected papers JSON, validate schema
 2. **Deduplication Phase**: Identify duplicates, create duplicate entries with similarity metrics
-3. **Enrichment Phase**: 
+3. **Enrichment Phase**:
    - Batch papers for API efficiency (minimize total queries)
    - Query sources in parallel
    - Store all results with provenance

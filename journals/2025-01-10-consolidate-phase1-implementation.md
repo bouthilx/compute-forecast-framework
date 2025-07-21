@@ -55,7 +55,7 @@ class ProvenanceRecord:
     """Base class for tracking source and timing of enrichment data"""
     source: str
     timestamp: datetime
-    
+
 @dataclass
 class CitationData:
     """Citation count data"""
@@ -81,7 +81,7 @@ class AbstractRecord(ProvenanceRecord):
 class URLData:
     """URL data"""
     url: str
-    
+
 @dataclass
 class URLRecord(ProvenanceRecord):
     """URL with provenance"""
@@ -95,7 +95,7 @@ class EnrichmentResult:
     abstracts: List[AbstractRecord] = field(default_factory=list)
     urls: List[URLRecord] = field(default_factory=list)
     errors: List[Dict[str, str]] = field(default_factory=list)
-    
+
 @dataclass
 class ConsolidationResult:
     """Overall consolidation operation result"""
@@ -125,7 +125,7 @@ def citation_count(self) -> int:
     if not self.citations_history:
         return self.citations  # fallback to original field
     max_count = max(
-        record.data.count 
+        record.data.count
         for record in self.citations_history
     )
     return max(max_count, self.citations)
@@ -166,14 +166,14 @@ class SourceConfig:
 
 class BaseConsolidationSource(ABC):
     """Base class for all consolidation sources"""
-    
+
     def __init__(self, name: str, config: SourceConfig):
         self.name = name
         self.config = config
         self.logger = logging.getLogger(f"consolidation.{name}")
         self.api_calls = 0
         self.last_request_time = 0
-        
+
     def _rate_limit(self):
         """Enforce rate limiting"""
         elapsed = time.time() - self.last_request_time
@@ -181,7 +181,7 @@ class BaseConsolidationSource(ABC):
         if sleep_time > 0:
             time.sleep(sleep_time)
         self.last_request_time = time.time()
-        
+
     @abstractmethod
     def find_papers(self, papers: List[Paper]) -> Dict[str, str]:
         """
@@ -189,7 +189,7 @@ class BaseConsolidationSource(ABC):
         Returns mapping of our paper_id -> source_paper_id
         """
         pass
-        
+
     @abstractmethod
     def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
         """
@@ -203,37 +203,37 @@ class BaseConsolidationSource(ABC):
         }
         """
         pass
-        
+
     def enrich_papers(self, papers: List[Paper]) -> List[EnrichmentResult]:
         """Main enrichment workflow - single pass for all fields"""
         results = []
-        
+
         # Process in batches
         for i in range(0, len(papers), self.config.batch_size):
             batch = papers[i:i + self.config.batch_size]
-            
+
             # Find papers in this source ONCE
             id_mapping = self.find_papers(batch)
             source_ids = list(id_mapping.values())
-            
+
             if not source_ids:
                 continue
-                
+
             # Fetch ALL enrichment data in one API call (or minimal calls)
             try:
                 enrichment_data = self.fetch_all_fields(source_ids)
             except Exception as e:
                 self.logger.error(f"Error fetching data: {e}")
                 continue
-            
+
             # Create results with provenance
             for paper in batch:
                 result = EnrichmentResult(paper_id=paper.paper_id)
-                
+
                 source_id = id_mapping.get(paper.paper_id)
                 if source_id and source_id in enrichment_data:
                     data = enrichment_data[source_id]
-                    
+
                     # Add citation if found
                     if data.get('citations') is not None:
                         citation_record = CitationRecord(
@@ -243,7 +243,7 @@ class BaseConsolidationSource(ABC):
                             data=CitationData(count=data['citations'])
                         )
                         result.citations.append(citation_record)
-                    
+
                     # Add abstract if found
                     if data.get('abstract'):
                         abstract_record = AbstractRecord(
@@ -253,7 +253,7 @@ class BaseConsolidationSource(ABC):
                             data=AbstractData(text=data['abstract'])
                         )
                         result.abstracts.append(abstract_record)
-                        
+
                     # Add URLs if found
                     for url in data.get('urls', []):
                         url_record = URLRecord(
@@ -263,9 +263,9 @@ class BaseConsolidationSource(ABC):
                             data=URLData(url=url)
                         )
                         result.urls.append(url_record)
-                
+
                 results.append(result)
-                
+
         return results
 ```
 
@@ -284,28 +284,28 @@ from ...metadata_collection.models import Paper
 
 class SemanticScholarSource(BaseConsolidationSource):
     """Semantic Scholar consolidation source"""
-    
+
     def __init__(self, config: Optional[SourceConfig] = None):
         if config is None:
             config = SourceConfig()
         super().__init__("semantic_scholar", config)
         self.base_url = "https://api.semanticscholar.org/v1"
         self.graph_url = "https://api.semanticscholar.org/graph/v1"
-        
+
         self.headers = {}
         if self.config.api_key:
             self.headers["x-api-key"] = self.config.api_key
-            
+
     def find_papers(self, papers: List[Paper]) -> Dict[str, str]:
         """Find papers using multiple identifiers"""
         mapping = {}
-        
+
         # Try to match by existing Semantic Scholar ID
         for paper in papers:
             if paper.paper_id and paper.paper_id.startswith("SS:"):
                 mapping[paper.paper_id] = paper.paper_id[3:]
                 continue
-                
+
         # Batch lookup by DOI
         doi_batch = []
         doi_to_paper = {}
@@ -313,7 +313,7 @@ class SemanticScholarSource(BaseConsolidationSource):
             if paper.paper_id not in mapping and paper.doi:
                 doi_batch.append(paper.doi)
                 doi_to_paper[paper.doi] = paper.paper_id
-                
+
         if doi_batch:
             # Use paper batch endpoint
             self._rate_limit()
@@ -324,19 +324,19 @@ class SemanticScholarSource(BaseConsolidationSource):
                 params={"fields": "paperId"}
             )
             self.api_calls += 1
-            
+
             if response.status_code == 200:
                 for item in response.json():
                     if item and "paperId" in item:
                         doi = item.get("externalIds", {}).get("DOI")
                         if doi in doi_to_paper:
                             mapping[doi_to_paper[doi]] = item["paperId"]
-                            
+
         # Fallback: Search by title for remaining papers
         for paper in papers:
             if paper.paper_id in mapping:
                 continue
-                
+
             self._rate_limit()
             query = f'"{paper.title}"'
             response = requests.get(
@@ -349,29 +349,29 @@ class SemanticScholarSource(BaseConsolidationSource):
                 headers=self.headers
             )
             self.api_calls += 1
-            
+
             if response.status_code == 200:
                 data = response.json()
                 if data.get("data"):
                     result = data["data"][0]
                     # Verify it's the same paper (title similarity and year)
-                    if (self._similar_title(paper.title, result["title"]) and 
+                    if (self._similar_title(paper.title, result["title"]) and
                         result.get("year") == paper.year):
                         mapping[paper.paper_id] = result["paperId"]
-                        
+
         return mapping
-        
+
     def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
         """Fetch all available fields in a single API call per batch"""
         results = {}
-        
+
         # All fields we want in one request
         fields = "paperId,title,abstract,citationCount,year,authors,externalIds,openAccessPdf,fieldsOfStudy,venue"
-        
+
         # Process in chunks of 500 (API limit)
         for i in range(0, len(source_ids), 500):
             batch = source_ids[i:i+500]
-            
+
             self._rate_limit()
             response = requests.post(
                 f"{self.graph_url}/paper/batch",
@@ -380,16 +380,16 @@ class SemanticScholarSource(BaseConsolidationSource):
                 params={"fields": fields}
             )
             self.api_calls += 1
-            
+
             if response.status_code == 200:
                 for item in response.json():
                     if item is None:
                         continue
-                        
+
                     paper_id = item.get("paperId")
                     if not paper_id:
                         continue
-                        
+
                     # Extract all data from single response
                     paper_data = {
                         'citations': item.get('citationCount'),
@@ -399,29 +399,29 @@ class SemanticScholarSource(BaseConsolidationSource):
                         'venue': item.get('venue'),
                         'fields_of_study': item.get('fieldsOfStudy', [])
                     }
-                    
+
                     # Add open access PDF URL if available
                     if item.get('openAccessPdf') and item['openAccessPdf'].get('url'):
                         paper_data['urls'].append(item['openAccessPdf']['url'])
-                        
+
                     results[paper_id] = paper_data
-                    
+
         return results
-        
+
     def _similar_title(self, title1: str, title2: str) -> bool:
         """Check if two titles are similar enough"""
         # Simple normalization and comparison
         norm1 = title1.lower().strip()
         norm2 = title2.lower().strip()
-        
+
         # Exact match after normalization
         if norm1 == norm2:
             return True
-            
+
         # Check if one is substring of other (handling subtitles)
         if norm1 in norm2 or norm2 in norm1:
             return True
-            
+
         # Could add more sophisticated matching here
         return False
 ```
@@ -440,42 +440,42 @@ from ...metadata_collection.models import Paper
 
 class OpenAlexSource(BaseConsolidationSource):
     """OpenAlex consolidation source"""
-    
+
     def __init__(self, config: Optional[SourceConfig] = None):
         if config is None:
             config = SourceConfig()
         super().__init__("openalex", config)
         self.base_url = "https://api.openalex.org"
-        
+
         # Email for polite access
         email = config.api_key  # Using api_key field for email
         self.headers = {"User-Agent": "ConsolidationBot/1.0"}
         if email:
             self.headers["User-Agent"] += f" (mailto:{email})"
-            
+
     def find_papers(self, papers: List[Paper]) -> Dict[str, str]:
         """Find papers using OpenAlex search"""
         mapping = {}
-        
+
         # Check for existing OpenAlex IDs
         for paper in papers:
             if paper.openalex_id:
                 mapping[paper.paper_id] = paper.openalex_id
                 continue
-                
+
         # Batch search by DOI
         doi_filter_parts = []
         doi_to_paper = {}
-        
+
         for paper in papers:
             if paper.paper_id not in mapping and paper.doi:
                 doi_filter_parts.append(f'doi:"{paper.doi}"')
                 doi_to_paper[paper.doi] = paper.paper_id
-                
+
         if doi_filter_parts:
             # OpenAlex OR filter syntax
             filter_str = "|".join(doi_filter_parts)
-            
+
             self._rate_limit()
             response = requests.get(
                 f"{self.base_url}/works",
@@ -487,18 +487,18 @@ class OpenAlexSource(BaseConsolidationSource):
                 headers=self.headers
             )
             self.api_calls += 1
-            
+
             if response.status_code == 200:
                 for work in response.json().get("results", []):
                     doi = work.get("doi", "").replace("https://doi.org/", "")
                     if doi in doi_to_paper:
                         mapping[doi_to_paper[doi]] = work["id"]
-                        
+
         # Search by title for remaining papers
         for paper in papers:
             if paper.paper_id in mapping:
                 continue
-                
+
             self._rate_limit()
             response = requests.get(
                 f"{self.base_url}/works",
@@ -511,7 +511,7 @@ class OpenAlexSource(BaseConsolidationSource):
                 headers=self.headers
             )
             self.api_calls += 1
-            
+
             if response.status_code == 200:
                 results = response.json().get("results", [])
                 if results:
@@ -519,25 +519,25 @@ class OpenAlexSource(BaseConsolidationSource):
                     # Verify match
                     if self._similar_title(paper.title, work.get("title", "")):
                         mapping[paper.paper_id] = work["id"]
-                        
+
         return mapping
-        
+
     def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
         """Fetch all available fields in minimal API calls"""
         results = {}
-        
+
         # Build OR filter for all IDs
         id_filters = [f'openalex:"{id}"' for id in source_ids]
-        
+
         # Select all fields we need in one request
         select_fields = "id,title,abstract_inverted_index,cited_by_count,publication_year,authorships,primary_location,locations,concepts"
-        
+
         # Process in batches (OpenAlex has URL length limits)
         batch_size = 50
         for i in range(0, len(id_filters), batch_size):
             batch = id_filters[i:i+batch_size]
             filter_str = "|".join(batch)
-            
+
             self._rate_limit()
             response = requests.get(
                 f"{self.base_url}/works",
@@ -549,13 +549,13 @@ class OpenAlexSource(BaseConsolidationSource):
                 headers=self.headers
             )
             self.api_calls += 1
-            
+
             if response.status_code == 200:
                 for work in response.json().get("results", []):
                     work_id = work.get("id")
                     if not work_id:
                         continue
-                        
+
                     # Extract all data from single response
                     paper_data = {
                         'citations': work.get("cited_by_count", 0),
@@ -564,12 +564,12 @@ class OpenAlexSource(BaseConsolidationSource):
                         'authors': [],
                         'concepts': work.get('concepts', [])
                     }
-                    
+
                     # Convert inverted index to text
                     inverted = work.get("abstract_inverted_index", {})
                     if inverted:
                         paper_data['abstract'] = self._inverted_to_text(inverted)
-                        
+
                     # Extract author information
                     for authorship in work.get('authorships', []):
                         author_info = {
@@ -577,20 +577,20 @@ class OpenAlexSource(BaseConsolidationSource):
                             'institutions': [inst.get('display_name') for inst in authorship.get('institutions', [])]
                         }
                         paper_data['authors'].append(author_info)
-                        
+
                     # Extract URLs from locations
                     if work.get('primary_location') and work['primary_location'].get('pdf_url'):
                         paper_data['urls'].append(work['primary_location']['pdf_url'])
-                        
+
                     # Check other locations for open access URLs
                     for location in work.get('locations', []):
                         if location.get('pdf_url') and location['pdf_url'] not in paper_data['urls']:
                             paper_data['urls'].append(location['pdf_url'])
-                            
+
                     results[work_id] = paper_data
-                    
+
         return results
-        
+
     def _inverted_to_text(self, inverted_index: Dict[str, List[int]]) -> str:
         """Convert OpenAlex inverted index to text"""
         words = []
@@ -599,7 +599,7 @@ class OpenAlexSource(BaseConsolidationSource):
                 words.append((pos, word))
         words.sort()
         return " ".join(word for _, word in words)
-        
+
     def _similar_title(self, title1: str, title2: str) -> bool:
         """Check if two titles are similar"""
         norm1 = title1.lower().strip()
@@ -635,20 +635,20 @@ def load_papers(input_path: Path) -> List[Paper]:
     """Load papers from collected JSON file"""
     with open(input_path) as f:
         data = json.load(f)
-    
+
     papers = []
     for paper_data in data.get("papers", []):
         # Convert to Paper object
         paper = Paper.from_dict(paper_data)
         papers.append(paper)
-        
+
     return papers
 
 def save_papers(papers: List[Paper], output_path: Path, stats: dict):
     """Save enriched papers to JSON file"""
     # Paper.to_dict() already handles provenance record serialization
     papers_data = [p.to_dict() for p in papers]
-    
+
     output_data = {
         "consolidation_metadata": {
             "timestamp": datetime.now().isoformat(),
@@ -656,7 +656,7 @@ def save_papers(papers: List[Paper], output_path: Path, stats: dict):
         },
         "papers": papers_data
     }
-    
+
     with open(output_path, "w") as f:
         json.dump(output_data, f, indent=2)
 
@@ -672,44 +672,44 @@ def main(
 ):
     """
     Consolidate and enrich paper metadata from multiple sources.
-    
+
     Examples:
         cf consolidate --input papers.json --output enriched.json
         cf consolidate --input papers.json --enrich citations
         cf consolidate --input papers.json --sources semantic_scholar
     """
-    
+
     # Set default output
     if not output:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output = Path(f"data/consolidated_papers/papers_{timestamp}.json")
-    
+
     # Parse options
     enrich_fields = [f.strip() for f in enrich.split(",")]
     source_names = [s.strip() for s in sources.split(",")]
-    
+
     console.print(f"[cyan]Loading papers from {input}...[/cyan]")
     papers = load_papers(input)
     console.print(f"[green]Loaded {len(papers)} papers[/green]")
-    
+
     if dry_run:
         console.print("\n[yellow]DRY RUN - Would enrich:[/yellow]")
         console.print(f"  Fields: {', '.join(enrich_fields)}")
         console.print(f"  Sources: {', '.join(source_names)}")
         console.print(f"  Papers: {len(papers)}")
         return
-    
+
     # Initialize sources
     source_objects = []
-    
+
     if "semantic_scholar" in source_names:
         config = SourceConfig(api_key=ss_api_key)
         source_objects.append(SemanticScholarSource(config))
-        
+
     if "openalex" in source_names:
         config = SourceConfig(api_key=openalex_email)  # Email in api_key field
         source_objects.append(OpenAlexSource(config))
-    
+
     # Track statistics
     stats = {
         "total_papers": len(papers),
@@ -718,57 +718,57 @@ def main(
         "urls_added": 0,
         "api_calls": {}
     }
-    
+
     # Create paper lookup for efficient updates
     papers_by_id = {p.paper_id: p for p in papers if p.paper_id}
-    
+
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         console=console,
     ) as progress:
-        
+
         # Single enrichment pass through all sources
         task = progress.add_task("Enriching papers from all sources...", total=len(source_objects))
-        
+
         for source in source_objects:
             console.print(f"[cyan]Enriching from {source.name}...[/cyan]")
-            
+
             try:
                 # Get ALL enrichment data in one pass
                 enrichment_results = source.enrich_papers(papers)
-                
+
                 # Apply all enrichments to papers
                 for result in enrichment_results:
                     if result.paper_id in papers_by_id:
                         paper = papers_by_id[result.paper_id]
-                        
+
                         # Add all enrichment data with provenance
                         paper.citations.extend(result.citations)
                         paper.abstracts.extend(result.abstracts)
                         paper.urls.extend(result.urls)
-                        
+
                         # Update statistics
                         stats["citations_added"] += len(result.citations)
                         stats["abstracts_added"] += len(result.abstracts)
                         stats["urls_added"] += len(result.urls)
-                
+
                 console.print(f"[green]✓[/green] Completed {source.name}")
-                
+
             except Exception as e:
                 logger.error(f"Error enriching from {source.name}: {e}")
                 console.print(f"[red]✗[/red] Failed to enrich from {source.name}: {e}")
-            
+
             progress.advance(task)
-    
+
     # Collect API call stats
     for source in source_objects:
         stats["api_calls"][source.name] = source.api_calls
-    
+
     # Save results
     output.parent.mkdir(parents=True, exist_ok=True)
     save_papers(papers, output, stats)
-    
+
     console.print(f"\n[green]✓[/green] Saved enriched data to {output}")
     console.print("\n[bold]Summary:[/bold]")
     console.print(f"  Papers processed: {stats['total_papers']}")
@@ -817,7 +817,7 @@ def test_unified_enrichment():
             urls=[]
         )
     ]
-    
+
     # Mock source with unified fetch_all_fields
     mock_source = Mock()
     mock_source.name = "test_source"
@@ -829,10 +829,10 @@ def test_unified_enrichment():
             "urls": ["https://example.com/paper.pdf"]
         }
     }
-    
+
     # Test enrichment
     results = mock_source.enrich_papers(papers)
-    
+
     # In real implementation, paper would be updated directly
     # For test, we check the enrichment results
     assert len(results) == 1
@@ -870,10 +870,10 @@ def test_consolidate_command(tmp_path):
             }
         ]
     }
-    
+
     with open(input_file, "w") as f:
         json.dump(input_data, f)
-    
+
     # Run command
     runner = CliRunner()
     result = runner.invoke(app, [
@@ -882,7 +882,7 @@ def test_consolidate_command(tmp_path):
         "--output", str(tmp_path / "output.json"),
         "--dry-run"
     ])
-    
+
     assert result.exit_code == 0
     assert "DRY RUN" in result.output
     assert "1 papers" in result.output

@@ -20,7 +20,7 @@ Created a two-phase consolidation plan:
 - `PaperIdentifiers` dataclass in `models_extended.py` to track all identifiers:
   - DOI, ArXiv ID, OpenAlex ID, Semantic Scholar ID, PubMed ID, etc.
   - Helper method `has_external_ids()` to check if batch lookup is possible
-  
+
 - `ConsolidationPhaseState` dataclass to track two-phase progress:
   - Current phase and completion status
   - Collected identifiers

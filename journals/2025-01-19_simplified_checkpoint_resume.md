@@ -17,7 +17,7 @@ Implemented a simple hash-based tracking system:
    - Authors (sorted alphabetically, normalized)
    - Venue (normalized)
    - Year
-   
+
 2. **Simplified Tracking**: Added `processed_paper_hashes: Set[str]` to `ConsolidationPhaseState` to track which papers have been processed
 
 3. **Efficient Resume**: During resume, papers are filtered based on their hash before any API calls are made
@@ -29,7 +29,7 @@ Implemented a simple hash-based tracking system:
 def get_paper_hash(paper: Paper) -> str:
     """Generate a unique hash for a paper based on title, authors, venue, and year."""
     title = paper.title.lower().strip() if paper.title else ""
-    
+
     # Sort and normalize author names
     authors = []
     if hasattr(paper, 'authors') and paper.authors:
@@ -42,10 +42,10 @@ def get_paper_hash(paper: Paper) -> str:
                 authors.append(name)
     authors.sort()
     authors_str = ";".join(authors)
-    
+
     venue = paper.venue.lower().strip() if paper.venue else ""
     year = str(paper.year) if paper.year else ""
-    
+
     content = f"{title}|{authors_str}|{venue}|{year}"
     return hashlib.sha256(content.encode()).hexdigest()
 ```
