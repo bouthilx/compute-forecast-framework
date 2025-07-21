@@ -307,8 +307,9 @@ class BreakthroughDetector:
 
                 # Calculate individual component scores
                 years_since_pub = max(1, self.current_year - paper.year)
+                citation_count = paper.get_latest_citations_count()
                 citation_velocity = (
-                    paper.citations / years_since_pub if paper.citations else 0
+                    citation_count / years_since_pub if citation_count > 0 else 0
                 )
 
                 # Velocity score

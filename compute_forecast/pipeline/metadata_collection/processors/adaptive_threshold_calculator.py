@@ -52,7 +52,7 @@ class AdaptiveThresholdCalculator:
             return base_threshold
 
         # Calculate statistical threshold (percentile from config)
-        citations = [p.citations for p in venue_papers if p.citations is not None]
+        citations = [p.get_latest_citations_count() for p in venue_papers]
         if citations:
             statistical_threshold = np.percentile(
                 citations, self.config.statistical_percentile
@@ -129,11 +129,11 @@ class AdaptiveThresholdCalculator:
 
         # Calculate how many papers would be above threshold
         papers_above = len(
-            [p for p in venue_papers if p.citations >= adaptive_threshold]
+            [p for p in venue_papers if p.get_latest_citations_count() >= adaptive_threshold]
         )
 
         # Calculate alternative thresholds
-        citations = [p.citations for p in venue_papers if p.citations is not None]
+        citations = [p.get_latest_citations_count() for p in venue_papers]
         alternative_thresholds = {}
         if citations:
             alternative_thresholds = {

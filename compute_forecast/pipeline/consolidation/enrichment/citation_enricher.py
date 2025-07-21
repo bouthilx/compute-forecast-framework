@@ -3,6 +3,7 @@ import logging
 
 from ..sources.base import BaseConsolidationSource
 from ...metadata_collection.models import Paper
+from ..models import CitationRecord
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class CitationEnricher:
         Enrich papers with citations from all sources.
         Returns mapping of paper_id -> list of citation records
         """
-        all_citations = {}
+        all_citations: Dict[str, List[CitationRecord]] = {}
 
         for source in self.sources:
             logger.info(f"Fetching citations from {source.name}")

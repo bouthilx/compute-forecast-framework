@@ -442,29 +442,37 @@ class MockDataGenerator:
             authorship_analysis=authorship_analysis,
             venue_analysis=venue_analysis,
         )
-        
+
         # Add citations if provided
         if citations is not None:
-            from compute_forecast.pipeline.consolidation.models import CitationRecord, CitationData
+            from compute_forecast.pipeline.consolidation.models import (
+                CitationRecord,
+                CitationData,
+            )
+
             citation_record = CitationRecord(
                 source="mock_generator",
                 timestamp=datetime.now(),
                 original=True,
-                data=CitationData(count=citations)
+                data=CitationData(count=citations),
             )
             paper.citations.append(citation_record)
-        
+
         # Add abstract if provided
         if abstract:
-            from compute_forecast.pipeline.consolidation.models import AbstractRecord, AbstractData
+            from compute_forecast.pipeline.consolidation.models import (
+                AbstractRecord,
+                AbstractData,
+            )
+
             abstract_record = AbstractRecord(
                 source="mock_generator",
                 timestamp=datetime.now(),
                 original=True,
-                data=AbstractData(text=abstract, language="en")
+                data=AbstractData(text=abstract, language="en"),
             )
             paper.abstracts.append(abstract_record)
-        
+
         return paper
 
     def _generate_title(self) -> str:
@@ -817,7 +825,9 @@ class MockDataGenerator:
         for author in authors:
             detail = {
                 "name": author.name,
-                "affiliation": author.affiliations[0] if author.affiliations else "Unknown",
+                "affiliation": author.affiliations[0]
+                if author.affiliations
+                else "Unknown",
                 "category": "unknown",
             }
 

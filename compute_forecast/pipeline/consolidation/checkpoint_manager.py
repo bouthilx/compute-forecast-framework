@@ -46,7 +46,7 @@ class ConsolidationCheckpointManager:
 
     def __init__(
         self,
-        session_id: str = None,
+        session_id: Optional[str] = None,
         checkpoint_dir: Path = Path(".cf_state/consolidate"),
         checkpoint_interval_minutes: float = 5.0,
     ):
@@ -415,7 +415,7 @@ class ConsolidationCheckpointManager:
         Returns:
             List of session info dicts with keys: session_id, created_at, input_file, status
         """
-        sessions = []
+        sessions: List[Dict[str, Any]] = []
 
         if not checkpoint_dir.exists():
             return sessions

@@ -140,8 +140,8 @@ class MergeWorker(threading.Thread):
                 original=False,
                 data=IdentifierData(
                     identifier_type="s2_paper",
-                    identifier_value=enrichment["semantic_scholar_id"]
-                )
+                    identifier_value=enrichment["semantic_scholar_id"],
+                ),
             )
             consolidated.identifiers.append(id_record)
 
@@ -154,9 +154,8 @@ class MergeWorker(threading.Thread):
                     timestamp=datetime.now(),
                     original=False,
                     data=IdentifierData(
-                        identifier_type=id_type,
-                        identifier_value=enrichment[id_field]
-                    )
+                        identifier_type=id_type, identifier_value=enrichment[id_field]
+                    ),
                 )
                 consolidated.identifiers.append(id_record)
 

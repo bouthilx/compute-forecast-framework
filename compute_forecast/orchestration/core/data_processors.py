@@ -212,7 +212,11 @@ class SimpleCitationAnalyzer:
         self, papers: List[Paper], min_citations: int
     ) -> List[Paper]:
         """Filter papers by minimum citation count"""
-        filtered = [paper for paper in papers if paper.get_latest_citations_count() >= min_citations]
+        filtered = [
+            paper
+            for paper in papers
+            if paper.get_latest_citations_count() >= min_citations
+        ]
         logger.info(
             f"Citation filter: {len(papers)} -> {len(filtered)} papers (min_citations={min_citations})"
         )

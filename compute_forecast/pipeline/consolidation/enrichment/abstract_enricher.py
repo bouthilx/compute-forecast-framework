@@ -3,6 +3,7 @@ import logging
 
 from ..sources.base import BaseConsolidationSource
 from ...metadata_collection.models import Paper
+from ..models import AbstractRecord
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class AbstractEnricher:
         Enrich papers with abstracts from all sources.
         Returns mapping of paper_id -> list of abstract records
         """
-        all_abstracts = {}
+        all_abstracts: Dict[str, List[AbstractRecord]] = {}
 
         # Skip papers that already have abstracts
         papers_needing_abstracts = [p for p in papers if not p.abstracts]
