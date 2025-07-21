@@ -105,7 +105,9 @@ class CitationAnalyzer:
             for p in valid_papers
             if p.get_latest_citations_count() > high_citation_threshold
         ]
-        zero_citation_papers = [p for p in valid_papers if p.get_latest_citations_count() == 0]
+        zero_citation_papers = [
+            p for p in valid_papers if p.get_latest_citations_count() == 0
+        ]
 
         # Generate threshold recommendations
         suggested_thresholds = self._generate_threshold_recommendations(
@@ -245,9 +247,7 @@ class CitationAnalyzer:
             else 0
         )
         avg_citations_filtered = (
-            np.mean(
-                [p.get_latest_citations_count() for p in papers_above_threshold]
-            )
+            np.mean([p.get_latest_citations_count() for p in papers_above_threshold])
             if papers_above_threshold
             else 0
         )

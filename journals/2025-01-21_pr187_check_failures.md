@@ -259,4 +259,42 @@ All files directly modified in the consolidation branch now pass pre-commit chec
 The user has requested to fix ALL pre-commit failures, not just those in PR #187. Starting with 112 remaining errors.
 
 ### Error Analysis by File:
-Let me first analyze which files have the most errors to prioritize fixes.
+Started with 112 errors across many files.
+
+### Fixes Applied - Round 1:
+
+1. **filter_tests.py** - Fixed all Paper/Author instantiations
+2. **workflow_coordinator.py** - Fixed Paper instantiation
+3. **contract_tests.py** - Fixed Paper instantiation
+4. **google_scholar.py** - Fixed all Author/Paper instantiations and citations comparisons
+5. **citation_analyzer.py** - Replaced all p.citations with p.get_latest_citations_count()
+
+### Commit 8: **f682e2c** - "Fix Paper model issues in multiple files"
+- 6 files changed
+- Fixed Paper/Author model migration issues in test and source files
+
+### Fixes Applied - Round 2:
+
+Reduced errors from 112 to 71. Fixed the following files:
+
+6. **openalex.py** - Fixed Author model to use affiliations=[] instead of affiliation/author_id
+7. **semantic_scholar.py** - Fixed AbstractRecord and URLRecord data types
+8. **benchmark/extractor.py** - Fixed paper.abstract → paper.get_best_abstract()
+9. **benchmark/workflow_manager.py** - Fixed paper.abstract → paper.get_best_abstract()
+10. **unpaywall_client.py** - Fixed Paper model to use record lists
+11. **jmlr_collector.py** - Fixed URLRecord handling in regex
+12. **enhanced_semantic_scholar.py** - Fixed Author/Paper model instantiations
+13. **enhanced_openalex.py** - Fixed Author/Paper model instantiations
+14. **enhanced_crossref.py** - Fixed Author/Paper model instantiations with record lists
+15. **semantic_scholar_v2.py** - Fixed Optional[str] index type issues
+16. **semantic_scholar.py (consolidation)** - Fixed Optional[str] index type issues
+17. **openalex.py (consolidation)** - Fixed return type to filter out None keys
+18. **doi_resolver_collector.py** - Fixed URLRecord type handling in methods
+
+### Current Status After Round 2:
+- Reduced errors from 112 to 71 (39 errors fixed)
+- Most errors are now in consolidate.py (old consolidation command)
+- Remaining errors related to:
+  - Paper.external_ids (no longer exists in model)
+  - Various type mismatches in old consolidate command
+  - Some worker type issues

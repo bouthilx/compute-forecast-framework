@@ -15,6 +15,7 @@ from compute_forecast.pipeline.metadata_collection.models import (
     APIResponse,
     ResponseMetadata,
     APIError,
+    URLRecord,
 )
 
 logger = logging.getLogger(__name__)
@@ -227,10 +228,18 @@ class UnpaywallClient:
             authors=authors,
             venue=data.get("journal_name", ""),
             year=data.get("year", 0) or 0,
-            citations=0,  # Unpaywall doesn't provide citation counts
-            abstract="",  # Unpaywall doesn't provide abstracts
+            abstracts=[],  # Unpaywall doesn't provide abstracts
+            citations=[],  # Unpaywall doesn't provide citation counts
             doi=data.get("doi", ""),
-            urls=oa_urls,
+            urls=[
+                URLRecord(
+                    source="unpaywall",
+                    timestamp=datetime.now(),
+                    original=True,
+                    data=url,
+                )
+                for url in oa_urls
+            ],
             paper_id=f"unpaywall_{data.get('doi', '')}",
         )
 

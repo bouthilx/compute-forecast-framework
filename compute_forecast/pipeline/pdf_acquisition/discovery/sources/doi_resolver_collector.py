@@ -138,12 +138,22 @@ class DOIResolverCollector(BasePDFCollector):
             Merged list of unique URLs with CrossRef URLs first
         """
         # Start with CrossRef URLs (typically publisher versions)
-        merged_urls = list(crossref_urls)
+        merged_urls = []
+        seen_urls = set()
+
+        # Add CrossRef URLs
+        for url_record in crossref_urls:
+            url = url_record.data if hasattr(url_record, "data") else str(url_record)
+            if url not in seen_urls:
+                merged_urls.append(url)
+                seen_urls.add(url)
 
         # Add Unpaywall URLs that aren't already in the list
-        for url in unpaywall_urls:
-            if url not in merged_urls:
+        for url_record in unpaywall_urls:
+            url = url_record.data if hasattr(url_record, "data") else str(url_record)
+            if url not in seen_urls:
                 merged_urls.append(url)
+                seen_urls.add(url)
 
         return merged_urls
 

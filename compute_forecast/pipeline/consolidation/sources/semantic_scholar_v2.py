@@ -105,17 +105,23 @@ class SemanticScholarSource(BaseConsolidationSource):
 
                                 # Check DOI match
                                 doi = ext_ids.get("DOI")
-                                if doi and f"DOI:{doi}" in id_to_paper:
-                                    mapping[id_to_paper[f"DOI:{doi}"]] = item["paperId"]
-                                    matches_found += 1
+                                if doi:
+                                    doi_key = f"DOI:{doi}"
+                                    if doi_key in id_to_paper:
+                                        paper_id = id_to_paper[doi_key]
+                                        if paper_id is not None:
+                                            mapping[paper_id] = item["paperId"]
+                                            matches_found += 1
 
                                 # Check ArXiv match
                                 arxiv = ext_ids.get("ArXiv")
-                                if arxiv and f"ARXIV:{arxiv}" in id_to_paper:
-                                    mapping[id_to_paper[f"ARXIV:{arxiv}"]] = item[
-                                        "paperId"
-                                    ]
-                                    matches_found += 1
+                                if arxiv:
+                                    arxiv_key = f"ARXIV:{arxiv}"
+                                    if arxiv_key in id_to_paper:
+                                        paper_id = id_to_paper[arxiv_key]
+                                        if paper_id is not None:
+                                            mapping[paper_id] = item["paperId"]
+                                            matches_found += 1
 
                     if prof:
                         prof.metadata["matches_found"] = matches_found
@@ -132,7 +138,7 @@ class SemanticScholarSource(BaseConsolidationSource):
             )
 
             # Build a mapping of normalized titles to papers
-            title_to_papers = {}
+            title_to_papers: Dict[str, List[Paper]] = {}
             for paper in papers_needing_title_search:
                 # We'll use a simplified title for matching
                 normalized_title = paper.title.lower().strip()
@@ -201,7 +207,8 @@ class SemanticScholarSource(BaseConsolidationSource):
                                     self._similar_title(paper.title, result["title"])
                                     and result.get("year") == paper.year
                                 ):
-                                    mapping[paper.paper_id] = result["paperId"]
+                                    if paper.paper_id is not None:
+                                        mapping[paper.paper_id] = result["paperId"]
                                     if prof:
                                         prof.metadata["match_found"] = True
                                 else:

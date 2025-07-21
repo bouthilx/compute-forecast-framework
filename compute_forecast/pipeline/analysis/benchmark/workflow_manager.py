@@ -47,7 +47,8 @@ class ExtractionWorkflowManager:
 
     def detect_domain(self, paper: Paper) -> BenchmarkDomain:
         """Detect domain from paper content."""
-        text = f"{paper.title} {paper.abstract}".lower()
+        abstract_text = paper.get_best_abstract() if paper.abstracts else ""
+        text = f"{paper.title} {abstract_text}".lower()
 
         # NLP keywords
         nlp_keywords = [

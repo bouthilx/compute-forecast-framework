@@ -173,7 +173,7 @@ class OpenAlexSource(BaseConsolidationSource):
                 )
                 # Skip this paper and continue with others
 
-        return mapping
+        return {k: v for k, v in mapping.items() if k is not None}
 
     def fetch_all_fields(self, source_ids: List[str]) -> Dict[str, Dict[str, Any]]:
         """Fetch all available fields in minimal API calls"""

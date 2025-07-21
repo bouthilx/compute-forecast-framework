@@ -250,7 +250,8 @@ class SemanticScholarSource(BaseConsolidationSource):
                                     paper_authors,
                                     result_authors,
                                 ):
-                                    mapping[paper.paper_id] = result["paperId"]
+                                    if paper.paper_id is not None:
+                                        mapping[paper.paper_id] = result["paperId"]
                                     if prof:
                                         prof.metadata["match_found"] = True
                                 else:

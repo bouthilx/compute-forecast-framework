@@ -4,7 +4,15 @@ import random
 import os
 from datetime import datetime
 from .base import BaseCitationSource
-from ..models import Paper, Author, CollectionQuery, CollectionResult
+from ..models import (
+    Paper,
+    Author,
+    CollectionQuery,
+    CollectionResult,
+    AbstractRecord,
+    CitationRecord,
+    URLRecord,
+)
 from ....core.config import ConfigManager
 from ....core.logging import setup_logging
 
@@ -82,7 +90,11 @@ class SemanticScholarSource(BaseCitationSource):
                         effective_threshold = self._get_dynamic_citation_threshold(
                             query.year, query.min_citations
                         )
-                        if paper and paper.citations >= effective_threshold:
+                        if (
+                            paper
+                            and paper.get_latest_citations_count()
+                            >= effective_threshold
+                        ):
                             papers.append(paper)
                     except Exception as e:
                         errors.append(f"Failed to parse paper: {e}")
@@ -322,8 +334,7 @@ class SemanticScholarSource(BaseCitationSource):
                     if author_name:  # Only add authors with names
                         author = Author(
                             name=author_name,
-                            affiliation="",  # Semantic Scholar doesn't always provide this
-                            author_id=author_data.get("authorId", "").strip(),
+                            affiliations=[],  # Semantic Scholar doesn't always provide this
                         )
                         authors.append(author)
 
@@ -342,9 +353,37 @@ class SemanticScholarSource(BaseCitationSource):
             authors=authors,
             venue=result.get("venue", query.venue or ""),
             year=year,
-            citations=citations,
-            abstract=(result.get("abstract") or "").strip(),
-            urls=[str(result.get("url"))] if result.get("url") else [],
+            abstracts=[
+                AbstractRecord(
+                    source="semantic_scholar",
+                    timestamp=datetime.now(),
+                    original=True,
+                    data=(result.get("abstract") or "").strip()
+                    or " ",  # AbstractData cannot be empty
+                )
+            ]
+            if (result.get("abstract") or "").strip()
+            else [],
+            citations=[
+                CitationRecord(
+                    source="semantic_scholar",
+                    timestamp=datetime.now(),
+                    original=True,
+                    data=citations,
+                )
+            ]
+            if citations > 0
+            else [],
+            urls=[
+                URLRecord(
+                    source="semantic_scholar",
+                    timestamp=datetime.now(),
+                    original=True,
+                    data=result.get("url") or "",
+                )
+            ]
+            if result.get("url")
+            else [],
             source="semantic_scholar",
             collection_timestamp=datetime.now(),
             mila_domain=query.domain,
@@ -375,8 +414,7 @@ class SemanticScholarSource(BaseCitationSource):
             for author_data in paper_data.get("authors", []):
                 author = Author(
                     name=author_data.get("name", ""),
-                    affiliation="",  # Semantic Scholar doesn't always provide this in basic calls
-                    author_id=author_data.get("authorId", ""),
+                    affiliations=[],  # Semantic Scholar doesn't always provide this in basic calls
                 )
                 authors.append(author)
 
@@ -386,10 +424,37 @@ class SemanticScholarSource(BaseCitationSource):
                 authors=authors,
                 venue=paper_data.get("venue", ""),
                 year=paper_data.get("year", 0),
-                citations=paper_data.get("citationCount", 0),
-                abstract=paper_data.get("abstract", ""),
+                abstracts=[
+                    AbstractRecord(
+                        source="semantic_scholar",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=paper_data.get("abstract", ""),
+                    )
+                ]
+                if paper_data.get("abstract", "")
+                else [],
+                citations=[
+                    CitationRecord(
+                        source="semantic_scholar",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=paper_data.get("citationCount", 0),
+                    )
+                ]
+                if paper_data.get("citationCount", 0) > 0
+                else [],
                 doi=paper_data.get("doi", ""),
-                urls=[str(paper_data.get("url"))] if paper_data.get("url") else [],
+                urls=[
+                    URLRecord(
+                        source="semantic_scholar",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=paper_data.get("url") or "",
+                    )
+                ]
+                if paper_data.get("url")
+                else [],
                 source="semantic_scholar",
                 collection_timestamp=datetime.now(),
             )
