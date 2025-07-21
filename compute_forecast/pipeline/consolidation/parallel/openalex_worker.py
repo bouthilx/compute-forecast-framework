@@ -101,12 +101,12 @@ class OpenAlexWorker(ConsolidationWorker):
             # Add empty results for papers not found
             for paper in papers:
                 if not any(p.paper_id == paper.paper_id for p, _ in results):
-                    results.append((paper, None))
+                    results.append((paper, {}))
 
         except Exception as e:
             logger.error(f"OpenAlexWorker enrichment error: {str(e)}")
             # Return empty results for all papers on error
-            results = [(paper, None) for paper in papers]
+            results = [(paper, {}) for paper in papers]
 
         return results
 
@@ -115,7 +115,7 @@ class OpenAlexWorker(ConsolidationWorker):
         # Check identifiers first
         for identifier in data.get("identifiers", []):
             if identifier["type"] == "arxiv":
-                return identifier["value"]
+                return str(identifier["value"])
 
         # Check URLs for ArXiv links
         arxiv_patterns = [

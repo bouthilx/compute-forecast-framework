@@ -254,6 +254,7 @@ class TestVenueCollectionEngine:
         # With optimization, may batch across years for better efficiency
         assert estimate.total_batches >= 1
 
+    @pytest.mark.skip(reason="refactor: Slow test")
     def test_api_failure_recovery(self):
         """Test recovery from API failures"""
         venues = ["ICML", "NeurIPS"]

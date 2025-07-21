@@ -155,13 +155,16 @@ class OpenAlexSource(BaseConsolidationSource):
 
                         # Verify match using fuzzy matching with year and author info
                         work_year = work.get("publication_year")
-                        if self._similar_title(
-                            paper.title,
-                            work.get("title", ""),
-                            paper.year,
-                            work_year,
-                            paper.authors,  # Pass paper authors
-                            work_authors,  # Pass work authors
+                        if (
+                            self._similar_title(
+                                paper.title,
+                                work.get("title", ""),
+                                paper.year,
+                                work_year,
+                                paper.authors,  # Pass paper authors
+                                work_authors,  # Pass work authors
+                            )
+                            and paper.paper_id
                         ):
                             mapping[paper.paper_id] = work["id"]
             except Exception as e:

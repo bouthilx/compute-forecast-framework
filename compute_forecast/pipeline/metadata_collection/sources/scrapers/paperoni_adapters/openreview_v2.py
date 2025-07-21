@@ -283,7 +283,7 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         self, venue_id: str, venue: str, year: int
     ) -> List[SimplePaper]:
         """Get papers using API v1 for ICLR ≤2023."""
-        papers = []
+        papers: List[SimplePaper] = []
 
         # First, get all submissions
         invitation_formats = [
@@ -380,7 +380,7 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         self, venue_id: str, venue: str, year: int
     ) -> List[SimplePaper]:
         """Get papers using API v2 for standard conferences."""
-        papers = []
+        papers: List[SimplePaper] = []
 
         # Try different invitation formats
         invitation_formats = [
@@ -549,7 +549,7 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         try:
             # 1. Check if we have a cached decision from batch processing
             if hasattr(submission, "_cached_decision"):
-                return submission._cached_decision
+                return str(submission._cached_decision) if submission._cached_decision else None
 
             # 2. Use heuristics-based approach for decision extraction from replies
             # Priority: lower rank = higher priority

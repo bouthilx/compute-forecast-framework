@@ -106,12 +106,12 @@ class SemanticScholarWorker(ConsolidationWorker):
             # Add empty results for papers not found
             for paper in papers:
                 if not any(p.paper_id == paper.paper_id for p, _ in results):
-                    results.append((paper, None))
+                    results.append((paper, {}))
 
         except Exception as e:
             logger.error(f"SemanticScholarWorker enrichment error: {str(e)}")
             # Return empty results for all papers on error
-            results = [(paper, None) for paper in papers]
+            results = [(paper, {}) for paper in papers]
 
         return results
 
@@ -120,7 +120,7 @@ class SemanticScholarWorker(ConsolidationWorker):
         # Check identifiers
         for identifier in data.get("identifiers", []):
             if identifier["type"] == "doi":
-                return identifier["value"]
+                return str(identifier["value"])
 
         # S2 sometimes has DOI in URLs
         for url in data.get("urls", []):
@@ -136,7 +136,7 @@ class SemanticScholarWorker(ConsolidationWorker):
         # Check identifiers first
         for identifier in data.get("identifiers", []):
             if identifier["type"] == "arxiv":
-                return identifier["value"]
+                return str(identifier["value"])
 
         # Check URLs
         arxiv_patterns = [

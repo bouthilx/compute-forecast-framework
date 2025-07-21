@@ -101,7 +101,7 @@ class SemanticScholarSource(BaseConsolidationSource):
         url: str,
         json: dict,
         headers: dict,
-        params: dict = None,
+        params: Optional[dict] = None,
         timeout: int = 30,
     ) -> requests.Response:
         """Make POST request with retry logic for connection errors."""
@@ -170,16 +170,18 @@ class SemanticScholarSource(BaseConsolidationSource):
                                 # Check DOI match
                                 doi = ext_ids.get("DOI")
                                 if doi and f"DOI:{doi}" in id_to_paper:
-                                    mapping[id_to_paper[f"DOI:{doi}"]] = item["paperId"]
-                                    matches_found += 1
+                                    paper_id = id_to_paper[f"DOI:{doi}"]
+                                    if paper_id:
+                                        mapping[paper_id] = item["paperId"]
+                                        matches_found += 1
 
                                 # Check ArXiv match
                                 arxiv = ext_ids.get("ArXiv")
                                 if arxiv and f"ARXIV:{arxiv}" in id_to_paper:
-                                    mapping[id_to_paper[f"ARXIV:{arxiv}"]] = item[
-                                        "paperId"
-                                    ]
-                                    matches_found += 1
+                                    paper_id = id_to_paper[f"ARXIV:{arxiv}"]
+                                    if paper_id:
+                                        mapping[paper_id] = item["paperId"]
+                                        matches_found += 1
 
                     if prof:
                         prof.metadata["matches_found"] = matches_found
