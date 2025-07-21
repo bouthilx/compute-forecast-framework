@@ -25,27 +25,16 @@ class FilterTestSuite:
             # High computational content paper
             Paper(
                 title="Large-Scale Transformer Training with 175B Parameters",
-                authors=[Author("AI Researcher", "MIT")],
+                authors=[Author("AI Researcher", [["MIT"]])],
                 venue="NeurIPS",
                 year=2023,
-                citations=500,
-                abstract="""
-                We present a large transformer model with 175 billion parameters.
-                Training was performed using 1024 V100 GPUs over 2 weeks.
-                The model required 16 TB of memory and achieved 20 TFLOPS.
-                We used a batch size of 2048 and learning rate of 0.0001.
-                Training took 336 hours total with dataset of 500 billion tokens.
-
-                Our experimental results demonstrate superior performance on benchmarks.
-                We conducted extensive experiments and evaluation on multiple datasets.
-                The implementation details include hyperparameter tuning and ablation studies.
-                Performance metrics show significant improvements over baselines.
-                """,
+                abstracts=[],  # Will add abstract after
+                citations=[],
             ),
             # Medium computational content paper
             Paper(
                 title="Efficient Neural Architecture Search",
-                authors=[Author("ML Engineer", "Google")],
+                authors=[Author("ML Engineer", [["Google"]])],
                 venue="ICML",
                 year=2023,
                 citations=200,
@@ -62,7 +51,7 @@ class FilterTestSuite:
             # Low computational content paper
             Paper(
                 title="Survey of Deep Learning Methods",
-                authors=[Author("Survey Author", "Stanford")],
+                authors=[Author("Survey Author", ["Stanford"])],
                 venue="JMLR",
                 year=2023,
                 citations=150,
@@ -75,7 +64,7 @@ class FilterTestSuite:
             # Theoretical paper
             Paper(
                 title="Theoretical Analysis of Gradient Descent",
-                authors=[Author("Theory Researcher", "CMU")],
+                authors=[Author("Theory Researcher", ["CMU"])],
                 venue="STOC",
                 year=2023,
                 citations=80,

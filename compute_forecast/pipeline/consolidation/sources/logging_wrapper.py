@@ -46,7 +46,7 @@ class LoggingSourceWrapper(BaseConsolidationSource):
             original_rate_limit()
 
         # Store original method and replace it
-        setattr(self.wrapped_source, '_rate_limit', logged_rate_limit)
+        setattr(self.wrapped_source, "_rate_limit", logged_rate_limit)
 
     def __getattr__(self, name):
         """Forward attribute access to wrapped source."""

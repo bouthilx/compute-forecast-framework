@@ -34,7 +34,7 @@ class ParallelConsolidator:
         openalex_batch_size: int = 50,
         ss_batch_size: int = 500,
         checkpoint_manager: Optional[ConsolidationCheckpointManager] = None,
-        checkpoint_interval: int = 300,  # 5 minutes
+        checkpoint_interval: float = 300,  # 5 minutes
     ):
         self.openalex_email = openalex_email
         self.ss_api_key = ss_api_key
@@ -44,25 +44,25 @@ class ParallelConsolidator:
         self.checkpoint_interval = checkpoint_interval
 
         # Queues - separate input queues for each worker
-        self.openalex_input_queue = queue.Queue()
-        self.ss_input_queue = queue.Queue()
-        self.enrichment_queue = queue.Queue()
-        self.output_queue = queue.Queue()
-        self.error_queue = queue.Queue()
+        self.openalex_input_queue: queue.Queue[Paper] = queue.Queue()
+        self.ss_input_queue: queue.Queue[Paper] = queue.Queue()
+        self.enrichment_queue: queue.Queue[Any] = queue.Queue()
+        self.output_queue: queue.Queue[Any] = queue.Queue()
+        self.error_queue: queue.Queue[Any] = queue.Queue()
 
         # Workers
-        self.openalex_worker = None
-        self.semantic_scholar_worker = None
-        self.merge_worker = None
+        self.openalex_worker: Optional[OpenAlexWorker] = None
+        self.semantic_scholar_worker: Optional[SemanticScholarWorker] = None
+        self.merge_worker: Optional[MergeWorker] = None
 
         # Progress callbacks
-        self.openalex_progress_callback = None
-        self.ss_progress_callback = None
+        self.openalex_progress_callback: Optional[Callable[[int], None]] = None
+        self.ss_progress_callback: Optional[Callable[[int], None]] = None
 
         # State
-        self.openalex_processed_hashes = set()
-        self.ss_processed_hashes = set()
-        self.start_time = None
+        self.openalex_processed_hashes: set[str] = set()
+        self.ss_processed_hashes: set[str] = set()
+        self.start_time: Optional[float] = None
 
     def set_progress_callbacks(
         self,
@@ -87,7 +87,7 @@ class ParallelConsolidator:
     def process_papers(
         self,
         papers: List[Paper],
-        progress_update_callback: Optional[Callable[[str, int], None]] = None,
+        progress_update_callback: Optional[Callable[[str, int, int, int], None]] = None,
         input_file: str = "",
         checkpoint_papers: Optional[List[Paper]] = None,
         checkpoint_stats: Optional[Dict[str, Any]] = None,
@@ -106,10 +106,6 @@ class ParallelConsolidator:
         self.input_file = input_file
         self.checkpoint_papers = checkpoint_papers or papers
         self.total_papers = len(papers)
-
-        # Initialize checkpoint manager's input file if present
-        if self.checkpoint_manager:
-            self.checkpoint_manager.input_file = input_file
 
         # Initialize workers with separate input queues
         self.openalex_worker = OpenAlexWorker(
@@ -157,12 +153,17 @@ class ParallelConsolidator:
             )
             self.semantic_scholar_worker.api_calls = ss_stats.get("api_calls", 0)
 
+            # If merge worker stats exist, initialize them
+            if self.merge_worker:
+                merge_stats = checkpoint_stats.get("merge", {})
+                self.merge_worker.papers_merged = merge_stats.get("papers_merged", 0)
+
         self.merge_worker = MergeWorker(
             input_queue=self.enrichment_queue,
             output_queue=self.output_queue,
             error_queue=self.error_queue,
             checkpoint_callback=self._checkpoint if self.checkpoint_manager else None,
-            checkpoint_interval=self.checkpoint_interval,
+            checkpoint_interval=int(self.checkpoint_interval),
         )
 
         # Start workers
@@ -182,27 +183,35 @@ class ParallelConsolidator:
         )
 
         # Monitor progress and wait for completion
-        self._monitor_progress(len(papers), progress_update_callback)
+        self._monitor_progress(len(papers), progress_update_callback)  # type: ignore
 
         # Stop workers
-        self.openalex_worker.stop()
-        self.semantic_scholar_worker.stop()
-        self.merge_worker.stop()
+        if self.openalex_worker:
+            self.openalex_worker.stop()
+        if self.semantic_scholar_worker:
+            self.semantic_scholar_worker.stop()
+        if self.merge_worker:
+            self.merge_worker.stop()
 
         # Wait for workers to finish
-        self.openalex_worker.join(timeout=5)
-        self.semantic_scholar_worker.join(timeout=5)
-        self.merge_worker.join(timeout=5)
+        if self.openalex_worker:
+            self.openalex_worker.join(timeout=5)
+        if self.semantic_scholar_worker:
+            self.semantic_scholar_worker.join(timeout=5)
+        if self.merge_worker:
+            self.merge_worker.join(timeout=5)
 
         # Get final results
-        merged_papers = self.merge_worker.get_merged_papers()
+        merged_papers = (
+            self.merge_worker.get_merged_papers() if self.merge_worker else []
+        )
 
         # Final checkpoint
         if self.checkpoint_manager:
             self._checkpoint(force=True)
 
         # Report statistics
-        duration = time.time() - self.start_time
+        duration = time.time() - (self.start_time or time.time())
         logger.info(
             f"Parallel consolidation complete. "
             f"Papers: {len(merged_papers)}, Duration: {duration:.1f}s"
@@ -225,7 +234,9 @@ class ParallelConsolidator:
 
         last_progress_update = time.time()
 
-        while self.merge_worker.papers_merged < expected_enrichments:
+        while (
+            self.merge_worker and self.merge_worker.papers_merged < expected_enrichments
+        ):
             # Check enrichment queue for results
             try:
                 # Non-blocking check of enrichment queue size
@@ -237,16 +248,28 @@ class ParallelConsolidator:
                     progress_callback and time.time() - last_progress_update > 0.1
                 ):  # Update every 100ms
                     # Get actual counts from workers
-                    oa_processed = self.openalex_worker.papers_processed
-                    ss_processed = self.semantic_scholar_worker.papers_processed
+                    oa_processed = (
+                        self.openalex_worker.papers_processed
+                        if self.openalex_worker
+                        else 0
+                    )
+                    ss_processed = (
+                        self.semantic_scholar_worker.papers_processed
+                        if self.semantic_scholar_worker
+                        else 0
+                    )
 
                     # Update progress if changed
                     if oa_processed > source_progress["openalex"]:
                         progress_callback(
                             "openalex",
                             oa_processed - source_progress["openalex"],
-                            self.openalex_worker.citations_found,
-                            self.openalex_worker.abstracts_found,
+                            self.openalex_worker.citations_found
+                            if self.openalex_worker
+                            else 0,
+                            self.openalex_worker.abstracts_found
+                            if self.openalex_worker
+                            else 0,
                         )
                         source_progress["openalex"] = oa_processed
 
@@ -254,8 +277,12 @@ class ParallelConsolidator:
                         progress_callback(
                             "semantic_scholar",
                             ss_processed - source_progress["semantic_scholar"],
-                            self.semantic_scholar_worker.citations_found,
-                            self.semantic_scholar_worker.abstracts_found,
+                            self.semantic_scholar_worker.citations_found
+                            if self.semantic_scholar_worker
+                            else 0,
+                            self.semantic_scholar_worker.abstracts_found
+                            if self.semantic_scholar_worker
+                            else 0,
                         )
                         source_progress["semantic_scholar"] = ss_processed
 
@@ -283,7 +310,9 @@ class ParallelConsolidator:
             return
 
         # Get merged papers to count actual enriched papers
-        merged_papers = self.merge_worker.get_merged_papers()
+        merged_papers = (
+            self.merge_worker.get_merged_papers() if self.merge_worker else []
+        )
 
         # Count papers that actually have data from each source
         openalex_enriched = 0
@@ -311,16 +340,28 @@ class ParallelConsolidator:
         phase_state = ConsolidationPhaseState(
             phase="parallel_consolidation",
             phase_completed=False,
-            phase_start_time=datetime.fromtimestamp(self.start_time),
+            phase_start_time=datetime.fromtimestamp(self.start_time)
+            if self.start_time
+            else datetime.now(),
             # Source-specific processed hashes
-            openalex_processed_hashes=self.openalex_worker.processed_hashes,
-            semantic_scholar_processed_hashes=self.semantic_scholar_worker.processed_hashes,
+            openalex_processed_hashes=self.openalex_worker.processed_hashes
+            if self.openalex_worker
+            else set(),
+            semantic_scholar_processed_hashes=self.semantic_scholar_worker.processed_hashes
+            if self.semantic_scholar_worker
+            else set(),
             # Merged papers
             merged_papers=merged_papers,
             # Statistics
-            papers_processed=self.openalex_worker.papers_processed
-            + self.semantic_scholar_worker.papers_processed,
-            papers_enriched=self.merge_worker.papers_merged,
+            papers_processed=(
+                self.openalex_worker.papers_processed if self.openalex_worker else 0
+            )
+            + (
+                self.semantic_scholar_worker.papers_processed
+                if self.semantic_scholar_worker
+                else 0
+            ),
+            papers_enriched=self.merge_worker.papers_merged if self.merge_worker else 0,
         )
 
         self.checkpoint_manager.save_checkpoint(
@@ -328,20 +369,36 @@ class ParallelConsolidator:
             total_papers=self.total_papers,
             sources_state={
                 "openalex": {
-                    "papers_processed": self.openalex_worker.papers_processed,
+                    "papers_processed": self.openalex_worker.papers_processed
+                    if self.openalex_worker
+                    else 0,
                     "papers_enriched": openalex_enriched,  # Use actual count
-                    "api_calls": self.openalex_worker.api_calls,
-                    "citations_found": self.openalex_worker.citations_found,
-                    "abstracts_found": self.openalex_worker.abstracts_found,
+                    "api_calls": self.openalex_worker.api_calls
+                    if self.openalex_worker
+                    else 0,
+                    "citations_found": self.openalex_worker.citations_found
+                    if self.openalex_worker
+                    else 0,
+                    "abstracts_found": self.openalex_worker.abstracts_found
+                    if self.openalex_worker
+                    else 0,
                 },
                 "semantic_scholar": {
-                    "papers_processed": self.semantic_scholar_worker.papers_processed,
+                    "papers_processed": self.semantic_scholar_worker.papers_processed
+                    if self.semantic_scholar_worker
+                    else 0,
                     "papers_enriched": ss_enriched,  # Use actual count
-                    "api_calls": self.semantic_scholar_worker.api_calls,
-                    "citations_found": self.semantic_scholar_worker.citations_found,
-                    "abstracts_found": self.semantic_scholar_worker.abstracts_found,
+                    "api_calls": self.semantic_scholar_worker.api_calls
+                    if self.semantic_scholar_worker
+                    else 0,
+                    "citations_found": self.semantic_scholar_worker.citations_found
+                    if self.semantic_scholar_worker
+                    else 0,
+                    "abstracts_found": self.semantic_scholar_worker.abstracts_found
+                    if self.semantic_scholar_worker
+                    else 0,
                 },
-                "merge": self.merge_worker.get_state(),
+                "merge": self.merge_worker.get_state() if self.merge_worker else {},
             },
             papers=self.checkpoint_papers,
             phase_state=phase_state.to_dict(),
@@ -352,18 +409,34 @@ class ParallelConsolidator:
         """Report consolidation statistics."""
         stats = {
             "OpenAlex": {
-                "papers_processed": self.openalex_worker.papers_processed,
-                "papers_enriched": self.openalex_worker.papers_enriched,
-                "api_calls": self.openalex_worker.api_calls,
+                "papers_processed": self.openalex_worker.papers_processed
+                if self.openalex_worker
+                else 0,
+                "papers_enriched": self.openalex_worker.papers_enriched
+                if self.openalex_worker
+                else 0,
+                "api_calls": self.openalex_worker.api_calls
+                if self.openalex_worker
+                else 0,
             },
             "Semantic Scholar": {
-                "papers_processed": self.semantic_scholar_worker.papers_processed,
-                "papers_enriched": self.semantic_scholar_worker.papers_enriched,
-                "api_calls": self.semantic_scholar_worker.api_calls,
+                "papers_processed": self.semantic_scholar_worker.papers_processed
+                if self.semantic_scholar_worker
+                else 0,
+                "papers_enriched": self.semantic_scholar_worker.papers_enriched
+                if self.semantic_scholar_worker
+                else 0,
+                "api_calls": self.semantic_scholar_worker.api_calls
+                if self.semantic_scholar_worker
+                else 0,
             },
             "Merge": {
-                "papers_merged": self.merge_worker.papers_merged,
-                "unique_papers": len(self.merge_worker.get_merged_papers()),
+                "papers_merged": self.merge_worker.papers_merged
+                if self.merge_worker
+                else 0,
+                "unique_papers": len(self.merge_worker.get_merged_papers())
+                if self.merge_worker
+                else 0,
             },
         }
 

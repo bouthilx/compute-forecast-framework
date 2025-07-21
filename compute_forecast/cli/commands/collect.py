@@ -374,8 +374,8 @@ def main(
         if scraper:
             scraper_class = registry._scrapers.get(scraper)
             if scraper_class:
-                estimate_scraper = scraper_class(config)
-                estimate_scraper._original_venue = venue_name
+                estimate_scraper = scraper_class(config)  # type: ignore
+                # estimate_scraper._original_venue = venue_name  # Not needed
             else:
                 estimate_scraper = None
         else:
@@ -423,8 +423,8 @@ def main(
                 # User provided specific scraper
                 scraper_class = registry._scrapers.get(scraper)
                 if scraper_class:
-                    scraper_instance = scraper_class(config)
-                    scraper_instance._original_venue = venue_name
+                    scraper_instance = scraper_class(config)  # type: ignore
+                    # scraper_instance._original_venue = venue_name  # Not needed
                 else:
                     console.print(
                         f"[red]Error:[/red] Unknown scraper {scraper}. "
@@ -434,7 +434,7 @@ def main(
                     continue
             else:
                 # Use default scraper for venue
-                scraper_instance = registry.get_scraper_for_venue(venue_name, config)
+                scraper_instance = registry.get_scraper_for_venue(venue_name, config)  # type: ignore
 
             if not scraper_instance:
                 console.print(

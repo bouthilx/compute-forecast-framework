@@ -129,7 +129,11 @@ class AdaptiveThresholdCalculator:
 
         # Calculate how many papers would be above threshold
         papers_above = len(
-            [p for p in venue_papers if p.get_latest_citations_count() >= adaptive_threshold]
+            [
+                p
+                for p in venue_papers
+                if p.get_latest_citations_count() >= adaptive_threshold
+            ]
         )
 
         # Calculate alternative thresholds

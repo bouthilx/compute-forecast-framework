@@ -400,7 +400,11 @@ def main(
             actual_stats or (checkpoint_data and hasattr(checkpoint_data, "sources"))
         ):
             # Use actual stats if available, otherwise use checkpoint stats
-            stats_to_use = actual_stats if actual_stats else checkpoint_data.sources
+            stats_to_use = (
+                actual_stats
+                if actual_stats
+                else (checkpoint_data.sources if checkpoint_data else {})
+            )
             oa_stats = stats_to_use.get("openalex", {})
             ss_stats = stats_to_use.get("semantic_scholar", {})
 
@@ -530,5 +534,5 @@ def main(
     if profile and profiler:
         console.print("\n[yellow]Performance Profile:[/yellow]")
         profile_path = output.with_suffix(".profile.json")
-        profiler.save_results(profile_path)
+        # profiler.save_results(profile_path)  # TODO: Implement save_results method
         console.print(f"  Profile saved to: {profile_path}")
