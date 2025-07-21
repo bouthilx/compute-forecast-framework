@@ -6,9 +6,59 @@ from unittest.mock import patch, mock_open
 import json
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector import (
     BreakthroughDetector,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestBreakthroughDetector:
@@ -26,42 +76,39 @@ class TestBreakthroughDetector:
     @pytest.fixture
     def high_impact_paper(self):
         """Create a high-impact paper."""
-        return Paper(
+        return create_test_paper(
             paper_id="high1",
             title="Transformer: A Novel Architecture for State-of-the-Art Performance",
-            abstract="We introduce a groundbreaking new method that achieves unprecedented results.",
+            abstract_text="We introduce a groundbreaking new method that achieves unprecedented results.",
             venue="NeurIPS",
-            normalized_venue="NeurIPS",
             year=2023,
-            citations=150,
+            citation_count=150,
             authors=[Author(name="Geoffrey Hinton"), Author(name="Yann LeCun")],
         )
 
     @pytest.fixture
     def medium_impact_paper(self):
         """Create a medium-impact paper."""
-        return Paper(
+        return create_test_paper(
             paper_id="med1",
             title="Improving Neural Networks with Better Optimization",
-            abstract="We present an incremental improvement to existing methods.",
+            abstract_text="We present an incremental improvement to existing methods.",
             venue="ICML",
-            normalized_venue="ICML",
             year=2022,
-            citations=30,
+            citation_count=30,
             authors=[Author(name="John Doe"), Author(name="Jane Smith")],
         )
 
     @pytest.fixture
     def low_impact_paper(self):
         """Create a low-impact paper."""
-        return Paper(
+        return create_test_paper(
             paper_id="low1",
             title="A Survey of Recent Methods",
-            abstract="We survey existing approaches in the field.",
+            abstract_text="We survey existing approaches in the field.",
             venue="Workshop",
-            normalized_venue="Workshop",
             year=2020,
-            citations=5,
+            citation_count=5,
             authors=[Author(name="Unknown Author")],
         )
 
@@ -147,12 +194,12 @@ class TestBreakthroughDetector:
 
     def test_calculate_breakthrough_score_no_citations(self, detector):
         """Test breakthrough score for paper with no citations."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="new1",
             title="A New Method",
             venue="ICML",
             year=2023,
-            citations=0,
+            citation_count=0,
             authors=[Author(name="Test")],
         )
 
@@ -207,13 +254,13 @@ class TestBreakthroughDetector:
 
     def test_keyword_matching_case_insensitive(self, detector):
         """Test that keyword matching is case-insensitive."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="1",
             title="TRANSFORMER: A NOVEL APPROACH",  # Uppercase
-            abstract="We present a BREAKTHROUGH method.",  # Mixed case
+            abstract_text="We present a BREAKTHROUGH method.",  # Mixed case
             venue="NeurIPS",
             year=2023,
-            citations=50,
+            citation_count=50,
             authors=[Author(name="Test")],
         )
 
@@ -262,22 +309,22 @@ class TestBreakthroughDetector:
             detector.current_year = 2024
 
             # Very recent paper (1 year old)
-            recent_paper = Paper(
+            recent_paper = create_test_paper(
                 paper_id="1",
                 title="Recent Paper",
                 venue="ICML",
                 year=2023,
-                citations=20,
+                citation_count=20,
                 authors=[Author(name="Test")],
             )
 
             # Older paper (5 years old)
-            old_paper = Paper(
+            old_paper = create_test_paper(
                 paper_id="2",
                 title="Old Paper",
                 venue="ICML",
                 year=2019,
-                citations=20,
+                citation_count=20,
                 authors=[Author(name="Test")],
             )
 
@@ -294,12 +341,12 @@ class TestBreakthroughDetector:
 
     def test_paper_without_authors(self, detector):
         """Test handling paper without authors."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="1",
             title="Paper without authors",
             venue="NeurIPS",
             year=2023,
-            citations=50,
+            citation_count=50,
             authors=[],
         )
 

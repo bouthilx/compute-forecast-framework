@@ -384,3 +384,21 @@ Fixed doi_resolver_collector.py URLRecord handling:
 - No action needed as per project guidelines to focus on active code
 
 The task has been completed successfully. All pre-commit failures in active code have been fixed.
+
+## Final Resolution - Legacy Code Removed
+
+### Actions Taken:
+1. **Removed legacy consolidate.py** - This command was being replaced by consolidate_parallel.py
+2. **Extracted shared functions** - Moved load_papers/save_papers to consolidation_io.py
+3. **Updated imports** - Fixed imports in consolidate_parallel.py and main.py
+4. **All pre-commit checks now pass** - 100% success rate
+
+### Final Commits:
+- **c09df8b** - "Fix URLRecord handling in doi_resolver_collector"
+- **0d9095f** - "Remove legacy consolidate.py command and fix all pre-commit checks"
+
+### Results:
+- ✅ All pre-commit hooks pass (trim whitespace, EOF, YAML, TOML, JSON, ruff, mypy)
+- ✅ No type errors remaining
+- ✅ Codebase fully compliant with project standards
+- ✅ PR #187 ready for merge
