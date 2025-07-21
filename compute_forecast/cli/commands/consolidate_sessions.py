@@ -39,7 +39,8 @@ def list_sessions(
     table.add_column("Status", style="bold")
     table.add_column("Input File")
     table.add_column("Papers")
-    table.add_column("Sources")
+    table.add_column("OpenAlex", style="green")
+    table.add_column("Semantic Scholar", style="blue")
     table.add_column("Created", style="dim")
     table.add_column("Last Checkpoint", style="dim")
     
@@ -59,13 +60,100 @@ def list_sessions(
         created = datetime.fromisoformat(session["created_at"]).strftime("%Y-%m-%d %H:%M")
         last_checkpoint = datetime.fromisoformat(session["last_checkpoint"]).strftime("%Y-%m-%d %H:%M")
         
+        # Get source statistics from checkpoint
+        oa_stats = "N/A"
+        ss_stats = "N/A"
+        
+        if "source_stats" in session:
+            # Check if we have OpenAlex stats
+            if "openalex" in session["source_stats"]:
+                oa = session["source_stats"]["openalex"]
+                papers = oa.get("papers_processed", 0)
+                enriched = oa.get("papers_enriched", 0)
+                oa_stats = f"{papers}p/{enriched}e"
+                
+            # Check if we have Semantic Scholar stats
+            if "semantic_scholar" in session["source_stats"]:
+                ss = session["source_stats"]["semantic_scholar"]
+                papers = ss.get("papers_processed", 0)
+                enriched = ss.get("papers_enriched", 0)
+                ss_stats = f"{papers}p/{enriched}e"
+        
+        # Try to get actual statistics from enriched papers file
+        session_dir = checkpoint_dir / session["session_id"]
+        enriched_file = session_dir / "papers_enriched.json"
+        
+        if enriched_file.exists():
+            try:
+                import json
+                with open(enriched_file) as f:
+                    data = json.load(f)
+                
+                papers_data = data.get("papers", [])
+                
+                # Count actual enriched papers from each source
+                oa_enriched_count = 0
+                ss_enriched_count = 0
+                
+                for paper in papers_data:
+                    # Check OpenAlex
+                    has_oa_data = False
+                    if paper.get("openalex_id"):
+                        has_oa_data = True
+                    elif paper.get("citations"):
+                        for citation in paper["citations"]:
+                            if citation.get("source") == "openalex":
+                                has_oa_data = True
+                                break
+                    elif paper.get("abstracts"):
+                        for abstract in paper["abstracts"]:
+                            if abstract.get("source") == "openalex":
+                                has_oa_data = True
+                                break
+                    
+                    if has_oa_data:
+                        oa_enriched_count += 1
+                    
+                    # Check Semantic Scholar
+                    has_ss_data = False
+                    if hasattr(paper, "external_ids") and paper.get("external_ids", {}).get("semantic_scholar"):
+                        has_ss_data = True
+                    elif paper.get("citations"):
+                        for citation in paper["citations"]:
+                            if citation.get("source") == "semanticscholar":
+                                has_ss_data = True
+                                break
+                    elif paper.get("abstracts"):
+                        for abstract in paper["abstracts"]:
+                            if abstract.get("source") == "semanticscholar":
+                                has_ss_data = True
+                                break
+                    
+                    if has_ss_data:
+                        ss_enriched_count += 1
+                
+                # Update stats with actual counts
+                if "source_stats" in session:
+                    if "openalex" in session["source_stats"]:
+                        papers = session["source_stats"]["openalex"].get("papers_processed", 0)
+                        oa_stats = f"{papers}p/{oa_enriched_count}e"
+                    
+                    if "semantic_scholar" in session["source_stats"]:
+                        papers = session["source_stats"]["semantic_scholar"].get("papers_processed", 0)
+                        ss_stats = f"{papers}p/{ss_enriched_count}e"
+                        
+            except Exception as e:
+                # If we can't read the file, fall back to checkpoint stats
+                pass
+        
         # Add row
         table.add_row(
             session["session_id"],
             status,
             session["input_file"],
             str(session["total_papers"]),
-            ", ".join(session["sources"]),
+            oa_stats,
+            ss_stats,
             created,
             last_checkpoint
         )

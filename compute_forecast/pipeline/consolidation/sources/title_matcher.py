@@ -81,29 +81,103 @@ class TitleMatcher:
         return normalized
         
     def _normalize_authors(self, authors1: List, authors2: List) -> Tuple[set, set]:
-        """Normalize author lists for comparison."""
-        authors1_normalized = set()
-        for author in authors1:
-            # Handle both string and Author objects
-            name = author.name if hasattr(author, 'name') else str(author)
-            # Simple normalization - lowercase and remove extra spaces
-            normalized = ' '.join(name.lower().strip().split())
-            # Also add last name only for better matching
-            last_name = normalized.split()[-1] if normalized else ""
-            authors1_normalized.add(normalized)
-            if last_name:
-                authors1_normalized.add(last_name)
+        """Normalize author lists for comparison with smart initial matching."""
+        
+        def normalize_author_name(name: str) -> Tuple[str, str]:
+            """Extract first initial and last name from author name.
+            
+            Returns:
+                (first_initial, last_name) tuple
+            """
+            # Handle comma-separated names (Last, First)
+            if ',' in name:
+                parts = name.split(',', 1)
+                last_name = parts[0].strip().lower()
+                first_parts = parts[1].strip().lower().split() if len(parts) > 1 else []
+            else:
+                # Normal order (First Last)
+                parts = name.lower().strip().split()
+                if not parts:
+                    return ("", "")
+                last_name = parts[-1]
+                first_parts = parts[:-1]
+            
+            # Clean last name of suffixes
+            last_name = re.sub(r'\b(jr|sr|iii|ii|iv|v)\.?$', '', last_name).strip()
+            
+            # Get first initial
+            first_initial = ""
+            if first_parts:
+                first_part = first_parts[0].rstrip('.')
+                # Always use just the first character as initial
+                first_initial = first_part[0] if first_part else ""
                 
-        authors2_normalized = set()
+            return (first_initial, last_name)
+        
+        # Extract author representations
+        authors1_normalized = []
+        authors2_normalized = []
+        
+        for author in authors1:
+            name = author.name if hasattr(author, 'name') else str(author)
+            first, last = normalize_author_name(name)
+            if last:  # Must have at least a last name
+                authors1_normalized.append((first, last))
+                
         for author in authors2:
             name = author.name if hasattr(author, 'name') else str(author)
-            normalized = ' '.join(name.lower().strip().split())
-            last_name = normalized.split()[-1] if normalized else ""
-            authors2_normalized.add(normalized)
-            if last_name:
-                authors2_normalized.add(last_name)
-                
-        return authors1_normalized, authors2_normalized
+            first, last = normalize_author_name(name)
+            if last:  # Must have at least a last name
+                authors2_normalized.append((first, last))
+        
+        # Count matches with flexible matching
+        # For each author in the smaller list, find best match in larger list
+        matches = 0
+        used_indices = set()
+        
+        # Process the smaller list first to maximize match potential
+        if len(authors1_normalized) <= len(authors2_normalized):
+            for a1_first, a1_last in authors1_normalized:
+                for i, (a2_first, a2_last) in enumerate(authors2_normalized):
+                    if i in used_indices:
+                        continue
+                    # Check if last names match
+                    if a1_last == a2_last:
+                        # Check first initial compatibility
+                        # Empty matches anything (missing first name)
+                        # Same initial matches
+                        # Full name matches initial (j matches jacob)
+                        if (not a1_first or not a2_first or  # One is missing
+                            a1_first == a2_first):  # Same initial
+                            matches += 1
+                            used_indices.add(i)
+                            break
+        else:
+            # Process from authors2 perspective
+            for a2_first, a2_last in authors2_normalized:
+                for i, (a1_first, a1_last) in enumerate(authors1_normalized):
+                    if i in used_indices:
+                        continue
+                    if a2_last == a1_last:
+                        if (not a1_first or not a2_first or
+                            a1_first == a2_first):
+                            matches += 1
+                            used_indices.add(i)
+                            break
+        
+        # Return sets that represent the actual author lists and their overlap
+        # set1 represents all authors from list 1
+        # set2 should represent all authors from list 2, not just matches
+        # The intersection will represent the matches
+        set1 = set(range(len(authors1_normalized)))
+        set2 = set(range(len(authors1_normalized), len(authors1_normalized) + len(authors2_normalized)))
+        
+        # Add common elements to represent matches
+        # We'll add the first 'matches' elements from set1 to set2
+        for i in range(matches):
+            set2.add(i)
+            
+        return set1, set2
         
     def calculate_similarity(
         self, 
@@ -137,15 +211,43 @@ class TitleMatcher:
         
         # Exact match after normalization
         if norm1 == norm2:
+            similarity = 1.0
             # Apply safety checks even for exact normalized matches
             if self.require_safety_checks:
                 # Check year difference
                 if year1 and year2:
                     year_diff = abs(year1 - year2)
                     if year_diff > 1:
-                        # Papers more than 1 year apart - not exact match
-                        return 0.5, "low_confidence"
-            return 1.0, "exact"
+                        # Papers more than 1 year apart - reduce score
+                        similarity *= 0.5
+                        
+                # Check author overlap - always apply if authors provided
+                if authors1 and authors2:
+                    authors1_normalized, authors2_normalized = self._normalize_authors(authors1, authors2)
+                    overlap = len(authors1_normalized & authors2_normalized)
+                    # Calculate overlap ratio based on smaller author list
+                    min_authors = min(len(authors1_normalized), len(authors2_normalized))
+                    if min_authors > 0:
+                        overlap_ratio = overlap / min_authors
+                        # Apply penalty based on overlap ratio
+                        # Full overlap (1.0) = no penalty
+                        # No overlap (0.0) = multiply by 0.3
+                        # Linear interpolation: penalty = 0.3 + 0.7 * overlap_ratio
+                        author_penalty = 0.3 + 0.7 * overlap_ratio
+                        similarity *= author_penalty
+                        logger.debug(f"Author overlap: {overlap}/{min_authors} = {overlap_ratio:.2f}, penalty factor: {author_penalty:.2f}")
+            
+            # Determine match type based on final similarity
+            if similarity >= 1.0:
+                return similarity, "exact"
+            elif similarity >= self.high_confidence_threshold:
+                return similarity, "high_confidence"
+            elif similarity >= self.medium_confidence_threshold:
+                return similarity, "medium_confidence"
+            elif similarity > 0.7:
+                return similarity, "low_confidence"
+            else:
+                return similarity, "no_match"
             
         # Check substring containment (common for ArXiv vs conference)
         if norm1 in norm2 or norm2 in norm1:
@@ -160,12 +262,21 @@ class TitleMatcher:
                     if year_diff > 1:
                         similarity *= 0.5
                         
-                # Check author overlap
-                if authors1 and authors2 and similarity >= self.medium_confidence_threshold:
+                # Check author overlap - always apply if authors provided
+                if authors1 and authors2:
                     authors1_normalized, authors2_normalized = self._normalize_authors(authors1, authors2)
                     overlap = len(authors1_normalized & authors2_normalized)
-                    if overlap == 0:
-                        similarity *= 0.7
+                    # Calculate overlap ratio based on smaller author list
+                    min_authors = min(len(authors1_normalized), len(authors2_normalized))
+                    if min_authors > 0:
+                        overlap_ratio = overlap / min_authors
+                        # Apply penalty based on overlap ratio
+                        # Full overlap (1.0) = no penalty
+                        # No overlap (0.0) = multiply by 0.3
+                        # Linear interpolation: penalty = 0.3 + 0.7 * overlap_ratio
+                        author_penalty = 0.3 + 0.7 * overlap_ratio
+                        similarity *= author_penalty
+                        logger.debug(f"Author overlap: {overlap}/{min_authors} = {overlap_ratio:.2f}, penalty factor: {author_penalty:.2f}")
                         
             if similarity >= self.high_confidence_threshold:
                 return similarity, "high_confidence"
@@ -207,16 +318,21 @@ class TitleMatcher:
                     # Adjacent years (common for ArXiv->conference) - small penalty
                     similarity *= 0.95
                     
-            # Check author overlap for medium confidence matches
-            if similarity >= self.medium_confidence_threshold:
-                if authors1 and authors2:
-                    authors1_normalized, authors2_normalized = self._normalize_authors(authors1, authors2)
-                    overlap = len(authors1_normalized & authors2_normalized)
-                    if overlap == 0:
-                        logger.debug("No author overlap - reducing confidence")
-                        similarity *= 0.7
-                    else:
-                        logger.debug(f"Found {overlap} author overlaps")
+            # Check author overlap - always apply if authors provided
+            if authors1 and authors2:
+                authors1_normalized, authors2_normalized = self._normalize_authors(authors1, authors2)
+                overlap = len(authors1_normalized & authors2_normalized)
+                # Calculate overlap ratio based on smaller author list
+                min_authors = min(len(authors1_normalized), len(authors2_normalized))
+                if min_authors > 0:
+                    overlap_ratio = overlap / min_authors
+                    # Apply penalty based on overlap ratio
+                    # Full overlap (1.0) = no penalty
+                    # No overlap (0.0) = multiply by 0.3
+                    # Linear interpolation: penalty = 0.3 + 0.7 * overlap_ratio
+                    author_penalty = 0.3 + 0.7 * overlap_ratio
+                    similarity *= author_penalty
+                    logger.debug(f"Author overlap: {overlap}/{min_authors} = {overlap_ratio:.2f}, penalty factor: {author_penalty:.2f}")
                         
         # Determine match type based on final similarity
         if similarity >= self.high_confidence_threshold:

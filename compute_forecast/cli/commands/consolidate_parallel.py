@@ -158,6 +158,7 @@ def main(
     # Check for resume
     checkpoint_data = None
     papers = None
+    actual_stats = None
     
     if resume:
         checkpoint_result = checkpoint_manager.load_checkpoint()
@@ -172,6 +173,104 @@ def main(
                 console.print(f"  Current phase: {phase_state.phase}")
                 console.print(f"  OpenAlex processed: {len(phase_state.openalex_processed_hashes)}")
                 console.print(f"  Semantic Scholar processed: {len(phase_state.semantic_scholar_processed_hashes)}")
+            
+            # Count actual enriched papers from the loaded file
+            actual_stats = {
+                'openalex': {
+                    'papers_processed': checkpoint_data.sources.get('openalex', {}).get('papers_processed', 0),
+                    'papers_enriched': 0,
+                    'citations_found': 0,
+                    'abstracts_found': 0
+                },
+                'semantic_scholar': {
+                    'papers_processed': checkpoint_data.sources.get('semantic_scholar', {}).get('papers_processed', 0),
+                    'papers_enriched': 0,
+                    'citations_found': 0,
+                    'abstracts_found': 0
+                }
+            }
+            
+            # Check if we have the enriched papers file
+            enriched_file = checkpoint_manager.checkpoint_dir / "papers_enriched.json"
+            if enriched_file.exists():
+                try:
+                    with open(enriched_file) as f:
+                        data = json.load(f)
+                    
+                    papers_data = data.get("papers", [])
+                    
+                    # Count actual enriched papers and content
+                    for paper in papers_data:
+                        # Check OpenAlex
+                        has_oa_data = False
+                        has_oa_citation = False
+                        has_oa_abstract = False
+                        
+                        if paper.get("openalex_id"):
+                            has_oa_data = True
+                            
+                        if paper.get("citations"):
+                            for citation in paper["citations"]:
+                                if citation.get("source") == "openalex":
+                                    has_oa_data = True
+                                    has_oa_citation = True
+                                    break
+                                    
+                        if paper.get("abstracts"):
+                            for abstract in paper["abstracts"]:
+                                if abstract.get("source") == "openalex":
+                                    has_oa_data = True
+                                    has_oa_abstract = True
+                                    break
+                        
+                        if has_oa_data:
+                            actual_stats['openalex']['papers_enriched'] += 1
+                        if has_oa_citation:
+                            actual_stats['openalex']['citations_found'] += 1
+                        if has_oa_abstract:
+                            actual_stats['openalex']['abstracts_found'] += 1
+                        
+                        # Check Semantic Scholar
+                        has_ss_data = False
+                        has_ss_citation = False
+                        has_ss_abstract = False
+                        
+                        if paper.get("external_ids", {}).get("semantic_scholar"):
+                            has_ss_data = True
+                            
+                        if paper.get("citations"):
+                            for citation in paper["citations"]:
+                                if citation.get("source") == "semanticscholar":
+                                    has_ss_data = True
+                                    has_ss_citation = True
+                                    break
+                                    
+                        if paper.get("abstracts"):
+                            for abstract in paper["abstracts"]:
+                                if abstract.get("source") == "semanticscholar":
+                                    has_ss_data = True
+                                    has_ss_abstract = True
+                                    break
+                        
+                        if has_ss_data:
+                            actual_stats['semantic_scholar']['papers_enriched'] += 1
+                        if has_ss_citation:
+                            actual_stats['semantic_scholar']['citations_found'] += 1
+                        if has_ss_abstract:
+                            actual_stats['semantic_scholar']['abstracts_found'] += 1
+                    
+                    console.print(f"\n[cyan]Actual enrichment statistics from file:[/cyan]")
+                    console.print(f"  OpenAlex: {actual_stats['openalex']['papers_enriched']} enriched, "
+                                f"{actual_stats['openalex']['citations_found']} citations, "
+                                f"{actual_stats['openalex']['abstracts_found']} abstracts")
+                    console.print(f"  Semantic Scholar: {actual_stats['semantic_scholar']['papers_enriched']} enriched, "
+                                f"{actual_stats['semantic_scholar']['citations_found']} citations, "
+                                f"{actual_stats['semantic_scholar']['abstracts_found']} abstracts")
+                    
+                except Exception as e:
+                    console.print(f"[yellow]Warning: Could not read enriched papers file: {e}[/yellow]")
+                    actual_stats = None
+                    
         else:
             console.print("[yellow]No valid checkpoint found, starting from beginning[/yellow]")
     
@@ -232,6 +331,38 @@ def main(
             total=len(papers)
         )
         
+        # If resuming, set initial progress
+        if resume and (actual_stats or (checkpoint_data and hasattr(checkpoint_data, 'sources'))):
+            # Use actual stats if available, otherwise use checkpoint stats
+            stats_to_use = actual_stats if actual_stats else checkpoint_data.sources
+            oa_stats = stats_to_use.get('openalex', {})
+            ss_stats = stats_to_use.get('semantic_scholar', {})
+            
+            # Set initial progress
+            oa_processed = oa_stats.get('papers_processed', 0)
+            ss_processed = ss_stats.get('papers_processed', 0)
+            
+            if oa_processed > 0:
+                progress.update(openalex_task, completed=oa_processed)
+                progress_column.update_stats(
+                    openalex_task, 
+                    oa_stats.get('citations_found', 0),
+                    oa_stats.get('abstracts_found', 0)
+                )
+                
+            if ss_processed > 0:
+                progress.update(ss_task, completed=ss_processed)
+                progress_column.update_stats(
+                    ss_task,
+                    ss_stats.get('citations_found', 0),
+                    ss_stats.get('abstracts_found', 0)
+                )
+                
+            # Log the actual statistics being used
+            console.print(f"\n[cyan]Starting with statistics:[/cyan]")
+            console.print(f"  OpenAlex: {oa_processed} processed, {oa_stats.get('papers_enriched', 0)} enriched")
+            console.print(f"  Semantic Scholar: {ss_processed} processed, {ss_stats.get('papers_enriched', 0)} enriched")
+        
         # Define progress callback
         def update_progress(source: str, count: int, citations: int, abstracts: int):
             logger.debug(f"Progress update: {source} - count:{count}, citations:{citations}, abstracts:{abstracts}")
@@ -246,11 +377,21 @@ def main(
         console.print("\n[bold cyan]Starting Parallel Consolidation[/bold cyan]")
         start_time = datetime.now()
         
+        # Pass checkpoint stats if resuming
+        checkpoint_stats = None
+        if resume and checkpoint_data and hasattr(checkpoint_data, 'sources'):
+            # Use actual stats if we calculated them, otherwise use checkpoint stats
+            if actual_stats:
+                checkpoint_stats = actual_stats
+            else:
+                checkpoint_stats = checkpoint_data.sources
+            
         enriched_papers = consolidator.process_papers(
             papers, 
             update_progress,
             input_file=str(input),
-            checkpoint_papers=papers
+            checkpoint_papers=papers,
+            checkpoint_stats=checkpoint_stats
         )
         
         # Merge with any existing papers from checkpoint

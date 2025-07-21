@@ -77,7 +77,7 @@ class ParallelConsolidator:
         # Return any merged papers from checkpoint
         return getattr(phase_state, 'merged_papers', [])
         
-    def process_papers(self, papers: List[Paper], progress_update_callback: Optional[Callable[[str, int], None]] = None, input_file: str = "", checkpoint_papers: Optional[List[Paper]] = None) -> List[Paper]:
+    def process_papers(self, papers: List[Paper], progress_update_callback: Optional[Callable[[str, int], None]] = None, input_file: str = "", checkpoint_papers: Optional[List[Paper]] = None, checkpoint_stats: Optional[Dict[str, Any]] = None) -> List[Paper]:
         """
         Process papers through parallel consolidation.
         
@@ -117,6 +117,23 @@ class ParallelConsolidator:
             batch_size=1,  # Process one at a time
             processed_hashes=self.ss_processed_hashes
         )
+        
+        # If we have checkpoint stats, initialize worker counters
+        if checkpoint_stats:
+            oa_stats = checkpoint_stats.get('openalex', {})
+            ss_stats = checkpoint_stats.get('semantic_scholar', {})
+            
+            self.openalex_worker.papers_processed = oa_stats.get('papers_processed', 0)
+            self.openalex_worker.papers_enriched = oa_stats.get('papers_enriched', 0)
+            self.openalex_worker.citations_found = oa_stats.get('citations_found', 0)
+            self.openalex_worker.abstracts_found = oa_stats.get('abstracts_found', 0)
+            self.openalex_worker.api_calls = oa_stats.get('api_calls', 0)
+            
+            self.semantic_scholar_worker.papers_processed = ss_stats.get('papers_processed', 0)
+            self.semantic_scholar_worker.papers_enriched = ss_stats.get('papers_enriched', 0)
+            self.semantic_scholar_worker.citations_found = ss_stats.get('citations_found', 0)
+            self.semantic_scholar_worker.abstracts_found = ss_stats.get('abstracts_found', 0)
+            self.semantic_scholar_worker.api_calls = ss_stats.get('api_calls', 0)
         
         self.merge_worker = MergeWorker(
             input_queue=self.enrichment_queue,
@@ -233,6 +250,25 @@ class ParallelConsolidator:
         if not force and not self.checkpoint_manager.should_checkpoint():
             return
             
+        # Get merged papers to count actual enriched papers
+        merged_papers = self.merge_worker.get_merged_papers()
+        
+        # Count papers that actually have data from each source
+        openalex_enriched = 0
+        ss_enriched = 0
+        
+        for paper in merged_papers:
+            # Check if paper has OpenAlex data
+            if paper.openalex_id or any(r.source == 'openalex' for r in getattr(paper, 'citations', [])):
+                openalex_enriched += 1
+            
+            # Check if paper has Semantic Scholar data
+            # Check external_ids for semantic_scholar ID
+            if hasattr(paper, 'external_ids') and paper.external_ids.get('semantic_scholar'):
+                ss_enriched += 1
+            elif any(r.source == 'semanticscholar' for r in getattr(paper, 'citations', [])):
+                ss_enriched += 1
+            
         # Build phase state
         phase_state = ConsolidationPhaseState(
             phase="parallel_consolidation",
@@ -244,7 +280,7 @@ class ParallelConsolidator:
             semantic_scholar_processed_hashes=self.semantic_scholar_worker.processed_hashes,
             
             # Merged papers
-            merged_papers=self.merge_worker.get_merged_papers(),
+            merged_papers=merged_papers,
             
             # Statistics
             papers_processed=self.openalex_worker.papers_processed + self.semantic_scholar_worker.papers_processed,
@@ -257,13 +293,17 @@ class ParallelConsolidator:
             sources_state={
                 "openalex": {
                     "papers_processed": self.openalex_worker.papers_processed,
-                    "papers_enriched": self.openalex_worker.papers_enriched,
-                    "api_calls": self.openalex_worker.api_calls
+                    "papers_enriched": openalex_enriched,  # Use actual count
+                    "api_calls": self.openalex_worker.api_calls,
+                    "citations_found": self.openalex_worker.citations_found,
+                    "abstracts_found": self.openalex_worker.abstracts_found
                 },
                 "semantic_scholar": {
                     "papers_processed": self.semantic_scholar_worker.papers_processed,
-                    "papers_enriched": self.semantic_scholar_worker.papers_enriched,
-                    "api_calls": self.semantic_scholar_worker.api_calls
+                    "papers_enriched": ss_enriched,  # Use actual count
+                    "api_calls": self.semantic_scholar_worker.api_calls,
+                    "citations_found": self.semantic_scholar_worker.citations_found,
+                    "abstracts_found": self.semantic_scholar_worker.abstracts_found
                 },
                 "merge": self.merge_worker.get_state()
             },

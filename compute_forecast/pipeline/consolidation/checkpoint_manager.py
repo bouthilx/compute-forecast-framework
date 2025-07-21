@@ -456,6 +456,19 @@ class ConsolidationCheckpointManager:
                         # Old format - use actual source names
                         sources_list = list(sources_status.keys())
                     
+                    # Extract source statistics if available
+                    source_stats = {}
+                    if isinstance(sources_status, dict):
+                        for source_name, source_data in sources_status.items():
+                            if isinstance(source_data, dict) and "papers_processed" in source_data:
+                                source_stats[source_name] = {
+                                    "papers_processed": source_data.get("papers_processed", 0),
+                                    "papers_enriched": source_data.get("papers_enriched", 0),
+                                    "citations_found": source_data.get("citations_found", 0),
+                                    "abstracts_found": source_data.get("abstracts_found", 0),
+                                    "api_calls": source_data.get("api_calls", 0)
+                                }
+                    
                     sessions.append({
                         "session_id": checkpoint_data["session_id"],
                         "created_at": session_data.get("created_at", checkpoint_data["timestamp"]),
@@ -463,7 +476,8 @@ class ConsolidationCheckpointManager:
                         "total_papers": checkpoint_data["total_papers"],
                         "sources": sources_list,
                         "status": status,
-                        "last_checkpoint": checkpoint_data["timestamp"]
+                        "last_checkpoint": checkpoint_data["timestamp"],
+                        "source_stats": source_stats
                     })
                     
                 except Exception as e:

@@ -67,7 +67,7 @@ class OpenAlexSource(BaseConsolidationSource):
             
         # Initialize fuzzy title matcher with conservative settings
         self.title_matcher = TitleMatcher(
-            high_confidence_threshold=0.90,  # Conservative for OpenAlex
+            high_confidence_threshold=0.95,  # More conservative to avoid false positives
             medium_confidence_threshold=0.85,
             require_safety_checks=True
         )

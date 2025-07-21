@@ -275,6 +275,9 @@ class Paper:
         paper_data.pop("computational_analysis", None)
         paper_data.pop("authorship_analysis", None)
         paper_data.pop("venue_analysis", None)
+        
+        # Remove legacy fields that no longer exist in the model
+        paper_data.pop("external_ids", None)
             
         paper_data["authors"] = authors
         paper_data["citations"] = citations

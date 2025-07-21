@@ -79,7 +79,7 @@ class SemanticScholarSource(BaseConsolidationSource):
             
         # Initialize fuzzy title matcher with slightly higher threshold for S2
         self.title_matcher = TitleMatcher(
-            high_confidence_threshold=0.92,  # Slightly higher threshold for S2
+            high_confidence_threshold=0.95,  # Conservative threshold to avoid false positives
             medium_confidence_threshold=0.87,
             require_safety_checks=True
         )
