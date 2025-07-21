@@ -14,7 +14,7 @@ class CitationEnricher:
     def __init__(self, sources: List[BaseConsolidationSource]):
         self.sources = sources
 
-    def enrich(self, papers: List[Paper]) -> Dict[str, List[Dict]]:
+    def enrich(self, papers: List[Paper]) -> Dict[str, List[CitationRecord]]:
         """
         Enrich papers with citations from all sources.
         Returns mapping of paper_id -> list of citation records

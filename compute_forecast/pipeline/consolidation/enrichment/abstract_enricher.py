@@ -14,7 +14,7 @@ class AbstractEnricher:
     def __init__(self, sources: List[BaseConsolidationSource]):
         self.sources = sources
 
-    def enrich(self, papers: List[Paper]) -> Dict[str, List[Dict]]:
+    def enrich(self, papers: List[Paper]) -> Dict[str, List[AbstractRecord]]:
         """
         Enrich papers with abstracts from all sources.
         Returns mapping of paper_id -> list of abstract records
