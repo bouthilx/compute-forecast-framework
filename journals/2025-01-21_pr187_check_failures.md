@@ -348,3 +348,14 @@ Started fixing the legacy consolidate.py errors:
 - Remaining 23 errors are all in the legacy consolidate.py command
 - These remaining errors are mostly type annotation issues that don't affect functionality
 - The consolidate.py command is being replaced by the new parallel consolidation system
+
+## Continued Fixes - Round 6
+
+Fixed doi_resolver_collector.py URLRecord handling:
+- Fixed url extraction from URLData objects (4 errors fixed)
+- Errors reduced from 23 to 19
+
+### Current Status:
+- All 19 remaining errors are in cli/commands/consolidate.py (legacy command)
+- All active code has been successfully migrated
+- Legacy consolidate.py errors are low priority as this code is being replaced

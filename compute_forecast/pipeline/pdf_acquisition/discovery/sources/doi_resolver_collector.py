@@ -143,14 +143,18 @@ class DOIResolverCollector(BasePDFCollector):
 
         # Add CrossRef URLs
         for url_record in crossref_urls:
-            url = url_record.data if hasattr(url_record, "data") else str(url_record)
+            url = (
+                url_record.data.url if hasattr(url_record, "data") else str(url_record)
+            )
             if url not in seen_urls:
                 merged_urls.append(url)
                 seen_urls.add(url)
 
         # Add Unpaywall URLs that aren't already in the list
         for url_record in unpaywall_urls:
-            url = url_record.data if hasattr(url_record, "data") else str(url_record)
+            url = (
+                url_record.data.url if hasattr(url_record, "data") else str(url_record)
+            )
             if url not in seen_urls:
                 merged_urls.append(url)
                 seen_urls.add(url)
