@@ -175,7 +175,7 @@ class OutlierDetector:
 
         # Check if it's a breakthrough paper
         if hasattr(paper, "citations") and paper.citations:
-            if paper.citations > 1000:
+            if paper.get_latest_citations_count() > 1000:
                 context["reasons"].append("Highly cited paper - might be breakthrough")
                 # Only update severity if not already determined to be expected
                 if context["severity"] not in ["expected", "suspicious"]:

@@ -112,7 +112,7 @@ class BaseConsolidationSource(ABC):
                 if not source_ids:
                     # Still need to create empty results for progress tracking
                     for paper in batch:
-                        result = EnrichmentResult(paper_id=paper.paper_id)
+                        result = EnrichmentResult(paper_id=paper.paper_id or "")
                         results.append(result)
                         if progress_callback:
                             progress_callback(result)
@@ -130,7 +130,7 @@ class BaseConsolidationSource(ABC):
                     self.logger.error(f"Error fetching data: {e}")
                     # Still need to create empty results for progress tracking
                     for paper in batch:
-                        result = EnrichmentResult(paper_id=paper.paper_id)
+                        result = EnrichmentResult(paper_id=paper.paper_id or "")
                         results.append(result)
                         if progress_callback:
                             progress_callback(result)
@@ -141,9 +141,9 @@ class BaseConsolidationSource(ABC):
                     "create_results", source=self.name, batch_size=len(batch)
                 ):
                     for paper in batch:
-                        result = EnrichmentResult(paper_id=paper.paper_id)
+                        result = EnrichmentResult(paper_id=paper.paper_id or "")
 
-                        source_id = id_mapping.get(paper.paper_id)
+                        source_id = id_mapping.get(paper.paper_id or "")
                         if source_id and source_id in enrichment_data:
                             data = enrichment_data[source_id]
 

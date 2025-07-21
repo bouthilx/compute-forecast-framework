@@ -44,8 +44,8 @@ class MergeWorker(threading.Thread):
         self.stop_event = threading.Event()
 
         # Track merged papers
-        self.merged_papers = {}  # paper_id -> Paper
-        self.papers_by_hash = {}  # paper_hash -> paper_id
+        self.merged_papers: Dict[str, Paper] = {}  # paper_id -> Paper
+        self.papers_by_hash: Dict[str, str] = {}  # paper_hash -> paper_id
 
         # Statistics
         self.papers_merged = 0
@@ -133,20 +133,32 @@ class MergeWorker(threading.Thread):
 
         # Store S2 ID in external_ids if present
         if enrichment.get("semantic_scholar_id"):
-            if not hasattr(consolidated, "external_ids"):
-                consolidated.external_ids = {}
-            consolidated.external_ids["semantic_scholar"] = enrichment[
-                "semantic_scholar_id"
-            ]
+            # Store as identifier record
+            id_record = IdentifierRecord(
+                source=source,
+                timestamp=datetime.now(),
+                original=False,
+                data=IdentifierData(
+                    identifier_type="s2_paper",
+                    identifier_value=enrichment["semantic_scholar_id"]
+                )
+            )
+            consolidated.identifiers.append(id_record)
 
-        # Store other IDs in external_ids
+        # Store other IDs as identifiers
         for id_field in ["pmid", "pmcid", "mag_id"]:
             if enrichment.get(id_field):
-                if not hasattr(consolidated, "external_ids"):
-                    consolidated.external_ids = {}
-                consolidated.external_ids[id_field.replace("_id", "")] = enrichment[
-                    id_field
-                ]
+                id_type = id_field.replace("_id", "")
+                id_record = IdentifierRecord(
+                    source=source,
+                    timestamp=datetime.now(),
+                    original=False,
+                    data=IdentifierData(
+                        identifier_type=id_type,
+                        identifier_value=enrichment[id_field]
+                    )
+                )
+                consolidated.identifiers.append(id_record)
 
         # 2. Citations - append CitationRecord
         if enrichment.get("citations") is not None:

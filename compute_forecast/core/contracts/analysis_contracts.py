@@ -214,7 +214,7 @@ class PaperMetadataContract(BaseContract):
                 "year": data.year,
                 "venue": data.venue,
                 "citations": data.citations,
-                "abstract": data.abstract,
+                "abstract": data.get_best_abstract(),
                 "paper_id": data.paper_id,
                 "openalex_id": data.openalex_id,
                 "arxiv_id": data.arxiv_id,

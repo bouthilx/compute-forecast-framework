@@ -3,7 +3,7 @@
 import time
 import logging
 from contextlib import contextmanager
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 
 
@@ -14,7 +14,7 @@ class TimingRecord:
     name: str
     start_time: float
     end_time: Optional[float] = None
-    metadata: Dict[str, any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     @property
     def duration(self) -> Optional[float]:
@@ -54,13 +54,13 @@ class PerformanceProfiler:
                 + " ".join(f"{k}={v}" for k, v in metadata.items())
             )
 
-    def get_summary(self) -> Dict[str, any]:
+    def get_summary(self) -> Dict[str, Any]:
         """Get timing summary statistics"""
         if not self.records:
             return {}
 
         # Group by operation name
-        operations = {}
+        operations: Dict[str, Dict[str, Any]] = {}
         for record in self.records:
             if record.duration is None:
                 continue
@@ -82,7 +82,7 @@ class PerformanceProfiler:
             op["records"].append(record)
 
         # Calculate averages and format
-        summary = {
+        summary: Dict[str, Any] = {
             "total_time": sum(r.duration for r in self.records if r.duration),
             "operations": {},
         }
@@ -124,9 +124,9 @@ class PerformanceProfiler:
 
         print(f"{'=' * 60}\n")
 
-    def get_detailed_breakdown(self) -> Dict[str, any]:
+    def get_detailed_breakdown(self) -> Dict[str, Any]:
         """Get detailed breakdown with metadata analysis"""
-        breakdown = {}
+        breakdown: Dict[str, Any] = {}
 
         for record in self.records:
             if record.duration is None:

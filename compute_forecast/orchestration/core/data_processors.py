@@ -156,7 +156,7 @@ class SimpleCitationAnalyzer:
         logger.info(f"Analyzing citations for {len(papers)} papers...")
 
         # Calculate citation statistics
-        citations = [paper.citations for paper in papers]
+        citations = [paper.get_latest_citations_count() for paper in papers]
         total_citations = sum(citations)
         average_citations = total_citations / len(papers) if papers else 0
 
@@ -212,7 +212,7 @@ class SimpleCitationAnalyzer:
         self, papers: List[Paper], min_citations: int
     ) -> List[Paper]:
         """Filter papers by minimum citation count"""
-        filtered = [paper for paper in papers if paper.citations >= min_citations]
+        filtered = [paper for paper in papers if paper.get_latest_citations_count() >= min_citations]
         logger.info(
             f"Citation filter: {len(papers)} -> {len(filtered)} papers (min_citations={min_citations})"
         )

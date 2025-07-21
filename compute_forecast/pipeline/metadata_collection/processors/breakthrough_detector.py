@@ -160,8 +160,9 @@ class BreakthroughDetector:
         # Factor 1: Citation velocity (weight from config)
         years_since_pub = max(1, self.current_year - paper.year) if paper.year else 1
         citation_velocity = 0.0
-        if paper.citations and years_since_pub > 0:
-            citation_velocity = paper.citations / years_since_pub
+        citation_count = paper.get_latest_citations_count()
+        if citation_count > 0 and years_since_pub > 0:
+            citation_velocity = citation_count / years_since_pub
 
         # Velocity scoring using config
         velocity_score = self.config.get_velocity_score(citation_velocity)
@@ -192,7 +193,7 @@ class BreakthroughDetector:
     def _calculate_keyword_score(self, paper: Paper) -> Tuple[float, List[str]]:
         """Calculate keyword-based breakthrough score."""
         title_lower = paper.title.lower() if paper.title else ""
-        abstract_lower = paper.abstract.lower() if paper.abstract else ""
+        abstract_lower = paper.get_best_abstract().lower()
 
         matched_keywords = []
         for keyword in self.breakthrough_keywords:
@@ -251,8 +252,9 @@ class BreakthroughDetector:
         # Check citation velocity
         years_since_pub = max(1, self.current_year - paper.year) if paper.year else 1
         citation_velocity = 0.0
-        if paper.citations and years_since_pub > 0:
-            citation_velocity = paper.citations / years_since_pub
+        citation_count = paper.get_latest_citations_count()
+        if citation_count > 0 and years_since_pub > 0:
+            citation_velocity = citation_count / years_since_pub
 
         if citation_velocity >= self.config.velocity_thresholds["high"]:
             indicators.append(
