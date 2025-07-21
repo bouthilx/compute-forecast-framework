@@ -72,8 +72,8 @@ class OpenAlexWorker(ConsolidationWorker):
 
                 # Process results
                 for oa_id, data in enrichment_data.items():
-                    paper = paper_by_oa_id.get(oa_id)
-                    if not paper:
+                    matched_paper = paper_by_oa_id.get(oa_id)
+                    if not matched_paper:
                         continue
 
                     # Extract IDs from the enrichment response
@@ -96,7 +96,7 @@ class OpenAlexWorker(ConsolidationWorker):
                     if arxiv_id:
                         enrichment["arxiv_id"] = arxiv_id
 
-                    results.append((paper, enrichment))
+                    results.append((matched_paper, enrichment))
 
             # Add empty results for papers not found
             for paper in papers:

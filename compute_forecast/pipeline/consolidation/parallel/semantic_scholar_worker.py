@@ -71,8 +71,8 @@ class SemanticScholarWorker(ConsolidationWorker):
 
                 # Process results
                 for s2_id, data in enrichment_data.items():
-                    paper = paper_by_s2_id.get(s2_id)
-                    if not paper:
+                    matched_paper = paper_by_s2_id.get(s2_id)
+                    if not matched_paper:
                         continue
 
                     # Build enrichment dict
@@ -101,7 +101,7 @@ class SemanticScholarWorker(ConsolidationWorker):
                         elif identifier["type"] == "mag":
                             enrichment["mag_id"] = identifier["value"]
 
-                    results.append((paper, enrichment))
+                    results.append((matched_paper, enrichment))
 
             # Add empty results for papers not found
             for paper in papers:

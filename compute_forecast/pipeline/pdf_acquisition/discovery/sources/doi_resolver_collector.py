@@ -126,7 +126,7 @@ class DOIResolverCollector(BasePDFCollector):
         return pdf_record
 
     def _merge_pdf_urls(
-        self, crossref_urls: List[str], unpaywall_urls: List[str]
+        self, crossref_urls: List[URLRecord], unpaywall_urls: List[URLRecord]
     ) -> List[str]:
         """Merge and deduplicate PDF URLs, prioritizing CrossRef (publisher) over Unpaywall.
 
@@ -138,8 +138,8 @@ class DOIResolverCollector(BasePDFCollector):
             Merged list of unique URLs with CrossRef URLs first
         """
         # Start with CrossRef URLs (typically publisher versions)
-        merged_urls = []
-        seen_urls = set()
+        merged_urls: List[str] = []
+        seen_urls: set[str] = set()
 
         # Add CrossRef URLs
         for url_record in crossref_urls:

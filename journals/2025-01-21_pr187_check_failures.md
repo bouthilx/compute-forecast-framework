@@ -316,3 +316,19 @@ Reduced errors from 71 to 30. Fixed the following issues:
 - Total reduction: 112 → 30 (82 errors fixed, 73% reduction)
 - Remaining errors mostly in consolidate.py (old consolidation command)
 - All Paper/Author model migration issues resolved in active code
+
+### Fixes Applied - Round 4:
+
+Reduced errors from 30 to 25. Fixed the following issues:
+
+26. **doi_resolver_collector.py** - Fixed remaining _merge_pdf_urls type annotation and added explicit type hints
+27. **semantic_scholar_worker.py** - Fixed variable shadowing issue with paper assignment
+28. **openalex_worker.py** - Fixed variable shadowing issue with paper assignment
+29. **semantic_scholar_v2.py** - Fixed params dict to use string values for requests.get
+
+### Final Status:
+- Reduced errors from 112 to 25 (87 errors fixed, 78% reduction)
+- All remaining 25 errors are in cli/commands/consolidate.py (old consolidation command)
+- This is legacy code that uses the old Paper model with external_ids
+- All active code has been successfully migrated to the new Paper/Author models
+- PR #187 should now pass all pre-commit checks for the files it modifies

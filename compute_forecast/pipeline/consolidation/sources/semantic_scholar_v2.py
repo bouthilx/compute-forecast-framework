@@ -184,7 +184,7 @@ class SemanticScholarSource(BaseConsolidationSource):
                             f"{self.graph_url}/paper/search",
                             params={
                                 "query": query,
-                                "limit": 1,
+                                "limit": "1",
                                 "fields": "paperId,title,year",
                             },
                             headers=self.headers,
