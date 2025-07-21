@@ -576,7 +576,7 @@ class ConsolidationCheckpointManager:
                 "interrupted",
                 "failed",
             ]:
-                return session["session_id"]
+                return str(session["session_id"])
 
         return None
 

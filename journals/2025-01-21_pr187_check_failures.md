@@ -217,3 +217,24 @@ The remaining 130+ errors are in files outside the scope of PR #187 and mostly r
 
 5. **openreview_v2.py** - 3 errors
    - Missing type annotations for lists
+
+### Fixes Applied:
+
+1. **semantic_scholar.py**:
+   - Changed `params: dict = None` to `params: Optional[dict] = None`
+   - Added null checks for Optional[str] when used as dict keys
+
+2. **openalex.py**:
+   - Added null check for `paper.paper_id` before using as dict key
+
+3. **semantic_scholar_worker.py & openalex_worker.py**:
+   - Changed `(paper, None)` to `(paper, {})` to match return type
+   - Added `str()` cast for identifier values
+
+4. **openreview_v2.py**:
+   - Added type annotations for list variables
+   - Fixed return type with proper cast
+
+### Commit 6: **3340559** - "Fix remaining type errors in consolidation source files"
+- 9 files changed
+- Fixed all type errors in consolidation-related files

@@ -549,7 +549,11 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         try:
             # 1. Check if we have a cached decision from batch processing
             if hasattr(submission, "_cached_decision"):
-                return str(submission._cached_decision) if submission._cached_decision else None
+                return (
+                    str(submission._cached_decision)
+                    if submission._cached_decision
+                    else None
+                )
 
             # 2. Use heuristics-based approach for decision extraction from replies
             # Priority: lower rank = higher priority
