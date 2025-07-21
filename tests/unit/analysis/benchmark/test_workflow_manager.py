@@ -3,6 +3,7 @@
 import pytest
 from unittest.mock import patch
 import pandas as pd
+from datetime import datetime
 
 from compute_forecast.pipeline.analysis.benchmark.workflow_manager import (
     ExtractionWorkflowManager,
@@ -23,6 +24,49 @@ from compute_forecast.pipeline.metadata_collection.models import (
     ComputationalAnalysis,
     Author,
 )
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(paper_id: str, title: str, venue: str, year: int, 
+                     citation_count: int, authors: list, abstract_text: str = "") -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count)
+            )
+        )
+    
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text)
+            )
+        )
+    
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestExtractionWorkflowManager:
@@ -39,14 +83,14 @@ class TestExtractionWorkflowManager:
         for year in years:
             for domain in domains:
                 for i in range(3):  # 3 papers per domain per year
-                    paper = Paper(
+                    paper = create_test_paper(
                         paper_id=f"paper_{paper_id}",
                         title=f"{domain} Paper {i} - {year}",
                         year=year,
                         venue="NeurIPS" if domain == "NLP" else "ICML",
                         authors=[Author(name=f"Author {paper_id}")],
-                        citations=i * 50,  # Add required citations field
-                        abstract=f"Research in {domain} using deep learning",
+                        citation_count=i * 50,  # Add required citations field
+                        abstract_text=f"Research in {domain} using deep learning",
                     )
                     papers.append(paper)
                     paper_id += 1
@@ -167,13 +211,13 @@ class TestExtractionWorkflowManager:
         results = []
 
         for i in range(3):
-            paper = Paper(
+            paper = create_test_paper(
                 paper_id=f"review_{i}",
                 title=f"Paper needing review {i}",
                 year=2023,
                 venue="ICML",
                 authors=[Author(name=f"Author {i}")],
-                citations=10,
+                citation_count=10,
             )
             papers_needing_review.append(paper)
 
@@ -213,23 +257,23 @@ class TestExtractionWorkflowManager:
         """Test error handling in parallel extraction."""
         batches = {
             "nlp_2023": [
-                Paper(
+                create_test_paper(
                     paper_id="1",
                     title="Test",
                     year=2023,
                     venue="ACL",
                     authors=[Author(name="A")],
-                    citations=10,
+                    citation_count=10,
                 )
             ],
             "computer_vision_2023": [
-                Paper(
+                create_test_paper(
                     paper_id="2",
                     title="Test2",
                     year=2023,
                     venue="CVPR",
                     authors=[Author(name="B")],
-                    citations=10,
+                    citation_count=10,
                 )
             ],
         }
@@ -260,34 +304,34 @@ class TestExtractionWorkflowManager:
 
     def test_domain_detection_from_paper(self, workflow_manager):
         """Test detecting domain from paper content."""
-        nlp_paper = Paper(
+        nlp_paper = create_test_paper(
             paper_id="nlp_test",
             title="BERT for Natural Language Understanding",
             year=2023,
             venue="ACL",
             authors=[Author(name="NLP Researcher")],
-            citations=100,
-            abstract="We present improvements to transformer models for NLP tasks.",
+            citation_count=100,
+            abstract_text="We present improvements to transformer models for NLP tasks.",
         )
 
-        cv_paper = Paper(
+        cv_paper = create_test_paper(
             paper_id="cv_test",
             title="Vision Transformer for Image Classification",
             year=2023,
             venue="CVPR",
             authors=[Author(name="CV Researcher")],
-            citations=150,
-            abstract="We apply transformers to computer vision and image recognition.",
+            citation_count=150,
+            abstract_text="We apply transformers to computer vision and image recognition.",
         )
 
-        rl_paper = Paper(
+        rl_paper = create_test_paper(
             paper_id="rl_test",
             title="Deep Reinforcement Learning for Atari Games",
             year=2023,
             venue="ICML",
             authors=[Author(name="RL Researcher")],
-            citations=80,
-            abstract="We train agents using reinforcement learning on Atari environments.",
+            citation_count=80,
+            abstract_text="We train agents using reinforcement learning on Atari environments.",
         )
 
         nlp_domain = workflow_manager.detect_domain(nlp_paper)
