@@ -30,7 +30,7 @@ from compute_forecast.pipeline.consolidation.models_extended import (
 )
 from compute_forecast.utils.profiling import PerformanceProfiler, set_profiler
 from compute_forecast.cli.utils.logging_handler import RichConsoleHandler
-from compute_forecast.cli.commands.consolidate import load_papers, save_papers
+from compute_forecast.cli.utils.consolidation_io import load_papers, save_papers
 
 console = Console()
 logger = logging.getLogger(__name__)

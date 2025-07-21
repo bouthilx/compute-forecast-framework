@@ -4,7 +4,6 @@ import typer
 from typing import Optional
 from .. import __version__
 from .commands.collect import main as collect_command
-from .commands.consolidate import main as consolidate_command
 from .commands.consolidate_sessions import list_sessions, clean_sessions
 from .commands.consolidate_parallel import main as consolidate_parallel_command
 
@@ -20,9 +19,6 @@ app = typer.Typer(
 # Register the commands
 app.command(name="collect")(collect_command)
 app.command(name="consolidate")(consolidate_parallel_command)  # Use parallel version
-app.command(name="consolidate-sequential")(
-    consolidate_command
-)  # Keep old version as sequential
 
 # Create a subcommand group for consolidation sessions
 consolidate_sessions_app = typer.Typer(help="Manage consolidation sessions")
