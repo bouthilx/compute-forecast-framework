@@ -1,7 +1,7 @@
 # Scraper Implementation Plan for Bulk Paper Collection
 
-**Date**: 2025-01-06  
-**Author**: Claude  
+**Date**: 2025-01-06
+**Author**: Claude
 **Objective**: Implement dedicated scrapers for bulk paper collection from venues not covered by paperoni
 
 ## Scraper Module Architecture
@@ -68,13 +68,13 @@ Based on investigation results from scripts/investigate_venue_scrapers.py:
 # conference_base.py
 class ConferenceProceedingsScaper(BaseScaper):
     """Base for scraping conference proceedings pages"""
-    
+
     def get_conference_years(self, venue: str) -> List[int]:
         """Get available years for a venue"""
-        
+
     def get_papers_for_year(self, venue: str, year: int) -> List[Paper]:
         """Get all papers from a venue/year"""
-        
+
     def parse_paper_metadata(self, paper_element) -> Paper:
         """Extract paper metadata from HTML element"""
 ```
@@ -86,7 +86,7 @@ class ConferenceProceedingsScaper(BaseScaper):
 - **Implementation**: Direct PDF link extraction + metadata parsing
 - **Timeline**: 2-3 days
 
-#### 1.3 Implement ACL Anthology Scraper  
+#### 1.3 Implement ACL Anthology Scraper
 - **Target**: 465 venues × multiple years = 10,000+ papers
 - **Approach**: Volume-based collection via `/volumes/{year}.{venue}/`
 - **Implementation**: Structured HTML parsing, no API needed
@@ -126,10 +126,10 @@ class ConferenceProceedingsScaper(BaseScaper):
 ```python
 class ComprehensiveScraperOrchestrator:
     """Orchestrate all scrapers for unified collection"""
-    
+
     def collect_by_venues(self, venues: List[str], years: List[int]) -> List[Paper]:
         """Collect papers using optimal scraper for each venue"""
-        
+
     def collect_by_institutions(self, institutions: List[str], years: List[int]) -> List[Paper]:
         """Collect papers with institution filtering"""
 ```
@@ -138,10 +138,10 @@ class ComprehensiveScraperOrchestrator:
 ```python
 class InstitutionMatcher:
     """Dynamic institution matching for collected papers"""
-    
+
     def extract_affiliations(self, paper: Paper) -> List[str]:
         """Extract all affiliations from paper metadata"""
-        
+
     def is_target_institution(self, paper: Paper, target_institutions: List[str]) -> bool:
         """Check if paper has target institution affiliation"""
 ```
@@ -150,13 +150,13 @@ class InstitutionMatcher:
 
 ### Conference Papers (Estimated)
 - **IJCAI**: 1,000+ papers per year × 6 years = 6,000+ papers
-- **ACL Family**: 465 venues × avg 50 papers = 23,000+ papers  
+- **ACL Family**: 465 venues × avg 50 papers = 23,000+ papers
 - **CVF**: 4 conferences × avg 2,000 papers × 6 years = 48,000+ papers
 - **AAAI**: 1,000+ papers per year × 6 years = 6,000+ papers
 - **Enhanced OpenReview**: 5,000+ papers across workshops
 - **Enhanced PMLR**: 10,000+ papers across proceedings
 
-### Journal Papers (Estimated)  
+### Journal Papers (Estimated)
 - **Nature Family**: 500+ papers per journal
 - **Medical Journals**: 1,000+ papers across venues
 
@@ -198,7 +198,7 @@ class InstitutionMatcher:
 - ACL Anthology scraper: 10,000+ papers from major venues
 - Zero critical errors during collection
 
-### Phase 2 Success Criteria  
+### Phase 2 Success Criteria
 - CVF scraper: 40,000+ computer vision papers
 - Enhanced API scrapers: 15,000+ additional papers
 - Institution filtering accuracy >95%

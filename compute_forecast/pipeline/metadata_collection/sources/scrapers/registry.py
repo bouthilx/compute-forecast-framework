@@ -1,7 +1,7 @@
 """Scraper registry for managing available scrapers."""
 
 import logging
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Type, Any
 
 from .base import BaseScraper, ScrapingConfig
 
@@ -40,7 +40,7 @@ class ScraperRegistry:
             self.register_scraper("ACLAnthologyScraper", ACLAnthologyScraper)
             self.register_scraper("CVFScraper", CVFScraper)
             self.register_scraper("PMLRScraper", PMLRScraper)
-            
+
         except ImportError as e:
             logger.warning(f"Failed to import package scrapers: {e}")
 
@@ -53,10 +53,10 @@ class ScraperRegistry:
                 OpenReviewAdapter,
                 OpenReviewAdapterV2,
                 SemanticScholarAdapter,
-                NaturePortfolioAdapter
+                NaturePortfolioAdapter,
             )
             from .aaai import AAAIScraper
-            
+
             self.register_scraper("NeurIPSScraper", NeurIPSAdapter)
             self.register_scraper("MLRScraper", MLRAdapter)
             self.register_scraper("OpenReviewScraper", OpenReviewAdapter)
@@ -64,7 +64,7 @@ class ScraperRegistry:
             self.register_scraper("SemanticScholarScraper", SemanticScholarAdapter)
             self.register_scraper("NaturePortfolioScraper", NaturePortfolioAdapter)
             self.register_scraper("AAAIScraper", AAAIScraper)
-            
+
         except ImportError as e:
             logger.warning(f"Failed to import paperoni adapters: {e}")
 
@@ -92,7 +92,6 @@ class ScraperRegistry:
             "iccv": "CVFScraper",
             "eccv": "CVFScraper",
             "wacv": "CVFScraper",
-            
             # Nature Portfolio journals
             "nature": "NaturePortfolioScraper",
             "scientific-reports": "NaturePortfolioScraper",
@@ -102,13 +101,11 @@ class ScraperRegistry:
             "nature-neuroscience": "NaturePortfolioScraper",
             "nature-methods": "NaturePortfolioScraper",
             "nature-biotechnology": "NaturePortfolioScraper",
-            
             # AAAI venues
             "aaai": "AAAIScraper",
             "aies": "AAAIScraper",
             "hcomp": "AAAIScraper",
             "icwsm": "AAAIScraper",
-            
             # Other venues with SemanticScholar fallback
             "miccai": "SemanticScholarScraper",
             "kdd": "SemanticScholarScraper",
@@ -143,9 +140,8 @@ class ScraperRegistry:
 
         # Instantiate scraper
         try:
-            scraper = scraper_class(config or ScrapingConfig())
-            # Store original venue name for scrapers that need it
-            scraper._original_venue = venue
+            # All scrapers take config as their parameter
+            scraper = scraper_class(config or ScrapingConfig())  # type: ignore[arg-type]
             return scraper
         except Exception as e:
             logger.error(f"Failed to instantiate scraper {scraper_name}: {e}")
@@ -167,11 +163,12 @@ class ScraperRegistry:
             venue_lower, self._venue_mapping.get("*", "SemanticScholarScraper")
         )
 
-        return {
+        result: Dict[str, Any] = {
             "venue": venue,
             "scraper": scraper_name,
             "is_fallback": venue_lower not in self._venue_mapping,
         }
+        return result
 
 
 # Global registry instance

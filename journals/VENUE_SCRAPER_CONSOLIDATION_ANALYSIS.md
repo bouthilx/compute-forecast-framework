@@ -1,6 +1,6 @@
 # Venue Scraper Consolidation Analysis
 
-**Date**: January 9, 2025  
+**Date**: January 9, 2025
 **Objective**: Group top 50 venues by platform/publisher to identify consolidated scrapers
 
 ## Executive Summary
@@ -21,7 +21,7 @@ Analysis of the top 50 venues reveals significant consolidation opportunities:
 
 ### 2. OpenReview
 **Venues**: ICLR, COLM, TMLR, RLC
-**Coverage**: 4 venues, 500+ papers  
+**Coverage**: 4 venues, 500+ papers
 **Scraper**: OpenReviewScraper (exists, needs extension)
 **Implementation**: Extend to handle journal format (TMLR) and new conferences
 
@@ -116,7 +116,7 @@ Analysis of the top 50 venues reveals significant consolidation opportunities:
 
 class PlatformBaseScraper(BaseScraper):
     """Base class for multi-venue platform scrapers"""
-    
+
     def get_venue_config(self, venue_name):
         """Get venue-specific configuration"""
         pass
@@ -151,7 +151,7 @@ _venue_mapping = {
     "acl": "ACLAnthologyScraper",
     "emnlp": "ACLAnthologyScraper",
     "cvpr": "CVFScraper",
-    
+
     # Platform extensions
     "aistats": "MLRScraper",
     "uai": "MLRScraper",
@@ -159,7 +159,7 @@ _venue_mapping = {
     "colm": "OpenReviewScraper",
     "tmlr": "OpenReviewScraper",
     "rlc": "OpenReviewScraper",
-    
+
     # New platform scrapers
     "icra": "IEEEScraper",
     "iros": "IEEEScraper",
@@ -169,22 +169,22 @@ _venue_mapping = {
     "ieee_access": "IEEEScraper",
     "ieee_tcns": "IEEEScraper",
     "ieee_tkde": "IEEEScraper",
-    
+
     "sigir": "ACMScraper",
     "siggraph_asia": "ACMScraper",
     "acm_facct": "ACMScraper",
     "acm_computing_surveys": "ACMScraper",
     "acm_tosem": "ACMScraper",
-    
+
     "nature": "NatureScraper",
     "scientific_reports": "NatureScraper",
     "communications_biology": "NatureScraper",
-    
+
     "molecular_autism": "BMCScraper",
     "bmj_open": "BMCScraper",
-    
+
     "frontiers_in_neuroscience": "FrontiersScraper",
-    
+
     # Individual scrapers
     "aaai": "AAAIScraper",
     "jmlr": "JMLRScraper",

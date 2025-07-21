@@ -21,7 +21,7 @@ The scraper architecture introduces a new data collection system that complement
 #### ScrapedPaper
 - **Note**: This model is NOT implemented in the codebase. It appears to be a conceptual model that was replaced by SimplePaper.
 
-#### Paper (data/models.py) 
+#### Paper (data/models.py)
 - **Purpose**: The comprehensive paper model used throughout the analysis pipeline
 - **Contains**:
   - Full author objects with affiliations
@@ -51,7 +51,7 @@ The scraper architecture introduces a new data collection system that complement
   - `get_proceedings_url()`: Build URL for venue/year
   - `parse_proceedings_page()`: Extract papers from HTML
 
-#### JournalPublisherScaper  
+#### JournalPublisherScaper
 - **Purpose**: For journal publisher sites
 - **Approach**: Search-based rather than enumeration
 - **Additional Methods**:

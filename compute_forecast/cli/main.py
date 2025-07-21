@@ -8,11 +8,12 @@ from .commands.consolidate import main as consolidate_command
 from .commands.consolidate_sessions import list_sessions, clean_sessions
 from .commands.consolidate_parallel import main as consolidate_parallel_command
 
+
 app = typer.Typer(
     name="compute-forecast",
     help="Compute Forecast - ML Research Computational Requirements Analysis. "
-         "A tool for collecting and analyzing computational requirements from ML research papers "
-         "to project future infrastructure needs.",
+    "A tool for collecting and analyzing computational requirements from ML research papers "
+    "to project future infrastructure needs.",
     add_completion=False,
 )
 
@@ -38,16 +39,18 @@ def version_callback(value: bool):
 @app.callback()
 def callback(
     version: Optional[bool] = typer.Option(
-        None, "--version", "-v", 
-        callback=version_callback, 
+        None,
+        "--version",
+        "-v",
+        callback=version_callback,
         help="Show version and exit.",
-        is_eager=True
-    )
+        is_eager=True,
+    ),
 ):
     """
     Compute Forecast - ML Research Computational Requirements Analysis
-    
-    A comprehensive tool for collecting and analyzing computational requirements 
+
+    A comprehensive tool for collecting and analyzing computational requirements
     from ML research papers to project future infrastructure needs.
     """
     pass

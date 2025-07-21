@@ -95,8 +95,6 @@ class VenueScrapingInvestigator:
         print("ACL ANTHOLOGY INVESTIGATION: Bulk Paper Collection")
         print("=" * 60)
 
-        base_url = "https://aclanthology.org/"
-
         # Check for API documentation
         api_endpoints = [
             "https://aclanthology.org/info/api/",
@@ -112,7 +110,7 @@ class VenueScrapingInvestigator:
                     print(f"✅ API found at: {api_url}")
                     api_available = True
                     break
-            except:
+            except Exception:
                 continue
 
         if not api_available:

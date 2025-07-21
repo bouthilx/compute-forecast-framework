@@ -1,7 +1,7 @@
 # Nature Portfolio API Analysis and Implementation Plan
 
-**Date**: January 9, 2025  
-**Task**: Exhaustive analysis of Nature Portfolio APIs and implementation planning  
+**Date**: January 9, 2025
+**Task**: Exhaustive analysis of Nature Portfolio APIs and implementation planning
 **Duration**: ~90 minutes
 
 ## Summary
@@ -71,11 +71,11 @@ class NaturePortfolioAdapter(BasePaperoniAdapter):
         super().__init__("nature_portfolio", config)
         self.springer_client = None  # Primary
         self.crossref_client = None  # Fallback
-        
+
     def get_supported_venues(self):
-        return ["nature", "scientific-reports", "communications-biology", 
+        return ["nature", "scientific-reports", "communications-biology",
                 "nature-communications", "nature-machine-intelligence", ...]
-        
+
     def _create_paperoni_scraper(self):
         # Initialize both clients
         # Springer Nature for comprehensive data
@@ -127,7 +127,7 @@ CROSSREF_CONTACT_EMAIL=your_email@institution.edu
 ```python
 # Add to _setup_venue_mappings()
 "nature": "NaturePortfolioScraper",
-"scientific-reports": "NaturePortfolioScraper", 
+"scientific-reports": "NaturePortfolioScraper",
 "communications-biology": "NaturePortfolioScraper",
 "nature-communications": "NaturePortfolioScraper",
 # ... etc

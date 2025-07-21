@@ -2,11 +2,15 @@
 
 from unittest.mock import Mock, patch
 
-from compute_forecast.data.sources.scrapers.conference_scrapers.cvf_scraper import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.cvf_scraper import (
     CVFScraper,
 )
-from compute_forecast.data.sources.scrapers.models import SimplePaper
-from compute_forecast.data.sources.scrapers.base import ScrapingResult
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
+    SimplePaper,
+)
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import (
+    ScrapingResult,
+)
 
 
 class TestCVFScraper:
@@ -108,7 +112,7 @@ class TestCVFScraper:
         assert url == expected
 
     @patch(
-        "compute_forecast.data.sources.scrapers.conference_scrapers.cvf_scraper.CVFScraper._make_request"
+        "compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.cvf_scraper.CVFScraper._make_request"
     )
     def test_scrape_venue_year_success(self, mock_make_request):
         """Test successful venue/year scraping."""
@@ -150,7 +154,7 @@ class TestCVFScraper:
         mock_get.assert_not_called()
 
     @patch(
-        "compute_forecast.data.sources.scrapers.conference_scrapers.cvf_scraper.CVFScraper._make_request"
+        "compute_forecast.pipeline.metadata_collection.sources.scrapers.conference_scrapers.cvf_scraper.CVFScraper._make_request"
     )
     def test_scrape_venue_year_network_error(self, mock_make_request):
         """Test network error handling."""

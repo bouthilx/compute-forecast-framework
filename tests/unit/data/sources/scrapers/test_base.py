@@ -6,7 +6,7 @@ from datetime import datetime
 import requests
 from typing import List, Dict
 
-from compute_forecast.data.sources.scrapers.base import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import (
     ScrapingConfig,
     ScrapingResult,
     BaseScraper,
@@ -14,13 +14,13 @@ from compute_forecast.data.sources.scrapers.base import (
     JournalPublisherScraper,
     APIEnhancedScraper,
 )
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 # Test implementations for abstract classes
 class MockScraperImpl(BaseScraper):
     """Concrete implementation for testing BaseScraper"""
-    
+
     def __init__(self, supported_venues=None, available_years=None, config=None):
         super().__init__("test_scraper", config)
         self._supported_venues = supported_venues or ["NeurIPS", "ICML"]
@@ -43,7 +43,7 @@ class MockScraperImpl(BaseScraper):
 
 class MockConferenceScraperImpl(ConferenceProceedingsScraper):
     """Concrete implementation for testing ConferenceProceedingsScraper"""
-    
+
     def __init__(self, config=None):
         super().__init__("test_conference_scraper", config)
 
@@ -74,7 +74,7 @@ class MockConferenceScraperImpl(ConferenceProceedingsScraper):
 
 class MockJournalScraperImpl(JournalPublisherScraper):
     """Concrete implementation for testing JournalPublisherScraper"""
-    
+
     def __init__(self, config=None):
         super().__init__("test_journal_scraper", config)
 
@@ -103,7 +103,7 @@ class MockJournalScraperImpl(JournalPublisherScraper):
 
 class MockAPIScraperImpl(APIEnhancedScraper):
     """Concrete implementation for testing APIEnhancedScraper"""
-    
+
     def __init__(self, auth_success=True, config=None):
         super().__init__("test_api_scraper", config)
         self.auth_success = auth_success
@@ -315,7 +315,7 @@ class TestConferenceProceedingsScraper:
 
 class TestJournalPublisherScraper:
     """Test JournalPublisherScraper"""
-    
+
     def test_scrape_venue_year_success(self):
         scraper = MockJournalScraperImpl()
         result = scraper.scrape_venue_year("Nature", 2023)
@@ -340,7 +340,7 @@ class TestJournalPublisherScraper:
 
 class TestAPIEnhancedScraper:
     """Test APIEnhancedScraper"""
-    
+
     def test_authentication_success(self):
         scraper = MockAPIScraperImpl(auth_success=True)
         assert scraper.authenticate() is True

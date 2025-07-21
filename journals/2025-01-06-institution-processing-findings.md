@@ -1,7 +1,7 @@
 # Institution Processing Infrastructure Analysis
 
-**Date**: 2025-01-06  
-**Author**: Claude  
+**Date**: 2025-01-06
+**Author**: Claude
 **Subject**: Comprehensive review of existing institution processing capabilities
 
 ## Executive Summary
@@ -101,26 +101,26 @@ The infrastructure is comprehensive. What's missing is merely a **thin coordinat
 ```python
 class InstitutionFilterWrapper:
     """Thin wrapper coordinating existing institution processing"""
-    
+
     def __init__(self):
         self.classifier = EnhancedOrganizationClassifier()
         self.parser = EnhancedAffiliationParser()
-    
+
     def filter_papers_by_institutions(self, papers: List[Paper], target_institutions: List[str]) -> List[Paper]:
         """Filter papers using existing classification infrastructure"""
         filtered = []
-        
+
         for paper in papers:
             # Use existing classifier to check each author
             for author in paper.authors:
                 classification = self.classifier.classify_with_confidence(author.affiliation)
-                
+
                 if classification['name'] in target_institutions and classification['confidence'] > 0.8:
                     filtered.append(paper)
                     break
-                    
+
         return filtered
-    
+
     def get_mila_papers(self, papers: List[Paper]) -> List[Paper]:
         """Convenience method for Mila filtering"""
         mila_variants = ["Mila - Quebec AI Institute", "Mila", "Montreal Institute for Learning Algorithms"]

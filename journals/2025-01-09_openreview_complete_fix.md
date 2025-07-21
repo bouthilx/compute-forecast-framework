@@ -1,7 +1,7 @@
 # OpenReview Complete Fix - TMLR Date and ICLR Historical Data
 
-**Date**: January 9, 2025  
-**Task**: Fix TMLR publication date filtering and ICLR historical data access  
+**Date**: January 9, 2025
+**Task**: Fix TMLR publication date filtering and ICLR historical data access
 **Duration**: ~45 minutes
 
 ## Summary
@@ -73,7 +73,7 @@ All venues now work correctly across all supported years:
 
 **ICLR** (API v1 for ≤2023, API v2 for ≥2024):
 - 2018: ✅ ~1,500 papers
-- 2019: ✅ ~1,500 papers  
+- 2019: ✅ ~1,500 papers
 - 2020: ✅ ~2,500 papers
 - 2021: ✅ ~2,900 papers
 - 2022: ✅ ~3,000 papers

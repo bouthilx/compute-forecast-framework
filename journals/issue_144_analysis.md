@@ -17,7 +17,7 @@
 #### ✅ Found Components
 1. **Base Scraper Classes** (`compute_forecast/data/sources/scrapers/base.py`)
    - `BaseScaper` (note: typo in class name)
-   - `ConferenceProceedingsScaper` 
+   - `ConferenceProceedingsScaper`
    - `ScrapingConfig` and `ScrapingResult` dataclasses
 
 2. **Error Handling** (`scrapers/error_handling.py`)
@@ -31,7 +31,7 @@
 
 #### ⚠️ Naming Discrepancies
 1. **Base class**: `BaseScaper` vs `BaseScraper` (typo in codebase)
-2. **Conference class**: `ConferenceProceedingsScaper` vs `ConferenceProceedingsScraper` 
+2. **Conference class**: `ConferenceProceedingsScaper` vs `ConferenceProceedingsScraper`
 3. **Models**: `SimplePaper` vs `ScrapedPaper`
 4. **Missing**: `ScrapedAuthor` model (authors handled as strings in `SimplePaper`)
 

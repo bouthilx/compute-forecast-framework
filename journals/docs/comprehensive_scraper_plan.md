@@ -4,7 +4,7 @@
 
 ### Package Data Sources
 - `enhanced_openalex.py` - Enhanced OpenAlex API client
-- `enhanced_semantic_scholar.py` - Enhanced Semantic Scholar client  
+- `enhanced_semantic_scholar.py` - Enhanced Semantic Scholar client
 - `enhanced_crossref.py` - Enhanced Crossref client
 - `google_scholar.py` - Google Scholar scraper
 - `base.py` - Base classes for data sources
@@ -25,12 +25,12 @@
 
 #### 1. **CVF Scraper** (CVPR/ICCV/ECCV/WACV)
 - **Mila Papers**: 16+ papers
-- **Base Class**: New `ConferenceProceedingsScaper` 
+- **Base Class**: New `ConferenceProceedingsScaper`
 - **Data Source**: https://openaccess.thecvf.com/
 - **Strategy**: Browse year-specific proceedings pages, extract all papers
 - **Implementation**: Custom scraper (no existing base available)
 
-#### 2. **ACL Anthology Scraper** (ACL/EMNLP/NAACL/COLING)  
+#### 2. **ACL Anthology Scraper** (ACL/EMNLP/NAACL/COLING)
 - **Mila Papers**: 12+ papers
 - **Base Class**: New `ACLAnthologyScaper`
 - **Data Source**: https://aclanthology.org/ + potential API
@@ -39,7 +39,7 @@
 
 #### 3. **AAAI Scraper**
 - **Mila Papers**: 14 papers
-- **Base Class**: Extend from `base.py` 
+- **Base Class**: Extend from `base.py`
 - **Data Source**: https://aaai.org/conference/ (JavaScript heavy)
 - **Strategy**: Selenium/Playwright for JS rendering
 - **Implementation**: Browser-based scraper
@@ -59,7 +59,7 @@
 - **Data Source**: OpenReview API
 - **Strategy**: Extend existing functionality for comprehensive collection
 
-#### 6. **Enhanced PMLR Scraper**  
+#### 6. **Enhanced PMLR Scraper**
 - **Base Class**: Extend paperoni's `mlr.py`
 - **Enhancement**: Add bulk year/venue collection
 - **Data Source**: PMLR proceedings API
@@ -74,7 +74,7 @@
 - **Strategy**: Search by keywords, pagination
 - **Implementation**: API-based with rate limiting
 
-#### 8. **Medical Journals Scraper** 
+#### 8. **Medical Journals Scraper**
 - **Mila Papers**: 35+ papers across venues
 - **Base Class**: `JournalPublisherScaper`
 - **Data Source**: PubMed, Elsevier, etc.
@@ -103,13 +103,13 @@
 # compute_forecast/data/sources/scrapers/
 class ConferenceProceedingsScaper(BaseScaper):
     """Base for conference proceedings scrapers"""
-    
-class JournalPublisherScaper(BaseScaper):  
+
+class JournalPublisherScaper(BaseScaper):
     """Base for journal publisher scrapers"""
-    
+
 class DigitalLibraryScaper(BaseScaper):
     """Base for digital library scrapers"""
-    
+
 class APIEnhancedScaper(BaseScaper):
     """Base for enhanced API clients"""
 ```
@@ -120,7 +120,7 @@ class APIEnhancedScaper(BaseScaper):
 # Venue-specific strategies
 venue_strategies = {
     'CVF': ['cvf_scraper'],
-    'ACL': ['acl_anthology_scraper'], 
+    'ACL': ['acl_anthology_scraper'],
     'OpenReview': ['enhanced_openreview'],
     'PMLR': ['enhanced_pmlr'],
     'Nature': ['nature_scraper', 'pubmed_fallback']
@@ -137,7 +137,7 @@ For each scraper, investigate:
 
 1. **Website Structure Analysis**
    - URL patterns and navigation
-   - Pagination mechanisms  
+   - Pagination mechanisms
    - Data format (HTML/JSON/API)
    - JavaScript requirements
 
@@ -162,7 +162,7 @@ For each scraper, investigate:
 ## Next Steps
 
 1. **Phase 1**: Investigate top 4 priority scrapers (CVF, ACL, AAAI, IJCAI)
-2. **Phase 2**: Design base classes and common components  
+2. **Phase 2**: Design base classes and common components
 3. **Phase 3**: Implement scrapers in priority order
 4. **Phase 4**: Integration testing and validation
 5. **Phase 5**: Performance optimization and monitoring

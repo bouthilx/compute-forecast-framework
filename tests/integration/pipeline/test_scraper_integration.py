@@ -2,12 +2,12 @@
 
 from unittest.mock import Mock
 
-from compute_forecast.data.sources.scrapers import (
+from compute_forecast.pipeline.metadata_collection.sources.scrapers import (
     SimplePaper,
     PaperoniAdapter,
     ScrapingBatch,
 )
-from compute_forecast.data.models import Paper, Author
+from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 
 
 def test_simple_paper_to_package_integration():
@@ -19,7 +19,7 @@ def test_simple_paper_to_package_integration():
         venue="CVPR",
         year=2024,
         abstract="This paper presents a novel deep learning approach...",
-        pdf_url="https://example.com/paper.pdf",
+        pdf_urls=["https://example.com/paper.pdf"],
         doi="10.1234/cvpr.2024.12345",
         source_scraper="cvpr_scraper",
         extraction_confidence=0.9,
@@ -83,7 +83,9 @@ def test_paperoni_adapter_integration():
     assert simple_paper.authors == ["Alice Johnson", "Bob Williams"]
     assert simple_paper.venue == "NeurIPS"
     assert simple_paper.year == 2023
-    assert simple_paper.pdf_url == "https://papers.nips.cc/paper/2023/file/abc123.pdf"
+    assert simple_paper.pdf_urls == [
+        "https://papers.nips.cc/paper/2023/file/abc123.pdf"
+    ]
     assert simple_paper.source_scraper == "paperoni"
 
     # Convert to package format
@@ -105,7 +107,7 @@ def test_scraping_batch_workflow():
             authors=[f"Author {i}"],
             venue="ICML",
             year=2024,
-            pdf_url=f"https://icml.cc/paper{i}.pdf",
+            pdf_urls=[f"https://icml.cc/paper{i}.pdf"],
             source_scraper="icml_scraper",
         )
         papers.append(paper)

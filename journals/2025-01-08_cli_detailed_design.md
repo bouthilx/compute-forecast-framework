@@ -1,6 +1,6 @@
 # CLI Detailed Design - Compute Forecast Command Interface
 
-**Date**: 2025-01-08  
+**Date**: 2025-01-08
 **Analysis**: Comprehensive CLI interface specification for compute-forecast tool
 
 ## Executive Summary
@@ -174,7 +174,7 @@ cf download --papers papers.json --retry-failed
 --resume                         # Resume interrupted downloads
 ```
 
-Note: 
+Note:
 - Storage configuration (Google Drive credentials and folder) is handled via .env file
 - Local cache directory is configured in .env file
 - Cache has no expiration (permanent unless manually cleared)
@@ -318,7 +318,7 @@ Domain classification should be part of extraction, not a separate analysis comm
 
 Should summarize computational patterns by:
 - Research domains (NLP, CV, RL)
-- Institutions (Mila vs peers)  
+- Institutions (Mila vs peers)
 - Time periods (yearly)
 - Computational intensity levels
 
@@ -495,7 +495,7 @@ cf quality check --papers papers.json --stage collection --strict
 #### Quality Stages
 
 1. **collection**: Metadata completeness, basic venue validation, duplicate detection
-2. **consolidation**: Enrichment success, linking accuracy, PDF URL validity  
+2. **consolidation**: Enrichment success, linking accuracy, PDF URL validity
 3. **download**: File integrity, content verification
 4. **extraction**: Confidence scores, value validation, computational relevance
 5. **pre-analysis**: Data readiness for statistical analysis

@@ -90,7 +90,7 @@ class VenueAnalyzer:
                 api_info = soup.get_text()
                 if "api" in api_info.lower():
                     print("API documentation found - this is the preferred approach")
-        except:
+        except Exception:
             print("No API documentation found")
 
         # Analyze venue structure

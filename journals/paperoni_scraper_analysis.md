@@ -9,7 +9,7 @@ Paperoni is a comprehensive paper scraping framework with 10 scrapers covering v
 ### 1. **NeurIPS Scraper** (`neurips.py` - 187 lines)
 - **Coverage**: NeurIPS conference papers
 - **Source**: proceedings.neurips.cc
-- **Features**: 
+- **Features**:
   - Fetches papers by volume
   - Supports both JSON metadata and BibTeX formats
   - Extracts authors, affiliations, abstracts

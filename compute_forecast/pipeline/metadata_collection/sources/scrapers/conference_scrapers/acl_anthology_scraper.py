@@ -3,7 +3,7 @@
 import re
 import requests
 from bs4 import BeautifulSoup
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from urllib.parse import urljoin
 from datetime import datetime
 
@@ -65,7 +65,7 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
 
             # Look for year-based links in various patterns
             for link in soup.find_all("a", href=True):
-                href = link["href"]
+                href = link.get("href", "")
                 # Multiple patterns: events/acl-2024/, volumes/2024.acl-main/, P24-1234
                 year_patterns = [
                     r"events/.*-(\d{4})/?$",
@@ -74,7 +74,7 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
                 ]
 
                 for pattern in year_patterns:
-                    year_match = re.search(pattern, href)
+                    year_match = re.search(pattern, str(href))
                     if year_match:
                         year_str = year_match.group(1)
                         # Handle 2-digit years
@@ -177,7 +177,7 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
         """Extract volume URLs from event page"""
         soup = BeautifulSoup(html, "html.parser")
         venue_code = self.venue_mappings.get(venue, venue.lower())
-        volumes = {}
+        volumes: Dict[str, str] = {}
 
         # Look for volume links
         volume_patterns = [
@@ -186,13 +186,13 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
         ]
 
         for link in soup.find_all("a", href=True):
-            href = link["href"]
+            href = link.get("href", "")
             for pattern in volume_patterns:
-                match = re.search(pattern, href)
+                match = re.search(pattern, str(href))
                 if match:
                     volume_type = match.group(1)
-                    full_url = urljoin(self.base_url, href)
-                    volumes[volume_type] = full_url
+                    full_url = urljoin(self.base_url, str(href))
+                    volumes[volume_type] = str(full_url)
 
         return volumes
 
@@ -262,7 +262,7 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
             "li.paper",  # List-based layout
         ]
 
-        paper_entries = []
+        paper_entries: List[Any] = []
         for selector in paper_selectors:
             paper_entries = soup.select(selector)
             if paper_entries:
@@ -427,10 +427,10 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
         # Look for explicit PDF link
         pdf_link = entry.find("a", href=re.compile(r"\.pdf$"))
         if pdf_link:
-            pdf_url = pdf_link["href"]
+            pdf_url = pdf_link.get("href", "")
             if not pdf_url.startswith("http"):
                 pdf_url = urljoin(self.base_url, pdf_url)
-            return pdf_url
+            return str(pdf_url)
 
         # ACL Anthology has predictable PDF URLs based on paper URL
         # Pattern 1: New format like /2024.acl-long.0/ -> /2024.acl-long.0.pdf

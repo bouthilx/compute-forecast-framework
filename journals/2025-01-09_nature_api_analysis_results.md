@@ -1,7 +1,7 @@
 # Nature Portfolio API Analysis - Key Findings
 
-**Date**: January 9, 2025  
-**Task**: Analysis of Springer Nature vs Crossref API coverage and capabilities  
+**Date**: January 9, 2025
+**Task**: Analysis of Springer Nature vs Crossref API coverage and capabilities
 **Duration**: ~2 hours
 
 ## Summary
@@ -19,7 +19,7 @@ Comprehensive analysis reveals **massive scale** of Nature Portfolio and confirm
 
 **📈 Recent Annual Volume**:
 - **2024**: 63,322 papers
-- **2023**: 50,250 papers  
+- **2023**: 50,250 papers
 - **2022**: 47,704 papers
 - **Growth rate**: ~26% increase from 2023 to 2024
 
@@ -146,11 +146,11 @@ class NaturePortfolioAdapter(BasePaperoniAdapter):
     def __init__(self, config=None):
         super().__init__("nature_portfolio", config)
         self.crossref_client = CrossrefClient()
-        
+
     def get_supported_venues(self):
-        return ["nature", "scientific-reports", "communications-biology", 
+        return ["nature", "scientific-reports", "communications-biology",
                 "nature-communications", ...]  # 20 journals
-        
+
     def _call_paperoni_scraper(self, scraper, venue, year):
         issn = self.venue_to_issn[venue]
         papers = self.crossref_client.get_journal_papers(issn, year)
@@ -173,7 +173,7 @@ class NaturePortfolioAdapter(BasePaperoniAdapter):
 With **63,322 papers in 2024 alone**, any coverage gaps would be catastrophic for research analysis. Crossref provides:
 
 ✅ **100% coverage guarantee** (all publishers required to deposit DOIs)
-✅ **Real-time updates** (new papers appear immediately)  
+✅ **Real-time updates** (new papers appear immediately)
 ✅ **Historical completeness** (retroactive DOI assignment)
 ✅ **Metadata richness** (authors, abstracts, citations, funding)
 

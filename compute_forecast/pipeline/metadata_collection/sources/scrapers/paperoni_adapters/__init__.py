@@ -9,9 +9,9 @@ from .nature_portfolio import NaturePortfolioAdapter
 
 __all__ = [
     "NeurIPSAdapter",
-    "MLRAdapter", 
+    "MLRAdapter",
     "OpenReviewAdapter",
     "OpenReviewAdapterV2",
     "SemanticScholarAdapter",
-    "NaturePortfolioAdapter"
+    "NaturePortfolioAdapter",
 ]
