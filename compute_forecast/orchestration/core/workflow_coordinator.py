@@ -377,8 +377,8 @@ class WorkflowCoordinator:
                 ],
                 venue=venue,
                 year=year,
-                citations=max(0, 50 - i),  # Decreasing citations
-                abstract=f"Abstract for {venue} paper {i + 1} from {year}",
+                abstracts=[],
+                citations=[],
                 collection_source="mock_api",
             )
             papers.append(paper)

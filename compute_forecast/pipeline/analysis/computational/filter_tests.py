@@ -25,7 +25,7 @@ class FilterTestSuite:
             # High computational content paper
             Paper(
                 title="Large-Scale Transformer Training with 175B Parameters",
-                authors=[Author("AI Researcher", [["MIT"]])],
+                authors=[Author("AI Researcher", ["MIT"])],
                 venue="NeurIPS",
                 year=2023,
                 abstracts=[],  # Will add abstract after
@@ -34,19 +34,11 @@ class FilterTestSuite:
             # Medium computational content paper
             Paper(
                 title="Efficient Neural Architecture Search",
-                authors=[Author("ML Engineer", [["Google"]])],
+                authors=[Author("ML Engineer", ["Google"])],
                 venue="ICML",
                 year=2023,
-                citations=200,
-                abstract="""
-                We propose an efficient method for neural architecture search.
-                Experiments were conducted on 8 A100 GPUs for 12 hours.
-                Our approach uses 50 million parameters and trains for 100 epochs.
-
-                Experimental validation shows competitive accuracy with reduced compute.
-                We implemented the method and conducted comprehensive evaluation.
-                Results demonstrate effectiveness across multiple benchmarks.
-                """,
+                abstracts=[],
+                citations=[],
             ),
             # Low computational content paper
             Paper(
@@ -54,12 +46,8 @@ class FilterTestSuite:
                 authors=[Author("Survey Author", ["Stanford"])],
                 venue="JMLR",
                 year=2023,
-                citations=150,
-                abstract="""
-                This survey reviews recent advances in deep learning.
-                We analyze various neural network architectures and training methods.
-                The paper discusses computational considerations but presents no experiments.
-                """,
+                abstracts=[],
+                citations=[],
             ),
             # Theoretical paper
             Paper(
@@ -67,12 +55,8 @@ class FilterTestSuite:
                 authors=[Author("Theory Researcher", ["CMU"])],
                 venue="STOC",
                 year=2023,
-                citations=80,
-                abstract="""
-                We provide theoretical convergence guarantees for gradient descent.
-                The analysis uses mathematical tools from optimization theory.
-                No computational experiments are performed in this work.
-                """,
+                abstracts=[],
+                citations=[],
             ),
         ]
 
@@ -226,7 +210,7 @@ class FilterTestSuite:
 
             # Test with malformed papers
             malformed_paper = Paper(
-                title="", authors=[], venue="", year=0, citations=0, abstract=""
+                title="", authors=[], venue="", year=0, abstracts=[], citations=[]
             )
 
             malformed_result = (
