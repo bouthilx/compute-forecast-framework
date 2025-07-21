@@ -298,3 +298,21 @@ Reduced errors from 112 to 71. Fixed the following files:
   - Paper.external_ids (no longer exists in model)
   - Various type mismatches in old consolidate command
   - Some worker type issues
+
+### Fixes Applied - Round 3:
+
+Reduced errors from 71 to 30. Fixed the following issues:
+
+19. **doi_resolver_collector.py** - Fixed URLRecord type annotations in method signatures
+20. **semantic_scholar.py** - Fixed AbstractData, CitationData, URLData construction
+21. **openalex.py** - Fixed CitationData and URLData construction
+22. **unpaywall_client.py** - Fixed URLData construction
+23. **enhanced_openalex.py** - Fixed AbstractData and CitationData construction
+24. **enhanced_crossref.py** - Fixed AbstractData, CitationData, URLData construction
+25. **jmlr_collector.py** - Fixed URLRecord handling to extract url from URLData
+
+### Current Status After Round 3:
+- Reduced errors from 71 to 30 (41 additional errors fixed)
+- Total reduction: 112 → 30 (82 errors fixed, 73% reduction)
+- Remaining errors mostly in consolidate.py (old consolidation command)
+- All Paper/Author model migration issues resolved in active code

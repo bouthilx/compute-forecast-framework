@@ -10,6 +10,7 @@ from ..models import (
     CitationRecord,
     URLRecord,
 )
+from ...consolidation.models import CitationData, URLData
 from ....core.config import ConfigManager
 from ....core.logging import setup_logging
 
@@ -190,7 +191,7 @@ class OpenAlexSource(BaseCitationSource):
                     source="openalex",
                     timestamp=datetime.now(),
                     original=True,
-                    data=citations,
+                    data=CitationData(count=citations),
                 )
             ]
             if citations > 0
@@ -201,7 +202,7 @@ class OpenAlexSource(BaseCitationSource):
                     source="openalex",
                     timestamp=datetime.now(),
                     original=True,
-                    data=str(work.get("id")),
+                    data=URLData(url=str(work.get("id"))),
                 )
             ]
             if work.get("id")
@@ -271,7 +272,7 @@ class OpenAlexSource(BaseCitationSource):
                         source="openalex",
                         timestamp=datetime.now(),
                         original=True,
-                        data=work_data.get("cited_by_count", 0),
+                        data=CitationData(count=work_data.get("cited_by_count", 0)),
                     )
                 ]
                 if work_data.get("cited_by_count", 0) > 0
@@ -282,7 +283,7 @@ class OpenAlexSource(BaseCitationSource):
                         source="openalex",
                         timestamp=datetime.now(),
                         original=True,
-                        data=str(work_data.get("id")),
+                        data=URLData(url=str(work_data.get("id"))),
                     )
                 ]
                 if work_data.get("id")

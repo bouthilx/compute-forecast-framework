@@ -10,7 +10,7 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import 
     BasePDFCollector,
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
-from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper, URLRecord
 from compute_forecast.pipeline.metadata_collection.sources.enhanced_crossref import (
     EnhancedCrossrefClient,
 )
@@ -158,7 +158,7 @@ class DOIResolverCollector(BasePDFCollector):
         return merged_urls
 
     def _calculate_confidence_score(
-        self, crossref_urls: List[str], unpaywall_urls: List[str]
+        self, crossref_urls: List[URLRecord], unpaywall_urls: List[URLRecord]
     ) -> float:
         """Calculate confidence score based on URL sources and counts.
 
@@ -216,7 +216,7 @@ class DOIResolverCollector(BasePDFCollector):
             return "needs_validation"
 
     def _get_sources_used(
-        self, crossref_urls: List[str], unpaywall_urls: List[str]
+        self, crossref_urls: List[URLRecord], unpaywall_urls: List[URLRecord]
     ) -> List[str]:
         """Get list of sources that provided URLs.
 
@@ -235,7 +235,7 @@ class DOIResolverCollector(BasePDFCollector):
         return sources
 
     def _determine_license(
-        self, crossref_urls: List[str], unpaywall_urls: List[str]
+        self, crossref_urls: List[URLRecord], unpaywall_urls: List[URLRecord]
     ) -> Optional[str]:
         """Determine license information based on sources.
 

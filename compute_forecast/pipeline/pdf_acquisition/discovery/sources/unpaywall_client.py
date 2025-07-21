@@ -17,6 +17,7 @@ from compute_forecast.pipeline.metadata_collection.models import (
     APIError,
     URLRecord,
 )
+from compute_forecast.pipeline.consolidation.models import URLData
 
 logger = logging.getLogger(__name__)
 
@@ -236,7 +237,7 @@ class UnpaywallClient:
                     source="unpaywall",
                     timestamp=datetime.now(),
                     original=True,
-                    data=url,
+                    data=URLData(url=url),
                 )
                 for url in oa_urls
             ],

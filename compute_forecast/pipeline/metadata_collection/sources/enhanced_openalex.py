@@ -15,6 +15,7 @@ from ..models import (
     AbstractRecord,
     CitationRecord,
 )
+from ...consolidation.models import AbstractData, CitationData
 from datetime import datetime
 import logging
 import re
@@ -202,7 +203,7 @@ class EnhancedOpenAlexClient:
                                 source="openalex",
                                 timestamp=datetime.now(),
                                 original=True,
-                                data=abstract,
+                                data=AbstractData(text=abstract),
                             )
                         ]
                         if abstract
@@ -212,7 +213,7 @@ class EnhancedOpenAlexClient:
                                 source="openalex",
                                 timestamp=datetime.now(),
                                 original=True,
-                                data=item.get("cited_by_count", 0),
+                                data=CitationData(count=item.get("cited_by_count", 0)),
                             )
                         ]
                         if item.get("cited_by_count", 0) > 0

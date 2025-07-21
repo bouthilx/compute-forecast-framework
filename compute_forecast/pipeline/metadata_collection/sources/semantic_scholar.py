@@ -13,6 +13,7 @@ from ..models import (
     CitationRecord,
     URLRecord,
 )
+from ...consolidation.models import AbstractData, URLData, CitationData
 from ....core.config import ConfigManager
 from ....core.logging import setup_logging
 
@@ -358,8 +359,9 @@ class SemanticScholarSource(BaseCitationSource):
                     source="semantic_scholar",
                     timestamp=datetime.now(),
                     original=True,
-                    data=(result.get("abstract") or "").strip()
-                    or " ",  # AbstractData cannot be empty
+                    data=AbstractData(
+                        text=(result.get("abstract") or "").strip() or " "
+                    ),
                 )
             ]
             if (result.get("abstract") or "").strip()
@@ -369,7 +371,7 @@ class SemanticScholarSource(BaseCitationSource):
                     source="semantic_scholar",
                     timestamp=datetime.now(),
                     original=True,
-                    data=citations,
+                    data=CitationData(count=citations),
                 )
             ]
             if citations > 0
@@ -379,7 +381,7 @@ class SemanticScholarSource(BaseCitationSource):
                     source="semantic_scholar",
                     timestamp=datetime.now(),
                     original=True,
-                    data=result.get("url") or "",
+                    data=URLData(url=result.get("url") or ""),
                 )
             ]
             if result.get("url")
@@ -429,7 +431,7 @@ class SemanticScholarSource(BaseCitationSource):
                         source="semantic_scholar",
                         timestamp=datetime.now(),
                         original=True,
-                        data=paper_data.get("abstract", ""),
+                        data=AbstractData(text=paper_data.get("abstract", "")),
                     )
                 ]
                 if paper_data.get("abstract", "")
@@ -439,7 +441,7 @@ class SemanticScholarSource(BaseCitationSource):
                         source="semantic_scholar",
                         timestamp=datetime.now(),
                         original=True,
-                        data=paper_data.get("citationCount", 0),
+                        data=CitationData(count=paper_data.get("citationCount", 0)),
                     )
                 ]
                 if paper_data.get("citationCount", 0) > 0
@@ -450,7 +452,7 @@ class SemanticScholarSource(BaseCitationSource):
                         source="semantic_scholar",
                         timestamp=datetime.now(),
                         original=True,
-                        data=paper_data.get("url") or "",
+                        data=URLData(url=paper_data.get("url") or ""),
                     )
                 ]
                 if paper_data.get("url")

@@ -16,6 +16,7 @@ from ..models import (
     CitationRecord,
     URLRecord,
 )
+from ...consolidation.models import AbstractData, CitationData, URLData
 from datetime import datetime
 import logging
 import re
@@ -198,7 +199,7 @@ class EnhancedCrossrefClient:
                                 source="crossref",
                                 timestamp=datetime.now(),
                                 original=True,
-                                data=abstract,
+                                data=AbstractData(text=abstract),
                             )
                         ]
                         if abstract
@@ -208,7 +209,9 @@ class EnhancedCrossrefClient:
                                 source="crossref",
                                 timestamp=datetime.now(),
                                 original=True,
-                                data=item.get("is-referenced-by-count", 0),
+                                data=CitationData(
+                                    count=item.get("is-referenced-by-count", 0)
+                                ),
                             )
                         ]
                         if item.get("is-referenced-by-count", 0) > 0
@@ -552,7 +555,9 @@ class EnhancedCrossrefClient:
                         source="crossref",
                         timestamp=datetime.now(),
                         original=True,
-                        data=self._clean_jats_abstract(message.get("abstract", "")),
+                        data=AbstractData(
+                            text=self._clean_jats_abstract(message.get("abstract", ""))
+                        ),
                     )
                 ]
                 if message.get("abstract")
@@ -562,7 +567,9 @@ class EnhancedCrossrefClient:
                         source="crossref",
                         timestamp=datetime.now(),
                         original=True,
-                        data=message.get("is-referenced-by-count", 0),
+                        data=CitationData(
+                            count=message.get("is-referenced-by-count", 0)
+                        ),
                     )
                 ]
                 if message.get("is-referenced-by-count", 0) > 0
@@ -573,7 +580,7 @@ class EnhancedCrossrefClient:
                         source="crossref",
                         timestamp=datetime.now(),
                         original=True,
-                        data=url,
+                        data=URLData(url=url),
                     )
                     for url in pdf_urls
                 ],
