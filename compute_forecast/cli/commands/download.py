@@ -11,6 +11,8 @@ from rich.table import Table
 from dotenv import load_dotenv
 
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.orchestration import DownloadOrchestrator
+from compute_forecast.monitoring import DownloadProgressManager
 
 
 console = Console()
@@ -254,40 +256,96 @@ def main(
     )
     console.print()
 
-    # Create placeholder for orchestrator
-    # TODO: Import and use actual DownloadOrchestrator once implemented
-    console.print(
-        "[yellow]Note:[/yellow] Download orchestrator not yet implemented. "
-        "This is a placeholder showing the command structure."
+    # Create progress manager if not disabled
+    progress_manager = (
+        None
+        if no_progress
+        else DownloadProgressManager(console=console, max_parallel=parallel)
     )
-    console.print()
-    console.print("Would download the following papers:")
-    for i, paper in enumerate(papers_to_download[:5]):
-        console.print(f"  {i + 1}. {paper.paper_id}: {paper.title[:60]}...")
-    if len(papers_to_download) > 5:
-        console.print(f"  ... and {len(papers_to_download) - 5} more")
 
-    # Save initial state
-    if resume:
-        save_download_state(state)
+    # Create download orchestrator
+    orchestrator = DownloadOrchestrator(
+        parallel_workers=parallel,
+        rate_limit=rate_limit,
+        timeout=timeout,
+        max_retries=max_retries,
+        retry_delay=retry_delay,
+        exponential_backoff=exponential_backoff,
+        cache_dir=str(cache_dir),
+        progress_manager=progress_manager,
+        state_path=get_download_state_path(),
+    )
 
-    # TODO: Implement actual download logic with DownloadOrchestrator
-    # orchestrator = DownloadOrchestrator(
-    #     parallel_workers=parallel,
-    #     rate_limit=rate_limit,
-    #     timeout=timeout,
-    #     max_retries=max_retries,
-    #     retry_delay=retry_delay,
-    #     exponential_backoff=exponential_backoff,
-    #     cache_dir=cache_dir,
-    #     progress_manager=progress_manager if not no_progress else None,
-    # )
-    #
-    # updated_papers = orchestrator.download_papers(
-    #     papers_to_download,
-    #     state=state,
-    #     resume=resume,
-    # )
-    #
-    # # Save updated papers with download status
-    # save_papers(updated_papers, papers)
+    # Filter papers based on state
+    papers_to_process = orchestrator.filter_papers_for_download(
+        all_papers, retry_failed=retry_failed, resume=resume
+    )
+
+    console.print(f"Starting download of {len(papers_to_process)} papers...")
+
+    # Callback to save papers periodically
+    def save_papers_callback(updated_papers: List[Paper]):
+        # Update papers in original data structure
+        paper_dict = {p.paper_id: p for p in updated_papers}
+        for i, p in enumerate(all_papers):
+            if p.paper_id in paper_dict:
+                all_papers[i] = paper_dict[p.paper_id]
+
+        # Save to file
+        save_papers_to_file(all_papers, papers)
+
+    # Download papers
+    try:
+        successful, failed = orchestrator.download_papers(
+            papers_to_process, save_papers_callback=save_papers_callback
+        )
+
+        # Final summary
+        console.print()
+        console.print("[bold]Download Summary:[/bold]")
+        console.print(f"  [green]Successful:[/green] {successful}")
+        console.print(f"  [red]Failed:[/red] {failed}")
+
+        # Show storage stats
+        stats = orchestrator.get_download_stats()
+        storage_stats = stats.get("storage_stats", {})
+        if storage_stats:
+            cache_stats = storage_stats.get("local_cache", {})
+            console.print(
+                f"  [blue]Cache size:[/blue] {cache_stats.get('total_size_mb', 0):.1f} MB"
+            )
+            console.print(
+                f"  [blue]Cached files:[/blue] {cache_stats.get('total_files', 0)}"
+            )
+
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Download interrupted by user[/yellow]")
+        if progress_manager:
+            progress_manager.stop()
+        raise typer.Exit(1)
+    except Exception as e:
+        console.print(f"\n[red]Error during download:[/red] {e}")
+        if progress_manager:
+            progress_manager.stop()
+        raise typer.Exit(1)
+
+
+def save_papers_to_file(papers: List[Paper], output_path: Path):
+    """Save papers back to JSON file."""
+    try:
+        # Load original file structure
+        with open(output_path, "r") as f:
+            data = json.load(f)
+
+        # Update papers in original structure
+        if isinstance(data, dict):
+            data["papers"] = [p.to_dict() for p in papers]
+        else:
+            data = [p.to_dict() for p in papers]
+
+        # Save back to file
+        with open(output_path, "w") as f:
+            json.dump(data, f, indent=2)
+
+    except Exception as e:
+        console.print(f"[red]Error saving papers:[/red] {e}")

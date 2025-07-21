@@ -293,3 +293,21 @@ class GoogleDriveStorage:
         except Exception as e:
             logger.error(f"Connection test failed: {e}")
             return False
+
+    def delete_file(self, file_id: str) -> bool:
+        """Delete a file from Google Drive.
+
+        Args:
+            file_id: Google Drive file ID
+
+        Returns:
+            True if successful
+        """
+        try:
+            self._service.files().delete(fileId=file_id).execute()
+            logger.info(f"Successfully deleted file {file_id}")
+            return True
+
+        except HttpError as e:
+            logger.error(f"Failed to delete {file_id}: {e}")
+            return False
