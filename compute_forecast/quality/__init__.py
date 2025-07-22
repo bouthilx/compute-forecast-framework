@@ -43,9 +43,16 @@ from .core.hooks import run_post_command_quality_check
 from .stages.base import StageQualityChecker
 
 # Register all available checkers and formatters
-from .stages.collection.register import register_collection_checker, register_collection_formatters
+from .stages.collection.register import (
+    register_collection_checker,
+    register_collection_formatters,
+)
 from .core.formatters import FormatterRegistry
-from .core.generic_formatters import GenericTextFormatter, GenericJSONFormatter, GenericMarkdownFormatter
+from .core.generic_formatters import (
+    GenericTextFormatter,
+    GenericJSONFormatter,
+    GenericMarkdownFormatter,
+)
 
 # Register checkers
 register_collection_checker()

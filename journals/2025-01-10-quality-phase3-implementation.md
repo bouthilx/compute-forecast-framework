@@ -1,20 +1,20 @@
 # Quality Command Phase 3: Integration Implementation Plan
 
-**Date**: 2025-01-10  
-**Time**: 18:00  
+**Date**: 2025-01-10
+**Time**: 18:00
 **Task**: Detailed implementation plan for Phase 3 - Integration (3 hours)
 
 ## Phase 3 Overview
 
 Based on the design document, Phase 3 focuses on **Integration** - implementing post-command hooks, integrating quality checks with the collect command, adding configuration loading, and testing the end-to-end flow.
 
-**Estimated Time**: 3 hours  
+**Estimated Time**: 3 hours
 **Scope**: Integration hooks, command integration, configuration management, end-to-end testing
 
 ## Phase 3 Tasks from Design Document
 
 ### Task 1: Create Post-Command Hooks (45 minutes)
-### Task 2: Integrate with Collect Command (90 minutes)  
+### Task 2: Integrate with Collect Command (90 minutes)
 ### Task 3: Add Configuration Loading (30 minutes)
 ### Task 4: Test End-to-End Flow (45 minutes)
 
@@ -46,40 +46,40 @@ def run_post_command_quality_check(
     show_summary: bool = True
 ) -> Optional[QualityReport]:
     """Run quality checks after a command completes.
-    
+
     Args:
         stage: The pipeline stage that just completed (e.g., "collection")
         output_path: Path to the output data file/directory
         context: Additional context from the command (venues, years, paper counts, etc.)
         config: Optional quality configuration (will use defaults if None)
         show_summary: Whether to show a quality summary in the console
-    
+
     Returns:
         QualityReport if checks were run successfully, None if skipped or failed
     """
     try:
         runner = QualityRunner()
-        
+
         # Use provided config or get defaults
         if config is None:
             config = _get_default_config(stage)
             config.verbose = False  # Keep integrated checks concise
-        
+
         # Run the quality checks
         report = runner.run_checks(stage, output_path, config)
-        
+
         if show_summary:
             _show_quality_summary(report, context)
-        
+
         # Handle critical issues
         if report.has_critical_issues():
             console = Console()
             console.print("\n[red]⚠️  Critical quality issues detected![/red]")
             console.print(f"Run [cyan]cf quality --stage {stage} --verbose {output_path}[/cyan] for details.")
             # Don't fail the command, just warn
-        
+
         return report
-        
+
     except Exception as e:
         # Don't fail the main command if quality checks fail
         console = Console()
@@ -98,7 +98,7 @@ def _get_default_config(stage: str) -> QualityConfig:
             "min_accuracy": 0.85
         }
     }
-    
+
     return QualityConfig(
         stage=stage,
         thresholds=default_thresholds.get(stage, {}),
@@ -111,16 +111,16 @@ def _get_default_config(stage: str) -> QualityConfig:
 def _show_quality_summary(report: QualityReport, context: Optional[Dict[str, Any]] = None):
     """Show a concise quality summary in the console."""
     console = Console()
-    
+
     # Determine overall quality grade
     grade = _score_to_grade(report.overall_score)
     grade_color = _grade_to_color(grade)
-    
+
     # Build summary text
     summary_lines = [
         f"Quality Score: [bold {grade_color}]{report.overall_score:.2f} ({grade})[/bold {grade_color}]"
     ]
-    
+
     # Add key metrics from context
     if context:
         if 'total_papers' in context:
@@ -130,19 +130,19 @@ def _show_quality_summary(report: QualityReport, context: Optional[Dict[str, Any
             if len(context['venues']) > 3:
                 venues_str += f" (+{len(context['venues']) - 3} more)"
             summary_lines.append(f"Venues: {venues_str}")
-    
+
     # Add issue counts
     critical_count = len(report.critical_issues)
     warning_count = len(report.warnings)
-    
+
     if critical_count > 0:
         summary_lines.append(f"[red]Critical Issues: {critical_count}[/red]")
     if warning_count > 0:
         summary_lines.append(f"[yellow]Warnings: {warning_count}[/yellow]")
-    
+
     if critical_count == 0 and warning_count == 0:
         summary_lines.append("[green]No issues detected[/green]")
-    
+
     # Show summary panel
     panel = Panel(
         "\n".join(summary_lines),
@@ -192,23 +192,23 @@ from compute_forecast.quality.core.hooks import run_post_command_quality_check
 def main(
     # ... existing parameters ...
     skip_quality_check: bool = typer.Option(
-        False, 
-        "--skip-quality-check", 
+        False,
+        "--skip-quality-check",
         help="Skip automatic quality checking after collection"
     ),
 ):
     """
     Collect research papers from various venues and years.
-    
+
     ... existing docstring ...
-    
+
     Quality Checking:
         By default, quality checks run automatically after collection.
         Use --skip-quality-check to disable this behavior.
     """
-    
+
     # ... existing collection logic ...
-    
+
     # At the end of successful collection, before the summary:
     if all_papers:
         save_papers(all_papers, output, {"errors": errors})
@@ -227,7 +227,7 @@ def main(
                 console.print(f"  - {error}")
             if len(errors) > 5:
                 console.print(f"  ... and {len(errors) - 5} more")
-        
+
         # Run quality checks if not skipped
         if not skip_quality_check:
             console.print("\n[cyan]Running quality checks on collected data...[/cyan]")
@@ -272,12 +272,12 @@ from .interfaces import QualityConfig
 
 
 def load_quality_config(
-    stage: str, 
+    stage: str,
     config_file: Optional[Path] = None,
     override_config: Optional[QualityConfig] = None
 ) -> QualityConfig:
     """Load quality configuration for a stage.
-    
+
     Configuration is loaded in this order (later sources override earlier):
     1. Default configuration
     2. Global config file (~/.cf/quality.yaml)
@@ -288,24 +288,24 @@ def load_quality_config(
     """
     # Start with defaults
     config = _get_default_config(stage)
-    
+
     # Load from config files
     configs_to_try = []
-    
+
     # Global config
     global_config = Path.home() / ".cf" / "quality.yaml"
     if global_config.exists():
         configs_to_try.append(global_config)
-    
+
     # Project config
     project_config = Path.cwd() / ".cf-quality.yaml"
     if project_config.exists():
         configs_to_try.append(project_config)
-    
+
     # Explicit config file
     if config_file and config_file.exists():
         configs_to_try.append(config_file)
-    
+
     # Load and merge configs
     for config_path in configs_to_try:
         try:
@@ -314,15 +314,15 @@ def load_quality_config(
         except Exception as e:
             # Don't fail on config errors, just warn
             print(f"Warning: Could not load config from {config_path}: {e}")
-    
+
     # Override from environment variables
     env_config = _load_from_env(stage)
     config = _merge_configs(config, env_config)
-    
+
     # Apply override config
     if override_config:
         config = _merge_configs(config, override_config)
-    
+
     return config
 
 
@@ -342,7 +342,7 @@ def _get_default_config(stage: str) -> QualityConfig:
             "verbose": False
         }
     }
-    
+
     stage_defaults = defaults.get(stage, defaults["collection"])
     return QualityConfig(**stage_defaults)
 
@@ -354,14 +354,14 @@ def _load_config_file(config_path: Path, stage: str) -> QualityConfig:
             data = yaml.safe_load(f)
         else:
             data = json.load(f)
-    
+
     # Extract stage-specific config
     stage_config = data.get('stages', {}).get(stage, {})
     global_config = {k: v for k, v in data.items() if k != 'stages'}
-    
+
     # Merge global and stage-specific
     merged = {**global_config, **stage_config}
-    
+
     return QualityConfig(
         stage=merged.get('stage', stage),
         thresholds=merged.get('thresholds', {}),
@@ -374,21 +374,21 @@ def _load_config_file(config_path: Path, stage: str) -> QualityConfig:
 def _load_from_env(stage: str) -> QualityConfig:
     """Load configuration from environment variables."""
     prefix = f"CF_QUALITY_{stage.upper()}_"
-    
+
     thresholds = {}
     skip_checks = []
-    
+
     # Load thresholds from env
     for key in ['MIN_COVERAGE', 'MIN_COMPLETENESS', 'MIN_CONSISTENCY', 'MIN_ACCURACY']:
         env_key = f"{prefix}{key}"
         if env_key in os.environ:
             thresholds[key.lower()] = float(os.environ[env_key])
-    
+
     # Load skip checks from env
     skip_env = os.environ.get(f"{prefix}SKIP_CHECKS", "")
     if skip_env:
         skip_checks = [s.strip() for s in skip_env.split(",")]
-    
+
     return QualityConfig(
         stage=stage,
         thresholds=thresholds,
@@ -402,7 +402,7 @@ def _merge_configs(base: QualityConfig, override: QualityConfig) -> QualityConfi
     """Merge two configurations, with override taking precedence."""
     merged_thresholds = {**base.thresholds, **override.thresholds}
     merged_skip_checks = list(set(base.skip_checks + override.skip_checks))
-    
+
     return QualityConfig(
         stage=override.stage or base.stage,
         thresholds=merged_thresholds,
@@ -434,17 +434,17 @@ from compute_forecast.quality.core.interfaces import QualityConfig
 
 class TestQualityIntegrationFlow:
     """Test complete integration flow of quality checks."""
-    
+
     def test_post_command_hook_with_good_data(self):
         """Test post-command hook with high-quality collection data."""
         with TemporaryDirectory() as tmp_dir:
             # Create test collection data
             test_data = self._create_good_collection_data()
             data_file = Path(tmp_dir) / "collection.json"
-            
+
             with open(data_file, 'w') as f:
                 json.dump(test_data, f)
-            
+
             # Test post-command hook
             context = {
                 "total_papers": len(test_data["papers"]),
@@ -452,69 +452,69 @@ class TestQualityIntegrationFlow:
                 "years": [2023, 2024],
                 "scrapers_used": ["neurips_scraper", "icml_scraper"]
             }
-            
+
             report = run_post_command_quality_check(
                 stage="collection",
                 output_path=data_file,
                 context=context,
                 show_summary=False  # Don't print during tests
             )
-            
+
             assert report is not None
             assert report.stage == "collection"
             assert report.overall_score >= 0.8
             assert len(report.critical_issues) == 0
-    
+
     def test_post_command_hook_with_poor_data(self):
         """Test post-command hook with low-quality collection data."""
         with TemporaryDirectory() as tmp_dir:
             # Create test collection data with issues
             test_data = self._create_poor_collection_data()
             data_file = Path(tmp_dir) / "collection.json"
-            
+
             with open(data_file, 'w') as f:
                 json.dump(test_data, f)
-            
+
             context = {
                 "total_papers": len(test_data["papers"]),
                 "venues": ["Unknown"],
                 "years": [2023],
                 "scrapers_used": ["failing_scraper"]
             }
-            
+
             report = run_post_command_quality_check(
                 stage="collection",
                 output_path=data_file,
                 context=context,
                 show_summary=False
             )
-            
+
             assert report is not None
             assert report.overall_score < 0.7
             assert len(report.critical_issues) > 0 or len(report.warnings) > 0
-    
+
     def test_post_command_hook_with_missing_file(self):
         """Test post-command hook gracefully handles missing files."""
         missing_file = Path("/nonexistent/file.json")
-        
+
         report = run_post_command_quality_check(
             stage="collection",
             output_path=missing_file,
             show_summary=False
         )
-        
+
         # Should return None when file doesn't exist
         assert report is None
-    
+
     def test_config_loading_from_defaults(self):
         """Test configuration loading with defaults."""
         config = load_quality_config("collection")
-        
+
         assert config.stage == "collection"
         assert "min_coverage" in config.thresholds
         assert config.output_format == "text"
         assert config.verbose is False
-    
+
     def test_config_loading_from_file(self):
         """Test configuration loading from config file."""
         with TemporaryDirectory() as tmp_dir:
@@ -531,19 +531,19 @@ class TestQualityIntegrationFlow:
                     }
                 }
             }
-            
+
             config_file = Path(tmp_dir) / "quality.yaml"
             import yaml
             with open(config_file, 'w') as f:
                 yaml.dump(config_data, f)
-            
+
             config = load_quality_config("collection", config_file=config_file)
-            
+
             assert config.thresholds["min_coverage"] == 0.9
             assert config.thresholds["min_completeness"] == 0.95
             assert "url_validation" in config.skip_checks
             assert config.verbose is True
-    
+
     def test_config_loading_from_environment(self):
         """Test configuration loading from environment variables."""
         with patch.dict('os.environ', {
@@ -552,12 +552,12 @@ class TestQualityIntegrationFlow:
             'CF_QUALITY_COLLECTION_VERBOSE': 'true'
         }):
             config = load_quality_config("collection")
-            
+
             assert config.thresholds["min_coverage"] == 0.85
             assert "check1" in config.skip_checks
             assert "check2" in config.skip_checks
             assert config.verbose is True
-    
+
     @patch('compute_forecast.cli.commands.collect.run_post_command_quality_check')
     def test_collect_command_integration(self, mock_quality_check):
         """Test that collect command properly calls quality checks."""
@@ -565,14 +565,14 @@ class TestQualityIntegrationFlow:
         mock_report = MagicMock()
         mock_report.has_critical_issues.return_value = False
         mock_quality_check.return_value = mock_report
-        
+
         # Import here to avoid circular imports during test collection
         from compute_forecast.cli.commands.collect import main as collect_main
-        
+
         # This test would need more setup to actually run collect command
         # For now, just verify the mock setup works
         assert mock_quality_check is not None
-    
+
     def test_error_handling_in_hooks(self):
         """Test that quality check errors don't break the main command."""
         with TemporaryDirectory() as tmp_dir:
@@ -580,16 +580,16 @@ class TestQualityIntegrationFlow:
             data_file = Path(tmp_dir) / "invalid.json"
             with open(data_file, 'w') as f:
                 f.write("invalid json content")
-            
+
             # Should not raise exception, should return None
             report = run_post_command_quality_check(
                 stage="collection",
                 output_path=data_file,
                 show_summary=False
             )
-            
+
             assert report is None
-    
+
     def _create_good_collection_data(self):
         """Create high-quality test collection data."""
         return {
@@ -647,7 +647,7 @@ class TestQualityIntegrationFlow:
                 }
             ]
         }
-    
+
     def _create_poor_collection_data(self):
         """Create low-quality test collection data with various issues."""
         return {

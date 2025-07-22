@@ -1,7 +1,7 @@
 # Quality Command Design and Implementation Plan (Revised)
 
-**Date**: 2025-01-10  
-**Time**: 15:30  
+**Date**: 2025-01-10
+**Time**: 15:30
 **Task**: Revised design and plan for `cf quality` command based on feedback
 
 ## Executive Summary
@@ -88,7 +88,7 @@ class StageQualityChecker(ABC):
     @abstractmethod
     def check(self, data: Any, config: QualityConfig) -> QualityReport:
         """Run quality checks for this stage."""
-    
+
     @abstractmethod
     def get_stage_name(self) -> str:
         """Return the stage name."""
@@ -106,7 +106,7 @@ class QualityConfig:
 class QualityRunner:
     def run_checks(self, stage: str, data_path: Path, config: QualityConfig) -> QualityReport:
         """Run quality checks for specified stage."""
-    
+
     def register_stage_checker(self, checker: StageQualityChecker):
         """Register a stage-specific checker."""
 ```
@@ -140,18 +140,18 @@ class QualityRunner:
        total_papers_collected: int
        expected_papers: Optional[int]
        coverage_rate: float
-       
+
        # Completeness
        papers_with_abstracts: int
        papers_with_pdfs: int
        papers_with_all_required_fields: int
        field_completeness_scores: Dict[str, float]
-       
+
        # Consistency
        venue_consistency_score: float
        year_consistency_score: float
        duplicate_rate: float
-       
+
        # Sources
        papers_by_scraper: Dict[str, int]
        scraper_success_rates: Dict[str, float]
@@ -165,12 +165,12 @@ The author name pattern validation will check that author names follow reasonabl
 def validate_author_names(papers: List[SimplePaper], config: QualityConfig) -> QualityCheckResult:
     """Validate that author names follow reasonable patterns."""
     import re
-    
+
     issues = []
     papers_with_issues = set()
     total_authors_checked = 0
     problematic_authors = 0
-    
+
     # Common patterns that indicate extraction errors
     suspicious_patterns = [
         r'^\d+$',  # Just numbers
@@ -181,19 +181,19 @@ def validate_author_names(papers: List[SimplePaper], config: QualityConfig) -> Q
         r'[^\w\s\-\'\.]',  # Contains unusual characters
         r'^(and|et|al|der|van|von|de|la|le)$',  # Common particles as full names
     ]
-    
+
     # Compile patterns
     suspicious_regexes = [re.compile(p, re.IGNORECASE) for p in suspicious_patterns]
-    
+
     # Valid name pattern (basic check)
     valid_name_pattern = re.compile(r'^[A-Za-z\-\'\s\.]+$')
-    
+
     for paper in papers:
         paper_has_issues = False
-        
+
         for author in paper.authors:
             total_authors_checked += 1
-            
+
             # Check for empty or whitespace-only
             if not author or not author.strip():
                 problematic_authors += 1
@@ -207,7 +207,7 @@ def validate_author_names(papers: List[SimplePaper], config: QualityConfig) -> Q
                     details={"paper_id": paper.paper_id}
                 ))
                 continue
-            
+
             # Check for suspicious patterns
             for regex in suspicious_regexes:
                 if regex.match(author.strip()):
@@ -222,7 +222,7 @@ def validate_author_names(papers: List[SimplePaper], config: QualityConfig) -> Q
                         details={"paper_id": paper.paper_id, "author": author}
                     ))
                     break
-            
+
             # Check if doesn't match valid pattern
             if not valid_name_pattern.match(author.strip()):
                 problematic_authors += 1
@@ -235,15 +235,15 @@ def validate_author_names(papers: List[SimplePaper], config: QualityConfig) -> Q
                     suggested_action="Verify if special characters are correct",
                     details={"paper_id": paper.paper_id, "author": author}
                 ))
-        
+
         if paper_has_issues:
             papers_with_issues.add(paper.paper_id)
-    
+
     # Calculate score
     author_score = 1.0 - (problematic_authors / total_authors_checked) if total_authors_checked > 0 else 1.0
     paper_score = 1.0 - (len(papers_with_issues) / len(papers)) if papers else 1.0
     score = (author_score + paper_score) / 2  # Average of both metrics
-    
+
     return QualityCheckResult(
         check_name="author_name_validation",
         check_type=QualityCheckType.ACCURACY,
@@ -271,7 +271,7 @@ from compute_forecast.quality.core.hooks import run_post_command_quality_check
 
 def collect_command(..., run_quality_check: bool = True):
     # ... existing collection logic ...
-    
+
     # Post-collection quality check
     if run_quality_check:
         quality_report = run_post_command_quality_check(
@@ -283,7 +283,7 @@ def collect_command(..., run_quality_check: bool = True):
                 "total_papers": len(papers),
             }
         )
-        
+
         if quality_report.has_critical_issues():
             console.print("[red]Critical quality issues detected![/red]")
             # Show summary and optionally abort
@@ -294,8 +294,8 @@ def collect_command(..., run_quality_check: bool = True):
 ```python
 # quality/core/hooks.py
 def run_post_command_quality_check(
-    stage: str, 
-    output_path: Path, 
+    stage: str,
+    output_path: Path,
     context: Dict[str, Any]
 ) -> QualityReport:
     """Run quality checks after command completion."""

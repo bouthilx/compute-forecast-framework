@@ -1,7 +1,7 @@
 # Quality Command Phase 1: Core Infrastructure Implementation
 
-**Date**: 2025-01-10  
-**Time**: 15:00  
+**Date**: 2025-01-10
+**Time**: 15:00
 **Task**: Detailed implementation plan for Phase 1 of quality command (Core Infrastructure)
 
 ## Phase 1 Overview
@@ -59,22 +59,22 @@ class QualityReport:
     data_path: Path
     overall_score: float
     check_results: List[QualityCheckResult]
-    
+
     @property
     def critical_issues(self) -> List[QualityIssue]:
-        return [issue for result in self.check_results 
-                for issue in result.issues 
+        return [issue for result in self.check_results
+                for issue in result.issues
                 if issue.level == QualityIssueLevel.CRITICAL]
-    
+
     @property
     def warnings(self) -> List[QualityIssue]:
-        return [issue for result in self.check_results 
-                for issue in result.issues 
+        return [issue for result in self.check_results
+                for issue in result.issues
                 if issue.level == QualityIssueLevel.WARNING]
-    
+
     def has_critical_issues(self) -> bool:
         return len(self.critical_issues) > 0
-    
+
     def get_score_by_type(self, check_type: QualityCheckType) -> float:
         results = [r for r in self.check_results if r.check_type == check_type]
         return sum(r.score for r in results) / len(results) if results else 0.0
@@ -101,44 +101,44 @@ from ..core.interfaces import QualityReport, QualityConfig, QualityCheckResult
 
 class StageQualityChecker(ABC):
     """Base class for stage-specific quality checkers."""
-    
+
     def __init__(self):
         self._checks = self._register_checks()
-    
+
     @abstractmethod
     def get_stage_name(self) -> str:
         """Return the stage name this checker handles."""
         pass
-    
+
     @abstractmethod
     def load_data(self, data_path: Path) -> Any:
         """Load and parse data for this stage."""
         pass
-    
+
     @abstractmethod
     def _register_checks(self) -> Dict[str, callable]:
         """Register all quality checks for this stage.
-        
+
         Returns:
             Dict mapping check names to check methods
         """
         pass
-    
+
     def check(self, data_path: Path, config: QualityConfig) -> QualityReport:
         """Run all quality checks for this stage."""
         # Load data
         data = self.load_data(data_path)
-        
+
         # Run checks
         results = []
         for check_name, check_func in self._checks.items():
             if check_name not in config.skip_checks:
                 result = check_func(data, config)
                 results.append(result)
-        
+
         # Calculate overall score
         overall_score = sum(r.score for r in results) / len(results) if results else 0.0
-        
+
         return QualityReport(
             stage=self.get_stage_name(),
             timestamp=datetime.now(),
@@ -146,7 +146,7 @@ class StageQualityChecker(ABC):
             overall_score=overall_score,
             check_results=results
         )
-    
+
     def get_available_checks(self) -> List[str]:
         """Get list of available check names."""
         return list(self._checks.keys())
@@ -162,31 +162,31 @@ from ..stages.base import StageQualityChecker
 
 class StageCheckerRegistry:
     """Registry for stage-specific quality checkers."""
-    
+
     def __init__(self):
         self._checkers: Dict[str, Type[StageQualityChecker]] = {}
         self._instances: Dict[str, StageQualityChecker] = {}
-    
+
     def register(self, stage: str, checker_class: Type[StageQualityChecker]):
         """Register a stage checker class."""
         self._checkers[stage.lower()] = checker_class
-    
+
     def get_checker(self, stage: str) -> Optional[StageQualityChecker]:
         """Get or create a checker instance for a stage."""
         stage = stage.lower()
-        
+
         if stage not in self._checkers:
             return None
-        
+
         if stage not in self._instances:
             self._instances[stage] = self._checkers[stage]()
-        
+
         return self._instances[stage]
-    
+
     def list_stages(self) -> List[str]:
         """List all registered stages."""
         return list(self._checkers.keys())
-    
+
     def list_checks_for_stage(self, stage: str) -> Optional[List[str]]:
         """List available checks for a stage."""
         checker = self.get_checker(stage)
@@ -217,37 +217,37 @@ from .registry import get_registry
 
 class QualityRunner:
     """Orchestrates quality checks across stages."""
-    
+
     def __init__(self):
         self.registry = get_registry()
-    
+
     def run_checks(
-        self, 
-        stage: str, 
-        data_path: Path, 
+        self,
+        stage: str,
+        data_path: Path,
         config: Optional[QualityConfig] = None
     ) -> QualityReport:
         """Run quality checks for a specific stage."""
         if config is None:
             config = self._get_default_config(stage)
-        
+
         checker = self.registry.get_checker(stage)
         if not checker:
             raise ValueError(f"No quality checker registered for stage: {stage}")
-        
+
         return checker.check(data_path, config)
-    
+
     def run_all_applicable_checks(
-        self, 
+        self,
         data_path: Path,
         config: Optional[QualityConfig] = None
     ) -> List[QualityReport]:
         """Run quality checks for all applicable stages based on data."""
         reports = []
-        
+
         # Detect applicable stages based on file/directory structure
         applicable_stages = self._detect_applicable_stages(data_path)
-        
+
         for stage in applicable_stages:
             try:
                 stage_config = config or self._get_default_config(stage)
@@ -256,33 +256,33 @@ class QualityRunner:
             except Exception as e:
                 # Log but continue with other stages
                 print(f"Warning: Quality check failed for stage {stage}: {e}")
-        
+
         return reports
-    
+
     def _detect_applicable_stages(self, data_path: Path) -> List[str]:
         """Detect which stages are applicable based on data structure."""
         applicable = []
-        
+
         if data_path.is_file() and data_path.suffix == '.json':
             # Try to detect stage from file content
             with open(data_path, 'r') as f:
                 data = json.load(f)
-                
+
             # Collection stage detection
             if 'collection_metadata' in data or 'papers' in data:
                 applicable.append('collection')
-            
+
             # Future: Add detection for other stages
             # if 'consolidated_data' in data:
             #     applicable.append('consolidation')
-        
+
         elif data_path.is_dir():
             # Check directory structure for hints
             if (data_path / 'collected_papers').exists():
                 applicable.append('collection')
-        
+
         return applicable
-    
+
     def _get_default_config(self, stage: str) -> QualityConfig:
         """Get default configuration for a stage."""
         # Default thresholds by stage
@@ -295,7 +295,7 @@ class QualityRunner:
             },
             # Future stages...
         }
-        
+
         return QualityConfig(
             stage=stage,
             thresholds=default_thresholds.get(stage, {}),
@@ -328,39 +328,39 @@ def run_post_command_quality_check(
     show_summary: bool = True
 ) -> Optional[QualityReport]:
     """Run quality checks after a command completes.
-    
+
     Args:
         stage: The pipeline stage that just completed
         output_path: Path to the output data
         context: Additional context from the command
         config: Optional quality configuration
         show_summary: Whether to show a summary in console
-    
+
     Returns:
         QualityReport if checks were run, None if skipped
     """
     try:
         runner = QualityRunner()
-        
+
         # Use provided config or get defaults
         if config is None:
             config = runner._get_default_config(stage)
             config.verbose = False  # Keep integrated checks concise
-        
+
         # Run the quality checks
         report = runner.run_checks(stage, output_path, config)
-        
+
         if show_summary:
             _show_quality_summary(report, context)
-        
+
         # Handle critical issues
         if report.has_critical_issues():
             console.print("\n[red]⚠️  Critical quality issues detected![/red]")
             console.print("Run [cyan]cf quality --stage collection --verbose[/cyan] for details.")
             # Don't fail the command, just warn
-        
+
         return report
-        
+
     except Exception as e:
         # Don't fail the main command if quality checks fail
         console.print(f"\n[yellow]Warning: Quality checks failed: {e}[/yellow]")
@@ -371,26 +371,26 @@ def _show_quality_summary(report: QualityReport, context: Optional[Dict[str, Any
     # Determine overall quality grade
     grade = _score_to_grade(report.overall_score)
     grade_color = _grade_to_color(grade)
-    
+
     # Build summary text
     summary_lines = [
         f"Quality Score: [bold {grade_color}]{report.overall_score:.2f} ({grade})[/bold {grade_color}]"
     ]
-    
+
     # Add key metrics from context
     if context:
         if 'total_papers' in context:
             summary_lines.append(f"Papers Collected: {context['total_papers']}")
-    
+
     # Add issue counts
     critical_count = len(report.critical_issues)
     warning_count = len(report.warnings)
-    
+
     if critical_count > 0:
         summary_lines.append(f"[red]Critical Issues: {critical_count}[/red]")
     if warning_count > 0:
         summary_lines.append(f"[yellow]Warnings: {warning_count}[/yellow]")
-    
+
     # Show summary panel
     panel = Panel(
         "\n".join(summary_lines),
@@ -486,16 +486,16 @@ def main(
     ),
 ):
     """Run quality checks on compute-forecast data."""
-    
+
     registry = get_registry()
-    
+
     # Handle listing options
     if list_stages:
         console.print("\nAvailable quality check stages:")
         for stage in registry.list_stages():
             console.print(f"  - {stage}")
         raise typer.Exit()
-    
+
     if list_checks:
         checks = registry.list_checks_for_stage(list_checks)
         if checks:
@@ -505,16 +505,16 @@ def main(
         else:
             console.print(f"[red]No quality checker found for stage: {list_checks}[/red]")
         raise typer.Exit()
-    
+
     # Validate arguments
     if not all_stages and not stage:
         console.print("[red]Error: Must specify either --stage or --all[/red]")
         raise typer.Exit(1)
-    
+
     if not data_path.exists():
         console.print(f"[red]Error: Data path does not exist: {data_path}[/red]")
         raise typer.Exit(1)
-    
+
     # Prepare configuration
     config = QualityConfig(
         stage=stage or "all",
@@ -523,10 +523,10 @@ def main(
         output_format=output_format,
         verbose=verbose
     )
-    
+
     # Run quality checks
     runner = QualityRunner()
-    
+
     try:
         if all_stages:
             reports = runner.run_all_applicable_checks(data_path, config)
@@ -537,13 +537,13 @@ def main(
             report = reports[0]
         else:
             report = runner.run_checks(stage, data_path, config)
-        
+
         # Output results (basic text format for now)
         if output_format == "text":
             _print_text_report(report, verbose)
         else:
             console.print(f"[yellow]Format '{output_format}' not yet implemented[/yellow]")
-            
+
     except ValueError as e:
         console.print(f"[red]Error: {e}[/red]")
         raise typer.Exit(1)
@@ -587,7 +587,7 @@ __all__ = [
     "QualityCheckType",
     "QualityIssueLevel",
     "QualityIssue",
-    "QualityCheckResult", 
+    "QualityCheckResult",
     "QualityReport",
     "QualityConfig",
     # Main components
@@ -612,7 +612,7 @@ from .hooks import run_post_command_quality_check
 
 __all__ = [
     "QualityRunner",
-    "get_registry", 
+    "get_registry",
     "register_stage_checker",
     "run_post_command_quality_check",
 ]
@@ -668,13 +668,13 @@ from compute_forecast.quality import (
 class DummyChecker(StageQualityChecker):
     def get_stage_name(self):
         return "dummy"
-    
+
     def load_data(self, data_path):
         return {"test": "data"}
-    
+
     def _register_checks(self):
         return {"dummy_check": self._dummy_check}
-    
+
     def _dummy_check(self, data, config):
         return QualityCheckResult(
             check_name="dummy_check",

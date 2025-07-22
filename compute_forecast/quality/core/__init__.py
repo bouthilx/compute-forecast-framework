@@ -21,7 +21,7 @@ __all__ = [
     "QualityReport",
     "QualityConfig",
     "QualityRunner",
-    "get_registry", 
+    "get_registry",
     "register_stage_checker",
     "run_post_command_quality_check",
     "format_report",

@@ -6,6 +6,7 @@ from .. import __version__
 from .commands.collect import main as collect_command
 from .commands.consolidate_sessions import list_sessions, clean_sessions
 from .commands.consolidate_parallel import main as consolidate_parallel_command
+from .commands.quality import main as quality_command
 
 
 app = typer.Typer(
@@ -15,10 +16,6 @@ app = typer.Typer(
     "to project future infrastructure needs.",
     add_completion=False,
 )
-
-# Import commands
-from .commands.collect import main as collect_command
-from .commands.quality import main as quality_command
 
 # Register the collect command
 app.command(name="collect")(collect_command)

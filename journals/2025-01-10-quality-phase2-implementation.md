@@ -1,7 +1,7 @@
 # Quality Command Phase 2: Collection Stage Implementation
 
-**Date**: 2025-01-10  
-**Time**: 16:00  
+**Date**: 2025-01-10
+**Time**: 16:00
 **Task**: Detailed implementation plan for Phase 2 of quality command (Collection Stage Quality Checks)
 
 ## Phase 2 Overview
@@ -22,35 +22,35 @@ from datetime import datetime
 @dataclass
 class CollectionQualityMetrics:
     """Metrics for collection quality assessment."""
-    
+
     # Coverage metrics
     total_papers_collected: int
     expected_papers: Optional[int] = None
     coverage_rate: float = 0.0
-    
+
     # Completeness metrics
     papers_with_all_required_fields: int = 0
     papers_with_abstracts: int = 0
     papers_with_pdfs: int = 0
     papers_with_dois: int = 0
     field_completeness_scores: Dict[str, float] = field(default_factory=dict)
-    
+
     # Consistency metrics
     venue_consistency_score: float = 1.0
     year_consistency_score: float = 1.0
     duplicate_count: int = 0
     duplicate_rate: float = 0.0
-    
+
     # Accuracy metrics
     valid_years_count: int = 0
     valid_authors_count: int = 0
     valid_urls_count: int = 0
     accuracy_scores: Dict[str, float] = field(default_factory=dict)
-    
+
     # Source metrics
     papers_by_scraper: Dict[str, int] = field(default_factory=dict)
     scraper_success_rates: Dict[str, float] = field(default_factory=dict)
-    
+
     # Timing
     collection_timestamp: Optional[datetime] = None
     quality_check_timestamp: Optional[datetime] = None
@@ -58,7 +58,7 @@ class CollectionQualityMetrics:
 @dataclass
 class CollectionContext:
     """Context information from collection process."""
-    
+
     venues_requested: List[str]
     years_requested: List[int]
     scrapers_used: List[str]
@@ -90,26 +90,26 @@ from .models import CollectionQualityMetrics, CollectionContext
 
 class CollectionQualityChecker(StageQualityChecker):
     """Quality checker for collection stage."""
-    
+
     def __init__(self):
         self.completeness_validator = CompletenessValidator()
         self.consistency_validator = ConsistencyValidator()
         self.accuracy_validator = AccuracyValidator()
         self.coverage_validator = CoverageValidator()
         super().__init__()
-    
+
     def get_stage_name(self) -> str:
         return "collection"
-    
+
     def load_data(self, data_path: Path) -> Dict[str, Any]:
         """Load collection data from JSON file."""
         with open(data_path, 'r') as f:
             data = json.load(f)
-        
+
         # Extract papers and metadata
         papers = data.get('papers', [])
         metadata = data.get('collection_metadata', {})
-        
+
         # Build context from metadata
         context = CollectionContext(
             venues_requested=metadata.get('venues', []),
@@ -118,14 +118,14 @@ class CollectionQualityChecker(StageQualityChecker):
             collection_duration=metadata.get('duration_seconds'),
             errors_encountered=metadata.get('errors', [])
         )
-        
+
         return {
             'papers': papers,
             'metadata': metadata,
             'context': context,
             'metrics': self._calculate_metrics(papers, metadata, context)
         }
-    
+
     def _register_checks(self) -> Dict[str, Callable]:
         """Register all collection quality checks."""
         return {
@@ -134,59 +134,59 @@ class CollectionQualityChecker(StageQualityChecker):
             'accuracy_check': self._accuracy_check,
             'coverage_check': self._coverage_check,
         }
-    
+
     def _completeness_check(self, data: Dict[str, Any], config: QualityConfig) -> QualityCheckResult:
         """Check completeness of collected papers."""
         papers = data['papers']
         metrics = data['metrics']
-        
+
         return self.completeness_validator.validate(
-            papers, 
+            papers,
             metrics,
             config.thresholds.get('min_completeness', 0.8)
         )
-    
+
     def _consistency_check(self, data: Dict[str, Any], config: QualityConfig) -> QualityCheckResult:
         """Check consistency of collected data."""
         papers = data['papers']
         context = data['context']
         metrics = data['metrics']
-        
+
         return self.consistency_validator.validate(
             papers,
             context,
             metrics,
             config.thresholds.get('min_consistency', 0.9)
         )
-    
+
     def _accuracy_check(self, data: Dict[str, Any], config: QualityConfig) -> QualityCheckResult:
         """Check accuracy of collected data."""
         papers = data['papers']
         metrics = data['metrics']
-        
+
         return self.accuracy_validator.validate(
             papers,
             metrics,
             config.thresholds.get('min_accuracy', 0.85),
             config.custom_params
         )
-    
+
     def _coverage_check(self, data: Dict[str, Any], config: QualityConfig) -> QualityCheckResult:
         """Check coverage of collection."""
         papers = data['papers']
         context = data['context']
         metrics = data['metrics']
-        
+
         return self.coverage_validator.validate(
             papers,
             context,
             metrics,
             config.thresholds.get('min_coverage', 0.7)
         )
-    
+
     def _calculate_metrics(
-        self, 
-        papers: List[Dict[str, Any]], 
+        self,
+        papers: List[Dict[str, Any]],
         metadata: Dict[str, Any],
         context: CollectionContext
     ) -> CollectionQualityMetrics:
@@ -197,16 +197,16 @@ class CollectionQualityChecker(StageQualityChecker):
             if 'timestamp' in metadata else None,
             quality_check_timestamp=datetime.now()
         )
-        
+
         # Field completeness
         required_fields = ['title', 'authors', 'venue', 'year']
         optional_fields = ['abstract', 'pdf_urls', 'doi', 'paper_id']
-        
+
         for paper in papers:
             # Check required fields
             if all(paper.get(f) for f in required_fields):
                 metrics.papers_with_all_required_fields += 1
-            
+
             # Check optional fields
             if paper.get('abstract'):
                 metrics.papers_with_abstracts += 1
@@ -214,18 +214,18 @@ class CollectionQualityChecker(StageQualityChecker):
                 metrics.papers_with_pdfs += 1
             if paper.get('doi'):
                 metrics.papers_with_dois += 1
-        
+
         # Calculate field completeness scores
         if papers:
             for field in required_fields + optional_fields:
                 count = sum(1 for p in papers if p.get(field))
                 metrics.field_completeness_scores[field] = count / len(papers)
-        
+
         # Source metrics
         for paper in papers:
             scraper = paper.get('source_scraper', 'unknown')
             metrics.papers_by_scraper[scraper] = metrics.papers_by_scraper.get(scraper, 0) + 1
-        
+
         return metrics
 ```
 
@@ -246,22 +246,22 @@ from .models import CollectionQualityMetrics, CollectionContext
 
 class CompletenessValidator:
     """Validates completeness of collected papers."""
-    
+
     REQUIRED_FIELDS = ['title', 'authors', 'venue', 'year']
     IMPORTANT_FIELDS = ['abstract', 'pdf_urls', 'paper_id']
-    
+
     def validate(
-        self, 
-        papers: List[Dict[str, Any]], 
+        self,
+        papers: List[Dict[str, Any]],
         metrics: CollectionQualityMetrics,
         threshold: float
     ) -> QualityCheckResult:
         """Validate completeness of the collection."""
         issues = []
-        
+
         # Check overall required field completeness
         required_completeness = metrics.papers_with_all_required_fields / len(papers) if papers else 0
-        
+
         if required_completeness < threshold:
             issues.append(QualityIssue(
                 check_type=QualityCheckType.COMPLETENESS,
@@ -271,7 +271,7 @@ class CompletenessValidator:
                 suggested_action=f"Review scraper implementation to ensure all required fields are extracted",
                 details={'required_fields': self.REQUIRED_FIELDS}
             ))
-        
+
         # Check specific field issues
         for field, score in metrics.field_completeness_scores.items():
             if field in self.REQUIRED_FIELDS and score < 0.95:
@@ -283,11 +283,11 @@ class CompletenessValidator:
                     suggested_action=f"Check scraper extraction for '{field}' field",
                     details={'completeness_score': score}
                 ))
-        
+
         # Check important optional fields
         abstract_rate = metrics.papers_with_abstracts / len(papers) if papers else 0
         pdf_rate = metrics.papers_with_pdfs / len(papers) if papers else 0
-        
+
         if abstract_rate < 0.5:
             issues.append(QualityIssue(
                 check_type=QualityCheckType.COMPLETENESS,
@@ -297,20 +297,20 @@ class CompletenessValidator:
                 suggested_action="Consider enhancing scrapers to extract abstracts",
                 details={'papers_with_abstracts': metrics.papers_with_abstracts}
             ))
-        
+
         # Calculate overall score
         weights = {
             'required': 0.6,
             'abstract': 0.2,
             'pdf': 0.2
         }
-        
+
         score = (
             weights['required'] * required_completeness +
             weights['abstract'] * abstract_rate +
             weights['pdf'] * pdf_rate
         )
-        
+
         return QualityCheckResult(
             check_name="completeness_check",
             check_type=QualityCheckType.COMPLETENESS,
@@ -328,7 +328,7 @@ class CompletenessValidator:
 
 class ConsistencyValidator:
     """Validates consistency of collected data."""
-    
+
     def validate(
         self,
         papers: List[Dict[str, Any]],
@@ -338,13 +338,13 @@ class ConsistencyValidator:
     ) -> QualityCheckResult:
         """Validate data consistency."""
         issues = []
-        
+
         # Check for duplicates
         seen_ids = set()
         seen_titles = set()
         duplicate_ids = []
         duplicate_titles = []
-        
+
         for paper in papers:
             # Check paper_id duplicates
             paper_id = paper.get('paper_id')
@@ -352,16 +352,16 @@ class ConsistencyValidator:
                 if paper_id in seen_ids:
                     duplicate_ids.append(paper_id)
                 seen_ids.add(paper_id)
-            
+
             # Check title duplicates (normalized)
             title = paper.get('title', '').lower().strip()
             if title:
                 if title in seen_titles:
                     duplicate_titles.append(paper.get('title'))
                 seen_titles.add(title)
-        
+
         duplicate_rate = (len(duplicate_ids) + len(duplicate_titles)) / (2 * len(papers)) if papers else 0
-        
+
         if duplicate_rate > 0.05:  # More than 5% duplicates
             issues.append(QualityIssue(
                 check_type=QualityCheckType.CONSISTENCY,
@@ -374,22 +374,22 @@ class ConsistencyValidator:
                     'duplicate_titles': duplicate_titles[:10]
                 }
             ))
-        
+
         # Check venue consistency
         venue_issues = self._check_venue_consistency(papers, context)
         issues.extend(venue_issues)
-        
+
         # Check year consistency
         year_issues = self._check_year_consistency(papers, context)
         issues.extend(year_issues)
-        
+
         # Calculate score
         consistency_score = 1.0 - (
             0.4 * duplicate_rate +
             0.3 * (len(venue_issues) / len(papers) if papers else 0) +
             0.3 * (len(year_issues) / len(papers) if papers else 0)
         )
-        
+
         return QualityCheckResult(
             check_name="consistency_check",
             check_type=QualityCheckType.CONSISTENCY,
@@ -402,19 +402,19 @@ class ConsistencyValidator:
                 'year_consistency_issues': len(year_issues)
             }
         )
-    
+
     def _check_venue_consistency(
-        self, 
-        papers: List[Dict[str, Any]], 
+        self,
+        papers: List[Dict[str, Any]],
         context: CollectionContext
     ) -> List[QualityIssue]:
         """Check if paper venues match requested venues."""
         issues = []
         requested_venues = set(v.lower() for v in context.venues_requested)
-        
+
         if not requested_venues:
             return issues
-        
+
         mismatched_papers = []
         for paper in papers[:100]:  # Check first 100 for performance
             paper_venue = paper.get('venue', '').lower()
@@ -424,7 +424,7 @@ class ConsistencyValidator:
                     'venue': paper.get('venue'),
                     'expected': context.venues_requested
                 })
-        
+
         if mismatched_papers:
             issues.append(QualityIssue(
                 check_type=QualityCheckType.CONSISTENCY,
@@ -434,9 +434,9 @@ class ConsistencyValidator:
                 suggested_action="Verify venue extraction and filtering logic",
                 details={'examples': mismatched_papers[:5]}
             ))
-        
+
         return issues
-    
+
     def _check_year_consistency(
         self,
         papers: List[Dict[str, Any]],
@@ -445,10 +445,10 @@ class ConsistencyValidator:
         """Check if paper years match requested years."""
         issues = []
         requested_years = set(context.years_requested)
-        
+
         if not requested_years:
             return issues
-        
+
         mismatched_papers = []
         for paper in papers:
             paper_year = paper.get('year')
@@ -458,7 +458,7 @@ class ConsistencyValidator:
                     'year': paper_year,
                     'expected': sorted(requested_years)
                 })
-        
+
         if mismatched_papers:
             issues.append(QualityIssue(
                 check_type=QualityCheckType.CONSISTENCY,
@@ -468,13 +468,13 @@ class ConsistencyValidator:
                 suggested_action="Verify year extraction and filtering logic",
                 details={'examples': mismatched_papers[:5]}
             ))
-        
+
         return issues
 
 
 class AccuracyValidator:
     """Validates accuracy of collected data."""
-    
+
     def validate(
         self,
         papers: List[Dict[str, Any]],
@@ -484,24 +484,24 @@ class AccuracyValidator:
     ) -> QualityCheckResult:
         """Validate data accuracy."""
         issues = []
-        
+
         # Validate temporal bounds
         temporal_issues = self._validate_temporal_bounds(papers, custom_params)
         issues.extend(temporal_issues)
-        
+
         # Validate author names
         author_issues = self._validate_author_names(papers)
         issues.extend(author_issues)
-        
+
         # Validate URLs
         url_issues = self._validate_urls(papers)
         issues.extend(url_issues)
-        
+
         # Calculate accuracy score
         total_validations = len(papers) * 3  # 3 validation types
         total_issues = len(temporal_issues) + len(author_issues) + len(url_issues)
         accuracy_score = 1.0 - (total_issues / total_validations) if total_validations > 0 else 1.0
-        
+
         return QualityCheckResult(
             check_name="accuracy_check",
             check_type=QualityCheckType.ACCURACY,
@@ -515,7 +515,7 @@ class AccuracyValidator:
                 'accuracy_rate': accuracy_score
             }
         )
-    
+
     def _validate_temporal_bounds(
         self,
         papers: List[Dict[str, Any]],
@@ -524,16 +524,16 @@ class AccuracyValidator:
         """Validate paper years are within reasonable bounds."""
         issues = []
         current_year = datetime.now().year
-        
+
         # Get bounds from config or use defaults
         min_year = custom_params.get('min_valid_year', 1950)
         max_year = custom_params.get('max_valid_year', current_year + 1)
-        
+
         for paper in papers:
             year = paper.get('year')
             if not year:
                 continue
-                
+
             if year < min_year:
                 issues.append(QualityIssue(
                     check_type=QualityCheckType.ACCURACY,
@@ -552,13 +552,13 @@ class AccuracyValidator:
                     suggested_action="Verify if this is an early access paper",
                     details={'paper_id': paper.get('paper_id'), 'year': year}
                 ))
-        
+
         return issues
-    
+
     def _validate_author_names(self, papers: List[Dict[str, Any]]) -> List[QualityIssue]:
         """Validate author name patterns as designed in revised journal."""
         issues = []
-        
+
         # Patterns that indicate extraction errors
         suspicious_patterns = [
             re.compile(r'^\d+$'),  # Just numbers
@@ -568,15 +568,15 @@ class AccuracyValidator:
             re.compile(r'\d{3,}'),  # Contains 3+ consecutive digits
             re.compile(r'^(and|et|al|der|van|von|de|la|le)$', re.IGNORECASE),  # Particles as names
         ]
-        
+
         papers_checked = 0
         for paper in papers[:1000]:  # Limit to first 1000 for performance
             if not paper.get('authors'):
                 continue
-                
+
             papers_checked += 1
             paper_has_issues = False
-            
+
             for author in paper['authors']:
                 if not author or not author.strip():
                     if not paper_has_issues:
@@ -590,7 +590,7 @@ class AccuracyValidator:
                         ))
                         paper_has_issues = True
                     continue
-                
+
                 # Check suspicious patterns
                 for pattern in suspicious_patterns:
                     if pattern.match(author.strip()):
@@ -605,9 +605,9 @@ class AccuracyValidator:
                             ))
                             paper_has_issues = True
                         break
-        
+
         return issues
-    
+
     def _validate_urls(self, papers: List[Dict[str, Any]]) -> List[QualityIssue]:
         """Validate URL formats."""
         issues = []
@@ -618,13 +618,13 @@ class AccuracyValidator:
             r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
             r'(?::\d+)?'  # optional port
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-        
+
         papers_with_urls = 0
         for paper in papers[:500]:  # Limit for performance
             pdf_urls = paper.get('pdf_urls', [])
             if not pdf_urls:
                 continue
-                
+
             papers_with_urls += 1
             for url in pdf_urls[:3]:  # Check first 3 URLs per paper
                 if not url_pattern.match(url):
@@ -637,13 +637,13 @@ class AccuracyValidator:
                         details={'paper_id': paper.get('paper_id'), 'url': url[:100]}
                     ))
                     break
-        
+
         return issues
 
 
 class CoverageValidator:
     """Validates collection coverage."""
-    
+
     # Expected paper counts by venue (rough estimates)
     EXPECTED_PAPERS_PER_VENUE = {
         'neurips': 1500,
@@ -655,7 +655,7 @@ class CoverageValidator:
         'acl': 600,
         'emnlp': 400,
     }
-    
+
     def validate(
         self,
         papers: List[Dict[str, Any]],
@@ -665,7 +665,7 @@ class CoverageValidator:
     ) -> QualityCheckResult:
         """Validate collection coverage."""
         issues = []
-        
+
         # Estimate expected papers
         expected_total = 0
         for venue in context.venues_requested:
@@ -673,12 +673,12 @@ class CoverageValidator:
             expected = self.EXPECTED_PAPERS_PER_VENUE.get(venue_lower, 500)  # Default 500
             expected_per_year = expected
             expected_total += expected_per_year * len(context.years_requested)
-        
+
         if expected_total > 0:
             coverage_rate = len(papers) / expected_total
             metrics.expected_papers = expected_total
             metrics.coverage_rate = coverage_rate
-            
+
             if coverage_rate < threshold:
                 issues.append(QualityIssue(
                     check_type=QualityCheckType.COVERAGE,
@@ -693,7 +693,7 @@ class CoverageValidator:
                         'years': context.years_requested
                     }
                 ))
-            
+
             # Check per-scraper performance
             for scraper, count in metrics.papers_by_scraper.items():
                 if count == 0 and scraper in context.scrapers_used:
@@ -705,10 +705,10 @@ class CoverageValidator:
                         suggested_action=f"Check if {scraper} scraper is working correctly",
                         details={'scraper': scraper}
                     ))
-        
+
         # Calculate score
         score = min(1.0, coverage_rate) if expected_total > 0 else 1.0
-        
+
         return QualityCheckResult(
             check_name="coverage_check",
             check_type=QualityCheckType.COVERAGE,
@@ -749,7 +749,7 @@ __all__ = [
     "CollectionQualityMetrics",
     "CollectionContext",
     "CompletenessValidator",
-    "ConsistencyValidator", 
+    "ConsistencyValidator",
     "AccuracyValidator",
     "CoverageValidator",
 ]
@@ -770,47 +770,47 @@ from compute_forecast.quality.core.hooks import _score_to_grade, _grade_to_color
 
 class TextFormatter:
     """Format quality reports as human-readable text."""
-    
+
     def format(self, report: QualityReport, verbose: bool = False) -> str:
         """Format report as text."""
         lines = []
-        
+
         # Header
         lines.append(f"\nQuality Report: {report.stage.title()} Stage")
         lines.append("=" * 60)
         lines.append(f"File: {report.data_path}")
         lines.append(f"Timestamp: {report.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
-        
+
         # Overall score
         grade = _score_to_grade(report.overall_score)
         lines.append(f"\nOverall Score: {report.overall_score:.2f} ({grade})")
-        
+
         # Summary by check type
         lines.append("\nCheck Summary:")
         lines.append("-" * 40)
-        
+
         for result in report.check_results:
             status = "✓" if result.passed else "✗"
             score_str = f"{result.score:.2f}"
             lines.append(f"{status} {result.check_name}: {score_str}")
-            
+
             if verbose and result.issues:
                 for issue in result.issues[:5]:  # First 5 issues
                     level_symbol = {"critical": "🔴", "warning": "🟡", "info": "ℹ️"}[issue.level.value]
                     lines.append(f"    {level_symbol} {issue.message}")
-        
+
         # Issue summary
         critical_count = len(report.critical_issues)
         warning_count = len(report.warnings)
-        
+
         lines.append(f"\nIssues Found:")
         lines.append(f"  Critical: {critical_count}")
         lines.append(f"  Warnings: {warning_count}")
-        
+
         if verbose and (critical_count > 0 or warning_count > 0):
             lines.append("\nDetailed Issues:")
             lines.append("-" * 40)
-            
+
             # Show critical issues first
             if critical_count > 0:
                 lines.append("\nCRITICAL ISSUES:")
@@ -818,20 +818,20 @@ class TextFormatter:
                     lines.append(f"\n  • {issue.message}")
                     lines.append(f"    Field: {issue.field or 'N/A'}")
                     lines.append(f"    Action: {issue.suggested_action}")
-            
+
             # Show warnings
             if warning_count > 0 and verbose:
                 lines.append("\nWARNINGS:")
                 for issue in report.warnings[:10]:
                     lines.append(f"\n  • {issue.message}")
                     lines.append(f"    Action: {issue.suggested_action}")
-        
+
         return "\n".join(lines)
 
 
 class JSONFormatter:
     """Format quality reports as JSON."""
-    
+
     def format(self, report: QualityReport, verbose: bool = False) -> str:
         """Format report as JSON."""
         data = {
@@ -848,7 +848,7 @@ class JSONFormatter:
             },
             "check_results": []
         }
-        
+
         for result in report.check_results:
             check_data = {
                 "name": result.check_name,
@@ -857,7 +857,7 @@ class JSONFormatter:
                 "score": result.score,
                 "metrics": result.metrics
             }
-            
+
             if verbose:
                 check_data["issues"] = [
                     {
@@ -869,57 +869,57 @@ class JSONFormatter:
                     }
                     for issue in result.issues
                 ]
-            
+
             data["check_results"].append(check_data)
-        
+
         return json.dumps(data, indent=2)
 
 
 class MarkdownFormatter:
     """Format quality reports as Markdown."""
-    
+
     def format(self, report: QualityReport, verbose: bool = False) -> str:
         """Format report as Markdown."""
         lines = []
-        
+
         # Header
         lines.append(f"# Quality Report: {report.stage.title()} Stage")
         lines.append("")
         lines.append(f"**File:** `{report.data_path}`")
         lines.append(f"**Timestamp:** {report.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
         lines.append("")
-        
+
         # Overall score
         grade = _score_to_grade(report.overall_score)
         lines.append(f"## Overall Score: {report.overall_score:.2f} ({grade})")
         lines.append("")
-        
+
         # Summary table
         lines.append("## Check Summary")
         lines.append("")
         lines.append("| Check | Type | Score | Status |")
         lines.append("|-------|------|-------|--------|")
-        
+
         for result in report.check_results:
             status = "✅ Passed" if result.passed else "❌ Failed"
             lines.append(f"| {result.check_name} | {result.check_type.value} | {result.score:.2f} | {status} |")
-        
+
         lines.append("")
-        
+
         # Issues
         critical_count = len(report.critical_issues)
         warning_count = len(report.warnings)
-        
+
         lines.append("## Issues Summary")
         lines.append("")
         lines.append(f"- **Critical Issues:** {critical_count}")
         lines.append(f"- **Warnings:** {warning_count}")
         lines.append("")
-        
+
         if verbose and (critical_count > 0 or warning_count > 0):
             lines.append("## Detailed Issues")
             lines.append("")
-            
+
             if critical_count > 0:
                 lines.append("### Critical Issues")
                 lines.append("")
@@ -928,7 +928,7 @@ class MarkdownFormatter:
                     lines.append(f"   - Field: `{issue.field or 'N/A'}`")
                     lines.append(f"   - Action: {issue.suggested_action}")
                     lines.append("")
-            
+
             if warning_count > 0:
                 lines.append("### Warnings")
                 lines.append("")
@@ -936,7 +936,7 @@ class MarkdownFormatter:
                     lines.append(f"{i}. {issue.message}")
                     lines.append(f"   - Action: {issue.suggested_action}")
                     lines.append("")
-        
+
         return "\n".join(lines)
 
 
@@ -953,7 +953,7 @@ def format_report(report: QualityReport, format: str, verbose: bool = False) -> 
     formatter = FORMATTERS.get(format)
     if not formatter:
         raise ValueError(f"Unknown format: {format}. Available: {list(FORMATTERS.keys())}")
-    
+
     return formatter.format(report, verbose)
 ```
 
@@ -977,10 +977,10 @@ def main(
     ),
 ):
     # ... existing collection logic ...
-    
+
     # After saving papers (around line 150)
     save_papers(all_papers, output_path, additional_metadata)
-    
+
     # Run quality check
     if not skip_quality_check:
         console.print("\n[cyan]Running quality checks...[/cyan]")
@@ -994,7 +994,7 @@ def main(
                 "scrapers_used": list(set(p.source_scraper for p in all_papers)),
             }
         )
-    
+
     # Final summary remains the same
 ```
 
@@ -1012,7 +1012,7 @@ from compute_forecast.quality.reports.formatters import format_report
 def _print_text_report(report, verbose: bool):
     """Print formatted text report."""
     from compute_forecast.quality.reports.formatters import format_report
-    
+
     formatted = format_report(report, "text", verbose)
     console.print(formatted)
 
@@ -1021,13 +1021,13 @@ def main(
     # ... existing parameters ...
 ):
     # ... existing logic ...
-    
+
     # Output results section
     if output_format == "text":
         _print_text_report(report, verbose)
     else:
         formatted = format_report(report, output_format, verbose)
-        
+
         if output_file:
             with open(output_file, 'w') as f:
                 f.write(formatted)
@@ -1055,7 +1055,7 @@ from compute_forecast.quality.stages.collection import CollectionQualityChecker
 
 class TestCollectionQualityChecker:
     """Test collection quality checker."""
-    
+
     @pytest.fixture
     def sample_collection_data(self):
         """Create sample collection data."""
@@ -1099,44 +1099,44 @@ class TestCollectionQualityChecker:
                 }
             ]
         }
-    
+
     @pytest.fixture
     def temp_data_file(self, sample_collection_data):
         """Create temporary data file."""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
             json.dump(sample_collection_data, f)
             return Path(f.name)
-    
+
     def test_collection_checker_registration(self):
         """Test that collection checker is registered."""
         # Import triggers registration
         import compute_forecast.quality.stages.collection
-        
+
         runner = QualityRunner()
         stages = runner.registry.list_stages()
         assert "collection" in stages
-    
+
     def test_completeness_check(self, temp_data_file):
         """Test completeness validation."""
         runner = QualityRunner()
         config = QualityConfig(stage="collection", verbose=True)
-        
+
         report = runner.run_checks("collection", temp_data_file, config)
-        
+
         # Find completeness check result
         completeness_result = next(
-            r for r in report.check_results 
+            r for r in report.check_results
             if r.check_name == "completeness_check"
         )
-        
+
         # Check that we detected missing abstracts and PDFs
         assert completeness_result.score < 1.0
         assert len(completeness_result.issues) > 0
-        
+
         # Check metrics
         assert "field_scores" in completeness_result.metrics
         assert completeness_result.metrics["field_scores"]["abstract"] < 1.0
-    
+
     def test_accuracy_check(self, temp_data_file):
         """Test accuracy validation."""
         runner = QualityRunner()
@@ -1144,77 +1144,77 @@ class TestCollectionQualityChecker:
             stage="collection",
             custom_params={"min_valid_year": 2020, "max_valid_year": 2024}
         )
-        
+
         report = runner.run_checks("collection", temp_data_file, config)
-        
+
         # Find accuracy check result
         accuracy_result = next(
-            r for r in report.check_results 
+            r for r in report.check_results
             if r.check_name == "accuracy_check"
         )
-        
+
         # Should detect future year and bad author name
         assert accuracy_result.score < 1.0
         assert len(accuracy_result.issues) >= 2
-        
+
         # Check for specific issues
         issue_messages = [issue.message for issue in accuracy_result.issues]
         assert any("future year" in msg for msg in issue_messages)
         assert any("123" in msg for msg in issue_messages)  # Bad author
-    
+
     def test_consistency_check(self, temp_data_file):
         """Test consistency validation."""
         runner = QualityRunner()
         config = QualityConfig(stage="collection")
-        
+
         report = runner.run_checks("collection", temp_data_file, config)
-        
+
         # Find consistency check result
         consistency_result = next(
-            r for r in report.check_results 
+            r for r in report.check_results
             if r.check_name == "consistency_check"
         )
-        
+
         # Should pass for this sample data
         assert consistency_result.passed
         assert consistency_result.score > 0.9
-    
+
     def test_coverage_check(self, temp_data_file):
         """Test coverage validation."""
         runner = QualityRunner()
         config = QualityConfig(stage="collection")
-        
+
         report = runner.run_checks("collection", temp_data_file, config)
-        
+
         # Find coverage check result
         coverage_result = next(
-            r for r in report.check_results 
+            r for r in report.check_results
             if r.check_name == "coverage_check"
         )
-        
+
         # Should detect low coverage (3 papers vs expected ~1500)
         assert coverage_result.score < 0.1
         assert len(coverage_result.issues) > 0
         assert "expected" in coverage_result.metrics
-    
+
     def test_report_formatting(self, temp_data_file):
         """Test report formatting."""
         from compute_forecast.quality.reports.formatters import format_report
-        
+
         runner = QualityRunner()
         report = runner.run_checks("collection", temp_data_file)
-        
+
         # Test text format
         text_output = format_report(report, "text", verbose=True)
         assert "Quality Report: Collection Stage" in text_output
         assert "Overall Score:" in text_output
-        
+
         # Test JSON format
         json_output = format_report(report, "json", verbose=False)
         data = json.loads(json_output)
         assert data["stage"] == "collection"
         assert "overall_score" in data
-        
+
         # Test Markdown format
         md_output = format_report(report, "markdown", verbose=True)
         assert "# Quality Report: Collection Stage" in md_output

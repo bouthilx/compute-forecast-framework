@@ -2,14 +2,14 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Callable
 from datetime import datetime
 from pathlib import Path
 
 
 class QualityCheckType(Enum):
     """Types of quality checks."""
-    
+
     COMPLETENESS = "completeness"
     ACCURACY = "accuracy"
     CONSISTENCY = "consistency"
@@ -18,7 +18,7 @@ class QualityCheckType(Enum):
 
 class QualityIssueLevel(Enum):
     """Severity levels for quality issues."""
-    
+
     CRITICAL = "critical"
     WARNING = "warning"
     INFO = "info"
@@ -27,7 +27,7 @@ class QualityIssueLevel(Enum):
 @dataclass
 class QualityIssue:
     """Represents a quality issue found during validation."""
-    
+
     check_type: QualityCheckType
     level: QualityIssueLevel
     field: Optional[str]
@@ -39,7 +39,7 @@ class QualityIssue:
 @dataclass
 class QualityCheckResult:
     """Result of a single quality check."""
-    
+
     check_name: str
     check_type: QualityCheckType
     passed: bool
@@ -51,31 +51,37 @@ class QualityCheckResult:
 @dataclass
 class QualityReport:
     """Comprehensive quality report for a stage."""
-    
+
     stage: str
     timestamp: datetime
     data_path: Path
     overall_score: float
     check_results: List[QualityCheckResult]
-    
+
     @property
     def critical_issues(self) -> List[QualityIssue]:
         """Get all critical issues from all checks."""
-        return [issue for result in self.check_results 
-                for issue in result.issues 
-                if issue.level == QualityIssueLevel.CRITICAL]
-    
+        return [
+            issue
+            for result in self.check_results
+            for issue in result.issues
+            if issue.level == QualityIssueLevel.CRITICAL
+        ]
+
     @property
     def warnings(self) -> List[QualityIssue]:
         """Get all warnings from all checks."""
-        return [issue for result in self.check_results 
-                for issue in result.issues 
-                if issue.level == QualityIssueLevel.WARNING]
-    
+        return [
+            issue
+            for result in self.check_results
+            for issue in result.issues
+            if issue.level == QualityIssueLevel.WARNING
+        ]
+
     def has_critical_issues(self) -> bool:
         """Check if there are any critical issues."""
         return len(self.critical_issues) > 0
-    
+
     def get_score_by_type(self, check_type: QualityCheckType) -> float:
         """Get average score for a specific check type."""
         results = [r for r in self.check_results if r.check_type == check_type]
@@ -85,7 +91,7 @@ class QualityReport:
 @dataclass
 class QualityConfig:
     """Configuration for quality checks."""
-    
+
     stage: str
     thresholds: Dict[str, float] = field(default_factory=dict)
     skip_checks: List[str] = field(default_factory=list)

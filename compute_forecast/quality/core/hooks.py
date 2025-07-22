@@ -18,65 +18,71 @@ def run_post_command_quality_check(
     output_path: Path,
     context: Optional[Dict[str, Any]] = None,
     config: Optional[QualityConfig] = None,
-    show_summary: bool = True
+    show_summary: bool = True,
 ) -> Optional[QualityReport]:
     """Run quality checks after a command completes.
-    
+
     Args:
         stage: The pipeline stage that just completed
         output_path: Path to the output data
         context: Additional context from the command
         config: Optional quality configuration
         show_summary: Whether to show a summary in console
-    
+
     Returns:
         QualityReport if checks were run, None if skipped
     """
     try:
         runner = QualityRunner()
-        
+
         # Use provided config or get defaults
         if config is None:
             config = get_default_quality_config(stage)
             config.verbose = False  # Keep integrated checks concise
-        
+
         # Run the quality checks
         report = runner.run_checks(stage, output_path, config)
-        
+
         if show_summary:
             _show_quality_summary(report, context)
-        
+
         # Handle critical issues
         if report.has_critical_issues():
             console.print("\n[red]⚠️  Critical quality issues detected![/red]")
-            console.print("Run [cyan]cf quality --stage collection --verbose[/cyan] for details.")
+            console.print(
+                "Run [cyan]cf quality --stage collection --verbose[/cyan] for details."
+            )
             # Don't fail the command, just warn
-        
+
         return report
-        
+
     except Exception as e:
         # Don't fail the main command if quality checks fail
         console.print(f"\n[yellow]Warning: Quality checks failed: {e}[/yellow]")
         return None
 
 
-def _show_quality_summary(report: QualityReport, context: Optional[Dict[str, Any]] = None):
+def _show_quality_summary(
+    report: QualityReport, context: Optional[Dict[str, Any]] = None
+):
     """Show a detailed quality summary in the console."""
     # For collection stage, show the rich formatted output
     if report.stage == "collection":
         from .formatters import format_report
-        
+
         try:
             # Use the text formatter to create rich output
             formatted_report = format_report(report, "text", verbose=False)
-            
+
             # Print the detailed report
             console.print("\n" + formatted_report)
-            
+
             # If there are critical issues, add a note about running verbose command
             if report.has_critical_issues():
-                console.print(f"\n[red]Run [cyan]cf quality --stage {report.stage} --verbose {report.data_path}[/cyan] for detailed issue analysis.[/red]")
-        
+                console.print(
+                    f"\n[red]Run [cyan]cf quality --stage {report.stage} --verbose {report.data_path}[/cyan] for detailed issue analysis.[/red]"
+                )
+
         except Exception:
             # Fall back to minimal summary if formatting fails
             _show_minimal_summary(report, context)
@@ -85,36 +91,38 @@ def _show_quality_summary(report: QualityReport, context: Optional[Dict[str, Any
         _show_minimal_summary(report, context)
 
 
-def _show_minimal_summary(report: QualityReport, context: Optional[Dict[str, Any]] = None):
+def _show_minimal_summary(
+    report: QualityReport, context: Optional[Dict[str, Any]] = None
+):
     """Show a minimal quality summary as fallback."""
     # Determine overall quality grade
     grade = _score_to_grade(report.overall_score)
     grade_color = _grade_to_color(grade)
-    
+
     # Build summary text
     summary_lines = [
         f"Quality Score: [bold {grade_color}]{report.overall_score:.2f} ({grade})[/bold {grade_color}]"
     ]
-    
+
     # Add key metrics from context
     if context:
-        if 'total_papers' in context:
+        if "total_papers" in context:
             summary_lines.append(f"Papers Collected: {context['total_papers']}")
-    
+
     # Add issue counts
     critical_count = len(report.critical_issues)
     warning_count = len(report.warnings)
-    
+
     if critical_count > 0:
         summary_lines.append(f"[red]Critical Issues: {critical_count}[/red]")
     if warning_count > 0:
         summary_lines.append(f"[yellow]Warnings: {warning_count}[/yellow]")
-    
+
     # Show summary panel
     panel = Panel(
         "\n".join(summary_lines),
         title="✓ Quality Check Summary",
-        border_style="green" if critical_count == 0 else "red"
+        border_style="green" if critical_count == 0 else "red",
     )
     console.print(panel)
 

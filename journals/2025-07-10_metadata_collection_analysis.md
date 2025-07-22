@@ -116,7 +116,7 @@ Based on the scraper registry table, here are all supported venues that need ana
 
 **Current Implementation:**
 - ❌ **DOI**: Not collected
-- ❌ **Keywords**: Not collected  
+- ❌ **Keywords**: Not collected
 - ✅ Collects: title, authors, venue, year, PDF URLs, paper_id
 
 **Code Analysis:**
@@ -428,7 +428,7 @@ The data model only supports these identifiers:
 
 3. **PMID Rarity**: PMIDs are extremely rare for ML conference papers, only appearing for interdisciplinary biomedical work.
 
-4. **Platform-Specific IDs**: 
+4. **Platform-Specific IDs**:
    - ACL venues have native ACL IDs
    - OpenReview venues use submission IDs
    - All papers get Semantic Scholar Corpus IDs when indexed
@@ -741,7 +741,7 @@ From scrapers.md:
 def acquire(self):
     # Select all papers ordered by most recent
     pq = select(sch.Paper).order_by(sch.Venue.date.desc())
-    
+
     for paper in papers:
         links = [l for l in paper.links if not been_processed(l)]
         for _, result in self.refine(paper, merge=True, links=links):
@@ -751,7 +751,7 @@ def acquire(self):
 **Refiner Priority System:**
 ```python
 @refiner(type="doi", priority=100)  # CrossRef
-@refiner(type="doi", priority=90)   # ScienceDirect  
+@refiner(type="doi", priority=90)   # ScienceDirect
 @refiner(type="arxiv", priority=80) # ArXiv
 @refiner(type="pdf", priority=10)   # PDF download (last resort)
 ```
@@ -821,7 +821,7 @@ Based on the design and documentation:
 
 ### 7. Efficiency Optimizations
 
-1. **Caching**: 
+1. **Caching**:
    - HTTP responses cached for 6 days
    - PDFs cached permanently
 

@@ -1,7 +1,7 @@
 # Quality Command Design and Implementation Plan
 
-**Date**: 2025-01-10  
-**Time**: 14:30  
+**Date**: 2025-01-10
+**Time**: 14:30
 **Task**: Design and plan implementation of `cf quality` command with focus on collection stage
 
 ## Executive Summary
@@ -89,7 +89,7 @@ class StageQualityChecker(ABC):
     @abstractmethod
     def check(self, data: Any, config: QualityConfig) -> QualityReport:
         """Run quality checks for this stage."""
-    
+
     @abstractmethod
     def get_stage_name(self) -> str:
         """Return the stage name."""
@@ -107,7 +107,7 @@ class QualityConfig:
 class QualityRunner:
     def run_checks(self, stage: str, data_path: Path, config: QualityConfig) -> QualityReport:
         """Run quality checks for specified stage."""
-    
+
     def register_stage_checker(self, checker: StageQualityChecker):
         """Register a stage-specific checker."""
 ```
@@ -142,18 +142,18 @@ class QualityRunner:
        total_papers_collected: int
        expected_papers: Optional[int]
        coverage_rate: float
-       
+
        # Completeness
        papers_with_abstracts: int
        papers_with_pdfs: int
        papers_with_all_required_fields: int
        field_completeness_scores: Dict[str, float]
-       
+
        # Consistency
        venue_consistency_score: float
        year_consistency_score: float
        duplicate_rate: float
-       
+
        # Sources
        papers_by_scraper: Dict[str, int]
        scraper_success_rates: Dict[str, float]
@@ -169,7 +169,7 @@ from compute_forecast.quality.core.hooks import run_post_command_quality_check
 
 def collect_command(..., run_quality_check: bool = True):
     # ... existing collection logic ...
-    
+
     # Post-collection quality check
     if run_quality_check:
         quality_report = run_post_command_quality_check(
@@ -181,7 +181,7 @@ def collect_command(..., run_quality_check: bool = True):
                 "total_papers": len(papers),
             }
         )
-        
+
         if quality_report.has_critical_issues():
             console.print("[red]Critical quality issues detected![/red]")
             # Show summary and optionally abort
@@ -192,8 +192,8 @@ def collect_command(..., run_quality_check: bool = True):
 ```python
 # quality/core/hooks.py
 def run_post_command_quality_check(
-    stage: str, 
-    output_path: Path, 
+    stage: str,
+    output_path: Path,
     context: Dict[str, Any]
 ) -> QualityReport:
     """Run quality checks after command completion."""

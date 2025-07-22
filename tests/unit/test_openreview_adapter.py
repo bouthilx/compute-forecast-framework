@@ -22,8 +22,6 @@ from compute_forecast.pipeline.consolidation.models import (
 )
 
 
-
-
 def create_test_paper(
     paper_id: str,
     title: str,

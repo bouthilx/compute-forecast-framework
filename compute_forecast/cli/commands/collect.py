@@ -15,9 +15,15 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import get_registry
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import ScrapingConfig
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import SimplePaper
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.registry import (
+    get_registry,
+)
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import (
+    ScrapingConfig,
+)
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
+    SimplePaper,
+)
 from compute_forecast.quality.core.hooks import run_post_command_quality_check
 
 
@@ -182,7 +188,9 @@ def main(
         False, "--list-venues", help="List available venues and their scrapers"
     ),
     skip_quality_check: bool = typer.Option(
-        False, "--skip-quality-check", help="Skip automatic quality checking after collection"
+        False,
+        "--skip-quality-check",
+        help="Skip automatic quality checking after collection",
     ),
 ):
     """
@@ -541,7 +549,7 @@ def main(
                 console.print(f"  - {error}")
             if len(errors) > 5:
                 console.print(f"  ... and {len(errors) - 5} more")
-        
+
         # Run quality checks if not skipped
         if not skip_quality_check:
             console.print("\n[cyan]Running quality checks on collected data...[/cyan]")
@@ -550,14 +558,14 @@ def main(
                     "total_papers": len(all_papers),
                     "venues": list(set(p.venue for p in all_papers)),
                     "years": sorted(list(set(p.year for p in all_papers))),
-                    "errors": errors
+                    "errors": errors,
                 }
                 run_post_command_quality_check(
                     stage="collection",
                     output_path=output,
                     context=context,
                     config=None,
-                    show_summary=True
+                    show_summary=True,
                 )
             except Exception as e:
                 console.print(f"[yellow]Warning: Quality check failed: {e}[/yellow]")
