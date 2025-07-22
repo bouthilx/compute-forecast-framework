@@ -68,7 +68,7 @@ class DetailedProgressColumn(ProgressColumn):
         # Calculate ETA
         if task.speed and task.remaining:
             eta_seconds = task.remaining / task.speed
-            eta_datetime = datetime.now() + datetime.timedelta(seconds=eta_seconds)
+            eta_datetime = datetime.now() + timedelta(seconds=eta_seconds)
             eta_str = eta_datetime.strftime("%Y-%m-%d %H:%M:%S ETA")
         else:
             eta_str = "--:--:-- ETA"

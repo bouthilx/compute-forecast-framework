@@ -430,7 +430,7 @@ class DownloadOrchestrator:
                         self._update_state(
                             paper.paper_id, "failed", error_msg, paper_info
                         )
-                        logger.warning(
+                        logger.info(
                             f"Failed to download PDF for {paper.paper_id}: {error_msg}"
                         )
 

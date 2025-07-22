@@ -126,7 +126,7 @@ class PDFDownloader:
 
                 # Check if error is retryable
                 if not self._is_retryable_error(error) or attempt == self.max_retries:
-                    logger.error(f"Non-retryable error or max retries reached: {error}")
+                    logger.info(f"Non-retryable error or max retries reached: {error}")
                     return False, error
 
                 # Calculate retry delay
@@ -135,7 +135,7 @@ class PDFDownloader:
                 else:
                     delay = self.retry_delay
 
-                logger.warning(
+                logger.info(
                     f"Attempt {attempt + 1} failed, retrying in {delay}s: {error}"
                 )
                 time.sleep(delay)
