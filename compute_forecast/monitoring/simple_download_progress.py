@@ -179,15 +179,6 @@ class SimpleDownloadProgressManager:
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.console.print(f"[dim]{timestamp}[/dim] [{color}]{message}[/{color}]")
 
-        # Also log to the standard logger for verbosity support
-        logger_level_map = {
-            "INFO": logging.INFO,
-            "SUCCESS": logging.INFO,
-            "ERROR": logging.ERROR,
-            "WARNING": logging.WARNING,
-        }
-        logger.log(logger_level_map.get(level, logging.INFO), message)
-
     def start_download(self, paper_id: str, total_size: int = 0):
         """Register a new download.
 
