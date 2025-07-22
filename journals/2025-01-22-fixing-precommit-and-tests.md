@@ -130,3 +130,35 @@ Fixed all remaining test failures by correcting module paths:
 - All 13 originally failing tests now pass
 - All pre-commit checks pass
 - No errors remaining
+
+## Additional Fixes Found and Resolved
+
+After the initial fixes, I found and fixed additional issues:
+
+1. **Unit test failure**: `test_extract_to_template` had incorrect module path
+   - Fixed: `compute_forecast.extraction` → `compute_forecast.pipeline.content_extraction.templates`
+
+2. **More incorrect module paths**: Found 14 remaining incorrect paths
+   - Fixed `compute_forecast.data.sources` → `compute_forecast.pipeline.metadata_collection.sources`
+   - Fixed 5 additional test files
+
+## Summary of All Changes
+
+**Total files fixed**: 19 test files
+- 9 files with `pdf_discovery` paths
+- 5 files with `data.sources` paths
+- 4 files with type annotation issues
+- 1 file with `extraction` path
+
+**Total commits**: 6
+- Initial Ruff and MyPy fixes
+- Type annotation improvements
+- Test module path corrections (pdf_discovery)
+- Final formatting fixes
+- Extraction test fix
+- Final module path fixes (data.sources)
+
+**Final status**: ✅ All errors resolved
+- All pre-commit checks pass (13/13)
+- All tests pass (1652 passed, 117 skipped)
+- No remaining errors or warnings (except deprecated datetime warnings)
