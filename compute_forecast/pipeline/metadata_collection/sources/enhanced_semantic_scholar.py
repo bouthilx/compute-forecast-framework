@@ -6,7 +6,19 @@ Real implementation with API integration, retry logic, and error handling
 import time
 import requests
 from typing import List, Optional, Dict, Any
-from ..models import Paper, Author, APIResponse, ResponseMetadata, APIError
+from ..models import (
+    Paper,
+    Author,
+    APIResponse,
+    ResponseMetadata,
+    APIError,
+)
+from ...consolidation.models import (
+    AbstractRecord,
+    AbstractData,
+    CitationRecord,
+    CitationData,
+)
 from datetime import datetime
 import logging
 
@@ -139,7 +151,7 @@ class EnhancedSemanticScholarClient:
                         authors.append(
                             Author(
                                 name=author_data.get("name", ""),
-                                author_id=author_data.get("authorId", ""),
+                                affiliations=[],
                             )
                         )
 
@@ -149,8 +161,26 @@ class EnhancedSemanticScholarClient:
                         authors=authors,
                         venue=item.get("venue", ""),
                         year=item.get("year", 0),
-                        citations=item.get("citationCount", 0),
-                        abstract=item.get("abstract", ""),
+                        abstracts=[
+                            AbstractRecord(
+                                source="semantic_scholar",
+                                timestamp=datetime.now(),
+                                original=True,
+                                data=AbstractData(text=item.get("abstract", "")),
+                            )
+                        ]
+                        if item.get("abstract")
+                        else [],
+                        citations=[
+                            CitationRecord(
+                                source="semantic_scholar",
+                                timestamp=datetime.now(),
+                                original=True,
+                                data=CitationData(count=item.get("citationCount", 0)),
+                            )
+                        ]
+                        if item.get("citationCount", 0) > 0
+                        else [],
                         paper_id=item.get("paperId"),
                         urls=[item.get("url")] if item.get("url") else [],
                         collection_source="semantic_scholar",

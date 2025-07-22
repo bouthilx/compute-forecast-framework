@@ -9,6 +9,58 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.nature_collecto
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+    doi: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+        doi=doi,
+    )
 
 
 class TestNaturePDFCollector:
@@ -22,40 +74,37 @@ class TestNaturePDFCollector:
     @pytest.fixture
     def nature_comms_paper(self):
         """Create a mock Nature Communications paper."""
-        return Paper(
+        return create_test_paper(
+            paper_id="test123",
             title="Test Nature Communications Paper",
             authors=[Author(name="Test Author")],
             venue="Nature Communications",
             year=2023,
-            citations=10,
-            paper_id="test123",
-            doi="10.1038/s41467-023-36000-6",
+            citation_count=10,
         )
 
     @pytest.fixture
     def sci_reports_paper(self):
         """Create a mock Scientific Reports paper."""
-        return Paper(
+        return create_test_paper(
+            paper_id="test456",
             title="Test Scientific Reports Paper",
             authors=[Author(name="Test Author")],
             venue="Scientific Reports",
             year=2023,
-            citations=5,
-            paper_id="test456",
-            doi="10.1038/srep12345",
+            citation_count=5,
         )
 
     @pytest.fixture
     def non_nature_paper(self):
         """Create a mock non-Nature paper."""
-        return Paper(
+        return create_test_paper(
+            paper_id="paper_99",
             title="Test Non-Nature Paper",
             authors=[Author(name="Test Author")],
             venue="ICML",
             year=2023,
-            citations=20,
-            paper_id="test789",
-            doi="10.1145/1234567.1234568",
+            citation_count=20,
         )
 
     def test_init(self):
@@ -81,75 +130,81 @@ class TestNaturePDFCollector:
     def test_is_nature_paper_by_doi(self, collector):
         """Test Nature paper identification by DOI pattern."""
         # Nature Communications DOIs
-        paper1 = Paper(
+        paper1 = create_test_paper(
             title="Test",
             authors=[],
             venue="",
             year=2023,
-            citations=0,
+            citation_count=0,
             paper_id="1",
-            doi="10.1038/s41467-023-36000-6",
+            doi="10.1038/s41467-023-12345-6",
         )
         assert collector.is_nature_paper(paper1) is True
 
-        # Scientific Reports DOIs
-        paper2 = Paper(
+        # Scientific Reports DOIs (old format)
+        paper2 = create_test_paper(
             title="Test",
             authors=[],
             venue="",
             year=2023,
-            citations=0,
+            citation_count=0,
             paper_id="2",
-            doi="10.1038/srep12345",
+            doi="10.1038/srep56789",
         )
         assert collector.is_nature_paper(paper2) is True
 
         # Old Nature Communications format
-        paper3 = Paper(
+        paper3 = create_test_paper(
             title="Test",
             authors=[],
             venue="",
             year=2023,
-            citations=0,
+            citation_count=0,
             paper_id="3",
-            doi="10.1038/ncomms1234",
+            doi="10.1038/ncomms12345",
         )
         assert collector.is_nature_paper(paper3) is True
 
         # Non-Nature DOI
-        paper4 = Paper(
+        paper4 = create_test_paper(
             title="Test",
             authors=[],
             venue="",
             year=2023,
-            citations=0,
+            citation_count=0,
             paper_id="4",
-            doi="10.1145/1234567.1234568",
+            doi="10.1016/j.cell.2023.01.001",
         )
         assert collector.is_nature_paper(paper4) is False
 
     def test_is_nature_paper_by_url(self, collector):
         """Test Nature paper identification by URL."""
-        paper = Paper(
+        # Note: The nature collector expects string URLs, not URLRecord objects
+
+        paper = create_test_paper(
             title="Test Paper",
             authors=[],
             venue="",
             year=2023,
-            citations=0,
+            citation_count=0,
             paper_id="test",
-            urls=["https://www.nature.com/articles/s41467-023-36000-6"],
         )
+        # Add Nature URL as string (the collector implementation expects strings)
+        paper.urls = ["https://www.nature.com/articles/s41467-023-12345"]
         assert collector.is_nature_paper(paper) is True
 
-        paper2 = Paper(
+        paper2 = create_test_paper(
             title="Test Paper",
             authors=[],
             venue="",
             year=2023,
-            citations=0,
+            citation_count=0,
             paper_id="test2",
-            urls=["https://arxiv.org/abs/2023.12345"],
         )
+        # Add non-Nature URL as string
+        paper2.urls = [
+            "https://www.sciencedirect.com/science/article/pii/S0092867423000011"
+        ]
         assert collector.is_nature_paper(paper2) is False
 
     def test_extract_article_id_from_doi(self, collector):
@@ -181,31 +236,36 @@ class TestNaturePDFCollector:
         assert collector._identify_journal(sci_reports_paper) == "Scientific Reports"
 
         # Test by DOI when venue is missing
-        paper = Paper(
+        paper = create_test_paper(
             title="Test",
             authors=[],
             venue="",
             year=2023,
-            citations=0,
+            citation_count=0,
             paper_id="test",
-            doi="10.1038/s41467-023-36000-6",
+            doi="10.1038/s41467-023-12345-6",
         )
         assert collector._identify_journal(paper) == "Nature Communications"
 
-        paper2 = Paper(
+        paper2 = create_test_paper(
             title="Test",
             authors=[],
             venue="",
             year=2023,
-            citations=0,
+            citation_count=0,
             paper_id="test2",
-            doi="10.1038/srep12345",
+            doi="10.1038/srep56789",
         )
         assert collector._identify_journal(paper2) == "Scientific Reports"
 
         # Unknown journal
-        paper3 = Paper(
-            title="Test", authors=[], venue="", year=2023, citations=0, paper_id="test3"
+        paper3 = create_test_paper(
+            title="Test",
+            authors=[],
+            venue="",
+            year=2023,
+            citation_count=0,
+            paper_id="test3",
         )
         assert collector._identify_journal(paper3) == "unknown"
 
@@ -267,6 +327,9 @@ class TestNaturePDFCollector:
         self, mock_check, collector, nature_comms_paper
     ):
         """Test successful direct PDF discovery."""
+        # Give the paper a DOI so it can extract article ID
+        nature_comms_paper.doi = "10.1038/s41467-023-36000-6"
+
         mock_check.return_value = (
             "https://www.nature.com/articles/s41467-023-36000-6.pdf"
         )
@@ -290,6 +353,9 @@ class TestNaturePDFCollector:
         self, mock_check, collector, nature_comms_paper
     ):
         """Test fallback to DOI resolver when direct access fails."""
+        # Give the paper a DOI so it can extract article ID and fall back to DOI resolver
+        nature_comms_paper.doi = "10.1038/s41467-023-36000-6"
+
         mock_check.return_value = None  # Direct access fails
 
         # Mock DOI resolver response

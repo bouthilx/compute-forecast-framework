@@ -10,6 +10,55 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.deduplication.engine im
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return create_test_paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citation_count=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestDeduplicationPerformance:
@@ -23,7 +72,7 @@ class TestDeduplicationPerformance:
 
         # Create 500 unique papers with some duplicates (reduced for testing)
         for i in range(500):
-            paper = Paper(
+            paper = create_test_paper(
                 title=f"Research Paper {i:04d}: Deep Learning Applications",
                 authors=[
                     Author(
@@ -119,7 +168,7 @@ class TestDeduplicationPerformance:
         records = []
 
         for i in range(10000):
-            paper = Paper(
+            paper = create_test_paper(
                 title=f"Large Scale Research {i:05d}: AI and ML",
                 authors=[
                     Author(name=f"Researcher {i % 500}", affiliation=f"Uni {i % 100}"),
@@ -208,7 +257,7 @@ class TestDeduplicationPerformance:
 
             title = variations[i % len(variations)]
 
-            paper = Paper(
+            paper = create_test_paper(
                 title=title,
                 authors=[
                     Author(name=f"Author {i % 100}", affiliation=f"Uni {i % 50}"),

@@ -9,6 +9,56 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.acl_anthology_c
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestACLAnthologyCollector:
@@ -22,18 +72,20 @@ class TestACLAnthologyCollector:
     @pytest.fixture
     def sample_paper(self):
         """Create sample paper for testing."""
-        return Paper(
+        return create_test_paper(
+            paper_id="paper_75",
             title="Neural Machine Translation by Jointly Learning to Align and Translate",
             authors=[
-                Author(name="Dzmitry Bahdanau", affiliation="University of Montreal"),
-                Author(name="Kyunghyun Cho", affiliation="University of Montreal"),
-                Author(name="Yoshua Bengio", affiliation="University of Montreal"),
+                Author(
+                    name="Dzmitry Bahdanau", affiliations=["University of Montreal"]
+                ),
+                Author(name="Kyunghyun Cho", affiliations=["University of Montreal"]),
+                Author(name="Yoshua Bengio", affiliations=["University of Montreal"]),
             ],
             venue="EMNLP",
             year=2023,
-            citations=1000,
-            paper_id="test_paper_123",
-            abstract="This paper presents a neural machine translation model...",
+            citation_count=1000,
+            abstract_text="This paper presents a neural machine translation model...",
         )
 
     def test_venue_mapping(self, collector):
@@ -270,7 +322,7 @@ class TestACLAnthologyCollector:
             pdf_record = collector._discover_single(sample_paper)
 
         # Verify result
-        assert pdf_record.paper_id == "test_paper_123"
+        assert pdf_record.paper_id == "paper_75"
         assert pdf_record.pdf_url == "https://aclanthology.org/2023.emnlp-main.456.pdf"
         assert pdf_record.source == "acl_anthology"
         assert pdf_record.confidence_score == 0.95
@@ -324,13 +376,13 @@ class TestACLAnthologyCollector:
 
     def test_discover_single_unknown_venue(self, collector):
         """Test discovery with unknown venue."""
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="paper_377",
             title="Some Paper",
             authors=[Author(name="Author One")],
             venue="ICML",  # Not an ACL venue
             year=2023,
-            citations=10,
-            paper_id="test_123",
+            citation_count=10,
         )
 
         with pytest.raises(Exception) as exc_info:
@@ -376,20 +428,20 @@ class TestACLAnthologyCollector:
     def test_statistics_tracking(self, collector):
         """Test that statistics are properly tracked."""
         papers = [
-            Paper(
+            create_test_paper(
                 title="Paper 1",
                 authors=[],
                 venue="EMNLP",
                 year=2023,
-                citations=10,
+                citation_count=10,
                 paper_id="p1",
             ),
-            Paper(
+            create_test_paper(
                 title="Paper 2",
                 authors=[],
                 venue="ACL",
                 year=2023,
-                citations=20,
+                citation_count=20,
                 paper_id="p2",
             ),
         ]
@@ -427,28 +479,28 @@ class TestACLAnthologyCollector:
     def test_batch_discovery(self, collector):
         """Test batch discovery of PDFs."""
         papers = [
-            Paper(
+            create_test_paper(
                 title="Neural Machine Translation with Attention",
                 authors=[],
                 venue="EMNLP",
                 year=2023,
-                citations=10,
+                citation_count=10,
                 paper_id="p1",
             ),
-            Paper(
+            create_test_paper(
                 title="Transformer Networks for Language Understanding",
                 authors=[],
                 venue="EMNLP",
                 year=2023,
-                citations=20,
+                citation_count=20,
                 paper_id="p2",
             ),
-            Paper(
+            create_test_paper(
                 title="BERT: Pre-training of Deep Bidirectional Transformers",
                 authors=[],
                 venue="ACL",
                 year=2022,
-                citations=30,
+                citation_count=30,
                 paper_id="p3",
             ),
         ]

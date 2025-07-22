@@ -1,6 +1,7 @@
 """Integration tests for ACL Anthology collector."""
 
 import pytest
+from datetime import datetime
 from unittest.mock import patch, Mock
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.acl_anthology_collector import (
@@ -10,9 +11,58 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
     PDFDiscoveryFramework,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 
 
-@pytest.mark.skip(reason="refactor: pdf_discovery modules not found")
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
+
+
+@pytest.mark.skip(reason="Integration test needs framework fixes")
 class TestACLAnthologyIntegration:
     """Integration tests for ACL Anthology collector with framework."""
 
@@ -28,31 +78,31 @@ class TestACLAnthologyIntegration:
     def sample_papers(self):
         """Create sample papers for testing."""
         return [
-            Paper(
+            create_test_paper(
+                paper_id="paper_81",
                 title="BERT: Pre-training of Deep Bidirectional Transformers",
-                authors=[Author(name="Jacob Devlin", affiliation="Google")],
+                authors=[Author(name="Jacob Devlin", affiliations=["Google"])],
                 venue="NAACL",
                 year=2019,
-                citations=50000,
-                paper_id="bert_paper",
-                abstract="We introduce a new language representation model...",
+                citation_count=50000,
+                abstract_text="We introduce a new language representation model...",
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_90",
                 title="Attention Is All You Need",
-                authors=[Author(name="Ashish Vaswani", affiliation="Google")],
+                authors=[Author(name="Ashish Vaswani", affiliations=["Google"])],
                 venue="EMNLP",
                 year=2017,
-                citations=70000,
-                paper_id="transformer_paper",
-                abstract="The dominant sequence transduction models...",
+                citation_count=70000,
+                abstract_text="The dominant sequence transduction models...",
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_99",
                 title="Unknown Paper from Different Venue",
-                authors=[Author(name="Test Author", affiliation="Test Uni")],
+                authors=[Author(name="Test Author", affiliations=["Test Uni"])],
                 venue="ICML",  # Not an ACL venue
                 year=2023,
-                citations=10,
-                paper_id="unknown_paper",
+                citation_count=10,
             ),
         ]
 

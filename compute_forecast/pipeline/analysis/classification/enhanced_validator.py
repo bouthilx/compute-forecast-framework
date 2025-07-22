@@ -221,9 +221,10 @@ class EnhancedClassificationValidator(ClassificationValidator):
 
         for paper in papers:
             for author in paper.authors:
-                if hasattr(author, "affiliation"):
+                if hasattr(author, "affiliations") and author.affiliations:
+                    # Process first affiliation (primary affiliation)
                     result = self.enhanced_classifier.classify_with_confidence(
-                        author.affiliation
+                        author.affiliations[0]
                     )
 
                     # Bin by confidence level

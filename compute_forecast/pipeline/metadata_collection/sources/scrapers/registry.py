@@ -51,6 +51,7 @@ class ScraperRegistry:
                 NeurIPSAdapter,
                 MLRAdapter,
                 OpenReviewAdapter,
+                OpenReviewAdapterV2,
                 SemanticScholarAdapter,
                 NaturePortfolioAdapter,
             )
@@ -59,6 +60,7 @@ class ScraperRegistry:
             self.register_scraper("NeurIPSScraper", NeurIPSAdapter)
             self.register_scraper("MLRScraper", MLRAdapter)
             self.register_scraper("OpenReviewScraper", OpenReviewAdapter)
+            self.register_scraper("OpenReviewScraperV2", OpenReviewAdapterV2)
             self.register_scraper("SemanticScholarScraper", SemanticScholarAdapter)
             self.register_scraper("NaturePortfolioScraper", NaturePortfolioAdapter)
             self.register_scraper("AAAIScraper", AAAIScraper)
@@ -72,7 +74,7 @@ class ScraperRegistry:
             # Direct scrapers with dedicated implementations
             "neurips": "NeurIPSScraper",
             "icml": "PMLRScraper",
-            "iclr": "OpenReviewScraper",
+            "iclr": "OpenReviewScraperV2",
             "ijcai": "IJCAIScraper",
             "acl": "ACLAnthologyScraper",
             "emnlp": "ACLAnthologyScraper",
@@ -82,9 +84,9 @@ class ScraperRegistry:
             "uai": "PMLRScraper",
             "collas": "PMLRScraper",
             # OpenReview venues
-            "tmlr": "OpenReviewScraper",
-            "colm": "OpenReviewScraper",
-            "rlc": "OpenReviewScraper",
+            "tmlr": "OpenReviewScraperV2",
+            "colm": "OpenReviewScraperV2",
+            "rlc": "OpenReviewScraperV2",
             # CVF venues with dedicated scraper
             "cvpr": "CVFScraper",
             "iccv": "CVFScraper",

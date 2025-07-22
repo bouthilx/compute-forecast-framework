@@ -3,6 +3,7 @@ Component Integration Tests for validating integration between all agent compone
 """
 
 import time
+from datetime import datetime
 from dataclasses import dataclass, field
 from typing import Dict, List, Any
 
@@ -14,6 +15,55 @@ from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     Author,
 )
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 @dataclass
@@ -174,29 +224,32 @@ class ComponentIntegrationTest:
 
             # Create test papers (simulating API collection results)
             test_papers = [
-                Paper(
+                create_test_paper(
+                    paper_id="paper_227",
                     title="Test Paper 1",
-                    authors=[Author(name="Author 1", affiliation="University 1")],
+                    authors=[Author(name="Author 1", affiliations=["University 1"])],
                     venue="ICML",
                     year=2024,
-                    citations=25,
-                    abstract="Test abstract 1",
+                    citation_count=25,
+                    abstract_text="Test abstract 1",
                 ),
-                Paper(
+                create_test_paper(
+                    paper_id="paper_235",
                     title="Test Paper 2",
-                    authors=[Author(name="Author 2", affiliation="University 2")],
+                    authors=[Author(name="Author 2", affiliations=["University 2"])],
                     venue="icml",  # Different case for normalization test
                     year=2024,
-                    citations=30,
-                    abstract="Test abstract 2",
+                    citation_count=30,
+                    abstract_text="Test abstract 2",
                 ),
-                Paper(
+                create_test_paper(
+                    paper_id="paper_243",
                     title="Test Paper 1",  # Duplicate for deduplication test
-                    authors=[Author(name="Author 1", affiliation="University 1")],
+                    authors=[Author(name="Author 1", affiliations=["University 1"])],
                     venue="ICML",
                     year=2024,
-                    citations=25,
-                    abstract="Test abstract 1",
+                    citation_count=25,
+                    abstract_text="Test abstract 1",
                 ),
             ]
 
@@ -210,9 +263,7 @@ class ComponentIntegrationTest:
                             paper.venue
                         )
                         if normalization_result:
-                            paper.normalized_venue = normalization_result.get(
-                                "normalized_name", paper.venue
-                            )
+                            paper.venue = normalization_result
                         normalized_papers.append(paper)
                     else:
                         # Fallback for simple test
@@ -321,13 +372,14 @@ class ComponentIntegrationTest:
 
             # Create test papers for processing
             test_papers = [
-                Paper(
+                create_test_paper(
+                    paper_id="paper_372",
                     title=f"Paper {i}",
                     authors=[],
                     venue="ICML",
                     year=2024,
-                    citations=i * 10,
-                    abstract=f"Abstract {i}",
+                    citation_count=i * 10,
+                    abstract_text=f"Abstract {i}",
                 )
                 for i in range(1, 11)  # 10 papers
             ]

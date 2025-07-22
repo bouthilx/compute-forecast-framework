@@ -59,7 +59,7 @@ class NLPBenchmarkExtractor:
             "fine_tuning": False,
         }
 
-        text = getattr(paper, "full_text", "") or paper.abstract
+        text = getattr(paper, "full_text", "") or paper.get_best_abstract()
 
         # Extract token count
         for pattern in self.token_patterns:
@@ -120,7 +120,7 @@ class NLPBenchmarkExtractor:
         benchmarks = []
         # Include full_text if available
         full_text = getattr(paper, "full_text", "")
-        text = f"{paper.title} {paper.abstract} {full_text}".lower()
+        text = f"{paper.title} {paper.get_best_abstract()} {full_text}".lower()
 
         for dataset in self.benchmark_datasets:
             # Handle special cases
@@ -179,7 +179,7 @@ class CVBenchmarkExtractor:
             "multi_scale_training": False,
         }
 
-        text = getattr(paper, "full_text", "") or paper.abstract
+        text = getattr(paper, "full_text", "") or paper.get_best_abstract()
 
         # Extract image resolution
         for pattern in self.resolution_patterns:
@@ -246,7 +246,7 @@ class CVBenchmarkExtractor:
         """Identify CV benchmark datasets mentioned in the paper."""
         benchmarks = []
         full_text = getattr(paper, "full_text", "")
-        text = f"{paper.title} {paper.abstract} {full_text}".lower()
+        text = f"{paper.title} {paper.get_best_abstract()} {full_text}".lower()
 
         for dataset in self.benchmark_datasets:
             # Handle special cases like CIFAR-10 vs CIFAR-100
@@ -306,7 +306,7 @@ class RLBenchmarkExtractor:
             "experience_replay_size": None,
         }
 
-        text = getattr(paper, "full_text", "") or paper.abstract
+        text = getattr(paper, "full_text", "") or paper.get_best_abstract()
 
         # Extract environment steps
         for pattern in self.step_patterns:
@@ -377,7 +377,7 @@ class RLBenchmarkExtractor:
         """Identify RL benchmark environments mentioned in the paper."""
         benchmarks = []
         full_text = getattr(paper, "full_text", "")
-        text = f"{paper.title} {paper.abstract} {full_text}".lower()
+        text = f"{paper.title} {paper.get_best_abstract()} {full_text}".lower()
 
         for env in self.benchmark_environments:
             # Handle special cases

@@ -2,6 +2,7 @@
 Tests for IntegratedExtractionValidator.
 """
 
+from datetime import datetime
 from unittest.mock import patch
 
 from compute_forecast.pipeline.content_extraction.quality.integrated_validator import (
@@ -9,7 +10,57 @@ from compute_forecast.pipeline.content_extraction.quality.integrated_validator i
     IntegratedValidationResult,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from .test_helpers import MockComputationalAnalysis as ComputationalAnalysis
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestIntegratedExtractionValidator:
@@ -20,13 +71,13 @@ class TestIntegratedExtractionValidator:
         self.validator = IntegratedExtractionValidator()
 
         # Create test paper
-        self.paper = Paper(
+        self.paper = create_test_paper(
             paper_id="test_paper_1",
             title="Large Language Model Training",
             year=2023,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
 
         # Create test extraction
@@ -42,13 +93,13 @@ class TestIntegratedExtractionValidator:
         # Create paper group for consistency checks
         self.paper_group = []
         for i in range(5):
-            paper = Paper(
+            paper = create_test_paper(
                 paper_id=f"similar_{i}",
                 title=f"Similar Language Model {i}",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             )
             paper.computational_analysis = ComputationalAnalysis(
                 gpu_hours=800 + i * 100,  # 800-1200
@@ -167,46 +218,46 @@ class TestIntegratedExtractionValidator:
         """Test paper grouping by domain."""
         papers = [
             (
-                Paper(
+                create_test_paper(
                     paper_id="1",
                     title="Transformer NLP Model",
                     year=2023,
                     authors=[],
                     venue="",
-                    citations=0,
+                    citation_count=0,
                 ),
                 None,
             ),
             (
-                Paper(
+                create_test_paper(
                     paper_id="2",
                     title="CNN Image Classification",
                     year=2023,
                     authors=[],
                     venue="",
-                    citations=0,
+                    citation_count=0,
                 ),
                 None,
             ),
             (
-                Paper(
+                create_test_paper(
                     paper_id="3",
                     title="RL Agent Training",
                     year=2023,
                     authors=[],
                     venue="",
-                    citations=0,
+                    citation_count=0,
                 ),
                 None,
             ),
             (
-                Paper(
+                create_test_paper(
                     paper_id="4",
                     title="BERT Language Understanding",
                     year=2023,
                     authors=[],
                     venue="",
-                    citations=0,
+                    citation_count=0,
                 ),
                 None,
             ),

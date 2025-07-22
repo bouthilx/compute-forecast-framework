@@ -5,15 +5,70 @@ from unittest.mock import Mock, patch
 import xml.etree.ElementTree as ET
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+    URLRecord,
+    URLData,
+)
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.hal_collector import (
     HALPDFCollector,
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
+from datetime import datetime
 from compute_forecast.pipeline.pdf_acquisition.discovery.utils import (
     APIError,
     NoResultsError,
     NoPDFFoundError,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+    doi: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+        doi=doi,
+    )
 
 
 class TestHALPDFCollector:
@@ -27,14 +82,13 @@ class TestHALPDFCollector:
     @pytest.fixture
     def sample_paper(self):
         """Create a sample paper for testing."""
-        return Paper(
+        return create_test_paper(
             paper_id="test_paper_1",
             title="Test Paper on Deep Learning",
             authors=[Author(name="Author A"), Author(name="Author B")],
             year=2023,
-            doi="10.1234/test.2023.001",
             venue="Test Conference",
-            citations=50,
+            citation_count=50,
         )
 
     @pytest.fixture
@@ -93,9 +147,12 @@ class TestHALPDFCollector:
         }
 
     def test_discover_single_success_oai(
-        self, collector, sample_paper, hal_oai_response
+        self, collector, sample_paper, hal_oai_response, hal_search_response
     ):
         """Test successful PDF discovery from HAL via OAI-PMH."""
+        # Give the paper a DOI so it tries OAI first
+        sample_paper.doi = "10.1234/test"
+
         with patch("requests.get") as mock_get:
             mock_response = Mock()
             mock_response.status_code = 200
@@ -118,20 +175,11 @@ class TestHALPDFCollector:
     ):
         """Test successful PDF discovery from HAL via Search API."""
         with patch("requests.get") as mock_get:
-            # First call fails with OAI-PMH
-            oai_response = Mock()
-            oai_response.status_code = 200
-            oai_response.text = """<?xml version="1.0" encoding="UTF-8"?>
-            <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
-                <error code="noRecordsMatch">No matching records</error>
-            </OAI-PMH>"""
-
-            # Second call succeeds with Search API
+            # Search API succeeds directly (no DOI, so no OAI attempt)
             search_response = Mock()
             search_response.status_code = 200
             search_response.json.return_value = hal_search_response
-
-            mock_get.side_effect = [oai_response, search_response]
+            mock_get.return_value = search_response
 
             result = collector._discover_single(sample_paper)
 
@@ -181,7 +229,8 @@ class TestHALPDFCollector:
             search_response.status_code = 200
             search_response.json.return_value = search_response_no_pdf
 
-            mock_get.side_effect = [oai_response, search_response]
+            # Since sample_paper has no DOI, it will only try search API
+            mock_get.return_value = search_response
 
             with pytest.raises(NoPDFFoundError, match="No PDF found"):
                 collector._discover_single(sample_paper)
@@ -205,7 +254,8 @@ class TestHALPDFCollector:
                 "response": {"numFound": 0, "docs": []}
             }
 
-            mock_get.side_effect = [oai_response, search_response]
+            # Since sample_paper has no DOI, it will only try search API
+            mock_get.return_value = search_response
 
             with pytest.raises(NoResultsError, match="No results found"):
                 collector._discover_single(sample_paper)
@@ -240,6 +290,9 @@ class TestHALPDFCollector:
 
     def test_rate_limiting(self, collector, sample_paper, hal_oai_response):
         """Test that rate limiting is applied."""
+        # Give the paper a DOI so it tries OAI
+        sample_paper.doi = "10.1234/test"
+
         with patch("requests.get") as mock_get:
             mock_response = Mock()
             mock_response.status_code = 200
@@ -258,19 +311,28 @@ class TestHALPDFCollector:
     def test_build_oai_identifier(self, collector, sample_paper):
         """Test OAI identifier construction."""
         # With DOI
+        sample_paper.doi = "10.1234/test.2023.001"
         identifier = collector._build_oai_identifier(sample_paper)
         assert identifier == "oai:HAL:10.1234/test.2023.001"
 
         # Without DOI but with HAL ID in URLs
-        paper_with_hal_url = Paper(
+        paper_with_hal_url = create_test_paper(
             paper_id="test2",
             title="Test",
-            urls=["https://hal.science/hal-12345678"],
             authors=[Author(name="Test Author")],
             venue="Test Venue",
             year=2023,
-            citations=0,
+            citation_count=0,
         )
+        # Add HAL URL
+        paper_with_hal_url.urls = [
+            URLRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=URLData(url="https://hal.science/hal-12345678v1"),
+            )
+        ]
         identifier = collector._build_oai_identifier(paper_with_hal_url)
         assert identifier == "oai:HAL:hal-12345678v1"
 

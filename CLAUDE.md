@@ -209,6 +209,7 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
 - Unit tests must complete in less than 2 minutes on github actions.
 - Functional tests must complete in less than 5 minutes on github actions.
 - Long running tests should be limited to tests/performance.
+- No test in `tests/unit` and `tests/integration` should take more than 10 seconds.
 
 ## Code Organization
 [TODO]
@@ -236,6 +237,7 @@ Keep a journal in `journals/` in markdown format where you detail the analysis r
 
 ## Package-Specific Guidelines
 [TODO]
+- Avoid relative imports as much as possible.
 
 ## Multi-Environment Testing
 - Supports Python 3.10-3.10 via tox
@@ -264,6 +266,9 @@ uv run pytest tests/unittest/test_player.py
 
 # Run with specific coverage target
 uv run pytest --cov-fail-under=90
+
+# Running some python script (**NEVER use python directly, ALWAYS use uv run python**)
+uv run python some_script.py
 ```
 
 ## Error Handling

@@ -245,7 +245,6 @@ class ComponentValidator:
                 authors=[Author(name="Test Author")],
                 venue="Test Venue",
                 year=2024,
-                citations=10,
             )
 
             # Test venue normalization
@@ -312,14 +311,12 @@ class ComponentValidator:
                         authors=[],
                         venue="Venue",
                         year=2024,
-                        citations=50,
                     ),
                     Paper(
                         title="Paper 2",
                         authors=[],
                         venue="Venue",
                         year=2024,
-                        citations=25,
                     ),
                 ]
 

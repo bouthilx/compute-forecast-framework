@@ -6,7 +6,17 @@ Simplified real implementation with API integration and error handling
 import time
 import requests
 from typing import List, Optional, Dict, Any
-from ..models import Paper, Author, APIResponse, ResponseMetadata, APIError
+from ..models import (
+    Paper,
+    Author,
+    APIResponse,
+    ResponseMetadata,
+    APIError,
+    AbstractRecord,
+    CitationRecord,
+    URLRecord,
+)
+from ...consolidation.models import AbstractData, CitationData, URLData
 from datetime import datetime
 import logging
 import re
@@ -184,8 +194,28 @@ class EnhancedCrossrefClient:
                         authors=authors,
                         venue=venue,
                         year=year,
-                        citations=item.get("is-referenced-by-count", 0),
-                        abstract=abstract,
+                        abstracts=[
+                            AbstractRecord(
+                                source="crossref",
+                                timestamp=datetime.now(),
+                                original=True,
+                                data=AbstractData(text=abstract),
+                            )
+                        ]
+                        if abstract
+                        else [],
+                        citations=[
+                            CitationRecord(
+                                source="crossref",
+                                timestamp=datetime.now(),
+                                original=True,
+                                data=CitationData(
+                                    count=item.get("is-referenced-by-count", 0)
+                                ),
+                            )
+                        ]
+                        if item.get("is-referenced-by-count", 0) > 0
+                        else [],
                         doi=item.get("DOI", ""),
                         collection_source="crossref",
                         collection_timestamp=datetime.now(),
@@ -505,9 +535,12 @@ class EnhancedCrossrefClient:
                 authors=[
                     Author(
                         name=f"{author.get('given', '')} {author.get('family', '')}".strip(),
-                        affiliation=author.get("affiliation", [{}])[0].get("name", "")
+                        affiliations=[
+                            author.get("affiliation", [{}])[0].get("name", "")
+                        ]
                         if author.get("affiliation")
-                        else "",
+                        and author.get("affiliation", [{}])[0].get("name", "")
+                        else [],
                     )
                     for author in message.get("author", [])
                 ],
@@ -517,10 +550,40 @@ class EnhancedCrossrefClient:
                 year=message.get("published-print", {}).get("date-parts", [[0]])[0][0]
                 or message.get("published-online", {}).get("date-parts", [[0]])[0][0]
                 or 0,
-                citations=message.get("is-referenced-by-count", 0),
-                abstract=self._clean_jats_abstract(message.get("abstract", "")),
+                abstracts=[
+                    AbstractRecord(
+                        source="crossref",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=AbstractData(
+                            text=self._clean_jats_abstract(message.get("abstract", ""))
+                        ),
+                    )
+                ]
+                if message.get("abstract")
+                else [],
+                citations=[
+                    CitationRecord(
+                        source="crossref",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=CitationData(
+                            count=message.get("is-referenced-by-count", 0)
+                        ),
+                    )
+                ]
+                if message.get("is-referenced-by-count", 0) > 0
+                else [],
                 doi=message.get("DOI", doi),
-                urls=pdf_urls,
+                urls=[
+                    URLRecord(
+                        source="crossref",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=URLData(url=url),
+                    )
+                    for url in pdf_urls
+                ],
                 paper_id=f"crossref_{doi}",
             )
 

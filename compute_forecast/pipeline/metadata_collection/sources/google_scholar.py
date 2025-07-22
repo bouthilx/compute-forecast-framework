@@ -13,6 +13,9 @@ try:
         Author,
         CollectionQuery,
         CollectionResult,
+        AbstractRecord,
+        CitationRecord,
+        URLRecord,
     )
     from compute_forecast.core.config import ConfigManager
     from compute_forecast.core.logging import setup_logging
@@ -201,7 +204,10 @@ class GoogleScholarSource(BaseCitationSource):
 
                 try:
                     paper = self._parse_scholar_result(result, query)
-                    if paper and paper.citations >= query.min_citations:
+                    if (
+                        paper
+                        and paper.get_latest_citations_count() >= query.min_citations
+                    ):
                         papers.append(paper)
                         self.logger.debug(f"Found paper: {paper.title[:60]}...")
 
@@ -291,8 +297,7 @@ class GoogleScholarSource(BaseCitationSource):
                     if author_name:  # Only add authors with names
                         author = Author(
                             name=author_name,
-                            affiliation="",  # Google Scholar doesn't provide affiliation in search results
-                            author_id="",  # No author ID in search results
+                            affiliations=[],  # Google Scholar doesn't provide affiliation in search results
                         )
                         authors.append(author)
                 elif isinstance(author_data, dict):
@@ -300,8 +305,9 @@ class GoogleScholarSource(BaseCitationSource):
                     if author_name:  # Only add authors with names
                         author = Author(
                             name=author_name,
-                            affiliation=author_data.get("affiliation", "").strip(),
-                            author_id=author_data.get("scholar_id", "").strip(),
+                            affiliations=[author_data.get("affiliation", "").strip()]
+                            if author_data.get("affiliation", "").strip()
+                            else [],
                         )
                         authors.append(author)
 
@@ -338,9 +344,36 @@ class GoogleScholarSource(BaseCitationSource):
             authors=authors,
             venue=venue,
             year=year,
-            citations=citations,
-            abstract=abstract,
-            urls=[url for url in urls if url is not None],
+            abstracts=[
+                AbstractRecord(
+                    source="google_scholar",
+                    timestamp=datetime.now(),
+                    original=True,
+                    data=abstract,
+                )
+            ]
+            if abstract
+            else [],
+            citations=[
+                CitationRecord(
+                    source="google_scholar",
+                    timestamp=datetime.now(),
+                    original=True,
+                    data=citations,
+                )
+            ]
+            if citations > 0
+            else [],
+            urls=[
+                URLRecord(
+                    source="google_scholar",
+                    timestamp=datetime.now(),
+                    original=True,
+                    data=url,
+                )
+                for url in urls
+                if url is not None
+            ],
             source="google_scholar",
             collection_timestamp=datetime.now(),
             mila_domain=query.domain,
@@ -366,8 +399,9 @@ class GoogleScholarSource(BaseCitationSource):
             for author_data in filled_paper.get("author", []):
                 author = Author(
                     name=author_data.get("name", ""),
-                    affiliation=author_data.get("affiliation", ""),
-                    author_id=author_data.get("scholar_id", ""),
+                    affiliations=[author_data.get("affiliation", "")]
+                    if author_data.get("affiliation", "")
+                    else [],
                 )
                 authors.append(author)
 
@@ -377,10 +411,37 @@ class GoogleScholarSource(BaseCitationSource):
                 authors=authors,
                 venue=filled_paper.get("venue", ""),
                 year=filled_paper.get("year", 0),
-                citations=filled_paper.get("num_citations", 0),
-                abstract=filled_paper.get("abstract", ""),
+                abstracts=[
+                    AbstractRecord(
+                        source="google_scholar",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=filled_paper.get("abstract", ""),
+                    )
+                ]
+                if filled_paper.get("abstract", "")
+                else [],
+                citations=[
+                    CitationRecord(
+                        source="google_scholar",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=filled_paper.get("num_citations", 0),
+                    )
+                ]
+                if filled_paper.get("num_citations", 0) > 0
+                else [],
                 doi=filled_paper.get("doi", ""),
-                urls=[filled_paper.get("url", "")] if filled_paper.get("url") else [],
+                urls=[
+                    URLRecord(
+                        source="google_scholar",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=filled_paper.get("url", ""),
+                    )
+                ]
+                if filled_paper.get("url")
+                else [],
                 source="google_scholar",
                 collection_timestamp=datetime.now(),
             )

@@ -4,15 +4,68 @@ import pytest
 from unittest.mock import Mock, patch
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.core_collector import (
     COREPDFCollector,
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
+from datetime import datetime
 from compute_forecast.pipeline.pdf_acquisition.discovery.utils import (
     APIError,
     NoResultsError,
     NoPDFFoundError,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+    doi: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+        doi=doi,
+    )
 
 
 class TestCOREPDFCollector:
@@ -26,14 +79,13 @@ class TestCOREPDFCollector:
     @pytest.fixture
     def sample_paper(self):
         """Create a sample paper for testing."""
-        return Paper(
+        return create_test_paper(
             paper_id="test_paper_1",
             title="Test Paper on Deep Learning",
             authors=[Author(name="Author A"), Author(name="Author B")],
             year=2023,
-            doi="10.1234/test.2023.001",
             venue="Test Conference",
-            citations=50,
+            citation_count=50,
         )
 
     @pytest.fixture
@@ -129,13 +181,13 @@ class TestCOREPDFCollector:
 
     def test_search_by_title(self, collector, sample_paper, core_api_response):
         """Test searching by title when DOI is not available."""
-        paper_without_doi = Paper(
+        paper_without_doi = create_test_paper(
             paper_id="test_paper_2",
             title="Test Paper on Deep Learning",
             authors=[Author(name="Author A")],
             year=2023,
             venue="Test Conference",
-            citations=10,
+            citation_count=10,
         )
 
         with patch("requests.get") as mock_get:
@@ -190,26 +242,26 @@ class TestCOREPDFCollector:
     def test_build_search_query(self, collector):
         """Test search query building."""
         # With DOI
-        paper_with_doi = Paper(
+        paper_with_doi = create_test_paper(
             paper_id="test1",
             title="Test Paper",
-            doi="10.1234/test",
             year=2023,
             authors=[Author(name="Test Author")],
             venue="Test Venue",
-            citations=0,
+            citation_count=0,
+            doi="10.1234/test",
         )
         query = collector._build_search_query(paper_with_doi)
         assert query == 'doi:"10.1234/test"'
 
         # Without DOI
-        paper_without_doi = Paper(
+        paper_without_doi = create_test_paper(
             paper_id="test2",
             title="Test Paper on Machine Learning",
             year=2023,
             authors=[Author(name="Test Author")],
             venue="Test Venue",
-            citations=0,
+            citation_count=0,
         )
         query = collector._build_search_query(paper_without_doi)
         assert query == 'title:"Test Paper on Machine Learning"'

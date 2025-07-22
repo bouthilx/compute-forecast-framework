@@ -6,6 +6,12 @@ from unittest.mock import patch
 import numpy as np
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     VenueConfig,
 )
@@ -18,6 +24,50 @@ from compute_forecast.pipeline.metadata_collection.processors.citation_statistic
     FilteringQualityReport,
     BreakthroughPaper,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestCitationAnalyzer:
@@ -64,13 +114,12 @@ class TestCitationAnalyzer:
         # High-impact NeurIPS papers
         for i in range(5):
             papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"neurips_high_{i}",
                     title=f"High Impact NeurIPS Paper {i}",
                     venue="NeurIPS",
-                    normalized_venue="NeurIPS",
                     year=2023,
-                    citations=100 + i * 20,
+                    citation_count=100 + i * 20,
                     authors=[Author(name=f"Author {i}")],
                 )
             )
@@ -78,13 +127,12 @@ class TestCitationAnalyzer:
         # Medium-impact ICML papers
         for i in range(5):
             papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"icml_med_{i}",
                     title=f"Medium Impact ICML Paper {i}",
                     venue="ICML",
-                    normalized_venue="ICML",
                     year=2022,
-                    citations=30 + i * 5,
+                    citation_count=30 + i * 5,
                     authors=[Author(name=f"Author {i + 5}")],
                 )
             )
@@ -92,13 +140,12 @@ class TestCitationAnalyzer:
         # Low-impact CVPR papers
         for i in range(5):
             papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"cvpr_low_{i}",
                     title=f"Low Impact CVPR Paper {i}",
                     venue="CVPR",
-                    normalized_venue="CVPR",
                     year=2021,
-                    citations=i * 2,
+                    citation_count=i * 2,
                     authors=[Author(name=f"Author {i + 10}")],
                 )
             )
@@ -106,13 +153,12 @@ class TestCitationAnalyzer:
         # Zero citation papers
         for i in range(3):
             papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"zero_{i}",
                     title=f"Zero Citation Paper {i}",
                     venue="Workshop",
-                    normalized_venue="Workshop",
                     year=2023,
-                    citations=0,
+                    citation_count=0,
                     authors=[Author(name=f"Author {i + 15}")],
                 )
             )
@@ -135,7 +181,9 @@ class TestCitationAnalyzer:
             assert len(report.year_analysis) > 0
             assert len(report.overall_percentiles) > 0
             # Check papers with zero citations (papers that have citations field == 0)
-            zero_citation_count = len([p for p in sample_papers if p.citations == 0])
+            zero_citation_count = len(
+                [p for p in sample_papers if p.get_latest_citations_count() == 0]
+            )
             assert len(report.zero_citation_papers) == zero_citation_count
             assert len(report.high_citation_outliers) > 0
             assert len(report.suggested_thresholds) > 0
@@ -200,15 +248,14 @@ class TestCitationAnalyzer:
     def test_detect_breakthrough_papers(self, analyzer, sample_papers):
         """Test breakthrough paper detection."""
         # Add a potential breakthrough paper
-        breakthrough_paper = Paper(
+        breakthrough_paper = create_test_paper(
             paper_id="breakthrough1",
             title="Transformer: A Novel Architecture",
-            abstract="We present a breakthrough method",
             venue="NeurIPS",
-            normalized_venue="NeurIPS",
             year=2023,
-            citations=200,
+            citation_count=200,
             authors=[Author(name="Geoffrey Hinton")],
+            abstract_text="We present a breakthrough method",
         )
         papers = sample_papers + [breakthrough_paper]
 
@@ -244,7 +291,9 @@ class TestCitationAnalyzer:
     def test_validate_filtering_quality(self, analyzer, sample_papers):
         """Test filtering quality validation."""
         # Filter to keep only high-citation papers
-        filtered_papers = [p for p in sample_papers if p.citations and p.citations > 50]
+        filtered_papers = [
+            p for p in sample_papers if p.get_latest_citations_count() > 50
+        ]
 
         report = analyzer.validate_filtering_quality(sample_papers, filtered_papers)
 
@@ -294,8 +343,10 @@ class TestCitationAnalyzer:
                 paper_id=str(i),
                 title=f"Paper {i}",
                 venue="Test",
+                normalized_venue="Test",
                 year=2023,
-                citations=None,
+                citations=[],  # Empty list instead of None
+                abstracts=[],
                 authors=[Author(name="Test")],
             )
             for i in range(5)
@@ -304,25 +355,23 @@ class TestCitationAnalyzer:
         report = analyzer.analyze_citation_distributions(papers)
 
         assert report.papers_analyzed == 5
-        assert len(report.zero_citation_papers) == 0  # None is different from 0
+        assert (
+            len(report.zero_citation_papers) == 5
+        )  # Papers with empty citations list are treated as zero citations
 
     def test_performance_large_dataset(self, analyzer):
         """Test performance with large dataset (50,000+ papers)."""
         # Create large dataset
         large_papers = []
         for i in range(50000):
+            venue = "NeurIPS" if i % 3 == 0 else "ICML" if i % 3 == 1 else "CVPR"
             large_papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=str(i),
                     title=f"Paper {i}",
-                    venue="NeurIPS" if i % 3 == 0 else "ICML" if i % 3 == 1 else "CVPR",
-                    normalized_venue="NeurIPS"
-                    if i % 3 == 0
-                    else "ICML"
-                    if i % 3 == 1
-                    else "CVPR",
+                    venue=venue,
                     year=2020 + (i % 4),
-                    citations=np.random.poisson(20),  # Poisson distribution
+                    citation_count=int(np.random.poisson(20)),  # Poisson distribution
                     authors=[Author(name=f"Author {i % 100}")],
                 )
             )

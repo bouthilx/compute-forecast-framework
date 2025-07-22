@@ -10,7 +10,7 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import 
     BasePDFCollector,
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
-from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.metadata_collection.models import Paper, URLRecord
 from compute_forecast.pipeline.metadata_collection.sources.enhanced_crossref import (
     EnhancedCrossrefClient,
 )
@@ -126,7 +126,7 @@ class DOIResolverCollector(BasePDFCollector):
         return pdf_record
 
     def _merge_pdf_urls(
-        self, crossref_urls: List[str], unpaywall_urls: List[str]
+        self, crossref_urls: List[URLRecord], unpaywall_urls: List[URLRecord]
     ) -> List[str]:
         """Merge and deduplicate PDF URLs, prioritizing CrossRef (publisher) over Unpaywall.
 
@@ -138,17 +138,31 @@ class DOIResolverCollector(BasePDFCollector):
             Merged list of unique URLs with CrossRef URLs first
         """
         # Start with CrossRef URLs (typically publisher versions)
-        merged_urls = list(crossref_urls)
+        merged_urls: List[str] = []
+        seen_urls: set[str] = set()
+
+        # Add CrossRef URLs
+        for url_record in crossref_urls:
+            url = (
+                url_record.data.url if hasattr(url_record, "data") else str(url_record)
+            )
+            if url not in seen_urls:
+                merged_urls.append(url)
+                seen_urls.add(url)
 
         # Add Unpaywall URLs that aren't already in the list
-        for url in unpaywall_urls:
-            if url not in merged_urls:
+        for url_record in unpaywall_urls:
+            url = (
+                url_record.data.url if hasattr(url_record, "data") else str(url_record)
+            )
+            if url not in seen_urls:
                 merged_urls.append(url)
+                seen_urls.add(url)
 
         return merged_urls
 
     def _calculate_confidence_score(
-        self, crossref_urls: List[str], unpaywall_urls: List[str]
+        self, crossref_urls: List[URLRecord], unpaywall_urls: List[URLRecord]
     ) -> float:
         """Calculate confidence score based on URL sources and counts.
 
@@ -206,7 +220,7 @@ class DOIResolverCollector(BasePDFCollector):
             return "needs_validation"
 
     def _get_sources_used(
-        self, crossref_urls: List[str], unpaywall_urls: List[str]
+        self, crossref_urls: List[URLRecord], unpaywall_urls: List[URLRecord]
     ) -> List[str]:
         """Get list of sources that provided URLs.
 
@@ -225,7 +239,7 @@ class DOIResolverCollector(BasePDFCollector):
         return sources
 
     def _determine_license(
-        self, crossref_urls: List[str], unpaywall_urls: List[str]
+        self, crossref_urls: List[URLRecord], unpaywall_urls: List[URLRecord]
     ) -> Optional[str]:
         """Determine license information based on sources.
 

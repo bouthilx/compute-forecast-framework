@@ -2,13 +2,65 @@
 Tests for ExtractionQualityValidator.
 """
 
+from datetime import datetime
+
 from compute_forecast.pipeline.content_extraction.quality.extraction_validator import (
     ExtractionQualityValidator,
     ExtractionValidation,
     ExtractionQuality,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from .test_helpers import MockComputationalAnalysis as ComputationalAnalysis
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestExtractionQualityValidator:
@@ -19,13 +71,13 @@ class TestExtractionQualityValidator:
         self.validator = ExtractionQualityValidator()
 
         # Create test paper
-        self.paper = Paper(
+        self.paper = create_test_paper(
             paper_id="test_paper_1",
             title="Large Language Model Training",
             year=2023,
             authors=[],
             venue="NeurIPS",
-            citations=0,
+            citation_count=0,
         )
 
         # Create complete extraction
@@ -129,26 +181,26 @@ class TestExtractionQualityValidator:
     def test_paper_consistency_check(self):
         """Test consistency between paper and extraction."""
         # Language model paper with appropriate extraction
-        lm_paper = Paper(
+        lm_paper = create_test_paper(
             paper_id="lm_paper",
             title="Scaling Transformer Language Models",
             year=2023,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
         lm_extraction = ComputationalAnalysis(parameters=10e9, gpu_hours=50000)
         score = self.validator._check_paper_consistency(lm_paper, lm_extraction)
         assert score > 0.8
 
         # Vision paper with batch size
-        cv_paper = Paper(
+        cv_paper = create_test_paper(
             paper_id="cv_paper",
             title="Efficient Image Classification with CNNs",
             year=2022,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
         cv_extraction = ComputationalAnalysis(batch_size=128, parameters=50e6)
         score = self.validator._check_paper_consistency(cv_paper, cv_extraction)

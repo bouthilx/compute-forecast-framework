@@ -10,6 +10,56 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.cvf_collector i
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestCVFCollector:
@@ -23,12 +73,12 @@ class TestCVFCollector:
     @pytest.fixture
     def sample_paper(self):
         """Create sample paper for testing."""
-        return Paper(
+        return create_test_paper(
             paper_id="test_paper_1",
             title="Deep Learning for Computer Vision",
             authors=["Author One", "Author Two"],
             year=2023,
-            citations=10,
+            citation_count=10,
             venue="CVPR",
         )
 
@@ -41,12 +91,12 @@ class TestCVFCollector:
 
     def test_venue_not_supported(self, collector):
         """Test handling of unsupported venues."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test_1",
             title="Test Paper",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
             venue="ICML",  # Not a CVF venue
         )
 
@@ -194,28 +244,28 @@ class TestCVFCollector:
     def test_discover_multiple_papers(self, collector):
         """Test batch discovery of papers."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="p1",
                 title="Paper One",
                 authors=[],
                 year=2023,
-                citations=0,
+                citation_count=0,
                 venue="CVPR",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="p2",
                 title="Paper Two",
                 authors=[],
                 year=2023,
-                citations=0,
+                citation_count=0,
                 venue="ICML",  # Not CVF
             ),
-            Paper(
+            create_test_paper(
                 paper_id="p3",
                 title="Paper Three",
                 authors=[],
                 year=2022,
-                citations=0,
+                citation_count=0,
                 venue="ECCV",
             ),
         ]
@@ -247,21 +297,21 @@ class TestCVFCollector:
     def test_venue_year_validation(self, collector):
         """Test validation of venue and year combinations."""
         # ICCV is biannual (odd years)
-        paper_odd = Paper(
+        paper_odd = create_test_paper(
             paper_id="test1",
             title="Test",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
             venue="ICCV",
         )
 
-        paper_even = Paper(
+        paper_even = create_test_paper(
             paper_id="test2",
             title="Test",
             authors=[],
             year=2022,
-            citations=0,
+            citation_count=0,
             venue="ICCV",
         )
 

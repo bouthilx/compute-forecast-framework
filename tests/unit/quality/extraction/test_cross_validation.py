@@ -2,10 +2,62 @@
 Tests for CrossValidationFramework.
 """
 
+from datetime import datetime
+
 from compute_forecast.pipeline.content_extraction.quality.cross_validation import (
     CrossValidationFramework,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestCrossValidationFramework:
@@ -19,13 +71,13 @@ class TestCrossValidationFramework:
         self.papers = []
         for year in [2019, 2020, 2021, 2022, 2023]:
             for i in range(30):  # 30 papers per year
-                paper = Paper(
+                paper = create_test_paper(
                     paper_id=f"paper_{year}_{i}",
                     title=f"Model {i} Research {year}",
                     year=year,
                     venue=f"Conference{i % 3}",  # 3 different venues
                     authors=[],
-                    citations=0,
+                    citation_count=0,
                 )
                 self.papers.append(paper)
 

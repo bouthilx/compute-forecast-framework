@@ -1,12 +1,63 @@
 """Tests for OpenReview PDF collector."""
 
 import pytest
+from datetime import datetime
 from unittest.mock import Mock, patch
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.openreview_collector import (
     OpenReviewPDFCollector,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestOpenReviewPDFCollector:
@@ -20,29 +71,29 @@ class TestOpenReviewPDFCollector:
     @pytest.fixture
     def sample_paper(self):
         """Create sample paper for testing."""
-        return Paper(
+        return create_test_paper(
             paper_id="test_123",
             title="Deep Learning for Natural Language Processing",
             authors=[
-                Author(name="John Doe", affiliation="Test University"),
-                Author(name="Jane Smith", affiliation="Research Lab"),
+                Author(name="John Doe", affiliations=["Test University"]),
+                Author(name="Jane Smith", affiliations=["Research Lab"]),
             ],
             venue="ICLR",
             year=2024,
-            citations=10,
-            abstract="This paper presents a new approach...",
+            citation_count=10,
+            abstract_text="This paper presents a new approach...",
         )
 
     @pytest.fixture
     def neurips_paper(self):
         """Create NeurIPS paper for testing."""
-        return Paper(
+        return create_test_paper(
             paper_id="neurips_123",
             title="Reinforcement Learning at Scale",
-            authors=[Author(name="Alice Johnson", affiliation="AI Lab")],
+            authors=[Author(name="Alice Johnson", affiliations=["AI Lab"])],
             venue="NeurIPS",
             year=2023,
-            citations=5,
+            citation_count=5,
         )
 
     def test_collector_initialization(self, collector):
@@ -230,21 +281,21 @@ class TestOpenReviewPDFCollector:
         mock_client_class.return_value = mock_client
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="p1",
                 title="Paper One",
-                authors=[Author(name="Author One", affiliation="Uni")],
+                authors=[Author(name="Author One", affiliations=["Uni"])],
                 venue="ICLR",
                 year=2024,
-                citations=1,
+                citation_count=1,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="p2",
                 title="Paper Two",
-                authors=[Author(name="Author Two", affiliation="Lab")],
+                authors=[Author(name="Author Two", affiliations=["Lab"])],
                 venue="NeurIPS",
                 year=2023,
-                citations=2,
+                citation_count=2,
             ),
         ]
 

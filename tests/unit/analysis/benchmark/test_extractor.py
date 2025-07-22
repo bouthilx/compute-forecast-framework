@@ -2,6 +2,7 @@
 
 import pytest
 from unittest.mock import Mock, patch
+from datetime import datetime
 
 from compute_forecast.pipeline.analysis.benchmark.extractor import (
     AcademicBenchmarkExtractor,
@@ -16,6 +17,56 @@ from compute_forecast.pipeline.metadata_collection.models import (
     ComputationalAnalysis,
     Author,
 )
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestAcademicBenchmarkExtractor:
@@ -46,14 +97,14 @@ class TestAcademicBenchmarkExtractor:
         """Create sample papers for testing."""
         papers = []
         for i in range(5):
-            paper = Paper(
+            paper = create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Deep Learning Paper {i}",
                 year=2023,
                 venue="NeurIPS",
                 authors=[Author(name=f"Author {i}")],
-                citations=10 + i * 5,
-                abstract="Training neural networks on large datasets...",
+                citation_count=10 + i * 5,
+                abstract_text="Training neural networks on large datasets...",
             )
             papers.append(paper)
         return papers
@@ -84,14 +135,39 @@ class TestAcademicBenchmarkExtractor:
         assert len(batch.papers) == 5
         assert all(isinstance(p, BenchmarkPaper) for p in batch.papers)
 
-    def test_identify_sota_papers(self, extractor, sample_papers):
+    def test_identify_sota_papers(self, extractor):
         """Test identifying state-of-the-art papers."""
-        # Add SOTA indicators to some papers
-        sample_papers[0].title = "BERT: Pre-training of Deep Bidirectional Transformers"
-        sample_papers[1].abstract = "We achieve new state-of-the-art results on GLUE"
-        sample_papers[2].title = "Achieving SOTA Performance on ImageNet"
+        papers = [
+            create_test_paper(
+                paper_id="paper_0",
+                title="BERT: Pre-training of Deep Bidirectional Transformers",
+                year=2023,
+                venue="NeurIPS",
+                authors=[Author(name="Author 0")],
+                citation_count=15,
+                abstract_text="Training neural networks on large datasets...",
+            ),
+            create_test_paper(
+                paper_id="paper_1",
+                title="Improving Neural Networks",
+                year=2023,
+                venue="NeurIPS",
+                authors=[Author(name="Author 1")],
+                citation_count=20,
+                abstract_text="We achieve new state-of-the-art results on GLUE",
+            ),
+            create_test_paper(
+                paper_id="paper_2",
+                title="Achieving SOTA Performance on ImageNet",
+                year=2023,
+                venue="NeurIPS",
+                authors=[Author(name="Author 2")],
+                citation_count=25,
+                abstract_text="Training neural networks on large datasets...",
+            ),
+        ]
 
-        sota_ids = extractor.identify_sota_papers(sample_papers)
+        sota_ids = extractor.identify_sota_papers(papers)
 
         assert len(sota_ids) >= 2
         assert "paper_0" in sota_ids
@@ -216,14 +292,14 @@ class TestAcademicBenchmarkExtractor:
 
     def test_extract_with_missing_computational_data(self, extractor):
         """Test extraction when computational data is missing."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="minimal_paper",
             title="Theoretical Analysis of Neural Networks",
             year=2022,
             venue="COLT",
             authors=[Author(name="Theorist")],
-            citations=5,
-            abstract="We provide theoretical bounds for neural network convergence.",
+            citation_count=5,
+            abstract_text="We provide theoretical bounds for neural network convergence.",
         )
 
         with patch.object(extractor.analyzer, "analyze_paper") as mock_analyze:

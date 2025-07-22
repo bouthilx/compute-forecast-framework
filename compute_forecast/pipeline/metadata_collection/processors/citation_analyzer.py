@@ -90,7 +90,7 @@ class CitationAnalyzer:
             year_analysis[year] = self._analyze_year_citations(year, year_paper_list)
 
         # Overall distribution analysis
-        all_citations = [p.citations for p in valid_papers if p.citations is not None]
+        all_citations = [p.get_latest_citations_count() for p in valid_papers]
         overall_percentiles = self._calculate_percentiles(all_citations)
 
         # Detect breakthrough candidates
@@ -103,9 +103,11 @@ class CitationAnalyzer:
         high_citation_outliers = [
             p
             for p in valid_papers
-            if p.citations and p.citations > high_citation_threshold
+            if p.get_latest_citations_count() > high_citation_threshold
         ]
-        zero_citation_papers = [p for p in valid_papers if p.citations == 0]
+        zero_citation_papers = [
+            p for p in valid_papers if p.get_latest_citations_count() == 0
+        ]
 
         # Generate threshold recommendations
         suggested_thresholds = self._generate_threshold_recommendations(
@@ -191,7 +193,7 @@ class CitationAnalyzer:
             venue = paper.normalized_venue or paper.venue
             year = paper.year
 
-            # Check if it's a breakthrough paper
+            # Check if it's a breakthrough paper first
             is_breakthrough = (
                 paper.paper_id in breakthrough_papers if paper.paper_id else False
             )
@@ -202,23 +204,24 @@ class CitationAnalyzer:
                 filtering_statistics["breakthrough_preserved"] += 1
                 if venue:
                     venue_representation[venue] += 1
+            elif not paper.citations:
+                # Check if paper has no citation data
+                papers_below_threshold.append(paper)
+                filtering_statistics["no_citation_data"] += 1
             else:
                 # Apply venue/year-specific threshold
                 threshold = venue_year_thresholds.get(
                     (venue, year), 5
                 )  # Default threshold
 
-                if paper.citations is not None and paper.citations >= threshold:
+                if paper.get_latest_citations_count() >= threshold:
                     papers_above_threshold.append(paper)
                     filtering_statistics["above_threshold"] += 1
                     if venue:
                         venue_representation[venue] += 1
                 else:
                     papers_below_threshold.append(paper)
-                    if paper.citations is None:
-                        filtering_statistics["no_citation_data"] += 1
-                    else:
-                        filtering_statistics["below_threshold"] += 1
+                    filtering_statistics["below_threshold"] += 1
 
         # Calculate threshold compliance
         threshold_compliance = {}
@@ -240,14 +243,12 @@ class CitationAnalyzer:
 
         # Estimated precision (quality of papers kept)
         avg_citations_original = (
-            np.mean([p.citations for p in valid_papers if p.citations is not None])
+            np.mean([p.get_latest_citations_count() for p in valid_papers])
             if valid_papers
             else 0
         )
         avg_citations_filtered = (
-            np.mean(
-                [p.citations for p in papers_above_threshold if p.citations is not None]
-            )
+            np.mean([p.get_latest_citations_count() for p in papers_above_threshold])
             if papers_above_threshold
             else 0
         )
@@ -259,10 +260,10 @@ class CitationAnalyzer:
 
         # Estimated coverage (coverage of important papers)
         high_impact_original = len(
-            [p for p in valid_papers if p.citations and p.citations > 50]
+            [p for p in valid_papers if p.get_latest_citations_count() > 50]
         )
         high_impact_kept = len(
-            [p for p in papers_above_threshold if p.citations and p.citations > 50]
+            [p for p in papers_above_threshold if p.get_latest_citations_count() > 50]
         )
         estimated_coverage = (
             high_impact_kept / high_impact_original if high_impact_original > 0 else 1.0
@@ -345,12 +346,12 @@ class CitationAnalyzer:
         high_impact_original = [
             p
             for p in original_papers
-            if p.citations and p.citations > high_impact_threshold
+            if p.get_latest_citations_count() > high_impact_threshold
         ]
         high_impact_preserved = [
             p
             for p in filtered_papers
-            if p.citations and p.citations > high_impact_threshold
+            if p.get_latest_citations_count() > high_impact_threshold
         ]
         impact_preservation_rate = (
             len(high_impact_preserved) / len(high_impact_original)
@@ -376,12 +377,12 @@ class CitationAnalyzer:
 
         # Quality indicators
         avg_citations_original = (
-            np.mean([p.citations for p in original_papers if p.citations is not None])
+            np.mean([p.get_latest_citations_count() for p in original_papers])
             if original_papers
             else 0
         )
         avg_citations_filtered = (
-            np.mean([p.citations for p in filtered_papers if p.citations is not None])
+            np.mean([p.get_latest_citations_count() for p in filtered_papers])
             if filtered_papers
             else 0
         )
@@ -444,7 +445,7 @@ class CitationAnalyzer:
         self, venue: str, papers: List[Paper]
     ) -> VenueCitationStats:
         """Analyze citation patterns for specific venue."""
-        citations = [p.citations for p in papers if p.citations is not None]
+        citations = [p.get_latest_citations_count() for p in papers]
 
         # Calculate basic statistics
         percentiles = self._calculate_percentiles(citations)
@@ -469,7 +470,7 @@ class CitationAnalyzer:
             else 0
         )
         high_impact_papers = [
-            p for p in papers if p.citations and p.citations >= high_impact_threshold
+            p for p in papers if p.get_latest_citations_count() >= high_impact_threshold
         ]
 
         # Find breakthrough papers
@@ -509,7 +510,7 @@ class CitationAnalyzer:
         self, year: int, papers: List[Paper]
     ) -> YearCitationStats:
         """Analyze citation patterns for specific year."""
-        citations = [p.citations for p in papers if p.citations is not None]
+        citations = [p.get_latest_citations_count() for p in papers]
         years_since_publication = self.current_year - year
 
         # Calculate statistics
@@ -583,7 +584,7 @@ class CitationAnalyzer:
         indicators = {}
 
         # Overall quality metrics
-        citations = [p.citations for p in papers if p.citations is not None]
+        citations = [p.get_latest_citations_count() for p in papers]
         if citations:
             indicators["mean_citations"] = float(np.mean(citations))
             indicators["median_citations"] = float(np.median(citations))
@@ -675,9 +676,9 @@ class CitationAnalyzer:
                 continue
 
             # Skip papers with negative citations
-            if paper.citations is not None and paper.citations < 0:
+            if paper.get_latest_citations_count() < 0:
                 logger.warning(
-                    f"Skipping paper with negative citations: {paper.citations}"
+                    f"Skipping paper with negative citations: {paper.get_latest_citations_count()}"
                 )
                 continue
 

@@ -5,6 +5,57 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import 
     BasePDFCollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from datetime import datetime
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class SimpleCollector(BasePDFCollector):
@@ -42,12 +93,12 @@ class TestAdditionalCollectorCoverage:
         # But doesn't implement discover_pdfs_batch
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="p1",
                 title="Test",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
         ]

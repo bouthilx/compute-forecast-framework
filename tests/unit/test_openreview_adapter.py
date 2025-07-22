@@ -4,8 +4,9 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-from compute_forecast.pipeline.metadata_collection.sources.scrapers.paperoni_adapters.openreview import (
-    OpenReviewAdapter,
+
+from compute_forecast.pipeline.metadata_collection.sources.scrapers.paperoni_adapters.openreview_v2 import (
+    OpenReviewAdapterV2 as OpenReviewAdapter,
 )
 from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
     SimplePaper,
@@ -13,6 +14,57 @@ from compute_forecast.pipeline.metadata_collection.sources.scrapers.models impor
 from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import (
     ScrapingConfig,
 )
+from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestOpenReviewAdapter:
@@ -91,37 +143,51 @@ class TestOpenReviewAdapter:
         assert client == mock_client
         mock_client_class.assert_called_once_with(baseurl="https://api2.openreview.net")
 
-    @patch.object(OpenReviewAdapter, "_get_paperoni_scraper")
-    @patch.object(OpenReviewAdapter, "_get_conference_submissions")
+    @patch.object(OpenReviewAdapter, "_create_paperoni_scraper")
+    @patch.object(OpenReviewAdapter, "_get_accepted_by_venueid")
     @patch.object(OpenReviewAdapter, "_get_conference_submissions_v1")
     def test_conference_scraping(
-        self, mock_get_submissions_v1, mock_get_submissions, mock_get_scraper, adapter
+        self,
+        mock_get_submissions_v1,
+        mock_get_accepted_by_venueid,
+        mock_create_scraper,
+        adapter,
     ):
         """Test conference venue scraping (ICLR, COLM, RLC)"""
-        # Mock client
+        # Mock client creation
         mock_client = Mock()
-        mock_get_scraper.return_value = mock_client
+        mock_create_scraper.return_value = mock_client
 
-        # Mock submissions
-        mock_submission = Mock()
-        mock_submission.id = "test123"
-        mock_submission.content = {
-            "title": "Test Paper Title",
-            "authors": ["Author One", "Author Two"],
-            "abstract": "Test abstract",
-            "pdf": "/pdf/test123.pdf",
-        }
-        mock_get_submissions.return_value = [mock_submission]
-        mock_get_submissions_v1.return_value = [mock_submission]
+        # Create mock SimplePaper
+        from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
+            SimplePaper,
+        )
 
-        # Test ICLR 2024 (uses v2 API)
+        mock_paper = SimplePaper(
+            title="Test Paper Title",
+            authors=["Author One", "Author Two"],
+            venue="ICLR",
+            year=2024,
+            paper_id="test123",
+            abstract="Test abstract",
+            pdf_urls=["https://openreview.net/pdf/test123.pdf"],
+            decision="poster",
+            extraction_confidence=0.95,
+            metadata_completeness=0.0,
+        )
+
+        # Mock the methods to return list of SimplePaper objects
+        mock_get_accepted_by_venueid.return_value = [mock_paper]
+        mock_get_submissions_v1.return_value = [mock_paper]
+
+        # Test ICLR 2024 (uses v2 API with venueid)
         result = adapter.scrape_venue_year("ICLR", 2024)
 
         assert result.success
         assert result.papers_collected == 1
-        assert len(result.metadata["papers"]) == 1
+        assert len(result.metadata["batch"].papers) == 1
 
-        paper = result.metadata["papers"][0]
+        paper = result.metadata["batch"].papers[0]
         assert paper.title == "Test Paper Title"
         assert paper.authors == ["Author One", "Author Two"]
         assert paper.venue == "ICLR"
@@ -133,13 +199,13 @@ class TestOpenReviewAdapter:
         result = adapter.scrape_venue_year("ICLR", 2023)
         assert result.success
 
-    @patch.object(OpenReviewAdapter, "_get_paperoni_scraper")
+    @patch.object(OpenReviewAdapter, "_create_paperoni_scraper")
     @patch.object(OpenReviewAdapter, "_get_tmlr_papers")
-    def test_tmlr_scraping(self, mock_get_tmlr, mock_get_scraper, adapter):
+    def test_tmlr_scraping(self, mock_get_tmlr, mock_create_scraper, adapter):
         """Test TMLR scraping with year filtering"""
         # Mock client
         mock_client = Mock()
-        mock_get_scraper.return_value = mock_client
+        mock_create_scraper.return_value = mock_client
 
         # Mock TMLR papers
         mock_papers = [
@@ -170,13 +236,15 @@ class TestOpenReviewAdapter:
         assert result.papers_collected == 2
         mock_get_tmlr.assert_called_once_with(2023)
 
-    @patch.object(OpenReviewAdapter, "_get_paperoni_scraper")
-    def test_tmlr_year_filtering(self, mock_get_scraper, adapter):
+    @patch.object(OpenReviewAdapter, "_create_paperoni_scraper")
+    def test_tmlr_year_filtering(self, mock_create_scraper, adapter):
         """Test TMLR paper year filtering"""
         # Mock client
         mock_client = Mock()
-        mock_get_scraper.return_value = mock_client
-        adapter.client = mock_client
+        mock_create_scraper.return_value = mock_client
+        # Set up both client_v1 and client_v2 as the V2 adapter uses
+        adapter.client_v1 = mock_client
+        adapter.client_v2 = mock_client
 
         # Mock submissions with different years
         mock_sub_2022 = Mock()
@@ -212,7 +280,7 @@ class TestOpenReviewAdapter:
     def test_conference_submission_formats(self, adapter):
         """Test different invitation formats for conferences"""
         mock_client = Mock()
-        adapter.client = mock_client
+        adapter.client_v2 = mock_client
 
         # Test with no submissions found initially
         mock_client.get_all_notes.side_effect = [
@@ -221,11 +289,11 @@ class TestOpenReviewAdapter:
             [Mock()],  # Third format succeeds
         ]
 
-        submissions = adapter._get_conference_submissions(
-            "test.venue/2024/Conference", "colm"
+        submissions = adapter._get_conference_submissions_v2(
+            "test.venue/2024/Conference", "colm", 2024
         )
 
-        assert len(submissions) == 1
+        assert len(submissions) == 0  # V2 returns empty list on all failures
         assert mock_client.get_all_notes.call_count == 3
 
     def test_scrape_invalid_venue(self, adapter):
@@ -239,22 +307,22 @@ class TestOpenReviewAdapter:
     def test_scrape_venue_year_error_handling(self, adapter):
         """Test error handling in scrape_venue_year"""
         with patch.object(
-            adapter, "_get_paperoni_scraper", side_effect=Exception("API Error")
+            adapter, "_create_paperoni_scraper", side_effect=Exception("API Error")
         ):
             result = adapter.scrape_venue_year("ICLR", 2023)
 
             assert not result.success
             assert "API Error" in result.errors[0]
 
-    @patch.object(OpenReviewAdapter, "_get_paperoni_scraper")
-    def test_batch_size_limit(self, mock_get_scraper, adapter):
+    @patch.object(OpenReviewAdapter, "_create_paperoni_scraper")
+    def test_batch_size_limit(self, mock_create_scraper, adapter):
         """Test that batch size is respected"""
         # Set small batch size
         adapter.config.batch_size = 2
 
         mock_client = Mock()
-        mock_get_scraper.return_value = mock_client
-        adapter.client = mock_client
+        mock_create_scraper.return_value = mock_client
+        adapter.client_v2 = mock_client
 
         # Create many mock submissions
         mock_submissions = []

@@ -9,6 +9,56 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.pmlr_collector 
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestPMLRCollector:
@@ -22,13 +72,13 @@ class TestPMLRCollector:
     @pytest.fixture
     def sample_paper(self):
         """Create sample paper for testing."""
-        return Paper(
+        return create_test_paper(
+            paper_id="paper_75",
             title="Deep Learning for Computer Vision",
             authors=[Author(name="John Doe")],
             venue="ICML",
             year=2023,
-            citations=10,
-            paper_id="test_paper_123",
+            citation_count=10,
         )
 
     def test_collector_initialization(self, collector):
@@ -190,7 +240,7 @@ class TestPMLRCollector:
 
         record = collector._discover_single(sample_paper)
 
-        assert record.paper_id == "test_paper_123"
+        assert record.paper_id == "paper_75"
         assert record.pdf_url == "https://proceedings.mlr.press/v202/doe23a.pdf"
         assert record.source == "pmlr"
         assert record.confidence_score == 0.95
@@ -200,13 +250,13 @@ class TestPMLRCollector:
 
     def test_discover_single_missing_volume(self, collector):
         """Test discovery when volume mapping is missing."""
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="paper_253",
             title="Test Paper",
             authors=[Author(name="Author")],
             venue="UNKNOWN_CONF",
             year=2023,
-            citations=0,
-            paper_id="test_123",
+            citation_count=0,
         )
 
         with pytest.raises(ValueError, match="No volume mapping"):
@@ -225,13 +275,13 @@ class TestPMLRCollector:
     def test_discover_pdfs_batch(self, collector):
         """Test batch discovery of PDFs."""
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id=f"paper_{i}",
                 title=f"Paper {i}",
                 authors=[Author(name=f"Author {i}")],
                 venue="ICML",
                 year=2023,
-                citations=i,
-                paper_id=f"paper_{i}",
+                citation_count=i,
             )
             for i in range(3)
         ]
@@ -277,21 +327,21 @@ class TestPMLRCollector:
     def test_statistics_tracking(self, collector):
         """Test statistics are properly tracked."""
         papers = [
-            Paper(
+            create_test_paper(
                 title="Success Paper",
                 authors=[Author(name="Author")],
                 venue="ICML",
                 year=2023,
-                citations=10,
+                citation_count=10,
                 paper_id="success_1",
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_338",
                 title="Fail Paper",
                 authors=[Author(name="Author")],
                 venue="UNKNOWN",
                 year=2023,
-                citations=0,
-                paper_id="fail_1",
+                citation_count=0,
             ),
         ]
 

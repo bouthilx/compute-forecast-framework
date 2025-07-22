@@ -5,6 +5,14 @@ from unittest.mock import Mock, patch
 from datetime import datetime
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+    URLRecord,
+    URLData,
+)
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector import (
     ArXivPDFCollector,
@@ -12,6 +20,50 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector
 from compute_forecast.pipeline.pdf_acquisition.discovery.utils.exceptions import (
     SourceNotApplicableError,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestArXivPDFCollector:
@@ -25,34 +77,39 @@ class TestArXivPDFCollector:
     @pytest.fixture
     def sample_paper(self):
         """Create sample paper for testing."""
-        return Paper(
+        paper = create_test_paper(
             paper_id="test_paper_1",
             title="Attention Is All You Need",
             authors=[Author(name="Vaswani, Ashish"), Author(name="Shazeer, Noam")],
-            abstract="The dominant sequence transduction models are based on complex recurrent or convolutional neural networks...",
+            abstract_text="The dominant sequence transduction models are based on complex recurrent or convolutional neural networks...",
             year=2017,
             venue="NeurIPS",
-            citations=1000,
-            arxiv_id="1706.03762v5",
-            doi="10.5555/3295222.3295349",
-            urls=["https://arxiv.org/abs/1706.03762"],
+            citation_count=1000,
         )
+        paper.arxiv_id = "1706.03762"
+        return paper
 
     @pytest.fixture
     def paper_without_arxiv_id(self):
         """Create paper without direct arXiv ID."""
-        return Paper(
+        paper = create_test_paper(
             paper_id="test_paper_2",
             title="Deep Residual Learning for Image Recognition",
             authors=[Author(name="He, Kaiming"), Author(name="Zhang, Xiangyu")],
-            abstract="Deeper neural networks are more difficult to train...",
+            abstract_text="Deeper neural networks are more difficult to train...",
             year=2016,
             venue="CVPR",
-            citations=500,
-            arxiv_id=None,
-            doi="10.1109/CVPR.2016.90",
-            urls=["https://arxiv.org/pdf/1512.03385.pdf"],
+            citation_count=500,
         )
+        paper.urls = [
+            URLRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=URLData(url="https://arxiv.org/abs/1512.03385"),
+            )
+        ]
+        return paper
 
     def test_collector_initialization(self, collector):
         """Test collector is properly initialized."""
@@ -73,17 +130,14 @@ class TestArXivPDFCollector:
 
     def test_extract_arxiv_id_no_match(self, collector):
         """Test behavior when no arXiv ID found."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test_paper_3",
             title="Some Non-ArXiv Paper",
             authors=[Author(name="Author, Test")],
-            abstract="Abstract...",
+            abstract_text="Abstract...",
             year=2020,
             venue="Journal",
-            citations=10,
-            arxiv_id=None,
-            doi="10.1000/test",
-            urls=["https://example.com/paper.pdf"],
+            citation_count=10,
         )
         arxiv_id = collector.extract_arxiv_id(paper)
         assert arxiv_id is None
@@ -235,27 +289,23 @@ class TestArXivPDFCollector:
     def test_discover_pdfs_multiple_papers(self, collector):
         """Test discover_pdfs with multiple papers."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper1",
                 title="Paper 1",
                 authors=[Author(name="Author 1")],
-                abstract="Abstract 1",
+                abstract_text="Abstract 1",
                 year=2020,
                 venue="Venue 1",
-                citations=100,
-                arxiv_id="2001.00001",
-                urls=[],
+                citation_count=100,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="paper2",
                 title="Paper 2",
                 authors=[Author(name="Author 2")],
-                abstract="Abstract 2",
+                abstract_text="Abstract 2",
                 year=2021,
                 venue="Venue 2",
-                citations=200,
-                arxiv_id="2101.00001",
-                urls=[],
+                citation_count=200,
             ),
         ]
 

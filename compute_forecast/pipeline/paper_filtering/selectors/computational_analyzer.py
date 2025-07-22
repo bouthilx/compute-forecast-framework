@@ -287,7 +287,7 @@ class ComputationalAnalyzer:
             ComputationalAnalysis object with scores and metrics
         """
         # Combine title and abstract for analysis
-        text = f"{paper.title} {paper.abstract}".lower()
+        text = f"{paper.title} {paper.get_best_abstract()}".lower()
 
         # Analyze keywords
         keyword_matches = self._analyze_keywords(text)

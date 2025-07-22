@@ -302,7 +302,7 @@ class MockDataGenerator:
                     paper.authors,
                     paper.year,
                     paper.venue,
-                    paper.abstract,
+                    paper.get_best_abstract(),
                 ]
                 if not all(required_fields):
                     return False
@@ -313,7 +313,7 @@ class MockDataGenerator:
 
             for paper in papers:
                 for field_name in [
-                    "abstract",
+                    "abstracts",
                     "keywords",
                     "arxiv_id",
                     "openalex_id",
@@ -338,7 +338,7 @@ class MockDataGenerator:
 
             for paper in papers:
                 for field_name in [
-                    "abstract",
+                    "abstracts",
                     "keywords",
                     "arxiv_id",
                     "openalex_id",
@@ -425,14 +425,12 @@ class MockDataGenerator:
                 keywords = [self.random.choice(self.KEYWORDS)]
             # Most optional fields missing
 
-        return Paper(
+        paper = Paper(
             paper_id=paper_id,
             title=title,
             authors=authors,
             venue=venue,
             year=year,
-            citations=citations,
-            abstract=abstract or "",
             keywords=keywords or [],
             arxiv_id=arxiv_id,
             openalex_id=openalex_id,
@@ -444,6 +442,38 @@ class MockDataGenerator:
             authorship_analysis=authorship_analysis,
             venue_analysis=venue_analysis,
         )
+
+        # Add citations if provided
+        if citations is not None:
+            from compute_forecast.pipeline.consolidation.models import (
+                CitationRecord,
+                CitationData,
+            )
+
+            citation_record = CitationRecord(
+                source="mock_generator",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citations),
+            )
+            paper.citations.append(citation_record)
+
+        # Add abstract if provided
+        if abstract:
+            from compute_forecast.pipeline.consolidation.models import (
+                AbstractRecord,
+                AbstractData,
+            )
+
+            abstract_record = AbstractRecord(
+                source="mock_generator",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract, language="en"),
+            )
+            paper.abstracts.append(abstract_record)
+
+        return paper
 
     def _generate_title(self) -> str:
         """Generate a realistic paper title."""
@@ -564,8 +594,7 @@ class MockDataGenerator:
             authors.append(
                 Author(
                     name=name,
-                    affiliation=affiliation or "",
-                    author_id=f"author_{self.random.randint(10000000, 99999999):x}",
+                    affiliations=[affiliation] if affiliation else [],
                     email=email or "",
                 )
             )
@@ -796,13 +825,15 @@ class MockDataGenerator:
         for author in authors:
             detail = {
                 "name": author.name,
-                "affiliation": author.affiliation or "Unknown",
+                "affiliation": author.affiliations[0]
+                if author.affiliations
+                else "Unknown",
                 "category": "unknown",
             }
 
-            if author.affiliation:
+            if author.affiliations and author.affiliations[0]:
                 # Check if academic or industry
-                affiliation_lower = author.affiliation.lower()
+                affiliation_lower = author.affiliations[0].lower()
                 if any(
                     keyword in affiliation_lower
                     for keyword in [

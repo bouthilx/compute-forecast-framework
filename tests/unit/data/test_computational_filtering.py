@@ -3,8 +3,15 @@ Unit tests for Computational Research Filtering System (Issue #8).
 """
 
 import pytest
+from datetime import datetime
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.paper_filtering.selectors.computational_analyzer import (
     ComputationalAnalyzer,
 )
@@ -23,6 +30,49 @@ from compute_forecast.pipeline.paper_filtering.selectors.pipeline_integration im
 )
 
 
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
+
+
 class TestComputationalAnalyzer:
     """Test computational richness analysis."""
 
@@ -31,13 +81,14 @@ class TestComputationalAnalyzer:
 
     def test_high_computational_content(self):
         """Test paper with high computational content."""
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="paper_84",
             title="A Novel Deep Learning Algorithm for Image Classification",
             authors=[],
             venue="NeurIPS",
             year=2024,
-            citations=10,
-            abstract="""We propose a novel deep learning algorithm that achieves
+            citation_count=10,
+            abstract_text="""We propose a novel deep learning algorithm that achieves
             state-of-the-art performance on ImageNet. Our implementation uses
             distributed training across 128 GPUs with 50M parameters. Extensive
             experiments demonstrate 95% accuracy with significant improvements
@@ -58,13 +109,14 @@ class TestComputationalAnalyzer:
 
     def test_low_computational_content(self):
         """Test paper with low computational content."""
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="paper_111",
             title="A Survey of User Preferences in Social Media",
             authors=[],
             venue="CHI",
             year=2024,
-            citations=5,
-            abstract="""This paper presents a survey of user preferences in
+            citation_count=5,
+            abstract_text="""This paper presents a survey of user preferences in
             social media platforms. We conducted interviews with 50 participants
             to understand their usage patterns and preferences.""",
         )
@@ -77,13 +129,14 @@ class TestComputationalAnalyzer:
 
     def test_theoretical_paper(self):
         """Test theoretical computer science paper."""
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="paper_130",
             title="On the Complexity of Graph Isomorphism",
             authors=[],
             venue="STOC",
             year=2024,
-            citations=20,
-            abstract="""We prove that graph isomorphism is in quasi-polynomial time.
+            citation_count=20,
+            abstract_text="""We prove that graph isomorphism is in quasi-polynomial time.
             Our proof uses novel theoretical techniques combining group theory with
             complexity analysis. We show that the algorithm runs in time O(n^log n)
             and prove tight lower bounds.""",
@@ -109,9 +162,9 @@ class TestAuthorshipClassifier:
     def test_pure_academic_authors(self):
         """Test paper with only academic authors."""
         authors = [
-            Author(name="John Doe", affiliation="MIT Computer Science Department"),
-            Author(name="Jane Smith", affiliation="Stanford University"),
-            Author(name="Bob Johnson", affiliation="UC Berkeley EECS"),
+            Author(name="John Doe", affiliations=["MIT Computer Science Department"]),
+            Author(name="Jane Smith", affiliations=["Stanford University"]),
+            Author(name="Bob Johnson", affiliations=["UC Berkeley EECS"]),
         ]
 
         analysis = self.classifier.classify_authors(authors)
@@ -124,10 +177,10 @@ class TestAuthorshipClassifier:
     def test_industry_collaboration(self):
         """Test paper with academic-industry collaboration."""
         authors = [
-            Author(name="Alice Chen", affiliation="Google Research"),
-            Author(name="David Park", affiliation="MIT CSAIL"),
-            Author(name="Eve Wilson", affiliation="Microsoft Research"),
-            Author(name="Frank Lee", affiliation="CMU Machine Learning Department"),
+            Author(name="Alice Chen", affiliations=["Google Research"]),
+            Author(name="David Park", affiliations=["MIT CSAIL"]),
+            Author(name="Eve Wilson", affiliations=["Microsoft Research"]),
+            Author(name="Frank Lee", affiliations=["CMU Machine Learning Department"]),
         ]
 
         analysis = self.classifier.classify_authors(authors)
@@ -140,9 +193,9 @@ class TestAuthorshipClassifier:
     def test_unknown_affiliations(self):
         """Test paper with unclear affiliations."""
         authors = [
-            Author(name="Person One", affiliation="Research Institute"),
-            Author(name="Person Two", affiliation="Advanced Technology Center"),
-            Author(name="Person Three", affiliation=""),
+            Author(name="Person One", affiliations=["Research Institute"]),
+            Author(name="Person Two", affiliations=["Advanced Technology Center"]),
+            Author(name="Person Three", affiliations=[]),
         ]
 
         analysis = self.classifier.classify_authors(authors)
@@ -154,10 +207,10 @@ class TestAuthorshipClassifier:
     def test_collaboration_patterns(self):
         """Test collaboration pattern analysis."""
         authors = [
-            Author(name="A", affiliation="MIT"),
-            Author(name="B", affiliation="Google"),
-            Author(name="C", affiliation="Stanford"),
-            Author(name="D", affiliation="Facebook AI Research"),
+            Author(name="A", affiliations=["MIT"]),
+            Author(name="B", affiliations=["Google"]),
+            Author(name="C", affiliations=["Stanford"]),
+            Author(name="D", affiliations=["Facebook AI Research"]),
         ]
 
         patterns = self.classifier.analyze_collaboration_patterns(authors)
@@ -228,16 +281,17 @@ class TestComputationalResearchFilter:
 
     def test_high_quality_ml_paper(self):
         """Test high-quality ML paper passes all filters."""
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="paper_281",
             title="Transformer-based Architecture for Large-Scale Learning",
             authors=[
-                Author(name="A", affiliation="MIT"),
-                Author(name="B", affiliation="Google Brain"),
+                Author(name="A", affiliations=["MIT"]),
+                Author(name="B", affiliations=["Google Brain"]),
             ],
             venue="ICML",
             year=2024,
-            citations=50,
-            abstract="""We present a novel transformer architecture that scales
+            citation_count=50,
+            abstract_text="""We present a novel transformer architecture that scales
             to billions of parameters. Our implementation achieves state-of-the-art
             results on multiple benchmarks. Training required 1000 GPU hours on
             a cluster of 256 V100 GPUs. Extensive experiments validate our approach.""",
@@ -258,13 +312,14 @@ class TestComputationalResearchFilter:
 
     def test_non_computational_paper(self):
         """Test non-computational paper is filtered out."""
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="paper_311",
             title="User Study of Mobile App Interfaces",
-            authors=[Author(name="X", affiliation="University of Design")],
+            authors=[Author(name="X", affiliations=["University of Design"])],
             venue="MobileHCI Workshop",
             year=2024,
-            citations=2,
-            abstract="""We conducted a user study with 20 participants to evaluate
+            citation_count=2,
+            abstract_text="""We conducted a user study with 20 participants to evaluate
             different mobile app interface designs.""",
         )
 
@@ -277,13 +332,14 @@ class TestComputationalResearchFilter:
     def test_batch_filtering(self):
         """Test batch filtering of multiple papers."""
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id="paper_330",
                 title=f"Paper {i}",
-                authors=[Author(name=f"Author {i}", affiliation="MIT")],
+                authors=[Author(name=f"Author {i}", affiliations=["MIT"])],
                 venue="NeurIPS" if i % 2 == 0 else "Unknown Conference",
                 year=2024,
-                citations=i * 10,
-                abstract="Deep learning algorithm with neural networks and GPU training. We implement and evaluate performance."
+                citation_count=i * 10,
+                abstract_text="Deep learning algorithm with neural networks and GPU training. We implement and evaluate performance."
                 if i % 2 == 0
                 else "User study",
             )
@@ -305,13 +361,14 @@ class TestComputationalResearchFilter:
         )
         strict_filter = ComputationalResearchFilter(strict_config)
 
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="paper_358",
             title="Machine Learning Application",
-            authors=[Author(name="A", affiliation="Small University")],
+            authors=[Author(name="A", affiliations=["Small University"])],
             venue="Regional ML Workshop",
             year=2024,
-            citations=5,
-            abstract="We apply machine learning to solve a practical problem.",
+            citation_count=5,
+            abstract_text="We apply machine learning to solve a practical problem.",
         )
 
         result = strict_filter.filter_paper(paper)
@@ -333,23 +390,25 @@ class TestFilteringPipelineIntegration:
     def test_realtime_filtering(self):
         """Test real-time filtering integration."""
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id="paper_386",
                 title="Deep Learning for NLP",
-                authors=[Author(name="A", affiliation="Stanford NLP Group")],
+                authors=[Author(name="A", affiliations=["Stanford NLP Group"])],
                 venue="ACL",
                 year=2024,
-                citations=30,
-                abstract="""We present a deep learning model for natural language
+                citation_count=30,
+                abstract_text="""We present a deep learning model for natural language
                 processing tasks. Our BERT-based architecture achieves new
                 state-of-the-art results on multiple benchmarks.""",
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_396",
                 title="Social Media Analysis",
-                authors=[Author(name="B", affiliation="Sociology Department")],
+                authors=[Author(name="B", affiliations=["Sociology Department"])],
                 venue="Social Computing Conference",
                 year=2024,
-                citations=5,
-                abstract="Analysis of social media trends and user behavior.",
+                citation_count=5,
+                abstract_text="Analysis of social media trends and user behavior.",
             ),
         ]
 
@@ -361,13 +420,14 @@ class TestFilteringPipelineIntegration:
     def test_performance_tracking(self):
         """Test performance statistics tracking."""
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id="paper_414",
                 title=f"Test Paper {i}",
                 authors=[],
                 venue="Test Venue",
                 year=2024,
-                citations=i,
-                abstract="Test abstract",
+                citation_count=i,
+                abstract_text="Test abstract",
             )
             for i in range(10)
         ]
@@ -396,21 +456,23 @@ class TestFilteringPipelineIntegration:
         self.pipeline.on_paper_filtered = on_filtered
 
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id="paper_449",
                 title="ML Paper",
-                authors=[Author(name="A", affiliation="MIT")],
+                authors=[Author(name="A", affiliations=["MIT"])],
                 venue="ICML",
                 year=2024,
-                citations=20,
-                abstract="Machine learning algorithm with neural networks. We implement a novel deep learning approach using distributed training on GPUs.",
+                citation_count=20,
+                abstract_text="Machine learning algorithm with neural networks. We implement a novel deep learning approach using distributed training on GPUs.",
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_457",
                 title="Non-CS Paper",
                 authors=[],
                 venue="Other Conference",
                 year=2024,
-                citations=1,
-                abstract="Non-computational content.",
+                citation_count=1,
+                abstract_text="Non-computational content.",
             ),
         ]
 

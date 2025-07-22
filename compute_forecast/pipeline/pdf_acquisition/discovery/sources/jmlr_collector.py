@@ -150,7 +150,15 @@ class JMLRCollector(BasePDFCollector):
         if paper.urls:
             for url in paper.urls:
                 # Pattern: jmlr.org/papers/v23/21-1234.html or similar
-                match = re.search(r"jmlr\.org/papers/v(\d+)/([^/\s]+)(?:\.html)?", url)
+                url_str = (
+                    url.data.url
+                    if hasattr(url, "data") and hasattr(url.data, "url")
+                    else str(url)
+                )
+                match = re.search(
+                    r"jmlr\.org/papers/v(\d+)/([^/\s]+)(?:\.html)?",
+                    url_str,
+                )
                 if match:
                     return {
                         "volume": match.group(1),
@@ -164,7 +172,15 @@ class JMLRCollector(BasePDFCollector):
             if paper.urls:
                 for url in paper.urls:
                     # Extract paper ID from URL
-                    match = re.search(r"/([^/]+?)(?:\.html)?$", url)
+                    url_str = (
+                        url.data.url
+                        if hasattr(url, "data") and hasattr(url.data, "url")
+                        else str(url)
+                    )
+                    match = re.search(
+                        r"/([^/]+?)(?:\.html)?$",
+                        url_str,
+                    )
                     if match:
                         paper_id = match.group(1)
                         break

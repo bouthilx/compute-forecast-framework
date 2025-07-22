@@ -1,0 +1,1 @@
+"""Parallel consolidation implementation."""

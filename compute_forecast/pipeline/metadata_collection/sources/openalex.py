@@ -2,7 +2,15 @@ import requests
 from datetime import datetime
 from typing import Dict, Any
 from .base import BaseCitationSource
-from ..models import Paper, Author, CollectionQuery, CollectionResult
+from ..models import (
+    Paper,
+    Author,
+    CollectionQuery,
+    CollectionResult,
+    CitationRecord,
+    URLRecord,
+)
+from ...consolidation.models import CitationData, URLData
 from ....core.config import ConfigManager
 from ....core.logging import setup_logging
 
@@ -46,7 +54,11 @@ class OpenAlexSource(BaseCitationSource):
                 for work in data.get("results", []):
                     try:
                         paper = self._parse_openalex_result(work, query)
-                        if paper and paper.citations >= query.min_citations:
+                        if (
+                            paper
+                            and paper.get_latest_citations_count()
+                            >= query.min_citations
+                        ):
                             papers.append(paper)
                     except Exception as e:
                         errors.append(f"Failed to parse work: {e}")
@@ -138,8 +150,7 @@ class OpenAlexSource(BaseCitationSource):
 
                             author = Author(
                                 name=author_name,
-                                affiliation=affiliation,
-                                author_id=author_info.get("id", "").strip(),
+                                affiliations=[affiliation] if affiliation else [],
                             )
                             authors.append(author)
 
@@ -174,10 +185,28 @@ class OpenAlexSource(BaseCitationSource):
             authors=authors,
             venue=venue,
             year=year,
-            citations=citations,
-            abstract="",  # Abstract not available in basic API response
+            abstracts=[],  # Abstract not available in basic API response
+            citations=[
+                CitationRecord(
+                    source="openalex",
+                    timestamp=datetime.now(),
+                    original=True,
+                    data=CitationData(count=citations),
+                )
+            ]
+            if citations > 0
+            else [],
             doi=work.get("doi", "").strip(),
-            urls=[str(work.get("id"))] if work.get("id") else [],
+            urls=[
+                URLRecord(
+                    source="openalex",
+                    timestamp=datetime.now(),
+                    original=True,
+                    data=URLData(url=str(work.get("id"))),
+                )
+            ]
+            if work.get("id")
+            else [],
             source="openalex",
             collection_timestamp=datetime.now(),
             mila_domain=query.domain,
@@ -224,8 +253,7 @@ class OpenAlexSource(BaseCitationSource):
 
                 author = Author(
                     name=author_info.get("display_name", ""),
-                    affiliation=affiliation,
-                    author_id=author_info.get("id", ""),
+                    affiliations=[affiliation] if affiliation else [],
                 )
                 authors.append(author)
 
@@ -238,10 +266,28 @@ class OpenAlexSource(BaseCitationSource):
                 authors=authors,
                 venue=venue_name,
                 year=work_data.get("publication_year", 0),
-                citations=work_data.get("cited_by_count", 0),
-                abstract="",  # Abstract not available in basic API response
+                abstracts=[],  # Abstract not available in basic API response
+                citations=[
+                    CitationRecord(
+                        source="openalex",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=CitationData(count=work_data.get("cited_by_count", 0)),
+                    )
+                ]
+                if work_data.get("cited_by_count", 0) > 0
+                else [],
                 doi=work_data.get("doi", ""),
-                urls=[str(work_data.get("id"))] if work_data.get("id") else [],
+                urls=[
+                    URLRecord(
+                        source="openalex",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=URLData(url=str(work_data.get("id"))),
+                    )
+                ]
+                if work_data.get("id")
+                else [],
                 source="openalex",
                 collection_timestamp=datetime.now(),
             )

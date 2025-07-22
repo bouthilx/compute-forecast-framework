@@ -5,6 +5,14 @@ from datetime import datetime
 from typing import List, Optional
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+    URLRecord,
+    URLData,
+)
 
 
 @dataclass
@@ -32,6 +40,9 @@ class SimplePaper:
     source_url: str = ""
     scraped_at: datetime = field(default_factory=datetime.now)
 
+    # Paper acceptance decision
+    decision: Optional[str] = None  # 'oral', 'poster', 'spotlight', or None
+
     # Quality indicators
     extraction_confidence: float = 1.0
 
@@ -39,18 +50,54 @@ class SimplePaper:
 
     def to_package_paper(self) -> Paper:
         """Convert to package's Paper model"""
+        # Create provenance records for scraped data
+        citations = []
+        if hasattr(self, "citations") and self.citations is not None:
+            citations.append(
+                CitationRecord(
+                    source=self.source_scraper,
+                    timestamp=self.scraped_at,
+                    original=True,  # This is from original scraper
+                    data=CitationData(count=self.citations),
+                )
+            )
+
+        abstracts = []
+        if self.abstract:
+            abstracts.append(
+                AbstractRecord(
+                    source=self.source_scraper,
+                    timestamp=self.scraped_at,
+                    original=True,  # This is from original scraper
+                    data=AbstractData(text=self.abstract, language="en"),
+                )
+            )
+
+        urls = []
+        for url in self.pdf_urls:
+            urls.append(
+                URLRecord(
+                    source=self.source_scraper,
+                    timestamp=self.scraped_at,
+                    original=True,  # This is from original scraper
+                    data=URLData(url=url),
+                )
+            )
+
         return Paper(
             title=self.title,
-            authors=[Author(name=name, affiliation="") for name in self.authors],
+            authors=[Author(name=name, affiliations=[]) for name in self.authors],
             venue=self.venue,
             year=self.year,
-            abstract=self.abstract or "",
+            citations=citations,
+            abstracts=abstracts,
             doi=self.doi or "",
-            urls=self.pdf_urls,
+            urls=urls,
             keywords=self.keywords,  # Pass through keywords
+            paper_id=self.paper_id,
+            arxiv_id=self.arxiv_id,
             collection_source=self.source_scraper,
             collection_timestamp=self.scraped_at,
-            citations=0,  # Default for scraped papers
         )
 
 

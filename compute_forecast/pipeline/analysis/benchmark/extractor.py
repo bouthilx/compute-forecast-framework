@@ -118,7 +118,8 @@ class AcademicBenchmarkExtractor:
 
         for paper in papers:
             # Check title and abstract for SOTA indicators
-            text_to_check = f"{paper.title} {paper.abstract}".lower()
+            abstract_text = paper.get_best_abstract() if paper.abstracts else ""
+            text_to_check = f"{paper.title} {abstract_text}".lower()
 
             # Check for explicit SOTA patterns
             for pattern in self.sota_patterns:
@@ -135,10 +136,11 @@ class AcademicBenchmarkExtractor:
                     break
 
             # Also check if paper has high citation count relative to year
-            if hasattr(paper, "citations") and paper.citations:
+            citations_count = paper.get_latest_citations_count()
+            if citations_count > 0:
                 years_since_pub = 2024 - paper.year
                 if years_since_pub > 0:
-                    citations_per_year = paper.citations / years_since_pub
+                    citations_per_year = citations_count / years_since_pub
                     if citations_per_year > 50:  # Threshold for high impact
                         if paper.paper_id:
                             sota_ids.add(paper.paper_id)
@@ -160,7 +162,8 @@ class AcademicBenchmarkExtractor:
         }
 
         # Get full text to analyze
-        text = getattr(paper, "full_text", "") or paper.abstract
+        abstract_text = paper.get_best_abstract() if paper.abstracts else ""
+        text = getattr(paper, "full_text", "") or abstract_text
 
         # Extract GPU information
         gpu_pattern = r"(\d+)\s*(?:x\s*)?([VATH]\d{2,3}|TPU|GPU)"
@@ -283,7 +286,8 @@ class AcademicBenchmarkExtractor:
     ) -> List[str]:
         """Extract benchmark datasets mentioned in the paper."""
         datasets = []
-        text = f"{paper.title} {paper.abstract}".lower()
+        abstract_text = paper.get_best_abstract() if paper.abstracts else ""
+        text = f"{paper.title} {abstract_text}".lower()
 
         # Domain-specific dataset patterns
         domain_datasets = {

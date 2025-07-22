@@ -6,6 +6,12 @@ from unittest.mock import patch
 import numpy as np
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     VenueConfig,
 )
@@ -18,6 +24,49 @@ from compute_forecast.pipeline.metadata_collection.processors.breakthrough_detec
 from compute_forecast.pipeline.metadata_collection.processors.adaptive_threshold_calculator import (
     AdaptiveThresholdCalculator,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count is not None and citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestCitationAnalysisIntegration:
@@ -77,14 +126,13 @@ class TestCitationAnalysisIntegration:
                 for i in range(5):
                     citations = np.random.poisson(100 - (2023 - year) * 20)
                     papers.append(
-                        Paper(
+                        create_test_paper(
                             paper_id=f"{venue}_{year}_high_{i}",
                             title=f"High Impact {venue} Paper {i}",
-                            abstract="This paper presents state-of-the-art results using novel methods.",
+                            abstract_text="This paper presents state-of-the-art results using novel methods.",
                             venue=venue,
-                            normalized_venue=venue,
                             year=year,
-                            citations=max(citations, 10),
+                            citation_count=max(citations, 10),
                             authors=[Author(name=f"Famous Author {i}")],
                         )
                     )
@@ -93,13 +141,12 @@ class TestCitationAnalysisIntegration:
                 for i in range(10):
                     citations = np.random.poisson(30 - (2023 - year) * 5)
                     papers.append(
-                        Paper(
+                        create_test_paper(
                             paper_id=f"{venue}_{year}_med_{i}",
                             title=f"Medium Impact {venue} Paper {i}",
                             venue=venue,
-                            normalized_venue=venue,
                             year=year,
-                            citations=max(citations, 0),
+                            citation_count=max(citations, 0),
                             authors=[Author(name=f"Regular Author {i}")],
                         )
                     )
@@ -114,14 +161,17 @@ class TestCitationAnalysisIntegration:
 
         for idx, title in enumerate(breakthrough_titles):
             papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"breakthrough_{idx}",
                     title=title,
-                    abstract="We present a groundbreaking new approach that achieves unprecedented results.",
-                    venue="NeurIPS" if idx % 2 == 0 else "ICML",
-                    normalized_venue="NeurIPS" if idx % 2 == 0 else "ICML",
+                    abstract_text="We present a groundbreaking new approach that achieves unprecedented results.",
+                    venue="NeurIPS"
+                    if idx % 2 == 0
+                    else "ICML"
+                    if idx % 2 == 0
+                    else "ICML",
                     year=2022 + idx % 2,
-                    citations=200 + idx * 50,
+                    citation_count=200 + idx * 50,
                     authors=[Author(name="Geoffrey Hinton"), Author(name="Yann LeCun")],
                 )
             )
@@ -129,13 +179,12 @@ class TestCitationAnalysisIntegration:
         # Add zero-citation papers
         for i in range(20):
             papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"zero_{i}",
                     title=f"Zero Citation Paper {i}",
                     venue="AISTATS",
-                    normalized_venue="AISTATS",
                     year=2023,
-                    citations=0,
+                    citation_count=0,
                     authors=[Author(name=f"New Author {i}")],
                 )
             )
@@ -203,13 +252,12 @@ class TestCitationAnalysisIntegration:
         for venue in papers_by_venue:
             for i in range(20):
                 papers_by_venue[venue].append(
-                    Paper(
+                    create_test_paper(
                         paper_id=f"{venue}_{i}",
                         title=f"{venue} Paper {i}",
                         venue=venue,
-                        normalized_venue=venue,
                         year=2023,
-                        citations=np.random.poisson(
+                        citation_count=np.random.poisson(
                             30 if venue == "NeurIPS" else 20 if venue == "CVPR" else 10
                         ),
                         authors=[Author(name=f"Author {i}")],
@@ -256,18 +304,14 @@ class TestCitationAnalysisIntegration:
             analyzer = CitationAnalyzer(venue_configs)
 
         # Get original venue distribution
-        original_venues = set(
-            p.normalized_venue for p in realistic_papers if p.normalized_venue
-        )
+        original_venues = set(p.venue for p in realistic_papers if p.venue)
 
         # Filter with moderate threshold
         filter_result = analyzer.filter_papers_by_citations(realistic_papers)
 
         # Check venue preservation
         filtered_venues = set(
-            p.normalized_venue
-            for p in filter_result.papers_above_threshold
-            if p.normalized_venue
+            p.venue for p in filter_result.papers_above_threshold if p.venue
         )
 
         # Should preserve most venues
@@ -289,24 +333,24 @@ class TestCitationAnalysisIntegration:
                 calculator.current_year = 2024
 
         papers_2023 = [
-            Paper(
+            create_test_paper(
                 paper_id=str(i),
                 title=f"Paper {i}",
                 venue="ICML",
                 year=2023,
-                citations=i * 5,
+                citation_count=i * 5,
                 authors=[Author(name="Test")],
             )
             for i in range(20)
         ]
 
         papers_2020 = [
-            Paper(
+            create_test_paper(
                 paper_id=str(i),
                 title=f"Paper {i}",
                 venue="ICML",
                 year=2020,
-                citations=i * 5,
+                citation_count=i * 5,
                 authors=[Author(name="Test")],
             )
             for i in range(20)
@@ -358,13 +402,12 @@ class TestCitationAnalysisIntegration:
         # Papers with complete data
         for i in range(100):
             mixed_papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"complete_{i}",
                     title=f"Complete Paper {i}",
                     venue="NeurIPS",
-                    normalized_venue="NeurIPS",
                     year=2022,
-                    citations=np.random.poisson(20),
+                    citation_count=np.random.poisson(20),
                     authors=[Author(name=f"Author {i}")],
                 )
             )
@@ -372,13 +415,12 @@ class TestCitationAnalysisIntegration:
         # Papers with missing citations
         for i in range(50):
             mixed_papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"no_cite_{i}",
                     title=f"No Citation Paper {i}",
                     venue="ICML",
-                    normalized_venue="ICML",
                     year=2022,
-                    citations=None,
+                    citation_count=None,
                     authors=[Author(name=f"Author {i}")],
                 )
             )
@@ -386,13 +428,12 @@ class TestCitationAnalysisIntegration:
         # Papers with missing venue
         for i in range(30):
             mixed_papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"no_venue_{i}",
                     title=f"No Venue Paper {i}",
                     venue=None,
-                    normalized_venue=None,
                     year=2022,
-                    citations=10,
+                    citation_count=10,
                     authors=[Author(name=f"Author {i}")],
                 )
             )

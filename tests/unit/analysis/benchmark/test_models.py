@@ -1,5 +1,7 @@
 """Tests for benchmark extraction data models."""
 
+from datetime import datetime
+
 # Import future models
 from compute_forecast.pipeline.analysis.benchmark.models import (
     BenchmarkDomain,
@@ -8,11 +10,61 @@ from compute_forecast.pipeline.analysis.benchmark.models import (
     BenchmarkExport,
     ExtractionQA,
 )
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     ComputationalAnalysis,
     Author,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestBenchmarkModels:
@@ -27,13 +79,13 @@ class TestBenchmarkModels:
 
     def test_benchmark_paper_creation(self):
         """Test creating a BenchmarkPaper instance."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test123",
             title="Test Paper",
             year=2023,
             venue="ICML",
             authors=[Author(name="Author 1")],
-            citations=50,
+            citation_count=50,
         )
         comp_analysis = ComputationalAnalysis(
             computational_richness=0.85,
@@ -67,13 +119,13 @@ class TestBenchmarkModels:
         """Test creating an ExtractionBatch instance."""
         papers = []
         for i in range(3):
-            paper = Paper(
+            paper = create_test_paper(
                 paper_id=f"paper{i}",
                 title=f"Paper {i}",
                 year=2023,
                 venue="NeurIPS",
                 authors=[Author(name=f"Author {i}")],
-                citations=10,
+                citation_count=10,
             )
             comp_analysis = ComputationalAnalysis(
                 computational_richness=0.8 - (i * 0.1),

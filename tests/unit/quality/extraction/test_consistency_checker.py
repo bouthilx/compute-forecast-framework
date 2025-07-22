@@ -3,13 +3,64 @@ Tests for ExtractionConsistencyChecker.
 """
 
 import numpy as np
+from datetime import datetime
 
 from compute_forecast.pipeline.content_extraction.quality.consistency_checker import (
     ExtractionConsistencyChecker,
     ConsistencyCheck,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from .test_helpers import MockComputationalAnalysis as ComputationalAnalysis
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestExtractionConsistencyChecker:
@@ -22,13 +73,13 @@ class TestExtractionConsistencyChecker:
         # Create test papers with increasing computational requirements
         self.papers = []
         for i, year in enumerate([2019, 2020, 2021, 2022, 2023]):
-            paper = Paper(
+            paper = create_test_paper(
                 paper_id=f"paper_{year}",
                 title=f"Model Training {year}",
                 year=year,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             )
             # Exponentially increasing requirements
             paper.computational_analysis = ComputationalAnalysis(
@@ -61,13 +112,13 @@ class TestExtractionConsistencyChecker:
     def test_temporal_consistency_with_outlier(self):
         """Test temporal consistency with outlier."""
         # Add outlier paper
-        outlier_paper = Paper(
+        outlier_paper = create_test_paper(
             paper_id="outlier",
             title="Outlier",
             year=2022,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
         outlier_paper.computational_analysis = ComputationalAnalysis(
             gpu_hours=1000000  # Way too high
@@ -86,13 +137,13 @@ class TestExtractionConsistencyChecker:
         # Create similar papers
         similar_papers = []
         for i in range(5):
-            paper = Paper(
+            paper = create_test_paper(
                 paper_id=f"similar_{i}",
                 title=f"Similar Model {i}",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             )
             paper.computational_analysis = ComputationalAnalysis(
                 gpu_hours=1000 + np.random.normal(0, 50)  # Small variation
@@ -113,13 +164,13 @@ class TestExtractionConsistencyChecker:
         # Use 10 papers where 3 are outliers (> 20% outliers)
         values = [100, 100, 100, 100, 100, 100, 100, 100000, 100000, 100000]
         for i, val in enumerate(values):
-            paper = Paper(
+            paper = create_test_paper(
                 paper_id=f"varied_{i}",
                 title=f"Varied Model {i}",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             )
             paper.computational_analysis = ComputationalAnalysis(gpu_hours=val)
             varied_papers.append(paper)
@@ -132,13 +183,13 @@ class TestExtractionConsistencyChecker:
 
     def test_domain_consistency_nlp(self):
         """Test domain-specific consistency for NLP."""
-        nlp_paper = Paper(
+        nlp_paper = create_test_paper(
             paper_id="nlp_1",
             title="Transformer Language Model Training",
             year=2023,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
 
         # Valid NLP extraction
@@ -156,13 +207,13 @@ class TestExtractionConsistencyChecker:
 
     def test_domain_consistency_cv(self):
         """Test domain-specific consistency for computer vision."""
-        cv_paper = Paper(
+        cv_paper = create_test_paper(
             paper_id="cv_1",
             title="Image Classification with Deep CNNs",
             year=2023,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
 
         # CV extraction with some violations
@@ -225,29 +276,29 @@ class TestExtractionConsistencyChecker:
         """Test domain determination from paper title."""
         # NLP papers
         nlp_papers = [
-            Paper(
+            create_test_paper(
                 paper_id="1",
                 title="Transformer Language Model",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="2",
                 title="BERT: Pre-training of Deep Bidirectional Transformers",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="3",
                 title="GPT-3: Language Models are Few-Shot Learners",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
         ]
         for paper in nlp_papers:
@@ -255,29 +306,29 @@ class TestExtractionConsistencyChecker:
 
         # CV papers
         cv_papers = [
-            Paper(
+            create_test_paper(
                 paper_id="4",
                 title="Deep Residual Learning for Image Recognition",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="5",
                 title="YOLO: Real-Time Object Detection",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="6",
                 title="Vision Transformer for Image Classification",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
         ]
         for paper in cv_papers:
@@ -285,41 +336,41 @@ class TestExtractionConsistencyChecker:
 
         # RL papers
         rl_papers = [
-            Paper(
+            create_test_paper(
                 paper_id="7",
                 title="Deep Reinforcement Learning with Policy Gradients",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="8",
                 title="PPO: Proximal Policy Optimization",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="9",
                 title="Multi-Agent Reinforcement Learning",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
         ]
         for paper in rl_papers:
             assert self.checker._determine_domain(paper) == "rl"
 
         # General papers
-        general_paper = Paper(
+        general_paper = create_test_paper(
             paper_id="10",
             title="A Study of Machine Learning Algorithms",
             year=2023,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
         assert self.checker._determine_domain(general_paper) == "general"

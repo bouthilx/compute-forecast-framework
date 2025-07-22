@@ -2,6 +2,12 @@
 
 from datetime import datetime
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     VenueConfig,
 )
@@ -9,6 +15,50 @@ from compute_forecast.pipeline.metadata_collection.processors import (
     CitationAnalyzer,
     CitationConfig,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count != 0:  # Include negative citations for edge case testing
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestCitationAnalyzerEdgeCases:
@@ -27,21 +77,21 @@ class TestCitationAnalyzerEdgeCases:
         """Test handling of papers with years in the future."""
         current_year = datetime.now().year
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="valid1",
                 title="Valid Paper",
                 authors=[Author(name="Author A")],
                 year=current_year - 1,
                 venue="NeurIPS",
-                citations=10,
+                citation_count=10,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="future1",
                 title="Future Paper",
                 authors=[Author(name="Author B")],
                 year=current_year + 5,  # Future year
                 venue="ICML",
-                citations=5,
+                citation_count=5,
             ),
         ]
 
@@ -56,21 +106,21 @@ class TestCitationAnalyzerEdgeCases:
     def test_papers_with_negative_citations(self):
         """Test handling of papers with negative citation counts."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="valid1",
                 title="Valid Paper",
                 authors=[Author(name="Author A")],
                 year=2020,
                 venue="NeurIPS",
-                citations=10,
+                citation_count=10,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="negative1",
                 title="Negative Citations Paper",
                 authors=[Author(name="Author B")],
                 year=2020,
                 venue="ICML",
-                citations=-5,  # Negative citations
+                citation_count=-5,  # Negative citations
             ),
         ]
 
@@ -81,21 +131,21 @@ class TestCitationAnalyzerEdgeCases:
     def test_papers_with_extremely_high_citations(self):
         """Test handling of papers with extremely high citation counts."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="normal1",
                 title="Normal Paper",
                 authors=[Author(name="Author A")],
                 year=2020,
                 venue="NeurIPS",
-                citations=100,
+                citation_count=100,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="extreme1",
                 title="Extremely Cited Paper",
                 authors=[Author(name="Author B")],
                 year=2020,
                 venue="ICML",
-                citations=1000000,  # Extremely high
+                citation_count=1000000,  # Extremely high
             ),
         ]
 
@@ -110,29 +160,29 @@ class TestCitationAnalyzerEdgeCases:
     def test_papers_with_none_values(self):
         """Test handling of papers with None values in various fields."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="none1",
                 title="Paper with None Year",
                 authors=[Author(name="Author A")],
                 year=None,  # None year
                 venue="NeurIPS",
-                citations=10,
+                citation_count=10,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="none2",
                 title="Paper with None Venue",
                 authors=[Author(name="Author B")],
                 year=2020,
                 venue=None,  # None venue
-                citations=20,
+                citation_count=20,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="none3",
                 title="Paper with None Citations",
                 authors=[Author(name="Author C")],
                 year=2021,
                 venue="ICML",
-                citations=None,  # None citations
+                citation_count=0,  # None citations
             ),
         ]
 
@@ -140,19 +190,19 @@ class TestCitationAnalyzerEdgeCases:
         report = self.analyzer.analyze_citation_distributions(papers)
         assert report.papers_analyzed == 3
 
-        # Papers with None citations should be tracked
-        assert len([p for p in papers if p.citations is None]) >= 1
+        # Papers with empty citations should be tracked
+        assert len([p for p in papers if len(p.citations) == 0]) >= 1
 
     def test_empty_venue_analysis(self):
         """Test venue analysis when no papers match a venue."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="p1",
                 title="Paper 1",
                 authors=[Author(name="Author A")],
                 year=2020,
                 venue="UnknownVenue",  # Not in venue configs
-                citations=10,
+                citation_count=10,
             )
         ]
 
@@ -167,13 +217,13 @@ class TestCitationAnalyzerEdgeCases:
         """Test handling of papers published in the current year (division by zero risk)."""
         current_year = datetime.now().year
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="current1",
                 title="Current Year Paper",
                 authors=[Author(name="Author A")],
                 year=current_year,  # Current year
                 venue="NeurIPS",
-                citations=5,
+                citation_count=5,
             )
         ]
 
@@ -188,13 +238,13 @@ class TestCitationAnalyzerEdgeCases:
     def test_papers_with_empty_authors_list(self):
         """Test handling of papers with empty authors list."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="no_authors",
                 title="Paper with No Authors",
                 authors=[],  # Empty authors list
                 year=2020,
                 venue="NeurIPS",
-                citations=10,
+                citation_count=10,
             )
         ]
 
@@ -206,13 +256,13 @@ class TestCitationAnalyzerEdgeCases:
     def test_papers_with_special_characters(self):
         """Test handling of papers with special characters in fields."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="special1",
                 title="Paper with émojis 🚀 and spëcial çharacters",
                 authors=[Author(name="Authör Ñame")],
                 year=2020,
                 venue="NeurIPS/Workshop",  # Special char in venue
-                citations=10,
+                citation_count=10,
             )
         ]
 
@@ -223,13 +273,13 @@ class TestCitationAnalyzerEdgeCases:
     def test_very_old_papers(self):
         """Test handling of very old papers (edge case for year calculations)."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="old1",
                 title="Very Old Paper",
                 authors=[Author(name="Historical Author")],
                 year=1950,  # Very old
                 venue="Ancient Conference",
-                citations=1000,
+                citation_count=1000,
             )
         ]
 
@@ -252,13 +302,13 @@ class TestCitationAnalyzerEdgeCases:
         # Create papers for all combinations
         for i, (venue, year) in enumerate([(v, y) for v in venues for y in years]):
             papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"p{i}",
                     title=f"Paper {i}",
                     authors=[Author(name=f"Author {i}")],
                     year=year,
                     venue=venue,
-                    citations=i * 2,
+                    citation_count=i * 2,
                 )
             )
 
@@ -270,13 +320,13 @@ class TestCitationAnalyzerEdgeCases:
     def test_filtering_with_all_papers_below_threshold(self):
         """Test filtering when all papers are below threshold."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"low{i}",
                 title=f"Low Citation Paper {i}",
                 authors=[Author(name=f"Author {i}")],
                 year=2020,
                 venue="NeurIPS",
-                citations=0,  # All have zero citations
+                citation_count=0,  # All have zero citations
             )
             for i in range(10)
         ]
@@ -286,19 +336,21 @@ class TestCitationAnalyzerEdgeCases:
             papers, preserve_breakthroughs=False
         )
         assert result.original_count == 10
-        # At least some papers should be kept due to minimum representation
-        assert result.filtered_count >= 1
+        # All papers have no citations, so all should be filtered out
+        assert result.filtered_count == 0
+        assert len(result.papers_below_threshold) == 10
+        assert result.filtering_statistics["no_citation_data"] == 10
 
     def test_validate_filtering_quality_extreme_cases(self):
         """Test quality validation with extreme filtering results."""
         all_papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"p{i}",
                 title=f"Paper {i}",
                 authors=[Author(name=f"Author {i}")],
                 year=2020,
                 venue="NeurIPS" if i < 5 else "ICML",
-                citations=100 if i < 2 else 1,
+                citation_count=100 if i < 2 else 1,
             )
             for i in range(10)
         ]

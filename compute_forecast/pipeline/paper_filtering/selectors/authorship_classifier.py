@@ -236,10 +236,13 @@ class AuthorshipClassifier:
             author_details.append(
                 {
                     "name": author.name,
-                    "affiliation": author.affiliation,
+                    "affiliation": author.affiliations[0]
+                    if author.affiliations
+                    else "",
                     "classification": classification,
                     "confidence": self._get_classification_confidence(
-                        author.affiliation, classification
+                        author.affiliations[0] if author.affiliations else "",
+                        classification,
                     ),
                 }
             )
@@ -272,10 +275,10 @@ class AuthorshipClassifier:
 
     def _classify_single_author(self, author: Author) -> str:
         """Classify a single author's affiliation."""
-        if not author.affiliation:
+        if not author.affiliations or not author.affiliations[0]:
             return "unknown"
 
-        affiliation_lower = author.affiliation.lower()
+        affiliation_lower = author.affiliations[0].lower()
 
         # Check known institutions first
         for academic_inst in self.known_academic:
@@ -467,9 +470,9 @@ class AuthorshipClassifier:
         # Extract primary affiliations
         affiliation_counts: Counter[str] = Counter()
         for author in authors:
-            if author.affiliation:
+            if author.affiliations and author.affiliations[0]:
                 # Extract institution name (simplified)
-                inst_name = self._extract_institution_name(author.affiliation)
+                inst_name = self._extract_institution_name(author.affiliations[0])
                 if inst_name:
                     affiliation_counts[inst_name] += 1
 

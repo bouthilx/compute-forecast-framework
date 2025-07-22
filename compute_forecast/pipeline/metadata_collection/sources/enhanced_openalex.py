@@ -6,7 +6,16 @@ Real implementation with API integration, retry logic, and error handling
 import time
 import requests
 from typing import List, Optional, Dict, Any
-from ..models import Paper, Author, APIResponse, ResponseMetadata, APIError
+from ..models import (
+    Paper,
+    Author,
+    APIResponse,
+    ResponseMetadata,
+    APIError,
+    AbstractRecord,
+    CitationRecord,
+)
+from ...consolidation.models import AbstractData, CitationData
 from datetime import datetime
 import logging
 import re
@@ -154,11 +163,7 @@ class EnhancedOpenAlexClient:
                         authors.append(
                             Author(
                                 name=author_info.get("display_name", ""),
-                                author_id=author_info.get("id", "").replace(
-                                    "https://openalex.org/", ""
-                                )
-                                if author_info.get("id")
-                                else "",
+                                affiliations=[],
                             )
                         )
 
@@ -193,8 +198,26 @@ class EnhancedOpenAlexClient:
                         authors=authors,
                         venue=venue,
                         year=item.get("publication_year", 0),
-                        citations=item.get("cited_by_count", 0),
-                        abstract=abstract,
+                        abstracts=[
+                            AbstractRecord(
+                                source="openalex",
+                                timestamp=datetime.now(),
+                                original=True,
+                                data=AbstractData(text=abstract),
+                            )
+                        ]
+                        if abstract
+                        else [],
+                        citations=[
+                            CitationRecord(
+                                source="openalex",
+                                timestamp=datetime.now(),
+                                original=True,
+                                data=CitationData(count=item.get("cited_by_count", 0)),
+                            )
+                        ]
+                        if item.get("cited_by_count", 0) > 0
+                        else [],
                         openalex_id=openalex_id,
                         doi=doi,
                         collection_source="openalex",

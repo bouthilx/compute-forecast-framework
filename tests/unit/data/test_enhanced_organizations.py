@@ -1,11 +1,66 @@
 """Test suite for enhanced organization classification system."""
 
 import pytest
+from datetime import datetime
+
 from compute_forecast.pipeline.analysis.classification.enhanced_organizations import (
     EnhancedOrganizationClassifier,
     OrganizationType,
     OrganizationRecord,
 )
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+from compute_forecast.pipeline.metadata_collection.models import (
+    Paper,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestEnhancedOrganizationClassifier:
@@ -234,23 +289,25 @@ class TestClassificationValidator:
 
     def test_validation_accuracy_calculation(self, validator):
         """Test accuracy calculation on known test cases."""
-        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Author
 
         # Create test papers with known classifications
         test_papers = [
-            Paper(
+            create_test_paper(
+                paper_id="test1",
                 title="Test Paper 1",
-                authors=[Author(name="John Doe", affiliation="MIT")],
+                authors=[Author(name="John Doe", affiliations=["MIT"])],
                 venue="NeurIPS",
                 year=2023,
-                citations=10,
+                citation_count=10,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="test2",
                 title="Test Paper 2",
-                authors=[Author(name="Jane Smith", affiliation="Google Research")],
+                authors=[Author(name="Jane Smith", affiliations=["Google Research"])],
                 venue="ICML",
                 year=2023,
-                citations=5,
+                citation_count=5,
             ),
         ]
 
@@ -262,19 +319,20 @@ class TestClassificationValidator:
 
     def test_edge_case_identification(self, validator):
         """Test identification of classification edge cases."""
-        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Author
 
         # Create paper with mixed affiliations (edge case)
-        Paper(
+        create_test_paper(
+            paper_id="edge1",
             title="Edge Case Paper",
             authors=[
-                Author(name="Author 1", affiliation="MIT"),
-                Author(name="Author 2", affiliation="Google"),
-                Author(name="Author 3", affiliation="Unknown Org"),
+                Author(name="Author 1", affiliations=["MIT"]),
+                Author(name="Author 2", affiliations=["Google"]),
+                Author(name="Author 3", affiliations=["Unknown Org"]),
             ],
             venue="Conference",
             year=2023,
-            citations=0,
+            citation_count=0,
         )
 
         failures = validator.identify_failures()
@@ -283,15 +341,16 @@ class TestClassificationValidator:
 
     def test_confidence_distribution_analysis(self, validator):
         """Test analysis of confidence score distribution."""
-        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Author
 
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id=f"test{i}",
                 title=f"Paper {i}",
-                authors=[Author(name=f"Author {i}", affiliation=aff)],
+                authors=[Author(name=f"Author {i}", affiliations=[aff])],
                 venue="Venue",
                 year=2023,
-                citations=i,
+                citation_count=i,
             )
             for i, aff in enumerate(
                 ["MIT", "Google", "Unknown University", "Random Corp"]
@@ -396,18 +455,19 @@ class TestPaperAuthorClassification:
 
     def test_academic_paper_classification(self, classifier):
         """Test classification of purely academic papers."""
-        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Author
 
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="acad1",
             title="Academic Paper",
             authors=[
-                Author(name="Prof A", affiliation="MIT"),
-                Author(name="Prof B", affiliation="Stanford University"),
-                Author(name="Prof C", affiliation="University of Toronto"),
+                Author(name="Prof A", affiliations=["MIT"]),
+                Author(name="Prof B", affiliations=["Stanford University"]),
+                Author(name="Prof C", affiliations=["University of Toronto"]),
             ],
             venue="NeurIPS",
             year=2023,
-            citations=50,
+            citation_count=50,
         )
 
         result = classifier.classify_paper_authors(paper.authors)
@@ -418,19 +478,20 @@ class TestPaperAuthorClassification:
 
     def test_industry_paper_classification(self, classifier):
         """Test classification of industry-dominated papers."""
-        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Author
 
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="ind1",
             title="Industry Paper",
             authors=[
-                Author(name="Researcher A", affiliation="Google Research"),
-                Author(name="Researcher B", affiliation="Microsoft Research"),
-                Author(name="Researcher C", affiliation="Meta AI"),
-                Author(name="Prof D", affiliation="MIT"),  # One academic
+                Author(name="Researcher A", affiliations=["Google Research"]),
+                Author(name="Researcher B", affiliations=["Microsoft Research"]),
+                Author(name="Researcher C", affiliations=["Meta AI"]),
+                Author(name="Prof D", affiliations=["MIT"]),  # One academic
             ],
             venue="ICML",
             year=2023,
-            citations=100,
+            citation_count=100,
         )
 
         result = classifier.classify_paper_authors(paper.authors)
@@ -441,20 +502,21 @@ class TestPaperAuthorClassification:
 
     def test_borderline_paper_classification(self, classifier):
         """Test classification of papers near 25% threshold."""
-        from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+        from compute_forecast.pipeline.metadata_collection.models import Author
 
         # Exactly 25% industry (should be academic)
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="border1",
             title="Borderline Paper",
             authors=[
-                Author(name="A", affiliation="MIT"),
-                Author(name="B", affiliation="Stanford"),
-                Author(name="C", affiliation="Harvard"),
-                Author(name="D", affiliation="Google"),  # 25% industry
+                Author(name="A", affiliations=["MIT"]),
+                Author(name="B", affiliations=["Stanford"]),
+                Author(name="C", affiliations=["Harvard"]),
+                Author(name="D", affiliations=["Google"]),  # 25% industry
             ],
             venue="Conference",
             year=2023,
-            citations=20,
+            citation_count=20,
         )
 
         result = classifier.classify_paper_authors(paper.authors)

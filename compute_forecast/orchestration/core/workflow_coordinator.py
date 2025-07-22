@@ -372,11 +372,13 @@ class WorkflowCoordinator:
         for i in range(count):
             paper = Paper(
                 title=f"{venue} Paper {i + 1} {year}",
-                authors=[Author(name=f"Author {i + 1}", affiliation="Test University")],
+                authors=[
+                    Author(name=f"Author {i + 1}", affiliations=["Test University"])
+                ],
                 venue=venue,
                 year=year,
-                citations=max(0, 50 - i),  # Decreasing citations
-                abstract=f"Abstract for {venue} paper {i + 1} from {year}",
+                abstracts=[],
+                citations=[],
                 collection_source="mock_api",
             )
             papers.append(paper)

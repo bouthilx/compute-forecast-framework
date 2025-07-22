@@ -225,8 +225,10 @@ class TestEnhancedSemanticScholarClient:
             assert paper.authors[0].name == "Dr. Jane Smith"
             assert paper.venue == "ICML"
             assert paper.year == 2023
-            assert paper.citations == 42
-            assert "advanced machine learning" in paper.abstract.lower()
+            assert paper.get_latest_citations_count() == 42
+            # Check abstract from abstracts list
+            assert len(paper.abstracts) > 0
+            assert "advanced machine learning" in paper.abstracts[0].data.text.lower()
             assert paper.collection_source == "semantic_scholar"
 
 
@@ -325,7 +327,8 @@ class TestEnhancedOpenAlexClient:
             result = self.client.search_papers(query, year)
 
             # Should reconstruct abstract correctly
-            assert result.papers[0].abstract == "This is a test abstract"
+            assert len(result.papers[0].abstracts) > 0
+            assert result.papers[0].abstracts[0].data.text == "This is a test abstract"
 
     @pytest.mark.skip(reason="refactor: Slow test")
     def test_openAlex_cursor_pagination(self):
@@ -415,7 +418,8 @@ class TestEnhancedCrossrefClient:
 
             # Should clean JATS XML tags
             expected_abstract = "This is a test abstract with formatting."
-            assert result.papers[0].abstract == expected_abstract
+            assert len(result.papers[0].abstracts) > 0
+            assert result.papers[0].abstracts[0].data.text == expected_abstract
 
     def test_search_venue_batch_crossref_query_syntax(self):
         """Test Crossref-specific query syntax for venue batching"""

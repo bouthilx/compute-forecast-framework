@@ -3,6 +3,12 @@
 import pytest
 from datetime import datetime
 
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     ComputationalAnalysis,
@@ -14,6 +20,50 @@ from compute_forecast.core.contracts.analysis_contracts import (
     PaperMetadataContract,
     ResourceMetricsContract,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestComputationalAnalysisContract:
@@ -220,14 +270,14 @@ class TestPaperMetadataContract:
     @pytest.fixture
     def valid_paper(self):
         """Provide valid paper instance."""
-        return Paper(
+        return create_test_paper(
             paper_id="123",
             title="Test Paper",
-            authors=[Author(name="Test Author", affiliation="Test University")],
+            authors=[Author(name="Test Author", affiliations=["Test University"])],
             venue="ICML",
             year=2024,
-            citations=10,
-            abstract="Test abstract",
+            citation_count=10,
+            abstract_text="Test abstract",
         )
 
     def test_contract_properties(self, contract):
@@ -254,7 +304,7 @@ class TestPaperMetadataContract:
             "authors": [{"name": "Test Author"}],
             "venue": "ICML",
             "year": 2024,
-            "citations": 10,
+            "citations": [],  # Empty list of CitationRecord objects
         }
 
         violations = contract.validate(paper_dict)
@@ -350,15 +400,15 @@ class TestPaperMetadataContract:
         assert len(year_violations) == 1
         assert year_violations[0].violation_type == ContractViolationType.OUT_OF_RANGE
 
-    def test_validate_negative_citations(self, contract):
-        """Test validation with negative citations."""
+    def test_validate_invalid_citations_type(self, contract):
+        """Test validation with invalid citations type."""
         paper_dict = {
             "paper_id": "123",
             "title": "Test Paper",
             "authors": [{"name": "Test Author"}],
             "venue": "ICML",
             "year": 2024,
-            "citations": -5,  # Negative
+            "citations": -5,  # Integer instead of list
         }
 
         violations = contract.validate(paper_dict)
@@ -366,7 +416,7 @@ class TestPaperMetadataContract:
         citation_violations = [v for v in violations if v.field_name == "citations"]
         assert len(citation_violations) == 1
         assert (
-            citation_violations[0].violation_type == ContractViolationType.OUT_OF_RANGE
+            citation_violations[0].violation_type == ContractViolationType.INVALID_TYPE
         )
 
     def test_validate_no_identifiers(self, contract):

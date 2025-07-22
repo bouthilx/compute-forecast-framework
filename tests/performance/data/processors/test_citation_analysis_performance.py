@@ -8,15 +8,65 @@ import psutil
 import os
 
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.collectors.state_structures import (
     VenueConfig,
 )
 from compute_forecast.pipeline.metadata_collection.processors.citation_analyzer import (
     CitationAnalyzer,
 )
+from datetime import datetime
 from compute_forecast.pipeline.metadata_collection.processors.breakthrough_detector import (
     BreakthroughDetector,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestCitationAnalysisPerformance:
@@ -74,14 +124,13 @@ class TestCitationAnalysisPerformance:
             for i in range(batch_size):
                 paper_id = batch * batch_size + i
                 papers.append(
-                    Paper(
+                    create_test_paper(
                         paper_id=f"paper_{paper_id}",
                         title=f"Paper {paper_id}",
-                        abstract="This is a test paper for performance evaluation.",
+                        abstract_text="This is a test paper for performance evaluation.",
                         venue=venues[venue_indices[i]],
-                        normalized_venue=venues[venue_indices[i]],
                         year=int(years[i]),
-                        citations=int(citations[i]),
+                        citation_count=int(citations[i]),
                         authors=[
                             Author(name=f"Author {paper_id % 1000}"),
                             Author(name=f"CoAuthor {paper_id % 500}"),

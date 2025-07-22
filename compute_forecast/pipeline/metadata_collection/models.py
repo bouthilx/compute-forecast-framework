@@ -3,17 +3,19 @@ from typing import List, Optional, Dict, Any, Literal
 from datetime import datetime, timedelta
 import threading
 
+from ..consolidation.models import (
+    CitationRecord,
+    AbstractRecord,
+    URLRecord,
+    IdentifierRecord,
+)
+
 
 @dataclass
 class Author:
     name: str
-    affiliation: str = ""
-    author_id: str = ""
+    affiliations: List[str] = field(default_factory=list)
     email: str = ""
-
-    def normalize_affiliation(self) -> str:
-        """Get normalized affiliation string"""
-        return self.affiliation.lower().strip()
 
 
 @dataclass
@@ -49,10 +51,11 @@ class Paper:
     authors: List[Author]
     venue: str
     year: int
-    citations: int
-    abstract: str = ""
+    citations: List[CitationRecord] = field(default_factory=list)
+    abstracts: List[AbstractRecord] = field(default_factory=list)
     doi: str = ""
-    urls: List[str] = field(default_factory=list)
+    urls: List[URLRecord] = field(default_factory=list)
+    identifiers: List[IdentifierRecord] = field(default_factory=list)
 
     # Core identifiers (at least one required)
     paper_id: Optional[str] = None  # Semantic Scholar ID
@@ -84,11 +87,55 @@ class Paper:
     selection_rank: Optional[int] = None
     benchmark_type: str = ""  # 'academic' or 'industry'
 
+    def get_latest_citations_count(self) -> int:
+        """Get highest citation count from all sources"""
+        if not self.citations:
+            return 0
+        return max(record.data.count for record in self.citations)
+
+    def get_best_abstract(self) -> str:
+        """Get best abstract (original if available, else first found)"""
+        # Prioritize original abstracts
+        for record in self.abstracts:
+            if record.original:
+                return record.data.text
+        # Fall back to first non-original
+        if self.abstracts:
+            return self.abstracts[0].data.text
+        return ""
+
+    def get_best_urls(self) -> List[str]:
+        """Get URLs (original if available, else all)"""
+        # Get original URLs first
+        original_urls = [record.data.url for record in self.urls if record.original]
+        if original_urls:
+            return original_urls
+        # Fall back to all URLs
+        return [record.data.url for record in self.urls]
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert paper to dictionary for JSON serialization"""
         result: Dict[str, Any] = {}
         for key, value in self.__dict__.items():
-            if isinstance(value, list) and value and hasattr(value[0], "__dict__"):
+            if isinstance(value, datetime):
+                result[key] = value.isoformat()
+            elif key in [
+                "citations",
+                "abstracts",
+                "urls",
+                "identifiers",
+            ] and isinstance(value, list):
+                # Special handling for provenance records
+                result[key] = []
+                for record in value:
+                    record_dict = {
+                        "source": record.source,
+                        "timestamp": record.timestamp.isoformat(),
+                        "original": record.original,
+                        "data": record.data.__dict__,
+                    }
+                    result[key].append(record_dict)
+            elif isinstance(value, list) and value and hasattr(value[0], "__dict__"):
                 result[key] = [item.__dict__ for item in value]
             elif hasattr(value, "__dict__"):
                 result[key] = value.__dict__ if value else None
@@ -96,11 +143,57 @@ class Paper:
                 result[key] = value
         return result
 
+    def update_identifiers_from_records(self):
+        """Update individual identifier fields from identifier records"""
+        for record in self.identifiers:
+            id_type = record.data.identifier_type
+            id_value = record.data.identifier_value
+
+            if id_type == "doi" and not self.doi:
+                self.doi = id_value
+            elif id_type == "arxiv" and not self.arxiv_id:
+                self.arxiv_id = id_value
+            elif id_type == "openalex" and not self.openalex_id:
+                self.openalex_id = id_value
+            elif id_type == "s2_paper" and not self.paper_id:
+                self.paper_id = id_value
+            # Store new identifier types in processing_flags
+            else:
+                if "discovered_identifiers" not in self.processing_flags:
+                    self.processing_flags["discovered_identifiers"] = {}
+                self.processing_flags["discovered_identifiers"][id_type] = id_value
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Paper":
         """Create Paper from dictionary"""
-        # Handle authors
-        authors = [Author(**author_data) for author_data in data.get("authors", [])]
+        # Handle authors with backward compatibility
+        authors = []
+        for author_data in data.get("authors", []):
+            if isinstance(author_data, dict):
+                # Handle old format (affiliation as string) to new format (affiliations as list)
+                if "affiliation" in author_data:
+                    author_data = author_data.copy()
+                    affiliation_value = author_data.pop("affiliation")
+                    if "affiliations" not in author_data:
+                        author_data["affiliations"] = (
+                            [affiliation_value] if affiliation_value else []
+                        )
+                # Handle None affiliations
+                if author_data.get("affiliations") is None:
+                    author_data = author_data.copy()
+                    author_data["affiliations"] = []
+                # Handle None email
+                if author_data.get("email") is None:
+                    author_data = author_data.copy()
+                    author_data["email"] = ""
+                # Remove author_id if present (no longer part of model)
+                if "author_id" in author_data:
+                    author_data = author_data.copy()
+                    author_data.pop("author_id", None)
+                authors.append(Author(**author_data))
+            elif isinstance(author_data, str):
+                # Handle simple string author names from scrapers
+                authors.append(Author(name=author_data, affiliations=[]))
 
         # Handle analysis objects
         comp_analysis = None
@@ -115,9 +208,106 @@ class Paper:
         if data.get("venue_analysis"):
             venue_analysis = VenueAnalysis(**data["venue_analysis"])
 
+        # Handle provenance fields (citations, abstracts, urls)
+        citations = []
+        if data.get("citations"):
+            from ..consolidation.models import CitationRecord, CitationData
+
+            for record in data["citations"]:
+                citations.append(
+                    CitationRecord(
+                        source=record["source"],
+                        timestamp=datetime.fromisoformat(record["timestamp"]),
+                        original=record.get("original", False),
+                        data=CitationData(count=record["data"]["count"]),
+                    )
+                )
+
+        abstracts = []
+        if data.get("abstracts"):
+            from ..consolidation.models import AbstractRecord, AbstractData
+
+            for record in data["abstracts"]:
+                abstracts.append(
+                    AbstractRecord(
+                        source=record["source"],
+                        timestamp=datetime.fromisoformat(record["timestamp"]),
+                        original=record.get("original", False),
+                        data=AbstractData(
+                            text=record["data"]["text"],
+                            language=record["data"].get("language", "en"),
+                        ),
+                    )
+                )
+
+        urls = []
+        if data.get("urls"):
+            from ..consolidation.models import URLRecord, URLData
+
+            for record in data["urls"]:
+                urls.append(
+                    URLRecord(
+                        source=record["source"],
+                        timestamp=datetime.fromisoformat(record["timestamp"]),
+                        original=record.get("original", False),
+                        data=URLData(url=record["data"]["url"]),
+                    )
+                )
+
+        identifiers = []
+        if data.get("identifiers"):
+            from ..consolidation.models import IdentifierRecord, IdentifierData
+
+            for record in data["identifiers"]:
+                identifiers.append(
+                    IdentifierRecord(
+                        source=record["source"],
+                        timestamp=datetime.fromisoformat(record["timestamp"]),
+                        original=record.get("original", False),
+                        data=IdentifierData(
+                            identifier_type=record["data"]["identifier_type"],
+                            identifier_value=record["data"]["identifier_value"],
+                        ),
+                    )
+                )
+
         # Create paper with processed data
         paper_data = data.copy()
+
+        # Handle None values for string fields
+        if paper_data.get("doi") is None:
+            paper_data["doi"] = ""
+
+        # Handle None values for list fields
+        if paper_data.get("keywords") is None:
+            paper_data["keywords"] = []
+
+        # Handle datetime fields
+        if "collection_timestamp" in paper_data and isinstance(
+            paper_data["collection_timestamp"], str
+        ):
+            paper_data["collection_timestamp"] = datetime.fromisoformat(
+                paper_data["collection_timestamp"]
+            )
+
+        # Remove fields we'll set explicitly
+        paper_data.pop("authors", None)
+        paper_data.pop("citations", None)
+        paper_data.pop("abstracts", None)
+        paper_data.pop("urls", None)
+        paper_data.pop("identifiers", None)
+        paper_data.pop("computational_analysis", None)
+        paper_data.pop("authorship_analysis", None)
+        paper_data.pop("venue_analysis", None)
+
+        # Remove legacy fields that no longer exist in the model
+        paper_data.pop("external_ids", None)
+
         paper_data["authors"] = authors
+        paper_data["citations"] = citations
+        paper_data["abstracts"] = abstracts
+        paper_data["urls"] = urls
+        paper_data["identifiers"] = identifiers
         paper_data["computational_analysis"] = comp_analysis
         paper_data["authorship_analysis"] = auth_analysis
         paper_data["venue_analysis"] = venue_analysis

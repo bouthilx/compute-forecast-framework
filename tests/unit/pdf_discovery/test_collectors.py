@@ -10,6 +10,56 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import 
     BasePDFCollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class MockPDFCollector(BasePDFCollector):
@@ -61,12 +111,12 @@ class TestBasePDFCollector:
     def test_discover_pdfs_single_paper(self):
         """Test discovering PDF for a single paper."""
         collector = MockPDFCollector()
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="paper_123",
             title="Test Paper",
             authors=[],
             year=2024,
-            citations=10,
+            citation_count=10,
             venue="Test Venue",
         )
 
@@ -81,12 +131,12 @@ class TestBasePDFCollector:
         """Test discovering PDFs for multiple papers."""
         collector = MockPDFCollector()
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Test Paper {i}",
                 authors=[],
                 year=2024,
-                citations=i,
+                citation_count=i,
                 venue="Test Venue",
             )
             for i in range(5)
@@ -103,28 +153,28 @@ class TestBasePDFCollector:
         """Test discovery with some failures."""
         collector = MockPDFCollector()
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper_1",
                 title="Success 1",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="fail_paper",
                 title="Fail",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="paper_2",
                 title="Success 2",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
         ]
@@ -149,12 +199,12 @@ class TestBasePDFCollector:
         slow_collector.timeout = 0.05  # 50ms timeout
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper_1",
                 title="Test",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
         ]
@@ -170,20 +220,20 @@ class TestBasePDFCollector:
         ) as mock_logger:
             collector = MockPDFCollector()
             papers = [
-                Paper(
+                create_test_paper(
                     paper_id="paper_1",
                     title="Test",
                     authors=[],
                     year=2024,
-                    citations=0,
+                    citation_count=0,
                     venue="Test",
                 ),
-                Paper(
+                create_test_paper(
                     paper_id="fail_paper",
                     title="Fail",
                     authors=[],
                     year=2024,
-                    citations=0,
+                    citation_count=0,
                     venue="Test",
                 ),
             ]
@@ -220,20 +270,20 @@ class TestBasePDFCollector:
 
         # After discovery
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper_1",
                 title="Success",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="fail_paper",
                 title="Fail",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
         ]
@@ -271,12 +321,12 @@ class TestBasePDFCollector:
         )
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Test {i}",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
             for i in range(10)

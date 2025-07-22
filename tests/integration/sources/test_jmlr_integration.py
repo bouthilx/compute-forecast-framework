@@ -1,14 +1,64 @@
 """Integration tests for JMLR/TMLR PDF collector."""
 
 import pytest
+from datetime import datetime
 
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.jmlr_collector import (
     JMLRCollector,
 )
 
 
 @pytest.mark.integration
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
+
+
 class TestJMLRIntegration:
     """Integration tests for JMLR/TMLR collector."""
 
@@ -20,14 +70,13 @@ class TestJMLRIntegration:
     def test_discover_real_jmlr_paper(self):
         """Test discovering a real JMLR paper."""
         # This is a real JMLR paper that should exist
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test_jmlr_1",
             title="A Dual Coordinate Descent Method for Large-scale Linear SVM",
             venue="Journal of Machine Learning Research",
             authors=[],
             year=2008,
-            citations=0,
-            urls=["https://jmlr.org/papers/v9/hsieh08a.html"],
+            citation_count=0,
         )
 
         record = self.collector._discover_single(paper)
@@ -43,13 +92,13 @@ class TestJMLRIntegration:
     def test_discover_real_tmlr_paper(self):
         """Test discovering a real TMLR paper."""
         # This would need a real TMLR paper title
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test_tmlr_1",
             title="Example TMLR Paper Title",  # Replace with real paper
             venue="Transactions on Machine Learning Research",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
         )
 
         try:
@@ -67,22 +116,21 @@ class TestJMLRIntegration:
     def test_collector_statistics(self):
         """Test that collector tracks statistics correctly."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="test1",
                 title="Test Paper 1",
                 venue="JMLR",
                 authors=[],
                 year=2023,
-                citations=0,
-                urls=["https://jmlr.org/papers/v9/test1.html"],
+                citation_count=0,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="test2",
                 title="Test Paper 2",
                 venue="NeurIPS",  # Not JMLR/TMLR
                 authors=[],
                 year=2023,
-                citations=0,
+                citation_count=0,
             ),
         ]
 

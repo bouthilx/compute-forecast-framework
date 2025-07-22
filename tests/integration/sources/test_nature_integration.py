@@ -1,15 +1,69 @@
 """Integration tests for Nature PDF collector."""
 
 import pytest
+from datetime import datetime
 from unittest.mock import patch, Mock
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.nature_collector import (
     NaturePDFCollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 
 
 @pytest.mark.integration
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+    doi: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    paper = Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
+    if doi:
+        paper.doi = doi
+    return paper
+
+
 class TestNatureIntegration:
     """Integration tests for Nature PDF collector."""
 
@@ -26,9 +80,8 @@ class TestNatureIntegration:
             authors=[Author(name="Masson-Delmotte, V.")],
             venue="Nature Communications",
             year=2018,
-            citations=100,
-            paper_id="nature_comms_test",
-            doi="10.1038/s41558-018-0091-3",  # Example Nature Climate Change paper
+            citation_count=100,
+            paper_id="nature_comms_test",  # Example Nature Climate Change paper
         )
 
     @pytest.fixture
@@ -39,9 +92,8 @@ class TestNatureIntegration:
             authors=[Author(name="Weiss, D. J.")],
             venue="Scientific Reports",
             year=2018,
-            citations=50,
-            paper_id="sci_reports_test",
-            doi="10.1038/nature25181",  # Example Nature paper
+            citation_count=50,
+            paper_id="sci_reports_test",  # Example Nature paper
         )
 
     @pytest.mark.skip(reason="Integration tests disabled by default")
@@ -80,13 +132,13 @@ class TestNatureIntegration:
         ]
 
         for doi, expected_id, expected_journal in test_cases:
-            paper = Paper(
+            paper = create_test_paper(
+                paper_id="paper_135",
                 title="Test Paper",
                 authors=[],
                 venue="",
                 year=2023,
-                citations=0,
-                paper_id=f"test_{doi}",
+                citation_count=0,
                 doi=doi,
             )
 
@@ -116,13 +168,13 @@ class TestNatureIntegration:
         ]
 
         for venue in venue_variations:
-            paper = Paper(
+            paper = create_test_paper(
+                paper_id=f"paper_{venue.replace(' ', '_')}",
                 title="Test Paper",
                 authors=[],
                 venue=venue,
                 year=2023,
-                citations=0,
-                paper_id=f"test_{venue}",
+                citation_count=0,
             )
             assert collector.is_nature_paper(paper) is True
 
@@ -130,13 +182,13 @@ class TestNatureIntegration:
     def test_mock_integration_flow(self, mock_head, collector):
         """Test the full integration flow with mocked HTTP responses."""
         # Create test paper
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="integration_test",
             title="Deep learning for molecular design",
             authors=[Author(name="Smith, J.")],
             venue="Nature Communications",
             year=2023,
-            citations=10,
-            paper_id="integration_test",
+            citation_count=10,
             doi="10.1038/s41467-023-12345-6",
         )
 
@@ -172,12 +224,12 @@ class TestNatureIntegration:
     @patch("requests.head")
     def test_fallback_to_doi_resolver(self, mock_head, collector):
         """Test fallback to DOI resolver when direct access fails."""
-        paper = Paper(
+        paper = create_test_paper(
             title="Machine learning in chemistry",
             authors=[],
             venue="Nature Communications",
             year=2023,
-            citations=5,
+            citation_count=5,
             paper_id="fallback_test",
             doi="10.1038/s41467-023-98765-4",
         )
@@ -210,30 +262,28 @@ class TestNatureIntegration:
     def test_statistics_tracking(self, collector):
         """Test that collector properly tracks statistics."""
         papers = [
-            Paper(
+            create_test_paper(
                 title="Test 1",
                 authors=[],
                 venue="Nature Communications",
                 year=2023,
-                citations=0,
+                citation_count=0,
                 paper_id="1",
-                doi="10.1038/s41467-023-11111-1",
             ),
-            Paper(
+            create_test_paper(
                 title="Test 2",
                 authors=[],
                 venue="Scientific Reports",
                 year=2023,
-                citations=0,
+                citation_count=0,
                 paper_id="2",
-                doi="10.1038/srep22222",
             ),
-            Paper(
+            create_test_paper(
                 title="Test 3",
                 authors=[],
                 venue="ICML",
                 year=2023,
-                citations=0,
+                citation_count=0,
                 paper_id="3",
             ),  # Not a Nature paper
         ]

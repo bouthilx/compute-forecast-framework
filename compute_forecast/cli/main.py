@@ -4,6 +4,9 @@ import typer
 from typing import Optional
 from .. import __version__
 from .commands.collect import main as collect_command
+from .commands.consolidate_sessions import list_sessions, clean_sessions
+from .commands.consolidate_parallel import main as consolidate_parallel_command
+
 
 app = typer.Typer(
     name="compute-forecast",
@@ -13,8 +16,15 @@ app = typer.Typer(
     add_completion=False,
 )
 
-# Register the collect command
+# Register the commands
 app.command(name="collect")(collect_command)
+app.command(name="consolidate")(consolidate_parallel_command)  # Use parallel version
+
+# Create a subcommand group for consolidation sessions
+consolidate_sessions_app = typer.Typer(help="Manage consolidation sessions")
+consolidate_sessions_app.command(name="list")(list_sessions)
+consolidate_sessions_app.command(name="clean")(clean_sessions)
+app.add_typer(consolidate_sessions_app, name="consolidate-sessions")
 
 
 def version_callback(value: bool):

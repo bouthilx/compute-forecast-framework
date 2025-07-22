@@ -5,6 +5,7 @@ Implements FullPipelineIntegrationTest as specified in Issue #13.
 
 import time
 import threading
+from datetime import datetime
 from dataclasses import dataclass, field
 from typing import Dict, List, Any
 
@@ -16,6 +17,55 @@ from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     Author,
 )
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 @dataclass
@@ -816,13 +866,16 @@ class TestDataGenerator:
         papers = []
 
         for i in range(count):
-            paper = Paper(
+            paper = create_test_paper(
+                paper_id=f"test_{i + 1}",
                 title=f"Test Paper {i + 1}",
-                authors=[Author(name=f"Author {i + 1}", affiliation="Test University")],
+                authors=[
+                    Author(name=f"Author {i + 1}", affiliations=["Test University"])
+                ],
                 venue="Test Venue",
                 year=2024,
-                citations=i * 2,
-                abstract=f"Abstract for test paper {i + 1}",
+                citation_count=i * 2,
+                abstract_text=f"Abstract for test paper {i + 1}",
             )
             papers.append(paper)
 

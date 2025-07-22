@@ -258,9 +258,18 @@ class HALPDFCollector(BasePDFCollector):
         if not paper.urls:
             return None
 
-        for url in paper.urls:
-            if isinstance(url, str) and "hal.science" in url:
-                match = self.hal_id_pattern.search(url)
+        for url_record in paper.urls:
+            # Handle both string URLs (old model) and URLRecord objects (new model)
+            url_str: str = ""
+            if isinstance(url_record, str):
+                url_str = url_record
+            elif hasattr(url_record, "data") and hasattr(url_record.data, "url"):
+                url_str = url_record.data.url
+            else:
+                continue
+
+            if "hal.science" in url_str:
+                match = self.hal_id_pattern.search(url_str)
                 if match:
                     return match.group(1)
 

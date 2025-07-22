@@ -1,6 +1,7 @@
 """Tests for domain-specific benchmark extractors."""
 
 import pytest
+from datetime import datetime
 
 from compute_forecast.pipeline.analysis.benchmark.domain_extractors import (
     NLPBenchmarkExtractor,
@@ -8,6 +9,56 @@ from compute_forecast.pipeline.analysis.benchmark.domain_extractors import (
     RLBenchmarkExtractor,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestNLPBenchmarkExtractor:
@@ -21,14 +72,14 @@ class TestNLPBenchmarkExtractor:
     @pytest.fixture
     def nlp_paper(self):
         """Create a sample NLP paper."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="nlp_001",
             title="BERT: Pre-training of Deep Bidirectional Transformers",
             year=2019,
             venue="NAACL",
             authors=[Author(name="Devlin et al.")],
-            citations=1000,
-            abstract="We introduce BERT, trained on BookCorpus and Wikipedia.",
+            citation_count=1000,
+            abstract_text="We introduce BERT, trained on BookCorpus and Wikipedia.",
         )
         # Add full_text as an attribute
         paper.full_text = """
@@ -102,14 +153,14 @@ class TestCVBenchmarkExtractor:
     @pytest.fixture
     def cv_paper(self):
         """Create a sample CV paper."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="cv_001",
             title="EfficientNet: Rethinking Model Scaling",
             year=2019,
             venue="ICML",
             authors=[Author(name="Tan et al.")],
-            citations=500,
-            abstract="We systematically study model scaling for ConvNets.",
+            citation_count=500,
+            abstract_text="We systematically study model scaling for ConvNets.",
         )
         paper.full_text = """
         Training on ImageNet with resolution 224x224.
@@ -174,14 +225,14 @@ class TestRLBenchmarkExtractor:
     @pytest.fixture
     def rl_paper(self):
         """Create a sample RL paper."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="rl_001",
             title="Mastering Atari with Discrete World Models",
             year=2021,
             venue="ICLR",
             authors=[Author(name="Hafner et al.")],
-            citations=200,
-            abstract="We introduce DreamerV2, achieving human-level Atari performance.",
+            citation_count=200,
+            abstract_text="We introduce DreamerV2, achieving human-level Atari performance.",
         )
         paper.full_text = """
         Trained on 57 Atari games for 200M environment steps each.
@@ -236,14 +287,14 @@ class TestRLBenchmarkExtractor:
 
     def test_extract_multiple_rl_environments(self, rl_extractor):
         """Test extracting metrics when multiple RL environments are used."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="rl_multi",
             title="Multi-Environment RL Agent",
             year=2022,
             venue="NeurIPS",
             authors=[Author(name="Researcher")],
-            citations=50,
-            abstract="Multi-environment reinforcement learning agent.",
+            citation_count=50,
+            abstract_text="Multi-environment reinforcement learning agent.",
         )
         paper.full_text = """
         Evaluated on Atari-57 with 100M steps per game.

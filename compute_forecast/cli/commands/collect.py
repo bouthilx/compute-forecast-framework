@@ -87,35 +87,19 @@ def load_venue_file(venue_file: Path) -> Dict[str, List[int]]:
 
 def save_papers(papers: List[SimplePaper], output_path: Path, metadata: Dict[str, Any]):
     """Save collected papers to JSON file."""
+    # Convert SimplePaper objects to Paper format
+    converted_papers = [p.to_package_paper() for p in papers]
+
     output_data = {
         "collection_metadata": {
             "timestamp": datetime.now().isoformat(),
-            "venues": list(set(p.venue for p in papers)),
-            "years": sorted(list(set(p.year for p in papers))),
-            "total_papers": len(papers),
+            "venues": list(set(p.venue for p in converted_papers)),
+            "years": sorted(list(set(p.year for p in converted_papers))),
+            "total_papers": len(converted_papers),
             "scrapers_used": list(set(p.source_scraper for p in papers)),
             **metadata,
         },
-        "papers": [
-            {
-                "title": p.title,
-                "authors": p.authors,
-                "venue": p.venue,
-                "year": p.year,
-                "abstract": p.abstract,
-                "pdf_urls": p.pdf_urls,
-                "keywords": getattr(p, "keywords", []),  # Include keywords if available
-                "doi": p.doi,
-                "arxiv_id": p.arxiv_id,
-                "paper_id": p.paper_id,
-                "source_scraper": p.source_scraper,
-                "source_url": p.source_url,
-                "scraped_at": p.scraped_at.isoformat(),
-                "extraction_confidence": p.extraction_confidence,
-                "metadata_completeness": p.metadata_completeness,
-            }
-            for p in papers
-        ],
+        "papers": [p.to_dict() for p in converted_papers],
     }
 
     # Ensure output directory exists
@@ -196,6 +180,9 @@ def main(
     rate_limit: float = typer.Option(
         1.0, "--rate-limit", help="API rate limit (requests/second)"
     ),
+    scraper: Optional[str] = typer.Option(
+        None, "--scraper", help="Override default scraper (e.g., OpenReviewScraperV2)"
+    ),
     list_venues: bool = typer.Option(
         False, "--list-venues", help="List available venues and their scrapers"
     ),
@@ -222,6 +209,9 @@ def main(
 
         # Resume interrupted collection
         cf collect --venue neurips --year 2024 --resume
+
+        # Use new OpenReview scraper (with better decision extraction)
+        cf collect --venue iclr --year 2024 --scraper OpenReviewScraperV2
     """
 
     # Handle --list-venues option
@@ -256,7 +246,8 @@ def main(
             "IJCAIScraper": "International Joint Conference on AI",
             "ACLAnthologyScraper": "ACL Anthology (NLP conferences)",
             "MLRScraper": "PMLR venues (ICML, AISTATS, UAI)",
-            "OpenReviewScraper": "OpenReview-hosted conferences",
+            "OpenReviewScraper": "OpenReview-hosted conferences (original)",
+            "OpenReviewScraperV2": "OpenReview with improved decision extraction",
             "NaturePortfolioScraper": "Nature Portfolio journals via Crossref",
             "AAAIScraper": "AAAI proceedings via OAI-PMH protocol",
             "CVFScraper": "Computer Vision Foundation conferences",
@@ -276,6 +267,13 @@ def main(
             "[cyan]Usage:[/cyan] cf collect --venue <venue_name> --year <year>"
         )
         console.print("[cyan]Example:[/cyan] cf collect --venue neurips --year 2023")
+        console.print(
+            "[cyan]Override scraper:[/cyan] cf collect --venue iclr --year 2024 --scraper OpenReviewScraperV2"
+        )
+        console.print()
+        console.print(
+            "[yellow]Note:[/yellow] OpenReviewScraperV2 provides improved decision extraction and filtering."
+        )
 
         return
 
@@ -343,11 +341,24 @@ def main(
     table.add_column("Scraper", style="green")
 
     for venue_name, venue_year_list in venue_years.items():
-        scraper_info = registry.get_scraper_for_venue_info(venue_name)
+        if scraper:
+            # Show overridden scraper
+            scraper_name = scraper
+            is_override = True
+        else:
+            # Show default scraper
+            scraper_info = registry.get_scraper_for_venue_info(venue_name)
+            scraper_name = scraper_info["scraper"]
+            is_override = False
+
+        display_name = scraper_name
+        if is_override:
+            display_name += " (override)"
+
         table.add_row(
             venue_name,
             ", ".join(str(y) for y in venue_year_list),
-            scraper_info["scraper"],
+            display_name,
         )
 
     console.print(table)
@@ -359,10 +370,20 @@ def main(
     venue_estimates = {}
 
     for venue_name, venue_year_list in venue_years.items():
-        scraper = registry.get_scraper_for_venue(venue_name, config)
+        # Get scraper for estimation - use override if provided
         if scraper:
+            scraper_class = registry._scrapers.get(scraper)
+            if scraper_class:
+                estimate_scraper = scraper_class(config)  # type: ignore
+                # estimate_scraper._original_venue = venue_name  # Not needed
+            else:
+                estimate_scraper = None
+        else:
+            estimate_scraper = registry.get_scraper_for_venue(venue_name, config)
+
+        if estimate_scraper:
             for year in venue_year_list:
-                estimate = scraper.estimate_paper_count(venue_name, year)
+                estimate = estimate_scraper.estimate_paper_count(venue_name, year)
                 if estimate:
                     # Apply max_papers limit to estimate (if limited)
                     if max_papers > 0:
@@ -397,9 +418,25 @@ def main(
         )
 
         for venue_name, venue_year_list in venue_years.items():
-            scraper = registry.get_scraper_for_venue(venue_name, config)
+            # Get scraper - use override if provided
+            if scraper:
+                # User provided specific scraper
+                scraper_class = registry._scrapers.get(scraper)
+                if scraper_class:
+                    scraper_instance = scraper_class(config)  # type: ignore
+                    # scraper_instance._original_venue = venue_name  # Not needed
+                else:
+                    console.print(
+                        f"[red]Error:[/red] Unknown scraper {scraper}. "
+                        f"Available scrapers: {', '.join(registry.get_available_scrapers())}"
+                    )
+                    errors.append(f"Unknown scraper {scraper}")
+                    continue
+            else:
+                # Use default scraper for venue
+                scraper_instance = registry.get_scraper_for_venue(venue_name, config)  # type: ignore
 
-            if not scraper:
+            if not scraper_instance:
                 console.print(
                     f"[red]Error:[/red] No scraper available for venue {venue_name}"
                 )
@@ -433,7 +470,7 @@ def main(
 
                 try:
                     # Scrape papers
-                    result = scraper.scrape_venue_year(venue_name, year)
+                    result = scraper_instance.scrape_venue_year(venue_name, year)
 
                     if result.success:
                         papers = result.metadata.get("papers", [])

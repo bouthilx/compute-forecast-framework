@@ -1,6 +1,7 @@
 """Integration tests for PubMed Central collector with PDF discovery framework."""
 
 import pytest
+from datetime import datetime
 from unittest.mock import Mock, patch
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
@@ -10,6 +11,55 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_
     PubMedCentralCollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestPubMedCentralIntegration:
@@ -27,30 +77,28 @@ class TestPubMedCentralIntegration:
     def medical_papers(self):
         """Create sample medical papers."""
         return [
-            Paper(
+            create_test_paper(
                 paper_id="med_1",
                 title="COVID-19 Vaccine Efficacy Study",
                 authors=["Dr. Smith", "Dr. Jones"],
                 year=2023,
-                citations=100,
+                citation_count=100,
                 venue="Journal of Medical Research",
-                doi="10.1234/jmr.2023.covid",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="med_2",
                 title="Machine Learning in Medical Imaging",
                 authors=["Dr. Brown", "Dr. Davis"],
                 year=2023,
-                citations=50,
+                citation_count=50,
                 venue="Medical AI Journal",
-                doi="10.5678/mai.2023.ml",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="med_3",
                 title="Deep Learning for Cancer Detection",
                 authors=["Dr. Wilson"],
                 year=2022,
-                citations=75,
+                citation_count=75,
                 venue="Oncology Research",
             ),
         ]
@@ -154,14 +202,13 @@ class TestPubMedCentralIntegration:
         # Priorities are set internally in the deduplication engine
 
         # Test with a medical paper
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="med_test",
             title="Test Medical Paper",
             authors=["Dr. Test"],
             year=2023,
-            citations=10,
+            citation_count=10,
             venue="Journal of Medical Research",
-            doi="10.1234/test",
         )
 
         # Mock response

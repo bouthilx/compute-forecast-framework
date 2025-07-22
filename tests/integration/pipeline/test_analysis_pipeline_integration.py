@@ -120,29 +120,32 @@ class MockDataGenerator:
         for j in range(author_count):
             author = Author(
                 name=f"Test Author {index}-{j}",
-                affiliation=self.random.choice(
-                    [
-                        "Stanford University",
-                        "MIT",
-                        "Google",
-                        "Microsoft",
-                        "OpenAI",
-                        "University of Toronto",
-                        "Carnegie Mellon",
-                        "UC Berkeley",
-                    ]
-                ),
+                affiliations=[
+                    self.random.choice(
+                        [
+                            "Stanford University",
+                            "MIT",
+                            "Google",
+                            "Microsoft",
+                            "OpenAI",
+                            "University of Toronto",
+                            "Carnegie Mellon",
+                            "UC Berkeley",
+                        ]
+                    )
+                ],
             )
             authors.append(author)
 
         # Generate paper
         paper = Paper(
+            paper_id=f"test_{index}",
             title=f"Test Paper {index}: {self._generate_title()}",
             authors=authors,
             venue=self.random.choice(self.config.venues),
             year=self.random.choice(self.config.years),
-            citations=self.random.randint(*self.config.citation_range),
-            abstract=self._generate_abstract(index),
+            citations=[],  # Will be populated separately if needed
+            abstracts=[],  # Will be populated separately if needed
         )
 
         return paper
@@ -231,9 +234,10 @@ class MockDataGenerator:
             "venues": list(set(p.venue for p in papers)),
             "year_range": [min(p.year for p in papers), max(p.year for p in papers)],
             "citation_stats": {
-                "min": min(p.citations for p in papers),
-                "max": max(p.citations for p in papers),
-                "avg": sum(p.citations for p in papers) / len(papers),
+                "min": min(p.get_latest_citations_count() or 0 for p in papers),
+                "max": max(p.get_latest_citations_count() or 0 for p in papers),
+                "avg": sum(p.get_latest_citations_count() or 0 for p in papers)
+                / len(papers),
             },
         }
 
@@ -267,51 +271,55 @@ class MockDataGenerator:
         # Edge case 1: Extremely long titles
         papers.append(
             Paper(
+                paper_id="edge_1",
                 title="A" + "Very " * 100 + "Long Title",
-                authors=[Author(name="Test Author", affiliation="Test Uni")],
+                authors=[Author(name="Test Author", affiliations=["Test Uni"])],
                 venue="ICML",
                 year=2024,
-                citations=0,
-                abstract="Test abstract",
+                citations=[],
+                abstracts=[],
             )
         )
 
         # Edge case 2: Many authors
         many_authors = [
-            Author(name=f"Author {i}", affiliation=f"Uni {i}") for i in range(50)
+            Author(name=f"Author {i}", affiliations=[f"Uni {i}"]) for i in range(50)
         ]
         papers.append(
             Paper(
+                paper_id="edge_2",
                 title="Paper with Many Authors",
                 authors=many_authors,
                 venue="NeurIPS",
                 year=2024,
-                citations=1000,
-                abstract="Test abstract",
+                citations=[],
+                abstracts=[],
             )
         )
 
         # Edge case 3: Special characters
         papers.append(
             Paper(
+                paper_id="edge_3",
                 title="Paper with Špëçîàl Çhärāçtêrs & Symbols #@$%",
-                authors=[Author(name="Tëst Åuthör", affiliation="Ünïvërsïty")],
+                authors=[Author(name="Tëst Åuthör", affiliations=["Ünïvërsïty"])],
                 venue="ICLR",
                 year=2024,
-                citations=50,
-                abstract="Abstract with émojis 🚀 and symbols",
+                citations=[],
+                abstracts=[],
             )
         )
 
         # Edge case 4: Boundary values
         papers.append(
             Paper(
+                paper_id="edge_4",
                 title="",  # Empty title
                 authors=[],  # No authors
                 venue="Unknown",
                 year=9999,  # Future year
-                citations=-1,  # Negative citations
-                abstract="",  # Empty abstract
+                citations=[],
+                abstracts=[],
             )
         )
 
@@ -707,12 +715,13 @@ class EndToEndPipelineTester:
                 test_papers[0]
                 if test_papers
                 else Paper(
+                    paper_id="dup_test",
                     title="Duplicate Test Paper",
-                    authors=[Author(name="Test Author", affiliation="Test Uni")],
+                    authors=[Author(name="Test Author", affiliations=["Test Uni"])],
                     venue="ICML",
                     year=2024,
-                    citations=10,
-                    abstract="Test abstract",
+                    citations=[],
+                    abstracts=[],
                 )
             )
             test_papers.append(duplicate_paper)  # Add duplicate
@@ -901,7 +910,8 @@ class ErrorInjector:
         elif corruption_type == "empty_authors":
             paper.authors = []
         elif corruption_type == "negative_citations":
-            paper.citations = -1
+            # Can't set citations count directly in new model
+            pass
         elif corruption_type == "invalid_year":
             paper.year = 1800
 

@@ -311,7 +311,13 @@ class EnhancedOrganizationClassifier(OrganizationDatabase):
         total_confidence = 0.0
 
         for author in authors:
-            affiliation = author.affiliation if hasattr(author, "affiliation") else ""
+            # Handle new model with affiliations list
+            if hasattr(author, "affiliations") and author.affiliations:
+                affiliation = author.affiliations[0]  # Use primary affiliation
+            elif hasattr(author, "affiliation"):
+                affiliation = author.affiliation
+            else:
+                affiliation = ""
             result = self.classify_with_confidence(affiliation)
 
             author_breakdown.append(

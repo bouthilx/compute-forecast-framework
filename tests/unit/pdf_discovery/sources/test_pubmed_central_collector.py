@@ -3,11 +3,63 @@
 import pytest
 from unittest.mock import Mock, patch
 import time
+from datetime import datetime
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector import (
     PubMedCentralCollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+    doi: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+        doi=doi,
+    )
 
 
 class TestPubMedCentralCollector:
@@ -21,14 +73,13 @@ class TestPubMedCentralCollector:
     @pytest.fixture
     def sample_paper(self):
         """Create a sample paper for testing."""
-        return Paper(
+        return create_test_paper(
             paper_id="test_paper_123",
             title="Deep Learning for Medical Image Analysis",
             authors=["John Doe", "Jane Smith"],
             year=2023,
-            citations=50,
+            citation_count=50,
             venue="Journal of Medical Imaging",
-            doi="10.1234/jmi.2023.123456",
         )
 
     @pytest.fixture
@@ -68,11 +119,21 @@ class TestPubMedCentralCollector:
     def test_discover_single_paper_with_doi(
         self,
         collector,
-        sample_paper,
         esearch_response_with_pmc,
         esummary_response_with_pmc,
     ):
         """Test discovering PDF for a paper with DOI."""
+        # Create paper with DOI
+        paper_with_doi = create_test_paper(
+            paper_id="test_paper_123",
+            title="Deep Learning for Medical Image Analysis",
+            authors=["John Doe", "Jane Smith"],
+            year=2023,
+            citation_count=50,
+            venue="Journal of Medical Imaging",
+            doi="10.1234/jmi.2023.123456",
+        )
+
         with patch(
             "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
@@ -89,7 +150,7 @@ class TestPubMedCentralCollector:
             mock_get.side_effect = [search_response, summary_response]
 
             # Test discovery
-            pdf_record = collector._discover_single(sample_paper)
+            pdf_record = collector._discover_single(paper_with_doi)
 
             assert pdf_record.paper_id == "test_paper_123"
             assert (
@@ -216,12 +277,12 @@ class TestPubMedCentralCollector:
     ):
         """Test rate limiting between requests."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Test {i}",
                 authors=["Author"],
                 year=2023,
-                citations=10,
+                citation_count=10,
                 venue="Test",
                 doi=f"10.1234/test.{i}",
             )
@@ -285,8 +346,17 @@ class TestPubMedCentralCollector:
 
     def test_search_query_formatting(self, collector, sample_paper):
         """Test search query formatting for different methods."""
-        # DOI search
-        query = collector._format_search_query(sample_paper, "doi")
+        # DOI search - create paper with DOI
+        paper_with_doi = create_test_paper(
+            paper_id="test",
+            title="Deep Learning for Medical Image Analysis",
+            authors=["John Doe", "Jane Smith"],
+            year=2023,
+            citation_count=0,
+            venue="Journal",
+            doi="10.1234/jmi.2023.123456",
+        )
+        query = collector._format_search_query(paper_with_doi, "doi")
         assert query == "10.1234/jmi.2023.123456[DOI]"
 
         # Title search
@@ -369,12 +439,12 @@ class TestPubMedCentralCollector:
             mock_get.side_effect = [search_resp, summary_resp]
 
             # Test DOI search (highest confidence)
-            paper = Paper(
+            paper = create_test_paper(
                 paper_id="p1",
                 title="Test",
                 authors=["A"],
                 year=2023,
-                citations=0,
+                citation_count=0,
                 venue="V",
                 doi="10.1234/test",
             )

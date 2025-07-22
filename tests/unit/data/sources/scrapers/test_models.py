@@ -9,6 +9,56 @@ from compute_forecast.pipeline.metadata_collection.sources.scrapers.models impor
     ScrapingBatch,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestSimplePaper:
@@ -87,13 +137,17 @@ class TestSimplePaper:
         assert len(package_paper.authors) == 2
         assert isinstance(package_paper.authors[0], Author)
         assert package_paper.authors[0].name == "Eve Wilson"
-        assert package_paper.authors[0].affiliation == ""
+        assert package_paper.authors[0].affiliations == []
         assert package_paper.authors[1].name == "Frank Miller"
         assert package_paper.venue == "IJCAI"
         assert package_paper.year == 2024
-        assert package_paper.abstract == "Test abstract"
+        # Check abstract is stored in abstracts list
+        assert len(package_paper.abstracts) == 1
+        assert package_paper.abstracts[0].data.text == "Test abstract"
         assert package_paper.doi == "10.5678/test"
-        assert package_paper.urls == ["https://example.com/test.pdf"]
+        # Check URLs are stored in urls list
+        assert len(package_paper.urls) == 1
+        assert package_paper.urls[0].data.url == "https://example.com/test.pdf"
         assert package_paper.collection_source == "test_scraper"
         assert package_paper.collection_timestamp == datetime(2024, 1, 15, 10, 30, 0)
 
@@ -108,9 +162,9 @@ class TestSimplePaper:
 
         package_paper = simple_paper.to_package_paper()
 
-        assert package_paper.abstract == ""
+        assert len(package_paper.abstracts) == 0
         assert package_paper.doi == ""
-        assert package_paper.urls == []
+        assert len(package_paper.urls) == 0
         assert package_paper.collection_source == ""
 
 

@@ -3,11 +3,61 @@
 import pytest
 from unittest.mock import Mock, patch
 import time
+from datetime import datetime
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector import (
     SemanticScholarPDFCollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestSemanticScholarPDFCollector:
@@ -52,12 +102,12 @@ class TestSemanticScholarPDFCollector:
         mock_api.search_paper.return_value = {"data": [mock_paper_response]}
 
         collector = SemanticScholarPDFCollector()
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test_paper_1",
             title="Test Paper",
             authors=[Author(name="John Doe")],
             year=2024,
-            citations=10,
+            citation_count=10,
             venue="Test Conference",
         )
 
@@ -93,12 +143,12 @@ class TestSemanticScholarPDFCollector:
         mock_api.search_paper.return_value = {"data": [mock_paper_response]}
 
         collector = SemanticScholarPDFCollector()
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test_paper_1",
             title="Test Paper",
             authors=[Author(name="John Doe")],
             year=2024,
-            citations=10,
+            citation_count=10,
             venue="Test Conference",
         )
 
@@ -163,12 +213,12 @@ class TestSemanticScholarPDFCollector:
 
         collector = SemanticScholarPDFCollector()
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Paper {i}",
                 authors=[Author(name="Test Author")],
                 year=2024,
-                citations=i,
+                citation_count=i,
                 venue="Test",
             )
             for i in range(1, 4)
@@ -208,12 +258,12 @@ class TestSemanticScholarPDFCollector:
         collector.rate_limit_delay = 0.1  # Short delay for testing
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Paper {i}",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
             for i in range(3)
@@ -258,12 +308,12 @@ class TestSemanticScholarPDFCollector:
         collector.max_retries = 3
         collector.retry_delay = 0.01  # Short for testing
 
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test_paper",
             title="Test Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
 
@@ -284,12 +334,12 @@ class TestSemanticScholarPDFCollector:
         # Mock all papers to have semantic_scholar_id for batch processing
         papers = []
         for i in range(600):
-            paper = Paper(
+            paper = create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Paper {i}",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
             paper.semantic_scholar_id = f"ss_{i}"  # Add ID for batch lookup
@@ -349,12 +399,12 @@ class TestSemanticScholarPDFCollector:
         }
 
         collector = SemanticScholarPDFCollector()
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test_paper",
             title="Test Paper",
             authors=[Author(name="John Doe")],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
 
@@ -405,12 +455,12 @@ class TestSemanticScholarPDFCollector:
 
                 collector = SemanticScholarPDFCollector()
                 papers = [
-                    Paper(
+                    create_test_paper(
                         paper_id=f"paper_{i}",
                         title=f"Paper {i}",
                         authors=[],
                         year=2024,
-                        citations=0,
+                        citation_count=0,
                         venue="Test",
                     )
                     for i in range(2)
@@ -442,12 +492,12 @@ class TestSemanticScholarPDFCollector:
         }
 
         collector = SemanticScholarPDFCollector()
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="doi_paper",
             title="Paper with DOI",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         paper.doi = "10.1234/test"
@@ -478,12 +528,12 @@ class TestSemanticScholarPDFCollector:
         }
 
         collector = SemanticScholarPDFCollector()
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="arxiv_paper",
             title="ArXiv Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         paper.arxiv_id = "2301.00001"
@@ -510,12 +560,12 @@ class TestSemanticScholarPDFCollector:
         }
 
         collector = SemanticScholarPDFCollector()
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="ss_id_paper",
             title="SS ID Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         paper.semantic_scholar_id = "ss_direct"
@@ -550,12 +600,12 @@ class TestSemanticScholarPDFCollector:
         }
 
         collector = SemanticScholarPDFCollector()
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test_paper",
             title="Different Title",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
 
@@ -592,12 +642,12 @@ class TestSemanticScholarPDFCollector:
         # Create papers with SS IDs to trigger batch path
         papers = []
         for i in range(2):
-            p = Paper(
+            p = create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Paper {i}",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
             p.semantic_scholar_id = f"ss_{i}"
