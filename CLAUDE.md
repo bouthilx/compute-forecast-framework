@@ -149,9 +149,6 @@ Report Generation
 3. **Growth Imperative**: Computational needs growing at 89% annually in the field vs Mila's 52%
 4. **Innovation Opportunity**: Specific breakthroughs possible with adequate computational investment
 
-### Closing Vision
-"With appropriate computational resources, Mila can transition from following breakthroughs to creating them."
-
 ## Remember
 
 **This is a focused research project to inform funding decisions, not a software engineering exercise.**
