@@ -502,58 +502,91 @@ class DownloadOrchestrator:
         with ThreadPoolExecutor(max_workers=self.parallel_workers) as executor:
             # Submit download tasks
             future_to_paper = {}
-
-            for paper in shuffled_papers:
+            paper_index = 0
+            active_downloads = 0
+            
+            # Initially submit up to parallel_workers tasks
+            while paper_index < len(shuffled_papers) and active_downloads < self.parallel_workers:
+                paper = shuffled_papers[paper_index]
                 # Apply rate limiting
                 self._enforce_rate_limit()
-
+                
                 # Update state
                 self._update_state(paper.paper_id, "in_progress")
-
+                
                 # Submit download task
                 logger.debug(f"Submitting download task for {paper.paper_id}")
                 future = executor.submit(self._download_single_paper, paper, downloader)
                 future_to_paper[future] = paper
+                
+                paper_index += 1
+                active_downloads += 1
 
-            # Process completed downloads
-            for future in as_completed(future_to_paper):
-                paper = future_to_paper[future]
+            # Process completed downloads and submit new ones
+            while future_to_paper:
+                # Wait for at least one download to complete
+                done_futures = []
+                for future in as_completed(future_to_paper, timeout=None):
+                    done_futures.append(future)
+                    break  # Process one at a time to maintain parallel limit
+                
+                # Process completed futures
+                for future in done_futures:
+                    paper = future_to_paper.pop(future)
+                    active_downloads -= 1
 
-                try:
-                    success, error_msg = future.result()
+                    try:
+                        success, error_msg = future.result()
 
-                    if success:
-                        successful += 1
-                        # Send success message to queue
-                        message = QueueMessage(
-                            type=MessageType.DOWNLOAD_COMPLETE,
-                            paper_id=paper.paper_id
-                        )
-                        self._message_queue.put(message)
-                    else:
+                        if success:
+                            successful += 1
+                            # Send success message to queue
+                            message = QueueMessage(
+                                type=MessageType.DOWNLOAD_COMPLETE,
+                                paper_id=paper.paper_id
+                            )
+                            self._message_queue.put(message)
+                        else:
+                            failed += 1
+                            # Determine if this is a permanent failure
+                            _, is_permanent = self._categorize_error(error_msg)
+                            
+                            # Send failure message to queue
+                            message = QueueMessage(
+                                type=MessageType.DOWNLOAD_FAILED,
+                                paper_id=paper.paper_id,
+                                data={"error": error_msg, "permanent": is_permanent}
+                            )
+                            self._message_queue.put(message)
+
+                    except Exception as e:
+                        logger.error(f"Unexpected error processing {paper.paper_id}: {e}")
                         failed += 1
-                        # Determine if this is a permanent failure
-                        _, is_permanent = self._categorize_error(error_msg)
                         
                         # Send failure message to queue
                         message = QueueMessage(
                             type=MessageType.DOWNLOAD_FAILED,
                             paper_id=paper.paper_id,
-                            data={"error": error_msg, "permanent": is_permanent}
+                            data={"error": str(e), "permanent": False}
                         )
                         self._message_queue.put(message)
-
-                except Exception as e:
-                    logger.error(f"Unexpected error processing {paper.paper_id}: {e}")
-                    failed += 1
                     
-                    # Send failure message to queue
-                    message = QueueMessage(
-                        type=MessageType.DOWNLOAD_FAILED,
-                        paper_id=paper.paper_id,
-                        data={"error": str(e), "permanent": False}
-                    )
-                    self._message_queue.put(message)
+                    # Submit next paper if any remain
+                    if paper_index < len(shuffled_papers) and active_downloads < self.parallel_workers:
+                        next_paper = shuffled_papers[paper_index]
+                        # Apply rate limiting
+                        self._enforce_rate_limit()
+                        
+                        # Update state
+                        self._update_state(next_paper.paper_id, "in_progress")
+                        
+                        # Submit download task
+                        logger.debug(f"Submitting download task for {next_paper.paper_id}")
+                        future = executor.submit(self._download_single_paper, next_paper, downloader)
+                        future_to_paper[future] = next_paper
+                        
+                        paper_index += 1
+                        active_downloads += 1
 
         # Stop processor thread
         self._stop_processor.set()

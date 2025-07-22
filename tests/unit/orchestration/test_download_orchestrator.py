@@ -343,7 +343,7 @@ class TestDownloadOrchestrator:
         mock_executor_class.return_value = mock_executor
 
         # Mock as_completed to return the submitted futures
-        def mock_as_completed_func(futures_dict):
+        def mock_as_completed_func(futures_dict, timeout=None):
             return futures_dict.keys()
 
         mock_as_completed.side_effect = mock_as_completed_func
