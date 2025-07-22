@@ -2,7 +2,7 @@
 
 import logging
 from typing import Dict, Optional, Callable, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 import time
 
@@ -14,10 +14,66 @@ from rich.progress import (
     BarColumn,
     TaskProgressColumn,
     TimeRemainingColumn,
+    TimeElapsedColumn,
+    ProgressColumn,
+    Task,
 )
 from rich.live import Live
 
 logger = logging.getLogger(__name__)
+
+
+class StatusColumn(ProgressColumn):
+    """Custom column to show download status counts."""
+    
+    def __init__(self):
+        super().__init__()
+    
+    def render(self, task: Task) -> str:
+        """Render the status counts."""
+        # Extract counts from task fields
+        success = task.fields.get('success', 0)
+        failed = task.fields.get('failed', 0)
+        broken = task.fields.get('broken', 0)
+        
+        return f"[green]success:{success}[/green] [yellow]failed:{failed}[/yellow] [red]broken:{broken}[/red]"
+
+
+class DetailedProgressColumn(ProgressColumn):
+    """Custom column showing percentage, count, elapsed time and ETA."""
+    
+    def render(self, task: Task) -> str:
+        """Render detailed progress information."""
+        if task.total is None:
+            return ""
+        
+        # Calculate percentage
+        percentage = (task.completed / task.total * 100) if task.total > 0 else 0
+        
+        # Get elapsed time
+        elapsed = task.elapsed
+        if elapsed is None:
+            elapsed_str = "00:00:00"
+        else:
+            days = int(elapsed // 86400)
+            hours = int((elapsed % 86400) // 3600)
+            minutes = int((elapsed % 3600) // 60)
+            seconds = int(elapsed % 60)
+            
+            if days > 0:
+                elapsed_str = f"{days:02d} {hours:02d}:{minutes:02d}:{seconds:02d}"
+            else:
+                elapsed_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        
+        # Calculate ETA
+        if task.speed and task.remaining:
+            eta_seconds = task.remaining / task.speed
+            eta_datetime = datetime.now() + datetime.timedelta(seconds=eta_seconds)
+            eta_str = eta_datetime.strftime("%Y-%m-%d %H:%M:%S ETA")
+        else:
+            eta_str = "--:--:-- ETA"
+        
+        return f"{percentage:3.0f}% ({task.completed}/{task.total}) {elapsed_str} ({eta_str})"
 
 
 class SimpleDownloadProgressManager:
@@ -35,7 +91,8 @@ class SimpleDownloadProgressManager:
         # Progress tracking
         self.total_papers = 0
         self.completed = 0
-        self.failed = 0
+        self.failed = 0  # Temporary failures (can be retried)
+        self.broken = 0  # Permanent failures (should not be retried)
         self.active_downloads: Dict[str, Dict[str, Any]] = {}
 
         # Threading
@@ -55,21 +112,28 @@ class SimpleDownloadProgressManager:
         self.total_papers = total_papers
         self.completed = 0
         self.failed = 0
+        self.broken = 0
 
-        # Create simple progress bar
+        # Create progress bar with custom columns
         self.progress = Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
             BarColumn(),
-            TaskProgressColumn(),
-            TimeRemainingColumn(),
+            DetailedProgressColumn(),
+            "[",
+            StatusColumn(),
+            "]",
             console=self.console,
             disable=False,
         )
 
-        # Create overall progress task
+        # Create overall progress task with custom fields
         self.overall_task = self.progress.add_task(
-            "[cyan]Downloading papers[/cyan]", total=total_papers
+            "[cyan]Downloading papers[/cyan]", 
+            total=total_papers,
+            success=0,
+            failed=0,
+            broken=0
         )
 
         # Start live display with transient mode
@@ -91,7 +155,9 @@ class SimpleDownloadProgressManager:
             f"\n[green]✓[/green] Downloaded {self.completed} papers successfully"
         )
         if self.failed > 0:
-            self.console.print(f"[red]✗[/red] Failed to download {self.failed} papers")
+            self.console.print(f"[yellow]⚠[/yellow] Failed to download {self.failed} papers (can retry)")
+        if self.broken > 0:
+            self.console.print(f"[red]✗[/red] Failed to download {self.broken} papers (permanent failures)")
 
     def log(self, message: str, level: str = "INFO"):
         """Log a message to console.
@@ -155,12 +221,13 @@ class SimpleDownloadProgressManager:
 
             self.progress.update(self.overall_task, description=desc)
 
-    def complete_download(self, paper_id: str, success: bool):
+    def complete_download(self, paper_id: str, success: bool, permanent_failure: bool = False):
         """Mark download as complete.
 
         Args:
             paper_id: Paper identifier
             success: Whether download was successful
+            permanent_failure: Whether this is a permanent failure (broken)
         """
         with self._lock:
             # Remove from active downloads
@@ -172,15 +239,23 @@ class SimpleDownloadProgressManager:
                 self.completed += 1
                 self.log(f"Downloaded {paper_id}", "SUCCESS")
             else:
-                self.failed += 1
-                self.log(f"Failed to download {paper_id}", "ERROR")
+                if permanent_failure:
+                    self.broken += 1
+                    self.log(f"Failed to download {paper_id} (permanent)", "ERROR")
+                else:
+                    self.failed += 1
+                    self.log(f"Failed to download {paper_id}", "ERROR")
 
             # Update overall progress
             self.progress.advance(self.overall_task, 1)
-
-            # Update description
-            desc = f"[cyan]Downloading papers[/cyan] - [green]{self.completed}[/green] success, [red]{self.failed}[/red] failed"
-            self.progress.update(self.overall_task, description=desc)
+            
+            # Update task fields for custom columns
+            self.progress.update(
+                self.overall_task, 
+                success=self.completed,
+                failed=self.failed,
+                broken=self.broken
+            )
 
     def get_progress_callback(self) -> Callable[[str, int, str, float], None]:
         """Get a progress callback function for downloads.
@@ -206,10 +281,12 @@ class SimpleDownloadProgressManager:
         Returns:
             Dictionary with download stats
         """
+        total_attempted = self.completed + self.failed + self.broken
         return {
             "total": self.total_papers,
             "completed": self.completed,
             "failed": self.failed,
+            "broken": self.broken,
             "in_progress": len(self.active_downloads),
-            "success_rate": self.completed / max(self.completed + self.failed, 1) * 100,
+            "success_rate": self.completed / max(total_attempted, 1) * 100,
         }

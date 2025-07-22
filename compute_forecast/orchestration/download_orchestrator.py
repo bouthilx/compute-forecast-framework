@@ -438,8 +438,10 @@ class DownloadOrchestrator:
                         paper.pdf_download_error = error_msg
 
                         if self.progress_manager:
+                            # Determine if this is a permanent failure
+                            _, is_permanent = self._categorize_error(error_msg)
                             self.progress_manager.complete_download(
-                                paper.paper_id, False
+                                paper.paper_id, False, permanent_failure=is_permanent
                             )
 
                 except Exception as e:
@@ -455,7 +457,8 @@ class DownloadOrchestrator:
                     self._update_state(paper.paper_id, "failed", str(e), paper_info)
 
                     if self.progress_manager:
-                        self.progress_manager.complete_download(paper.paper_id, False)
+                        # Unexpected errors are treated as temporary
+                        self.progress_manager.complete_download(paper.paper_id, False, permanent_failure=False)
 
                 # Save state periodically
                 if (successful + failed) % 10 == 0:
