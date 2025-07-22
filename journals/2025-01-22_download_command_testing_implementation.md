@@ -35,7 +35,7 @@ Created `tests/unit/orchestration/test_download_orchestrator.py` with 14 test ca
 Started implementing `tests/unit/storage/test_storage_manager.py` with 15 test cases planned:
 
 - Local-only mode operations
-- Google Drive-only mode operations  
+- Google Drive-only mode operations
 - Mixed storage mode with fallback
 - Progress callback propagation
 - Error handling scenarios

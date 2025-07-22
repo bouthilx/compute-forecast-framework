@@ -78,7 +78,7 @@ cf download --papers papers.json --resume --parallel 10
 @click.option('--exponential-backoff', is_flag=True)
 @click.option('--resume', is_flag=True)
 @click.option('--no-progress', is_flag=True)
-def download(papers, parallel, rate_limit, timeout, retry_failed, 
+def download(papers, parallel, rate_limit, timeout, retry_failed,
             max_retries, retry_delay, exponential_backoff, resume, no_progress):
     """Download PDFs using URLs discovered by consolidate command."""
 ```
@@ -161,7 +161,7 @@ Overall: 45/150 papers [30%] • Success: 42 • Failed: 3 • ETA: 00:12:34
    from rich.live import Live
    from rich.layout import Layout
    from rich.panel import Panel
-   
+
    # Create layout with scrolling log region and fixed progress region
    layout = Layout()
    layout.split_column(
@@ -178,7 +178,7 @@ Overall: 45/150 papers [30%] • Success: 42 • Failed: 3 • ETA: 00:12:34
      - Transfer speed in MB/s
      - Operation type: "Downloading", "Uploading to Drive", "Downloading from Drive"
      - Auto-remove on completion
-   
+
    - **Global Progress**:
      - Current/Total papers with percentage
      - Success count in green
@@ -207,81 +207,81 @@ class DownloadProgressManager:
         self.active_operations = {}
         self.completed = 0
         self.failed = 0
-        
+
     def start_operation(self, paper_id: str, total_size: int, operation_type: str):
         """Register a new operation with its own progress bar"""
         task = self.add_task(
-            f"Paper: {paper_id[:20]} • {operation_type}", 
+            f"Paper: {paper_id[:20]} • {operation_type}",
             total=total_size
         )
         self.active_operations[paper_id] = {
             'task': task,
             'operation': operation_type
         }
-        
+
     def update_progress(self, paper_id: str, transferred: int, speed: float):
         """Update progress for a specific operation"""
         if paper_id in self.active_operations:
             op = self.active_operations[paper_id]
-            self.update(op['task'], 
-                       completed=transferred, 
+            self.update(op['task'],
+                       completed=transferred,
                        description=f"Paper: {paper_id[:20]} • {speed:.1f} MB/s • {op['operation']}")
-            
+
     def complete_operation(self, paper_id: str, success: bool):
         """Mark operation as complete and remove progress bar"""
         if paper_id in self.active_operations:
             op = self.active_operations[paper_id]
             self.remove_task(op['task'])
             del self.active_operations[paper_id]
-            
+
         if success:
             self.completed += 1
             self.log_success(f"Completed {op['operation']} for {paper_id}")
         else:
             self.failed += 1
             self.log_error(f"Failed {op['operation']} for {paper_id}")
-            
+
         self.update_global_progress()
 ```
 
 **Google Drive Progress Integration**:
 ```python
 class GoogleDriveStorage:
-    def upload_with_progress(self, file_path: Path, paper_id: str, 
+    def upload_with_progress(self, file_path: Path, paper_id: str,
                            progress_callback: Callable):
         """Upload file to Google Drive with progress tracking"""
         file_size = file_path.stat().st_size
-        
+
         # Initialize progress for upload
         progress_callback.start_operation(paper_id, file_size, "Uploading to Drive")
-        
+
         # Use resumable upload for progress tracking
         media = MediaFileUpload(str(file_path), resumable=True)
         request = self.service.files().create(
             body={'name': file_path.name, 'parents': [self.folder_id]},
             media_body=media
         )
-        
+
         response = None
         while response is None:
             status, response = request.next_chunk()
             if status:
                 progress_callback.update_progress(
-                    paper_id, 
+                    paper_id,
                     int(status.resumable_progress),
                     status.resumable_progress / status.total_size / elapsed_time
                 )
-                
-    def download_with_progress(self, file_id: str, paper_id: str, 
+
+    def download_with_progress(self, file_id: str, paper_id: str,
                              output_path: Path, progress_callback: Callable):
         """Download file from Google Drive with progress tracking"""
         # Get file metadata for size
         file_metadata = self.service.files().get(fileId=file_id).execute()
         file_size = int(file_metadata.get('size', 0))
-        
+
         # Initialize progress for download
         progress_callback.start_operation(paper_id, file_size, "Downloading from Drive")
-        
+
         request = self.service.files().get_media(fileId=file_id)
         with open(output_path, 'wb') as f:
             downloader = MediaIoBaseDownload(f, request)
@@ -409,7 +409,7 @@ Key features:
 
 ### Data Flow
 1. Input: `papers.json` with PDF URLs from consolidation
-2. Processing: 
+2. Processing:
    - Check local cache first
    - If not cached, download from source URL (with progress)
    - Save to local cache
@@ -448,7 +448,7 @@ Key features:
 2. **Performance**: Processes 100 papers in under 10 minutes (with good connection)
 3. **Robustness**: Handles interruptions gracefully with full resume capability
 4. **Storage**: Seamless integration with Google Drive and local cache
-5. **User Experience**: 
+5. **User Experience**:
    - Clear progress indication for all operations (download, upload, cache)
    - Separate progress bars for concurrent operations
    - Clean separation of logs and progress display

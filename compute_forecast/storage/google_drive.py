@@ -271,20 +271,28 @@ class GoogleDriveStorage:
             # Instead, try to list contents of the folder to verify access
             try:
                 # Try to list files in the folder (this works with shared folders)
-                results = self._service.files().list(
-                    q=f"'{self.folder_id}' in parents and trashed=false",
-                    pageSize=1,
-                    fields="files(id)"
-                ).execute()
-                
+                results = (
+                    self._service.files()
+                    .list(
+                        q=f"'{self.folder_id}' in parents and trashed=false",
+                        pageSize=1,
+                        fields="files(id)",
+                    )
+                    .execute()
+                )
+
                 # If we can list contents, we have access
-                logger.info(f"Successfully connected to Google Drive folder: {self.folder_id}")
+                logger.info(
+                    f"Successfully connected to Google Drive folder: {self.folder_id}"
+                )
                 return True
-                
+
             except HttpError as e:
                 if e.resp.status == 404:
                     # Folder doesn't exist or not shared
-                    logger.error(f"Folder not found or not accessible: {self.folder_id}")
+                    logger.error(
+                        f"Folder not found or not accessible: {self.folder_id}"
+                    )
                     logger.error(
                         "Please ensure the folder is shared with the service account"
                     )

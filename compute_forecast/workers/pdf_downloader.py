@@ -103,7 +103,7 @@ class PDFDownloader:
             - error_message: Detailed error description if failed, None if successful
         """
         logger.info(f"Downloading PDF for {paper_id} from {pdf_url}")
-        
+
         # Notify progress manager about starting download
         if progress_callback:
             progress_callback(paper_id, 0, "Starting", 0)
@@ -189,7 +189,9 @@ class PDFDownloader:
 
             # Get content length
             content_length = int(response.headers.get("Content-Length", 0))
-            logger.debug(f"Content length: {content_length} bytes ({content_length/1024/1024:.1f} MB)")
+            logger.debug(
+                f"Content length: {content_length} bytes ({content_length / 1024 / 1024:.1f} MB)"
+            )
 
             # Initialize progress tracking
             if progress_callback and content_length > 0:
@@ -223,7 +225,9 @@ class PDFDownloader:
             logger.debug(f"Validating downloaded file: {tmp_path}")
             validation_error = self._validate_pdf(tmp_path, bytes_downloaded)
             if validation_error:
-                logger.warning(f"PDF validation failed for {paper_id}: {validation_error}")
+                logger.warning(
+                    f"PDF validation failed for {paper_id}: {validation_error}"
+                )
                 tmp_path.unlink()  # Delete invalid file
                 return False, validation_error
 
@@ -296,9 +300,18 @@ class PDFDownloader:
 
                 # Check for common error messages with more specific categorization
                 error_patterns = [
-                    (b"404 not found", "HTTP 404 - Page not found in downloaded content"),
-                    (b"403 forbidden", "HTTP 403 - Access forbidden in downloaded content"),
-                    (b"401 unauthorized", "HTTP 401 - Unauthorized access in downloaded content"),
+                    (
+                        b"404 not found",
+                        "HTTP 404 - Page not found in downloaded content",
+                    ),
+                    (
+                        b"403 forbidden",
+                        "HTTP 403 - Access forbidden in downloaded content",
+                    ),
+                    (
+                        b"401 unauthorized",
+                        "HTTP 401 - Unauthorized access in downloaded content",
+                    ),
                     (b"access denied", "Access denied by server"),
                     (b"error occurred", "Server error page detected"),
                     (b"page not found", "Page not found error in content"),

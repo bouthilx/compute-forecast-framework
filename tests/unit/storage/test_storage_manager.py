@@ -3,7 +3,7 @@
 import pytest
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock, patch, mock_open
+from unittest.mock import Mock
 
 from compute_forecast.storage.storage_manager import StorageManager
 
@@ -33,7 +33,7 @@ class TestStorageManager:
         return StorageManager(
             cache_dir=str(temp_dir / "cache"),
             google_drive_credentials=None,
-            google_drive_folder_id=None
+            google_drive_folder_id=None,
         )
 
     @pytest.fixture
@@ -43,7 +43,7 @@ class TestStorageManager:
         manager = StorageManager(
             cache_dir=str(temp_dir / "minimal_cache"),
             google_drive_credentials=None,
-            google_drive_folder_id=None
+            google_drive_folder_id=None,
         )
         # Replace with our mock
         manager.google_drive = mock_google_drive
@@ -56,7 +56,7 @@ class TestStorageManager:
         manager = StorageManager(
             cache_dir=str(temp_dir / "cache"),
             google_drive_credentials=None,
-            google_drive_folder_id=None
+            google_drive_folder_id=None,
         )
         # Replace with our mock
         manager.google_drive = mock_google_drive
@@ -70,8 +70,7 @@ class TestStorageManager:
         pdf_path.write_bytes(pdf_content)
 
         success = storage_manager_local_only.save_pdf(
-            paper_id="test_paper",
-            source_path=pdf_path
+            paper_id="test_paper", source_path=pdf_path
         )
 
         assert success is True
@@ -87,15 +86,16 @@ class TestStorageManager:
         assert retrieved_path.exists()
         assert retrieved_path.read_bytes() == pdf_content
 
-    def test_google_drive_only_mode(self, storage_manager_drive_only, mock_google_drive, temp_dir):
+    def test_google_drive_only_mode(
+        self, storage_manager_drive_only, mock_google_drive, temp_dir
+    ):
         """Test storage manager with only Google Drive."""
         # Test save
         pdf_path = temp_dir / "test.pdf"
         pdf_path.write_bytes(b"%PDF-1.4\nTest content")
 
         success, error = storage_manager_drive_only.save_pdf(
-            paper_id="test_paper",
-            pdf_path=pdf_path
+            paper_id="test_paper", pdf_path=pdf_path
         )
 
         assert success is True
@@ -121,8 +121,7 @@ class TestStorageManager:
         pdf_path.write_bytes(b"%PDF-1.4\nTest content")
 
         success, error = storage_manager_both.save_pdf(
-            paper_id="test_paper",
-            pdf_path=pdf_path
+            paper_id="test_paper", pdf_path=pdf_path
         )
 
         assert success is True
@@ -149,7 +148,9 @@ class TestStorageManager:
         assert cache_path.exists()
         assert cache_path.read_bytes() == pdf_content
 
-    def test_save_pdf_google_drive_success(self, storage_manager_drive_only, mock_google_drive, temp_dir):
+    def test_save_pdf_google_drive_success(
+        self, storage_manager_drive_only, mock_google_drive, temp_dir
+    ):
         """Test successful Google Drive upload."""
         pdf_path = temp_dir / "test.pdf"
         pdf_path.write_bytes(b"%PDF-1.4\nTest")
@@ -161,7 +162,7 @@ class TestStorageManager:
             paper_id="paper123",
             pdf_path=pdf_path,
             metadata={"title": "Test Paper"},
-            progress_callback=progress_callback
+            progress_callback=progress_callback,
         )
 
         assert success is True
@@ -170,7 +171,7 @@ class TestStorageManager:
             pdf_path,
             "paper123.pdf",
             metadata={"title": "Test Paper"},
-            progress_callback=progress_callback
+            progress_callback=progress_callback,
         )
 
     def test_save_pdf_fallback(self, storage_manager_both, mock_google_drive, temp_dir):
@@ -191,7 +192,9 @@ class TestStorageManager:
         cache_path = Path(storage_manager_both.cache_dir) / "paper123.pdf"
         assert cache_path.exists()
 
-    def test_save_pdf_both_fail(self, storage_manager_both, mock_google_drive, temp_dir):
+    def test_save_pdf_both_fail(
+        self, storage_manager_both, mock_google_drive, temp_dir
+    ):
         """Test when both local and Drive fail."""
         pdf_path = temp_dir / "test.pdf"
         pdf_path.write_bytes(b"%PDF-1.4\nTest")
@@ -248,11 +251,13 @@ class TestStorageManager:
         assert retrieved == cache_path
         assert retrieved.read_bytes() == b"%PDF-1.4\nCached content"
 
-    def test_get_pdf_from_drive(self, storage_manager_both, mock_google_drive, temp_dir):
+    def test_get_pdf_from_drive(
+        self, storage_manager_both, mock_google_drive, temp_dir
+    ):
         """Test retrieving PDF from Google Drive when not in cache."""
         # Not in cache, but in Drive
         mock_google_drive.file_exists.return_value = True
-        
+
         # Create a file to return
         downloaded_file = temp_dir / "downloaded.pdf"
         downloaded_file.write_bytes(b"%PDF-1.4\nDrive content")
@@ -269,16 +274,14 @@ class TestStorageManager:
         retrieved = storage_manager_both.get_pdf("nonexistent")
         assert retrieved is None
 
-    def test_save_with_metadata(self, storage_manager_both, mock_google_drive, temp_dir):
+    def test_save_with_metadata(
+        self, storage_manager_both, mock_google_drive, temp_dir
+    ):
         """Test saving with metadata passes through correctly."""
         pdf_path = temp_dir / "test.pdf"
         pdf_path.write_bytes(b"%PDF-1.4\nTest")
 
-        metadata = {
-            "title": "Test Paper",
-            "authors": "John Doe",
-            "year": 2024
-        }
+        metadata = {"title": "Test Paper", "authors": "John Doe", "year": 2024}
 
         storage_manager_both.save_pdf("paper123", pdf_path, metadata=metadata)
 
@@ -293,7 +296,7 @@ class TestStorageManager:
         assert not cache_dir.exists()
 
         storage_manager = StorageManager(cache_dir=str(cache_dir))
-        
+
         # Save a file to trigger directory creation
         pdf_path = temp_dir / "test.pdf"
         pdf_path.write_bytes(b"test")
@@ -306,11 +309,13 @@ class TestStorageManager:
         non_existent = temp_dir / "does_not_exist.pdf"
 
         success, error = storage_manager_local_only.save_pdf("paper123", non_existent)
-        
+
         assert success is False
         assert "not found" in error.lower()
 
-    def test_progress_callback_propagation(self, storage_manager_both, mock_google_drive, temp_dir):
+    def test_progress_callback_propagation(
+        self, storage_manager_both, mock_google_drive, temp_dir
+    ):
         """Test that progress callback is properly propagated."""
         pdf_path = temp_dir / "test.pdf"
         pdf_path.write_bytes(b"%PDF-1.4\nTest")
@@ -318,9 +323,7 @@ class TestStorageManager:
         progress_callback = Mock()
 
         storage_manager_both.save_pdf(
-            "paper123",
-            pdf_path,
-            progress_callback=progress_callback
+            "paper123", pdf_path, progress_callback=progress_callback
         )
 
         # Verify callback was passed to Google Drive

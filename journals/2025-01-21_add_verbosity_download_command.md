@@ -1,7 +1,7 @@
 # Add Verbosity to Download Command
 
-**Date**: 2025-01-21  
-**Time**: 17:25  
+**Date**: 2025-01-21
+**Time**: 17:25
 **Task**: Add verbosity argument to download command for better debugging
 
 ## Implementation
@@ -42,7 +42,7 @@ Added detailed logging to key components:
 
 #### Download Command (`download.py`):
 - Paper loading statistics
-- URL extraction details  
+- URL extraction details
 - Paper filtering information
 
 #### Download Orchestrator (`download_orchestrator.py`):
@@ -75,7 +75,7 @@ cf download --papers papers.json
 # INFO level logging (-v)
 cf download --papers papers.json -v
 
-# DEBUG level logging (-vv) 
+# DEBUG level logging (-vv)
 cf download --papers papers.json -vv
 ```
 
@@ -84,7 +84,7 @@ cf download --papers papers.json -vv
 With `-vv` (DEBUG) level, the output now shows:
 - Paper loading: "Loaded 4 papers from file, Found 4 with PDF URLs, 0 without"
 - HTTP details: "Making HTTP request to URL", "HTTP response status: 404"
-- Storage operations: "Saving PDF to storage", "Google Drive not configured" 
+- Storage operations: "Saving PDF to storage", "Google Drive not configured"
 - Download flow: Step-by-step progression including cache hits
 - Detailed error information for failed downloads
 

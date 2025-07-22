@@ -76,7 +76,7 @@ Update `tests/integration/test_download_integration.py`:
 ## Implementation Order
 
 1. Start with DownloadOrchestrator tests (most critical)
-2. Then StorageManager tests 
+2. Then StorageManager tests
 3. Add state management tests
 4. Finally, enhance integration tests if time permits
 

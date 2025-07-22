@@ -1,7 +1,7 @@
 # Failed Papers Export and Permanent Failure Tracking
 
-**Date**: 2025-01-22  
-**Time**: 07:55  
+**Date**: 2025-01-22
+**Time**: 07:55
 **Task**: Add comprehensive failed papers tracking with JSON export and permanent failure prevention
 
 ## Implementation Overview
@@ -36,7 +36,7 @@ class FailedPaper:
 
 **Error Categorization System:**
 - **HTTP 404** → `http_404` (permanent)
-- **HTTP 403** → `http_403` (permanent)  
+- **HTTP 403** → `http_403` (permanent)
 - **HTTP 401** → `http_401` (permanent)
 - **HTTP 5xx** → `http_server_error` (temporary)
 - **Timeout** → `timeout` (temporary)
@@ -123,7 +123,7 @@ Exporting Failed Papers:
 ```python
 # Skip permanently failed papers even if retry_failed is set
 permanent_failure = any(
-    fp.paper_id == paper_id and fp.permanent_failure 
+    fp.paper_id == paper_id and fp.permanent_failure
     for fp in self.state.failed_papers
 )
 if permanent_failure:
@@ -148,7 +148,7 @@ cf download --papers papers.json -v
 - Correctly classified HTTP 404 as permanent failures
 
 ### Retry Prevention Test:
-```bash  
+```bash
 cf download --papers papers.json --retry-failed -v
 ```
 - Correctly identified permanent failures from previous state

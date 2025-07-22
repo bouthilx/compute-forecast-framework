@@ -1,14 +1,14 @@
 # Fix Download Command Hanging Issue
 
-**Date**: 2025-01-21  
-**Time**: 17:10  
+**Date**: 2025-01-21
+**Time**: 17:10
 **Task**: Fix hanging issue in `cf download` command
 
 ## Problem Description
 
 The `cf download` command was hanging when executed. Two issues were identified:
 
-1. An attribute error: `'Paper' object has no attribute 'pdf_url'` 
+1. An attribute error: `'Paper' object has no attribute 'pdf_url'`
 2. The complex Layout/Panel setup in `DownloadProgressManager` was causing the terminal display to hang
 
 ## Analysis

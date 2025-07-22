@@ -302,7 +302,7 @@ class Paper:
 
         # Remove legacy fields that no longer exist in the model
         paper_data.pop("external_ids", None)
-        
+
         # Remove download-related fields that are added dynamically
         paper_data.pop("pdf_downloaded", None)
         paper_data.pop("pdf_download_timestamp", None)

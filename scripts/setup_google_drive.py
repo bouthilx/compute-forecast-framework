@@ -176,8 +176,7 @@ class GoogleDriveSetupWizard:
 
             # Initialize storage
             storage = GoogleDriveStorage(
-                credentials_path=str(self.credentials_file),
-                folder_id=folder_id
+                credentials_path=str(self.credentials_file), folder_id=folder_id
             )
 
             # Test connection
@@ -287,10 +286,10 @@ if credentials_path and folder_id:
         credentials_path=credentials_path,
         folder_id=folder_id
     )
-    
+
     if storage.test_connection():
         print("✓ Google Drive is ready!")
-        
+
         # Upload a file
         file_id = storage.upload_file(
             Path("example.pdf"),

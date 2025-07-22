@@ -8,7 +8,10 @@ from datetime import datetime
 from unittest.mock import Mock, patch, MagicMock
 from concurrent.futures import Future
 
-from compute_forecast.orchestration.download_orchestrator import DownloadOrchestrator, FailedPaper
+from compute_forecast.orchestration.download_orchestrator import (
+    DownloadOrchestrator,
+    FailedPaper,
+)
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
 from compute_forecast.pipeline.consolidation.models import URLRecord
 
@@ -73,10 +76,10 @@ class TestDownloadOrchestrator:
                     source="test",
                     timestamp="2024-01-01T00:00:00",
                     original=True,
-                    data={"url": "https://example.com/paper1.pdf"}
+                    data={"url": "https://example.com/paper1.pdf"},
                 )
             ],
-            processing_flags={"selected_pdf_url": "https://example.com/paper1.pdf"}
+            processing_flags={"selected_pdf_url": "https://example.com/paper1.pdf"},
         )
 
     def test_categorize_error(self, orchestrator):
@@ -92,7 +95,9 @@ class TestDownloadOrchestrator:
         assert is_permanent is True
 
         # Test server errors
-        error_type, is_permanent = orchestrator._categorize_error("HTTP 503 Service Unavailable")
+        error_type, is_permanent = orchestrator._categorize_error(
+            "HTTP 503 Service Unavailable"
+        )
         assert error_type == "http_server_error"
         assert is_permanent is False
 
@@ -112,7 +117,9 @@ class TestDownloadOrchestrator:
         assert is_permanent is True
 
         # Test unknown errors
-        error_type, is_permanent = orchestrator._categorize_error("Something went wrong")
+        error_type, is_permanent = orchestrator._categorize_error(
+            "Something went wrong"
+        )
         assert error_type == "other"
         assert is_permanent is False
 
@@ -130,7 +137,7 @@ class TestDownloadOrchestrator:
         # Test marking as failed with error details
         paper_info = {
             "title": sample_paper.title,
-            "pdf_url": sample_paper.processing_flags["selected_pdf_url"]
+            "pdf_url": sample_paper.processing_flags["selected_pdf_url"],
         }
         orchestrator._update_state("test_paper_1", "failed", "HTTP 404", paper_info)
         assert "test_paper_1" in orchestrator.state.failed
@@ -143,9 +150,30 @@ class TestDownloadOrchestrator:
     def test_filter_papers_for_download(self, orchestrator, mock_storage_manager):
         """Test paper filtering logic."""
         papers = [
-            Paper(paper_id="paper1", title="Paper 1", authors=[], venue="Test", year=2024, processing_flags={"selected_pdf_url": "url1"}),
-            Paper(paper_id="paper2", title="Paper 2", authors=[], venue="Test", year=2024, processing_flags={"selected_pdf_url": "url2"}),
-            Paper(paper_id="paper3", title="Paper 3", authors=[], venue="Test", year=2024, processing_flags={"selected_pdf_url": "url3"}),
+            Paper(
+                paper_id="paper1",
+                title="Paper 1",
+                authors=[],
+                venue="Test",
+                year=2024,
+                processing_flags={"selected_pdf_url": "url1"},
+            ),
+            Paper(
+                paper_id="paper2",
+                title="Paper 2",
+                authors=[],
+                venue="Test",
+                year=2024,
+                processing_flags={"selected_pdf_url": "url2"},
+            ),
+            Paper(
+                paper_id="paper3",
+                title="Paper 3",
+                authors=[],
+                venue="Test",
+                year=2024,
+                processing_flags={"selected_pdf_url": "url3"},
+            ),
         ]
 
         # Test with empty state - all papers should be included
@@ -167,7 +195,7 @@ class TestDownloadOrchestrator:
 
         # Reset state for next tests
         orchestrator.state.completed = []
-        
+
         # Test with failed papers (no retry)
         orchestrator.state.failed = {"paper2": "Some error"}
         filtered = orchestrator.filter_papers_for_download(papers, retry_failed=False)
@@ -178,7 +206,9 @@ class TestDownloadOrchestrator:
         filtered = orchestrator.filter_papers_for_download(papers, retry_failed=True)
         assert len(filtered) == 3  # All papers including failed paper2
 
-    def test_download_single_paper_success(self, orchestrator, sample_paper, mock_storage_manager):
+    def test_download_single_paper_success(
+        self, orchestrator, sample_paper, mock_storage_manager
+    ):
         """Test successful single paper download."""
         mock_downloader = Mock()
         mock_downloader.download_pdf.return_value = (True, None)
@@ -193,33 +223,41 @@ class TestDownloadOrchestrator:
             authors=[],
             venue="Test",
             year=2024,
-            processing_flags={"selected_pdf_url": "https://example.com/paper.pdf"}
+            processing_flags={"selected_pdf_url": "https://example.com/paper.pdf"},
         )
 
-        success, error = orchestrator._download_single_paper(simple_paper, mock_downloader)
+        success, error = orchestrator._download_single_paper(
+            simple_paper, mock_downloader
+        )
 
         assert success is True
         assert error is None
         mock_downloader.download_pdf.assert_called_once()
-        
+
         # Check progress callback was passed
         call_args = mock_downloader.download_pdf.call_args
         assert "progress_callback" in call_args.kwargs
 
-    def test_download_single_paper_already_exists(self, orchestrator, sample_paper, mock_storage_manager):
+    def test_download_single_paper_already_exists(
+        self, orchestrator, sample_paper, mock_storage_manager
+    ):
         """Test download when paper already exists."""
         mock_downloader = Mock()
-        
+
         # Paper exists in storage
         mock_storage_manager.exists.return_value = (True, "local")
 
-        success, error = orchestrator._download_single_paper(sample_paper, mock_downloader)
+        success, error = orchestrator._download_single_paper(
+            sample_paper, mock_downloader
+        )
 
         assert success is True
         assert error is None
         mock_downloader.download_pdf.assert_not_called()
 
-    def test_download_single_paper_failure(self, orchestrator, sample_paper, mock_storage_manager):
+    def test_download_single_paper_failure(
+        self, orchestrator, sample_paper, mock_storage_manager
+    ):
         """Test failed single paper download."""
         mock_downloader = Mock()
         mock_downloader.download_pdf.return_value = (False, "HTTP 404 Not Found")
@@ -231,17 +269,26 @@ class TestDownloadOrchestrator:
             authors=[],
             venue="Test",
             year=2024,
-            processing_flags={"selected_pdf_url": "https://example.com/paper.pdf"}
+            processing_flags={"selected_pdf_url": "https://example.com/paper.pdf"},
         )
 
-        success, error = orchestrator._download_single_paper(simple_paper, mock_downloader)
+        success, error = orchestrator._download_single_paper(
+            simple_paper, mock_downloader
+        )
 
         assert success is False
         assert error == "HTTP 404 Not Found"
 
     def test_download_single_paper_no_url(self, orchestrator, mock_storage_manager):
         """Test download with missing URL."""
-        paper = Paper(paper_id="test", title="Test", authors=[], venue="Test", year=2024, processing_flags={})
+        paper = Paper(
+            paper_id="test",
+            title="Test",
+            authors=[],
+            venue="Test",
+            year=2024,
+            processing_flags={},
+        )
         mock_downloader = Mock()
 
         success, error = orchestrator._download_single_paper(paper, mock_downloader)
@@ -250,16 +297,29 @@ class TestDownloadOrchestrator:
         assert error == "No PDF URL found"
         mock_downloader.download_pdf.assert_not_called()
 
-    @patch('compute_forecast.orchestration.download_orchestrator.as_completed')
-    @patch('compute_forecast.orchestration.download_orchestrator.PDFDownloader')
-    @patch('compute_forecast.orchestration.download_orchestrator.ThreadPoolExecutor')
-    def test_concurrent_downloads(self, mock_executor_class, mock_downloader_class, mock_as_completed, orchestrator, mock_storage_manager, mock_progress_manager):
+    @patch("compute_forecast.orchestration.download_orchestrator.as_completed")
+    @patch("compute_forecast.orchestration.download_orchestrator.PDFDownloader")
+    @patch("compute_forecast.orchestration.download_orchestrator.ThreadPoolExecutor")
+    def test_concurrent_downloads(
+        self,
+        mock_executor_class,
+        mock_downloader_class,
+        mock_as_completed,
+        orchestrator,
+        mock_storage_manager,
+        mock_progress_manager,
+    ):
         """Test concurrent download execution."""
         # Create papers
         papers = [
-            Paper(paper_id=f"paper{i}", title=f"Paper {i}", 
-                  authors=[], venue="Test", year=2024,
-                  processing_flags={"selected_pdf_url": f"url{i}"})
+            Paper(
+                paper_id=f"paper{i}",
+                title=f"Paper {i}",
+                authors=[],
+                venue="Test",
+                year=2024,
+                processing_flags={"selected_pdf_url": f"url{i}"},
+            )
             for i in range(3)
         ]
 
@@ -270,13 +330,13 @@ class TestDownloadOrchestrator:
 
         # Mock executor and futures
         submitted_futures = []
-        
+
         def mock_submit(func, *args):
             future = Mock(spec=Future)
             future.result.return_value = (True, None)
             submitted_futures.append(future)
             return future
-        
+
         mock_executor = MagicMock()
         mock_executor.submit.side_effect = mock_submit
         mock_executor.__enter__.return_value = mock_executor
@@ -285,9 +345,9 @@ class TestDownloadOrchestrator:
         # Mock as_completed to return the submitted futures
         def mock_as_completed_func(futures_dict):
             return futures_dict.keys()
-        
+
         mock_as_completed.side_effect = mock_as_completed_func
-            
+
         successful, failed = orchestrator.download_papers(papers)
 
         assert successful == 3
@@ -298,7 +358,7 @@ class TestDownloadOrchestrator:
     def test_rate_limiting(self, orchestrator):
         """Test rate limiting enforcement."""
         import time
-        
+
         orchestrator.rate_limit = 2.0  # 2 requests per second
         orchestrator._min_request_interval = 0.5  # Should wait 0.5s between requests
         orchestrator._last_request_time = time.time()
@@ -324,7 +384,7 @@ class TestDownloadOrchestrator:
                 error_type="http_404",
                 attempts=1,
                 last_attempt=datetime.now().isoformat(),
-                permanent_failure=True
+                permanent_failure=True,
             ),
             FailedPaper(
                 paper_id="paper2",
@@ -334,8 +394,8 @@ class TestDownloadOrchestrator:
                 error_type="timeout",
                 attempts=3,
                 last_attempt=datetime.now().isoformat(),
-                permanent_failure=False
-            )
+                permanent_failure=False,
+            ),
         ]
 
         output_path = temp_dir / "failed_papers.json"
@@ -371,10 +431,9 @@ class TestDownloadOrchestrator:
 
         # Create new orchestrator and load state
         new_orchestrator = DownloadOrchestrator(
-            parallel_workers=2,
-            state_path=orchestrator.state_path
+            parallel_workers=2, state_path=orchestrator.state_path
         )
-        
+
         loaded_state = new_orchestrator._load_state()
 
         assert loaded_state.completed == ["paper1", "paper2"]
@@ -384,7 +443,7 @@ class TestDownloadOrchestrator:
     def test_state_thread_safety(self, orchestrator):
         """Test thread-safe state updates."""
         import threading
-        
+
         def update_state(paper_id, status):
             orchestrator._update_state(paper_id, status)
 
@@ -401,13 +460,20 @@ class TestDownloadOrchestrator:
         # All updates should be recorded
         assert len(orchestrator.state.completed) == 10
 
-    @patch('compute_forecast.orchestration.download_orchestrator.PDFDownloader')
-    def test_download_papers_with_save_callback(self, mock_downloader_class, orchestrator):
+    @patch("compute_forecast.orchestration.download_orchestrator.PDFDownloader")
+    def test_download_papers_with_save_callback(
+        self, mock_downloader_class, orchestrator
+    ):
         """Test download with periodic save callback."""
         papers = [
-            Paper(paper_id=f"paper{i}", title=f"Paper {i}",
-                  authors=[], venue="Test", year=2024,
-                  processing_flags={"selected_pdf_url": f"url{i}"})
+            Paper(
+                paper_id=f"paper{i}",
+                title=f"Paper {i}",
+                authors=[],
+                venue="Test",
+                year=2024,
+                processing_flags={"selected_pdf_url": f"url{i}"},
+            )
             for i in range(12)  # More than 10 to trigger periodic save
         ]
 
@@ -417,7 +483,9 @@ class TestDownloadOrchestrator:
 
         save_callback = Mock()
 
-        with patch.object(orchestrator, '_download_single_paper', return_value=(True, None)):
+        with patch.object(
+            orchestrator, "_download_single_paper", return_value=(True, None)
+        ):
             orchestrator.download_papers(papers, save_papers_callback=save_callback)
 
         # Should have called save callback at least once (after 10 papers)

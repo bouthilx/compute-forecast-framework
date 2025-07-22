@@ -142,16 +142,15 @@ def test_configuration():
         try:
             # Test with the actual GoogleDriveStorage class
             storage = GoogleDriveStorage(
-                credentials_path=creds_path,
-                folder_id=folder_id
+                credentials_path=creds_path, folder_id=folder_id
             )
-            
+
             if storage.test_connection():
                 print("   ✓ Storage implementation is working correctly")
                 print("   The download command will use this configuration")
             else:
                 print("   ❌ Storage test failed")
-                
+
         except Exception as e:
             print(f"   ❌ Could not initialize storage: {e}")
     else:

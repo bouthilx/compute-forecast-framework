@@ -13,7 +13,9 @@ from dotenv import load_dotenv
 
 from compute_forecast.pipeline.metadata_collection.models import Paper
 from compute_forecast.orchestration import DownloadOrchestrator
-from compute_forecast.monitoring.simple_download_progress import SimpleDownloadProgressManager
+from compute_forecast.monitoring.simple_download_progress import (
+    SimpleDownloadProgressManager,
+)
 
 
 console = Console()
@@ -25,7 +27,7 @@ load_dotenv()
 def load_papers_for_download(papers_path: Path) -> List[Paper]:
     """Load papers from JSON file and filter those with PDF URLs."""
     logger = logging.getLogger(__name__)
-    
+
     with open(papers_path, "r") as f:
         data = json.load(f)
 
@@ -40,10 +42,10 @@ def load_papers_for_download(papers_path: Path) -> List[Paper]:
     # Convert to Paper objects and filter those with PDF URLs
     papers = []
     papers_without_urls = 0
-    
+
     for i, paper_data in enumerate(papers_data):
         paper = Paper.from_dict(paper_data)
-        
+
         # Generate paper_id if not present
         if not paper.paper_id:
             # Use existing identifiers or generate from title/venue/year
@@ -56,9 +58,9 @@ def load_papers_for_download(papers_path: Path) -> List[Paper]:
             else:
                 # Generate from title, venue, year
                 title_slug = paper.title[:50].lower()
-                title_slug = ''.join(c if c.isalnum() else '_' for c in title_slug)
+                title_slug = "".join(c if c.isalnum() else "_" for c in title_slug)
                 paper.paper_id = f"{paper.venue}_{paper.year}_{title_slug}_{i}"
-        
+
         # Extract best PDF URL from urls field
         pdf_url = get_best_pdf_url(paper)
         if pdf_url:
@@ -70,37 +72,39 @@ def load_papers_for_download(papers_path: Path) -> List[Paper]:
             papers_without_urls += 1
             logger.debug(f"Paper {paper.paper_id} has no usable PDF URL")
 
-    logger.info(f"Found {len(papers)} papers with PDF URLs, {papers_without_urls} without URLs")
+    logger.info(
+        f"Found {len(papers)} papers with PDF URLs, {papers_without_urls} without URLs"
+    )
     return papers
 
 
 def get_best_pdf_url(paper: Paper) -> Optional[str]:
     """Get the best PDF URL from a paper's URL records.
-    
+
     Prioritizes original=True records, otherwise selects the most recent one.
     Only considers URLs that appear to be PDFs.
     """
     if not paper.urls:
         return None
-    
+
     # Filter for likely PDF URLs
     pdf_urls = []
     for url_record in paper.urls:
         url = url_record.data.url
         # Check if URL likely points to a PDF
-        if url and ('.pdf' in url.lower() or 'pdf' in url.lower()):
+        if url and (".pdf" in url.lower() or "pdf" in url.lower()):
             pdf_urls.append(url_record)
-    
+
     if not pdf_urls:
         return None
-    
+
     # First, look for original URLs
     original_urls = [record for record in pdf_urls if record.original]
     if original_urls:
         # If multiple originals, take the most recent
         original_urls.sort(key=lambda r: r.timestamp, reverse=True)
         return original_urls[0].data.url
-    
+
     # No originals, take the most recent URL
     pdf_urls.sort(key=lambda r: r.timestamp, reverse=True)
     return pdf_urls[0].data.url
@@ -149,7 +153,9 @@ def validate_configuration() -> bool:
     if get_config_value("GOOGLE_DRIVE_FOLDER_ID") is not None:
         has_google_drive = True
         if get_config_value("GOOGLE_CREDENTIALS_PATH") is None:
-            warnings.append("GOOGLE_DRIVE_FOLDER_ID set but GOOGLE_CREDENTIALS_PATH not set")
+            warnings.append(
+                "GOOGLE_DRIVE_FOLDER_ID set but GOOGLE_CREDENTIALS_PATH not set"
+            )
         else:
             creds_path = Path(get_config_value("GOOGLE_CREDENTIALS_PATH"))
             if not creds_path.exists():
@@ -167,9 +173,13 @@ def validate_configuration() -> bool:
         for warning in warnings:
             console.print(f"  - {warning}")
         if has_google_drive:
-            console.print("[yellow]Google Drive upload will be disabled, using local cache only[/yellow]")
+            console.print(
+                "[yellow]Google Drive upload will be disabled, using local cache only[/yellow]"
+            )
     elif not has_google_drive:
-        console.print("[blue]Google Drive not configured, using local cache only[/blue]")
+        console.print(
+            "[blue]Google Drive not configured, using local cache only[/blue]"
+        )
 
     return True  # Always return True since Google Drive is optional
 
@@ -177,6 +187,9 @@ def validate_configuration() -> bool:
 def main(
     papers: Path = typer.Option(
         ..., "--papers", help="Path to papers JSON file with PDF URLs"
+    ),
+    output: Optional[Path] = typer.Option(
+        None, "--output", help="Path for output JSON file with download status (optional)"
     ),
     parallel: int = typer.Option(
         None, "--parallel", help="Number of parallel downloads (default from .env or 5)"
@@ -231,9 +244,9 @@ def main(
 
         # Resume interrupted download session
         cf download --papers papers.json --resume
-        
+
         # Enable verbose logging
-        cf download --papers papers.json -v      # INFO level logging  
+        cf download --papers papers.json -v      # INFO level logging
         cf download --papers papers.json -vv     # DEBUG level logging
     """
 
@@ -244,24 +257,27 @@ def main(
     elif verbose >= 1:
         log_level = logging.INFO
 
-    # Configure root logger  
+    # Configure root logger
     logging.basicConfig(
         level=log_level,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[logging.StreamHandler()],  # Add console handler for verbose output
     )
-    
+
     # Add a separate handler for verbose logging that works with Rich console
     if verbose > 0:
         logger = logging.getLogger()
         for handler in logger.handlers[:]:
             if isinstance(handler, logging.StreamHandler):
                 logger.removeHandler(handler)
-        
+
         # Create a new handler that outputs to stderr (won't interfere with Rich progress bar)
         import sys
+
         handler = logging.StreamHandler(sys.stderr)
-        handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+        handler.setFormatter(
+            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        )
         logger.addHandler(handler)
         logger.setLevel(log_level)
 
@@ -357,11 +373,11 @@ def main(
     console.print(f"  Timeout per file: {timeout}s")
     console.print(f"  Max retries: {max_retries}")
     console.print(f"  Cache directory: {cache_dir}")
-    google_drive_folder = get_config_value('GOOGLE_DRIVE_FOLDER_ID')
+    google_drive_folder = get_config_value("GOOGLE_DRIVE_FOLDER_ID")
     if google_drive_folder:
         console.print(f"  Google Drive folder: {google_drive_folder}")
     else:
-        console.print(f"  Google Drive: [yellow]Not configured[/yellow]")
+        console.print("  Google Drive: [yellow]Not configured[/yellow]")
     console.print()
 
     # Create progress manager if not disabled
@@ -393,16 +409,23 @@ def main(
 
     console.print(f"Starting download of {len(papers_to_process)} papers...")
 
+    # Determine output file path
+    output_path = output
+    if output_path and output is not None:
+        console.print(f"  [blue]Output file:[/blue] {output_path}")
+    
     # Callback to save papers periodically
     def save_papers_callback(updated_papers: List[Paper]):
-        # Update papers in original data structure
-        paper_dict = {p.paper_id: p for p in updated_papers}
-        for i, p in enumerate(all_papers):
-            if p.paper_id in paper_dict:
-                all_papers[i] = paper_dict[p.paper_id]
+        # Only save if output path is specified
+        if output_path is not None:
+            # Update papers in original data structure
+            paper_dict = {p.paper_id: p for p in updated_papers}
+            for i, p in enumerate(all_papers):
+                if p.paper_id in paper_dict:
+                    all_papers[i] = paper_dict[p.paper_id]
 
-        # Save to file
-        save_papers_to_file(all_papers, papers)
+            # Save to output file (not input file)
+            save_papers_to_file(all_papers, output_path, papers)
 
     # Download papers
     try:
@@ -434,16 +457,34 @@ def main(
             console.print("[bold]Exporting Failed Papers:[/bold]")
             failed_papers_file = orchestrator.export_failed_papers()
             if failed_papers_file:
-                console.print(f"  [yellow]Failed papers exported to:[/yellow] {failed_papers_file}")
-                
+                console.print(
+                    f"  [yellow]Failed papers exported to:[/yellow] {failed_papers_file}"
+                )
+
                 # Show summary of failure types
                 if orchestrator.state.failed_papers:
-                    permanent_failures = len([fp for fp in orchestrator.state.failed_papers if fp.permanent_failure])
-                    temporary_failures = len([fp for fp in orchestrator.state.failed_papers if not fp.permanent_failure])
-                    
-                    console.print(f"  [red]Permanent failures:[/red] {permanent_failures} (will not retry)")
-                    console.print(f"  [yellow]Temporary failures:[/yellow] {temporary_failures} (can retry)")
-                    
+                    permanent_failures = len(
+                        [
+                            fp
+                            for fp in orchestrator.state.failed_papers
+                            if fp.permanent_failure
+                        ]
+                    )
+                    temporary_failures = len(
+                        [
+                            fp
+                            for fp in orchestrator.state.failed_papers
+                            if not fp.permanent_failure
+                        ]
+                    )
+
+                    console.print(
+                        f"  [red]Permanent failures:[/red] {permanent_failures} (will not retry)"
+                    )
+                    console.print(
+                        f"  [yellow]Temporary failures:[/yellow] {temporary_failures} (can retry)"
+                    )
+
                     # Show breakdown by error type
                     error_summary = orchestrator._get_error_type_summary()
                     if error_summary:
@@ -452,6 +493,11 @@ def main(
                             console.print(f"    {error_type}: {stats['count']} papers")
         else:
             console.print("  [green]All downloads successful![/green]")
+
+        # Save final output if specified
+        if output_path is not None:
+            console.print()
+            console.print(f"[green]Output saved to:[/green] {output_path}")
 
     except KeyboardInterrupt:
         console.print("\n[yellow]Download interrupted by user[/yellow]")
@@ -465,11 +511,11 @@ def main(
         raise typer.Exit(1)
 
 
-def save_papers_to_file(papers: List[Paper], output_path: Path):
-    """Save papers back to JSON file."""
+def save_papers_to_file(papers: List[Paper], output_path: Path, input_path: Path):
+    """Save papers to output JSON file, preserving the original structure."""
     try:
-        # Load original file structure
-        with open(output_path, "r") as f:
+        # Load original file structure from input file
+        with open(input_path, "r") as f:
             data = json.load(f)
 
         # Update papers in original structure
@@ -478,9 +524,9 @@ def save_papers_to_file(papers: List[Paper], output_path: Path):
         else:
             data = [p.to_dict() for p in papers]
 
-        # Save back to file
+        # Save to output file
         with open(output_path, "w") as f:
             json.dump(data, f, indent=2)
 
     except Exception as e:
-        console.print(f"[red]Error saving papers:[/red] {e}")
+        console.print(f"[red]Error saving papers to {output_path}:[/red] {e}")

@@ -14,8 +14,6 @@ from rich.progress import (
     BarColumn,
     TaskProgressColumn,
     TimeRemainingColumn,
-    DownloadColumn,
-    TransferSpeedColumn,
 )
 from rich.live import Live
 
@@ -33,16 +31,16 @@ class SimpleDownloadProgressManager:
             max_parallel: Maximum parallel downloads (unused in simple version)
         """
         self.console = console or Console()
-        
+
         # Progress tracking
         self.total_papers = 0
         self.completed = 0
         self.failed = 0
         self.active_downloads: Dict[str, Dict[str, Any]] = {}
-        
+
         # Threading
         self._lock = threading.Lock()
-        
+
         # Progress bars
         self.progress = None
         self.live = None
@@ -57,7 +55,7 @@ class SimpleDownloadProgressManager:
         self.total_papers = total_papers
         self.completed = 0
         self.failed = 0
-        
+
         # Create simple progress bar
         self.progress = Progress(
             SpinnerColumn(),
@@ -68,12 +66,12 @@ class SimpleDownloadProgressManager:
             console=self.console,
             disable=False,
         )
-        
+
         # Create overall progress task
         self.overall_task = self.progress.add_task(
-            f"[cyan]Downloading papers[/cyan]", total=total_papers
+            "[cyan]Downloading papers[/cyan]", total=total_papers
         )
-        
+
         # Start live display with transient mode
         self.live = Live(
             self.progress,
@@ -87,9 +85,11 @@ class SimpleDownloadProgressManager:
         """Stop progress tracking."""
         if self.live:
             self.live.stop()
-            
+
         # Print final summary
-        self.console.print(f"\n[green]✓[/green] Downloaded {self.completed} papers successfully")
+        self.console.print(
+            f"\n[green]✓[/green] Downloaded {self.completed} papers successfully"
+        )
         if self.failed > 0:
             self.console.print(f"[red]✗[/red] Failed to download {self.failed} papers")
 
@@ -108,11 +108,11 @@ class SimpleDownloadProgressManager:
             "WARNING": "yellow",
         }
         color = color_map.get(level, "white")
-        
+
         # Log directly to console (will appear above progress bar)
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.console.print(f"[dim]{timestamp}[/dim] [{color}]{message}[/{color}]")
-        
+
         # Also log to the standard logger for verbosity support
         logger_level_map = {
             "INFO": logging.INFO,
@@ -152,7 +152,7 @@ class SimpleDownloadProgressManager:
             if active_count > 0 and paper_id in self.active_downloads:
                 speed_mb = speed / (1024 * 1024) if speed > 0 else 0
                 desc += f" - {paper_id[:30]}: {speed_mb:.1f} MB/s"
-            
+
             self.progress.update(self.overall_task, description=desc)
 
     def complete_download(self, paper_id: str, success: bool):
@@ -166,7 +166,7 @@ class SimpleDownloadProgressManager:
             # Remove from active downloads
             if paper_id in self.active_downloads:
                 del self.active_downloads[paper_id]
-            
+
             # Update counters
             if success:
                 self.completed += 1
@@ -174,10 +174,10 @@ class SimpleDownloadProgressManager:
             else:
                 self.failed += 1
                 self.log(f"Failed to download {paper_id}", "ERROR")
-            
+
             # Update overall progress
             self.progress.advance(self.overall_task, 1)
-            
+
             # Update description
             desc = f"[cyan]Downloading papers[/cyan] - [green]{self.completed}[/green] success, [red]{self.failed}[/red] failed"
             self.progress.update(self.overall_task, description=desc)
@@ -188,6 +188,7 @@ class SimpleDownloadProgressManager:
         Returns:
             Callback function that can be passed to downloaders
         """
+
         def callback(
             paper_id: str, bytes_transferred: int, operation: str, speed: float
         ):
