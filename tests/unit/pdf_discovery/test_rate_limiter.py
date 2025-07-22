@@ -51,8 +51,12 @@ class TestRateLimiter:
         # Should complete almost immediately
         assert end_time - start_time < 0.05
 
-    @patch("compute_forecast.pipeline.pdf_acquisition.discovery.utils.rate_limiter.time.sleep")
-    @patch("compute_forecast.pipeline.pdf_acquisition.discovery.utils.rate_limiter.time.time")
+    @patch(
+        "compute_forecast.pipeline.pdf_acquisition.discovery.utils.rate_limiter.time.sleep"
+    )
+    @patch(
+        "compute_forecast.pipeline.pdf_acquisition.discovery.utils.rate_limiter.time.time"
+    )
     def test_wait_calculation_precision(self, mock_time, mock_sleep):
         """Test precise wait time calculation."""
         # Set up mock times: current time when checking interval, then time after sleep

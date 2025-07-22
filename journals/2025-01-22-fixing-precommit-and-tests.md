@@ -88,14 +88,14 @@ The remaining failures are:
 
 Fixed the last remaining type errors:
 
-1. **validators.py line 249**: Fixed `seen_titles` type from `Dict[str, int]` to `Dict[str, Tuple[int, Dict[str, Any]]]` 
+1. **validators.py line 249**: Fixed `seen_titles` type from `Dict[str, int]` to `Dict[str, Tuple[int, Dict[str, Any]]]`
 2. **checker.py validator returns**: Added type assertions for all validator.validate() return values
 
 ## Final Status
 
 ✅ **All pre-commit checks now pass:**
 - trim trailing whitespace: Passed
-- fix end of files: Passed  
+- fix end of files: Passed
 - check yaml/toml/json: Passed
 - ruff (linting): Passed
 - ruff format: Passed
@@ -106,3 +106,27 @@ Fixed the last remaining type errors:
 ⚠️ **Remaining issues (not blocking):**
 - 7 failing integration tests in pubmed_central and semantic_scholar modules due to incorrect import paths
 - These are unrelated to the quality module and can be addressed separately
+
+## Final Test Fixes
+
+Fixed all remaining test failures by correcting module paths:
+
+1. **Incorrect module paths**: All references to `compute_forecast.pdf_discovery` were outdated
+2. **Correct path**: Should be `compute_forecast.pipeline.pdf_acquisition.discovery`
+3. **Fixed files** (9 total):
+   - tests/unit/pdf_discovery/test_arxiv_collector.py
+   - tests/unit/pdf_discovery/test_semantic_scholar_improvements.py
+   - tests/unit/pdf_discovery/test_collectors.py
+   - tests/unit/pdf_discovery/test_semantic_scholar_collector.py
+   - tests/unit/pdf_discovery/test_rate_limiter.py
+   - tests/unit/pdf_discovery/sources/test_acl_anthology_collector.py
+   - tests/unit/pdf_discovery/sources/test_pubmed_central_collector.py
+   - tests/unit/pdf_discovery/deduplication/test_matchers.py
+   - tests/integration/sources/test_ieee_integration.py
+
+## Final Status
+
+✅ **All tests now pass!**
+- All 13 originally failing tests now pass
+- All pre-commit checks pass
+- No errors remaining
