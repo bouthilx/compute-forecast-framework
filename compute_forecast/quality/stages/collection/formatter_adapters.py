@@ -25,7 +25,8 @@ class CollectionFormatterAdapter(ReportFormatter):
         formatter = self.formatter_class()
 
         # Format the report
-        return formatter.format_report(report, metrics)
+        formatted_output = formatter.format_report(report, metrics)
+        return str(formatted_output)
 
     def _extract_metrics(self, report: QualityReport) -> CollectionQualityMetrics:
         """Extract collection metrics from the report."""
@@ -35,7 +36,9 @@ class CollectionFormatterAdapter(ReportFormatter):
                 hasattr(check_result, "metrics")
                 and "collection_metrics" in check_result.metrics
             ):
-                return check_result.metrics["collection_metrics"]
+                metrics = check_result.metrics["collection_metrics"]
+                assert isinstance(metrics, CollectionQualityMetrics)
+                return metrics
 
         # If no metrics found, create from available data
         return self._create_metrics_from_report(report)

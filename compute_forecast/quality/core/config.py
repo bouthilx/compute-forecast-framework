@@ -121,7 +121,7 @@ def create_quality_config(
     stage: str,
     thresholds: Optional[Dict[str, float]] = None,
     skip_checks: Optional[List[str]] = None,
-    output_format: str = "text",
+    output_format: Literal["text", "json", "markdown"] = "text",
     verbose: bool = False,
 ) -> QualityConfig:
     """Create quality configuration with custom overrides.

@@ -1,7 +1,7 @@
 """Formatter registry and base classes for quality reports."""
 
 from abc import ABC, abstractmethod
-from typing import Dict, Type, Optional
+from typing import Dict, Type, Optional, Any
 from pathlib import Path
 
 from .interfaces import QualityReport
@@ -51,7 +51,7 @@ class FormatterRegistry:
         return cls._formatters.get(format_name)
 
     @classmethod
-    def list_formats(cls) -> Dict[str, list]:
+    def list_formats(cls) -> Dict[str, Any]:
         """List all available formats."""
         return {
             "generic": list(cls._formatters.keys()),

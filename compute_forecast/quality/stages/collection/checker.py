@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Callable
 from datetime import datetime
 
 from compute_forecast.quality.stages.base import StageQualityChecker
@@ -100,7 +100,7 @@ class CollectionQualityChecker(StageQualityChecker):
             "load_timestamp": datetime.now(),
         }
 
-    def _register_checks(self) -> Dict[str, callable]:
+    def _register_checks(self) -> Dict[str, Callable]:
         """Register all collection quality checks."""
         return {
             "completeness": self._run_completeness_check,
@@ -339,7 +339,7 @@ class CollectionQualityChecker(StageQualityChecker):
     ):
         """Extract coverage metrics from validation results."""
         # Count papers by scraper source
-        scraper_counts = {}
+        scraper_counts: Dict[str, int] = {}
         for paper in papers:
             # Try both possible field names
             scraper = paper.get("collection_source") or paper.get(
@@ -348,7 +348,7 @@ class CollectionQualityChecker(StageQualityChecker):
             scraper_counts[scraper] = scraper_counts.get(scraper, 0) + 1
 
         # Count papers by venue
-        venue_counts = {}
+        venue_counts: Dict[str, int] = {}
         for paper in papers:
             venue = paper.get("venue", "Unknown")
             venue_counts[venue] = venue_counts.get(venue, 0) + 1

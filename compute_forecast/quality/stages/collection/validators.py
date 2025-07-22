@@ -62,7 +62,7 @@ class CompletenessValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], config: QualityConfig
     ) -> QualityCheckResult:
         """Validate completeness of paper data."""
-        issues = []
+        issues: List[QualityIssue] = []
 
         if not papers:
             issues.append(
@@ -210,7 +210,7 @@ class ConsistencyValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], config: QualityConfig
     ) -> QualityCheckResult:
         """Validate consistency of paper data."""
-        issues = []
+        issues: List[QualityIssue] = []
 
         if not papers:
             return QualityCheckResult(
@@ -246,7 +246,7 @@ class ConsistencyValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], issues: List[QualityIssue]
     ) -> float:
         """Check for duplicate papers."""
-        seen_titles = {}
+        seen_titles: Dict[str, int] = {}
         all_duplicates = []
         duplicate_pairs = []
 
@@ -278,7 +278,7 @@ class ConsistencyValidator(BaseValidator):
                 seen_titles[title_lower] = (i, paper)
 
         # Calculate cross-venue duplicate statistics
-        venue_year_counts = {}
+        venue_year_counts: Dict[str, int] = {}
         cross_venue_pairs = {}
 
         for paper in papers:
@@ -392,7 +392,7 @@ class ConsistencyValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], issues: List[QualityIssue]
     ) -> float:
         """Check venue name consistency."""
-        venue_variants = {}
+        venue_variants: Dict[str, List[str]] = {}
 
         for paper in papers:
             venue = paper.get("venue", "").strip()
@@ -480,7 +480,7 @@ class AccuracyValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], config: QualityConfig
     ) -> QualityCheckResult:
         """Validate accuracy of paper data."""
-        issues = []
+        issues: List[QualityIssue] = []
 
         if not papers:
             return QualityCheckResult(
@@ -703,7 +703,7 @@ class CoverageValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], config: QualityConfig
     ) -> QualityCheckResult:
         """Validate collection coverage."""
-        issues = []
+        issues: List[QualityIssue] = []
 
         if not papers:
             issues.append(
@@ -747,7 +747,7 @@ class CoverageValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], issues: List[QualityIssue]
     ) -> float:
         """Analyze venue coverage distribution."""
-        venue_counts = {}
+        venue_counts: Dict[str, int] = {}
 
         for paper in papers:
             venue = paper.get("venue", "Unknown")
@@ -807,7 +807,7 @@ class CoverageValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], issues: List[QualityIssue]
     ) -> float:
         """Analyze year coverage distribution."""
-        year_counts = {}
+        year_counts: Dict[int, int] = {}
 
         for paper in papers:
             year = paper.get("year")
@@ -867,7 +867,7 @@ class CoverageValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], issues: List[QualityIssue]
     ) -> float:
         """Analyze scraper coverage distribution."""
-        scraper_counts = {}
+        scraper_counts: Dict[str, int] = {}
 
         for paper in papers:
             # Try both possible field names

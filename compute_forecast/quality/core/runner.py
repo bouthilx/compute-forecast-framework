@@ -31,9 +31,13 @@ class QualityRunner:
         if not config.verbose:
             progress = QualityCheckProgress()
             with progress.track_stage(stage):
-                return checker.check(data_path, config)
+                result = checker.check(data_path, config)
+                assert isinstance(result, QualityReport)
+                return result
         else:
-            return checker.check(data_path, config)
+            result = checker.check(data_path, config)
+            assert isinstance(result, QualityReport)
+            return result
 
     def run_all_applicable_checks(
         self, data_path: Path, config: Optional[QualityConfig] = None

@@ -53,7 +53,7 @@
 2. **Ruff F401**: Added `# noqa: F401` comment to the formatter_adapters import since it's needed for registration
 3. **Ruff E722**: Changed bare `except:` to `except Exception:`
 4. **MyPy interfaces.py**: Changed `field(default_factory=lambda: {})` back to `field(default_factory=dict)`
-5. **MyPy quality.py**: 
+5. **MyPy quality.py**:
    - Added type annotation for combined_data: `Dict[str, Any]`
    - Added None check for stage parameter before calling runner.run_checks
 6. **Pytest empty data test**: Changed assertion from `< 0.5` to `<= 0.5` to handle the boundary condition

@@ -8,6 +8,7 @@ from rich.progress import (
     TextColumn,
     BarColumn,
     TaskProgressColumn,
+    TaskID,
 )
 from rich.console import Console
 
@@ -17,8 +18,8 @@ class QualityCheckProgress:
 
     def __init__(self, console: Optional[Console] = None):
         self.console = console or Console()
-        self._progress = None
-        self._task_id = None
+        self._progress: Optional[Progress] = None
+        self._task_id: Optional[TaskID] = None
 
     @contextmanager
     def track_checks(

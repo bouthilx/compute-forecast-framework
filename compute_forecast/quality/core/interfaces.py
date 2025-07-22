@@ -1,8 +1,8 @@
 """Core interfaces and data structures for quality checking system."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field as dataclass_field
 from enum import Enum
-from typing import Dict, List, Optional, Any, Callable
+from typing import Dict, List, Optional, Any
 from datetime import datetime
 from pathlib import Path
 
@@ -33,7 +33,7 @@ class QualityIssue:
     field: Optional[str]
     message: str
     suggested_action: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = dataclass_field(default_factory=dict)
 
 
 @dataclass
@@ -44,8 +44,8 @@ class QualityCheckResult:
     check_type: QualityCheckType
     passed: bool
     score: float  # 0.0 to 1.0
-    issues: List[QualityIssue] = field(default_factory=list)
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    issues: List[QualityIssue] = dataclass_field(default_factory=list)
+    metrics: Dict[str, Any] = dataclass_field(default_factory=dict)
 
 
 @dataclass
@@ -93,8 +93,8 @@ class QualityConfig:
     """Configuration for quality checks."""
 
     stage: str
-    thresholds: Dict[str, float] = field(default_factory=dict)
-    skip_checks: List[str] = field(default_factory=list)
+    thresholds: Dict[str, float] = dataclass_field(default_factory=dict)
+    skip_checks: List[str] = dataclass_field(default_factory=list)
     output_format: str = "text"
     verbose: bool = False
-    custom_params: Dict[str, Any] = field(default_factory=dict)
+    custom_params: Dict[str, Any] = dataclass_field(default_factory=dict)
