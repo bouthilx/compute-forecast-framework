@@ -215,9 +215,9 @@ class SimpleDownloadProgressManager:
         with self._lock:
             active_count = len(self.active_downloads)
             desc = f"[cyan]Downloading papers[/cyan] ({active_count} active)"
-            if active_count > 0 and paper_id in self.active_downloads:
-                speed_mb = speed / (1024 * 1024) if speed > 0 else 0
-                desc += f" - {paper_id[:30]}: {speed_mb:.1f} MB/s"
+            if active_count > 0 and speed > 0:
+                speed_mb = speed / (1024 * 1024)
+                desc += f" - {speed_mb:.1f} MB/s"
 
             self.progress.update(self.overall_task, description=desc)
 
