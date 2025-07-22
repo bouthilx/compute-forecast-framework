@@ -78,13 +78,15 @@ class TestUnpaywallClient:
             assert result.success is True
             assert len(result.papers) == 1
             paper = result.papers[0]
-            assert paper.doi == "10.1038/nature12373"
+            assert getattr(paper, "doi", "") == "10.1038/nature12373"
             assert paper.title == "Example Paper Title"
             assert paper.venue == "Nature"
             assert paper.year == 2021
             assert len(paper.urls) == 2
-            assert "https://www.nature.com/articles/nature12373.pdf" in paper.urls
-            assert "https://arxiv.org/pdf/2105.12345.pdf" in paper.urls
+            # URLs are now URLRecord objects
+            url_strings = [url.data.url for url in paper.urls]
+            assert "https://www.nature.com/articles/nature12373.pdf" in url_strings
+            assert "https://arxiv.org/pdf/2105.12345.pdf" in url_strings
 
     def test_find_open_access_no_oa(self, client, mock_no_oa_response):
         """Test lookup for paper with no open access."""
@@ -203,7 +205,7 @@ class TestUnpaywallClient:
         """Test paper creation from Unpaywall data."""
         paper = client._create_paper_from_unpaywall_data(mock_oa_response)
 
-        assert paper.doi == "10.1038/nature12373"
+        assert getattr(paper, "doi", "") == "10.1038/nature12373"
         assert paper.title == "Example Paper Title"
         assert paper.venue == "Nature"
         assert paper.year == 2021

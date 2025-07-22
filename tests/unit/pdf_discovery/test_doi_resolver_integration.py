@@ -15,6 +15,56 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import (
     DiscoveryResult,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestDOIResolverIntegration:
@@ -23,35 +73,44 @@ class TestDOIResolverIntegration:
     @pytest.fixture
     def sample_papers(self):
         """Create sample papers with and without DOIs."""
-        return [
-            Paper(
-                title="Paper with DOI",
-                authors=[Author(name="John Doe")],
-                venue="Test Journal",
-                year=2021,
-                citations=10,
-                doi="10.1038/nature12373",
-                paper_id="paper_1",
-            ),
-            Paper(
-                title="Paper without DOI",
-                authors=[Author(name="Jane Smith")],
-                venue="Test Journal",
-                year=2021,
-                citations=5,
-                doi="",  # No DOI
-                paper_id="paper_2",
-            ),
-            Paper(
-                title="Another paper with DOI",
-                authors=[Author(name="Bob Wilson")],
-                venue="Test Journal",
-                year=2021,
-                citations=15,
-                doi="10.1126/science.123456",
-                paper_id="paper_3",
-            ),
-        ]
+        papers = []
+
+        # Paper with DOI (nature)
+        p1 = create_test_paper(
+            paper_id="paper_77",
+            title="Paper with DOI",
+            authors=[Author(name="John Doe")],
+            venue="Test Journal",
+            year=2021,
+            citation_count=10,
+        )
+        p1.doi = "10.1038/nature12373"
+        papers.append(p1)
+
+        # Paper without DOI
+        p2 = create_test_paper(
+            paper_id="paper_85",
+            title="Paper without DOI",
+            authors=[Author(name="Jane Smith")],
+            venue="Test Journal",
+            year=2021,
+            citation_count=5,
+        )
+        papers.append(p2)
+
+        # Another paper with DOI (science)
+        p3 = create_test_paper(
+            paper_id="paper_93",
+            title="Another paper with DOI",
+            authors=[Author(name="Bob Wilson")],
+            venue="Test Journal",
+            year=2021,
+            citation_count=15,
+        )
+        p3.doi = "10.1126/science.123456"
+        papers.append(p3)
+
+        return papers
 
     def test_framework_integration(self, sample_papers):
         """Test DOI resolver integration with PDF discovery framework."""
@@ -73,22 +132,34 @@ class TestDOIResolverIntegration:
                     APIResponse,
                     ResponseMetadata,
                 )
+                from compute_forecast.pipeline.consolidation.models import (
+                    URLRecord,
+                    URLData,
+                )
 
                 if doi in ["10.1038/nature12373", "10.1126/science.123456"]:
+                    paper = create_test_paper(
+                        paper_id="paper_128",
+                        title="Mock Paper",
+                        authors=[Author(name="Mock Author")],
+                        venue="Mock Journal",
+                        year=2021,
+                        citation_count=0,
+                    )
+                    paper.doi = doi
+                    # Add URLs to the paper
+                    paper.urls = [
+                        URLRecord(
+                            source="crossref",
+                            timestamp=datetime.now(),
+                            original=True,
+                            data=URLData(url=f"https://publisher.com/{doi}.pdf"),
+                        )
+                    ]
+
                     return APIResponse(
                         success=True,
-                        papers=[
-                            Paper(
-                                title="Mock Paper",
-                                authors=[Author(name="Mock Author")],
-                                venue="Mock Journal",
-                                year=2021,
-                                citations=0,
-                                doi=doi,
-                                urls=[f"https://publisher.com/{doi}.pdf"],
-                                paper_id=f"crossref_{doi}",
-                            )
-                        ],
+                        papers=[paper],
                         metadata=ResponseMetadata(
                             total_results=1,
                             returned_count=1,
@@ -106,22 +177,34 @@ class TestDOIResolverIntegration:
                     APIResponse,
                     ResponseMetadata,
                 )
+                from compute_forecast.pipeline.consolidation.models import (
+                    URLRecord,
+                    URLData,
+                )
 
                 if doi == "10.1038/nature12373":  # Only first DOI has OA
+                    paper = create_test_paper(
+                        paper_id="paper_160",
+                        title="Mock Paper",
+                        authors=[Author(name="Mock Author")],
+                        venue="Mock Journal",
+                        year=2021,
+                        citation_count=0,
+                    )
+                    paper.doi = doi
+                    # Add URLs to the paper
+                    paper.urls = [
+                        URLRecord(
+                            source="unpaywall",
+                            timestamp=datetime.now(),
+                            original=True,
+                            data=URLData(url=f"https://arxiv.org/{doi}.pdf"),
+                        )
+                    ]
+
                     return APIResponse(
                         success=True,
-                        papers=[
-                            Paper(
-                                title="Mock Paper",
-                                authors=[Author(name="Mock Author")],
-                                venue="Mock Journal",
-                                year=2021,
-                                citations=0,
-                                doi=doi,
-                                urls=[f"https://arxiv.org/pdf/{doi}.pdf"],
-                                paper_id=f"unpaywall_{doi}",
-                            )
-                        ],
+                        papers=[paper],
                         metadata=ResponseMetadata(
                             total_results=1,
                             returned_count=1,
@@ -149,9 +232,9 @@ class TestDOIResolverIntegration:
 
             # Check that we have records for papers with DOIs
             found_paper_ids = {record.paper_id for record in result.records}
-            assert "paper_1" in found_paper_ids
-            assert "paper_3" in found_paper_ids
-            assert "paper_2" not in found_paper_ids  # No DOI
+            assert "paper_77" in found_paper_ids  # First paper with DOI
+            assert "paper_93" in found_paper_ids  # Third paper with DOI
+            assert "paper_85" not in found_paper_ids  # Second paper - No DOI
 
             # Verify that both CrossRef and Unpaywall were called for papers with DOIs
             assert mock_crossref.call_count == 2

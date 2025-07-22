@@ -1,6 +1,7 @@
 """Tests for extraction quality assurance."""
 
 import pytest
+from datetime import datetime
 from unittest.mock import Mock
 
 from compute_forecast.pipeline.analysis.benchmark.quality_assurance import (
@@ -11,6 +12,12 @@ from compute_forecast.pipeline.analysis.benchmark.models import (
     ExtractionBatch,
     BenchmarkPaper,
     ExtractionQA,
+)
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
 )
 from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
@@ -24,6 +31,50 @@ def create_mock_paper(extraction_confidence=0.8):
     mock = Mock()
     mock.extraction_confidence = extraction_confidence
     return mock
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestExtractionQualityAssurance:
@@ -45,13 +96,13 @@ class TestExtractionQualityAssurance:
                 papers = []
                 for i in range(40):  # 40 papers per domain-year
                     confidence = 0.9 - (i * 0.02)  # Gradually decreasing confidence
-                    paper = Paper(
+                    paper = create_test_paper(
                         paper_id=f"{domain.value}_{year}_{i}",
                         title=f"Paper {i}",
                         year=year,
                         venue="Test",
                         authors=[Author(name="Author")],
-                        citations=i * 10,  # Add required citations field
+                        citation_count=i * 10,  # Add required citations field
                     )
 
                     benchmark_paper = BenchmarkPaper(

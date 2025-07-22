@@ -2,12 +2,62 @@
 
 from unittest.mock import Mock
 
+from datetime import datetime
 from compute_forecast.pipeline.metadata_collection.sources.scrapers import (
     SimplePaper,
     PaperoniAdapter,
     ScrapingBatch,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 def test_simple_paper_to_package_integration():
@@ -20,7 +70,6 @@ def test_simple_paper_to_package_integration():
         year=2024,
         abstract="This paper presents a novel deep learning approach...",
         pdf_urls=["https://example.com/paper.pdf"],
-        doi="10.1234/cvpr.2024.12345",
         source_scraper="cvpr_scraper",
         extraction_confidence=0.9,
     )
@@ -35,7 +84,7 @@ def test_simple_paper_to_package_integration():
     assert all(isinstance(author, Author) for author in package_paper.authors)
     assert package_paper.venue == "CVPR"
     assert package_paper.year == 2024
-    assert package_paper.citations == 0  # Default for scraped papers
+    assert package_paper.get_latest_citations_count() == 0  # Default for scraped papers
     assert package_paper.collection_source == "cvpr_scraper"
 
 

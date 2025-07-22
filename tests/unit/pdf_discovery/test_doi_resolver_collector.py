@@ -7,12 +7,62 @@ from datetime import datetime
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.doi_resolver_collector import (
     DOIResolverCollector,
 )
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     Author,
     APIResponse,
     ResponseMetadata,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestDOIResolverCollector:
@@ -26,46 +76,55 @@ class TestDOIResolverCollector:
     @pytest.fixture
     def sample_paper(self):
         """Create a sample paper with DOI."""
-        return Paper(
+        paper = create_test_paper(
+            paper_id="paper_79",
             title="Test Paper",
             authors=[Author(name="John Doe")],
             venue="Test Journal",
             year=2021,
-            citations=10,
-            doi="10.1038/nature12373",
-            paper_id="test_paper_1",
+            citation_count=10,
         )
+        paper.doi = "10.1038/nature12373"
+        return paper
 
     @pytest.fixture
     def sample_paper_no_doi(self):
         """Create a sample paper without DOI."""
-        return Paper(
+        return create_test_paper(
+            paper_id="paper_93",
             title="Test Paper No DOI",
             authors=[Author(name="Jane Smith")],
             venue="Test Journal",
             year=2021,
-            citations=5,
-            doi="",  # No DOI
-            paper_id="test_paper_2",
+            citation_count=5,  # No DOI
         )
 
     @pytest.fixture
     def mock_crossref_response(self):
         """Mock successful CrossRef response."""
+        from compute_forecast.pipeline.consolidation.models import URLRecord, URLData
+
+        paper = create_test_paper(
+            paper_id="paper_108",
+            title="Test Paper",
+            authors=[Author(name="John Doe")],
+            venue="Test Journal",
+            year=2021,
+            citation_count=10,
+        )
+        # Add URLs to the paper
+        paper.urls = [
+            URLRecord(
+                source="crossref",
+                timestamp=datetime.now(),
+                original=True,
+                data=URLData(url="https://www.nature.com/articles/nature12373.pdf"),
+            )
+        ]
+
         return APIResponse(
             success=True,
-            papers=[
-                Paper(
-                    title="Test Paper",
-                    authors=[Author(name="John Doe")],
-                    venue="Test Journal",
-                    year=2021,
-                    citations=10,
-                    doi="10.1038/nature12373",
-                    urls=["https://publisher.com/paper.pdf"],
-                    paper_id="crossref_10.1038/nature12373",
-                )
-            ],
+            papers=[paper],
             metadata=ResponseMetadata(
                 total_results=1,
                 returned_count=1,
@@ -80,20 +139,29 @@ class TestDOIResolverCollector:
     @pytest.fixture
     def mock_unpaywall_response(self):
         """Mock successful Unpaywall response."""
+        from compute_forecast.pipeline.consolidation.models import URLRecord, URLData
+
+        paper = create_test_paper(
+            paper_id="paper_135",
+            title="Test Paper",
+            authors=[Author(name="John Doe")],
+            venue="Test Journal",
+            year=2021,
+            citation_count=0,
+        )
+        # Add URLs to the paper
+        paper.urls = [
+            URLRecord(
+                source="unpaywall",
+                timestamp=datetime.now(),
+                original=True,
+                data=URLData(url="https://arxiv.org/pdf/2105.12345.pdf"),
+            )
+        ]
+
         return APIResponse(
             success=True,
-            papers=[
-                Paper(
-                    title="Test Paper",
-                    authors=[Author(name="John Doe")],
-                    venue="Test Journal",
-                    year=2021,
-                    citations=0,
-                    doi="10.1038/nature12373",
-                    urls=["https://arxiv.org/pdf/2105.12345.pdf"],
-                    paper_id="unpaywall_10.1038/nature12373",
-                )
-            ],
+            papers=[paper],
             metadata=ResponseMetadata(
                 total_results=1,
                 returned_count=1,
@@ -125,12 +193,13 @@ class TestDOIResolverCollector:
 
             result = collector._discover_single(sample_paper)
 
-            assert result.paper_id == "test_paper_1"
+            assert result.paper_id == "paper_79"
             assert result.source == "doi_resolver"
             assert result.confidence_score > 0.8  # High confidence for both sources
             assert len(result.version_info["crossref_urls"]) == 1
             assert len(result.version_info["unpaywall_urls"]) == 1
-            assert "https://publisher.com/paper.pdf" in result.pdf_url
+            # PDF URL should be from CrossRef (prioritized over Unpaywall)
+            assert result.pdf_url == "https://www.nature.com/articles/nature12373.pdf"
 
             # Both APIs should be called
             mock_crossref.assert_called_once_with("10.1038/nature12373")
@@ -153,7 +222,7 @@ class TestDOIResolverCollector:
 
             result = collector._discover_single(sample_paper)
 
-            assert result.paper_id == "test_paper_1"
+            assert result.paper_id == "paper_79"
             assert result.source == "doi_resolver"
             assert result.confidence_score > 0.6  # Medium confidence for one source
             assert len(result.version_info["crossref_urls"]) == 1
@@ -176,7 +245,7 @@ class TestDOIResolverCollector:
 
             result = collector._discover_single(sample_paper)
 
-            assert result.paper_id == "test_paper_1"
+            assert result.paper_id == "paper_79"
             assert result.source == "doi_resolver"
             assert result.confidence_score > 0.6  # Medium confidence for one source
             assert len(result.version_info["crossref_urls"]) == 0

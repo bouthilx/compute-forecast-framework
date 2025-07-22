@@ -1,5 +1,13 @@
 """Tests for mock data generators."""
 
+from datetime import datetime
+
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     Author,
@@ -12,6 +20,50 @@ from compute_forecast.testing.mock_data import (
     MockDataConfig,
     DataQuality,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestMockDataGenerator:
@@ -34,8 +86,8 @@ class TestMockDataGenerator:
             assert paper.authors
             assert paper.year
             assert paper.venue
-            assert paper.abstract
-            assert paper.citations >= 0
+            assert paper.abstracts  # Check abstracts list instead of abstract property
+            assert paper.get_latest_citations_count() >= 0
             assert 2019 <= paper.year <= 2024
 
     def test_generate_edge_case_papers(self):
@@ -52,9 +104,11 @@ class TestMockDataGenerator:
         extreme_citation_velocity_count = 0
 
         for paper in papers:
-            if not paper.abstract:
+            if not paper.abstracts:
                 missing_fields_count += 1
-            elif paper.abstract == "":  # Check for empty abstracts
+            elif (
+                len(paper.abstracts) > 0 and paper.abstracts[0].data.text == ""
+            ):  # Check for empty abstracts
                 empty_abstract_count += 1
 
             if not paper.keywords:
@@ -88,7 +142,7 @@ class TestMockDataGenerator:
             # But many optional fields should be missing
             missing_count = sum(
                 [
-                    paper.abstract is None,
+                    not paper.abstracts,
                     paper.keywords is None or len(paper.keywords) == 0,
                     paper.arxiv_id is None,
                     paper.openalex_id is None,
@@ -169,8 +223,8 @@ class TestMockDataGenerator:
             for author in paper.authors:
                 assert author.name
                 # Some authors should have affiliations
-                if author.affiliation:
-                    assert len(author.affiliation) > 0
+                if author.affiliations:
+                    assert len(author.affiliations) > 0
 
     def test_venue_distribution(self):
         """Test realistic venue distribution."""
@@ -215,7 +269,7 @@ class TestMockDataGenerator:
         generator = MockDataGenerator()
 
         papers = generator.generate(config)
-        citations = [p.citations for p in papers]
+        citations = [p.get_latest_citations_count() for p in papers]
 
         # Most papers should have few citations
         low_citation_papers = sum(1 for c in citations if c < 10)
@@ -227,7 +281,7 @@ class TestMockDataGenerator:
 
         # Older papers should generally have more citations
         for paper in papers:
-            if paper.year <= 2020 and paper.citations < 5:
+            if paper.year <= 2020 and paper.get_latest_citations_count() < 5:
                 # Older papers with very few citations should be rare
                 assert paper.venue not in ["ICML", "NeurIPS", "CVPR"]
 
@@ -260,22 +314,13 @@ class TestMockDataGenerator:
 
         # Should fail with wrong quality (too many missing fields)
         # Create a paper with many missing fields
-        corrupted_paper = Paper(
+        corrupted_paper = create_test_paper(
             paper_id="test",
             title="Test",
             authors=[],
             year=2023,
             venue="Test",
-            citations=0,
-            abstract=None,
-            keywords=None,
-            arxiv_id=None,
-            openalex_id=None,
-            computational_analysis=None,
-            citation_velocity=None,
-            normalized_venue="test",
-            collection_source="mock_generator",
-            collection_timestamp=papers[0].collection_timestamp,
+            citation_count=0,
         )
         # Replace multiple papers to ensure validation fails
         papers_with_corrupted = papers[:5] + [corrupted_paper] * 5

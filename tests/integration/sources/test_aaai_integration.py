@@ -1,14 +1,64 @@
 """Integration tests for AAAI collector."""
 
 import pytest
+from datetime import datetime
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.aaai_collector import (
     AAICollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 
 
 @pytest.mark.integration
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
+
+
 class TestAAIIntegration:
     """Integration tests for AAAI collector with real data."""
 
@@ -25,13 +75,13 @@ class TestAAIIntegration:
         Run with: pytest -m integration --no-skip
         """
         # Create a paper that should exist in AAAI proceedings
-        paper = Paper(
+        paper = create_test_paper(
+            paper_id="paper_78",
             title="Attention Is All You Need",  # Famous transformer paper
             authors=[Author(name="Ashish Vaswani"), Author(name="Noam Shazeer")],
             venue="AAAI",
             year=2023,  # Adjust year if needed
-            citations=1000,
-            paper_id="test_transformer_paper",
+            citation_count=1000,
         )
 
         try:
@@ -92,13 +142,13 @@ class TestAAIIntegration:
         import time
 
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id=f"test_{i}",
                 title=f"Test Paper {i}",
                 authors=[Author(name=f"Author {i}")],
                 venue="AAAI",
                 year=2024,
-                citations=10,
-                paper_id=f"test_{i}",
+                citation_count=10,
             )
             for i in range(3)
         ]

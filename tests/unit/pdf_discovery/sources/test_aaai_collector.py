@@ -9,6 +9,57 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.aaai_collector 
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from datetime import datetime
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestAAICollector:
@@ -22,13 +73,13 @@ class TestAAICollector:
     @pytest.fixture
     def sample_paper(self):
         """Create sample paper for testing."""
-        return Paper(
+        return create_test_paper(
+            paper_id="paper_76",
             title="Deep Learning for Natural Language Processing",
             authors=[Author(name="John Smith"), Author(name="Jane Doe")],
             venue="AAAI",
             year=2024,
-            citations=10,
-            paper_id="test_paper_123",
+            citation_count=10,
         )
 
     @pytest.fixture
@@ -268,7 +319,7 @@ class TestAAICollector:
             pdf_record = collector._discover_single(sample_paper)
 
             assert isinstance(pdf_record, PDFRecord)
-            assert pdf_record.paper_id == "test_paper_123"
+            assert pdf_record.paper_id == "paper_76"
             assert (
                 pdf_record.pdf_url
                 == "https://ojs.aaai.org/index.php/AAAI/article/download/12345/98765"

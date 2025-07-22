@@ -2,6 +2,56 @@
 
 from datetime import datetime
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 def test_paper_with_all_none_fields():
@@ -66,6 +116,7 @@ def test_paper_serialization_with_complex_types():
     )
 
     paper = Paper(
+        paper_id="test_123",
         title="Test Paper",
         authors=[
             Author(name="John Doe", affiliations=["MIT", "Stanford"]),
@@ -98,7 +149,6 @@ def test_paper_serialization_with_complex_types():
                 data=URLData(url="https://example.com/paper.pdf"),
             )
         ],
-        paper_id="test-123",
         keywords=["ml", "ai"],
         collection_timestamp=datetime(2025, 1, 10, 15, 30, 45),
     )
@@ -147,6 +197,7 @@ def test_paper_round_trip_serialization():
     )
 
     original = Paper(
+        paper_id="round-trip-123",
         title="Round Trip Test",
         authors=[Author(name="Test Author", affiliations=["Uni"])],
         venue="ICML",
@@ -176,7 +227,6 @@ def test_paper_round_trip_serialization():
                 data=URLData(url="https://test.com/paper.pdf"),
             )
         ],
-        paper_id="round-trip-123",
         keywords=["test", "serialization"],
         collection_timestamp=datetime(2025, 1, 10, 12, 0, 0),
     )

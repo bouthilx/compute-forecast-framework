@@ -77,12 +77,20 @@ class ArXivPDFCollector(BasePDFCollector):
 
         # Strategy 2: Check URLs for arxiv.org links
         if paper.urls:
-            for url in paper.urls:
-                if isinstance(url, str):
-                    extracted_id = self._extract_id_from_string(url)
-                    if extracted_id:
-                        logger.debug(f"Found arXiv ID from URL: {extracted_id}")
-                        return extracted_id
+            for url_record in paper.urls:
+                # Handle both string URLs (old model) and URLRecord objects (new model)
+                url_str: str = ""
+                if isinstance(url_record, str):
+                    url_str = url_record
+                elif hasattr(url_record, "data") and hasattr(url_record.data, "url"):
+                    url_str = url_record.data.url
+                else:
+                    continue
+
+                extracted_id = self._extract_id_from_string(url_str)
+                if extracted_id:
+                    logger.debug(f"Found arXiv ID from URL: {extracted_id}")
+                    return extracted_id
 
         # Strategy 3: Check DOI for arXiv references (some papers have arXiv DOIs)
         if paper.doi:

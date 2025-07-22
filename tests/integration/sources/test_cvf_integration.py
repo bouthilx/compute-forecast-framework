@@ -1,11 +1,61 @@
 """Integration tests for CVF collector with PDF discovery framework."""
 
 import pytest
+from datetime import datetime
 from unittest.mock import patch, Mock
 
 from compute_forecast.pipeline.pdf_acquisition.discovery import PDFDiscoveryFramework
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources import CVFCollector
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestCVFIntegration:
@@ -22,36 +72,36 @@ class TestCVFIntegration:
     def cvf_papers(self):
         """Create sample CVF conference papers."""
         return [
-            Paper(
+            create_test_paper(
                 paper_id="cvpr_2023_1",
                 title="Deep Learning for Object Detection",
                 authors=["John Doe", "Jane Smith"],
                 year=2023,
-                citations=50,
+                citation_count=50,
                 venue="CVPR",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="iccv_2023_1",
                 title="Vision Transformers for Image Classification",
                 authors=["Alice Brown"],
                 year=2023,
-                citations=30,
+                citation_count=30,
                 venue="ICCV",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="eccv_2022_1",
                 title="Neural Rendering Techniques",
                 authors=["Bob Wilson"],
                 year=2022,
-                citations=25,
+                citation_count=25,
                 venue="ECCV",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="icml_2023_1",
                 title="Machine Learning Theory",
                 authors=["Charlie Davis"],
                 year=2023,
-                citations=40,
+                citation_count=40,
                 venue="ICML",  # Not a CVF venue
             ),
         ]
@@ -155,22 +205,22 @@ class TestCVFIntegration:
     def test_cvf_biannual_conference_validation(self, mock_get, framework):
         """Test that biannual conferences are validated correctly."""
         # ICCV should work for odd years
-        paper_2023 = Paper(
+        paper_2023 = create_test_paper(
             paper_id="test1",
             title="Test Paper",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
             venue="ICCV",
         )
 
         # ICCV should fail for even years
-        paper_2022 = Paper(
+        paper_2022 = create_test_paper(
             paper_id="test2",
             title="Test Paper",
             authors=[],
             year=2022,
-            citations=0,
+            citation_count=0,
             venue="ICCV",
         )
 

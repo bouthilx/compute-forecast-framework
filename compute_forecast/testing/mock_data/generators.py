@@ -313,7 +313,7 @@ class MockDataGenerator:
 
             for paper in papers:
                 for field_name in [
-                    "abstract",
+                    "abstracts",
                     "keywords",
                     "arxiv_id",
                     "openalex_id",
@@ -338,7 +338,7 @@ class MockDataGenerator:
 
             for paper in papers:
                 for field_name in [
-                    "abstract",
+                    "abstracts",
                     "keywords",
                     "arxiv_id",
                     "openalex_id",

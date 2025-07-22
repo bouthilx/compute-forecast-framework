@@ -336,8 +336,10 @@ class TestCitationAnalyzerEdgeCases:
             papers, preserve_breakthroughs=False
         )
         assert result.original_count == 10
-        # At least some papers should be kept due to minimum representation
-        assert result.filtered_count >= 1
+        # All papers have no citations, so all should be filtered out
+        assert result.filtered_count == 0
+        assert len(result.papers_below_threshold) == 10
+        assert result.filtering_statistics["no_citation_data"] == 10
 
     def test_validate_filtering_quality_extreme_cases(self):
         """Test quality validation with extreme filtering results."""

@@ -16,6 +16,56 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
     PDFDiscoveryFramework,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class MockCollector(BasePDFCollector):
@@ -83,20 +133,20 @@ class TestPDFDiscoveryFramework:
         framework.add_collector(collector)
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper_1",
                 title="Test 1",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="paper_2",
                 title="Test 2",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
         ]
@@ -117,12 +167,12 @@ class TestPDFDiscoveryFramework:
         framework.add_collector(MockCollector("semantic_scholar"))
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper_1",
                 title="Test 1",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
         ]
@@ -143,20 +193,20 @@ class TestPDFDiscoveryFramework:
         framework.add_collector(MockCollector("openreview"))
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper_1",
                 title="Test 1",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="paper_2",
                 title="Test 2",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             ),
         ]
@@ -186,12 +236,12 @@ class TestPDFDiscoveryFramework:
         framework.add_collector(MockCollector("slow3", delay=0.1))
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Test {i}",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
             for i in range(5)
@@ -239,14 +289,13 @@ class TestPDFDiscoveryFramework:
                 )
 
         # ICLR paper should prefer openreview over arxiv over semantic_scholar
-        iclr_paper = Paper(
+        iclr_paper = create_test_paper(
             paper_id="iclr_unique_test",
             title="Innovative ICLR Research on Quantum Neural Networks",
-            authors=[Author(name="ICLR Author", affiliation="ICLR Uni")],
+            authors=[Author(name="ICLR Author", affiliations=["ICLR Uni"])],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="ICLR",
-            doi="10.1111/iclr.unique.2024",
         )
 
         result = framework.discover_pdfs([iclr_paper])
@@ -266,14 +315,13 @@ class TestPDFDiscoveryFramework:
         framework2.add_collector(MockCollector("arxiv"))
         framework2.add_collector(MockCollector("openreview"))
 
-        neurips_paper = Paper(
+        neurips_paper = create_test_paper(
             paper_id="neurips_unique_test",
             title="Revolutionary NeurIPS Study on Graph Learning",
-            authors=[Author(name="NeurIPS Author", affiliation="NeurIPS Uni")],
+            authors=[Author(name="NeurIPS Author", affiliations=["NeurIPS Uni"])],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="NeurIPS",
-            doi="10.2222/neurips.unique.2024",
         )
 
         result = framework2.discover_pdfs([neurips_paper])
@@ -303,14 +351,13 @@ class TestPDFDiscoveryFramework:
         framework.add_collector(collector2)
 
         # Create a paper that both collectors will find
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="duplicate_test",
             title="Test Paper",
-            authors=[Author(name="Test Author", affiliation="Test Uni")],
+            authors=[Author(name="Test Author", affiliations=["Test Uni"])],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
-            doi="10.1111/test.duplicate.2024",
         )
 
         result = framework.discover_pdfs([paper])
@@ -335,12 +382,12 @@ class TestPDFDiscoveryFramework:
         framework.add_collector(collector)
 
         # Create paper
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="url_test",
             title="URL Tracking Test",
-            authors=[Author(name="Test Author", affiliation="Test Uni")],
+            authors=[Author(name="Test Author", affiliations=["Test Uni"])],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
 
@@ -370,12 +417,12 @@ class TestPDFDiscoveryFramework:
         framework.add_collector(MockCollector("fast"))
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper_1",
                 title="Test",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
         ]
@@ -402,12 +449,12 @@ class TestPDFDiscoveryFramework:
             progress_updates.append((completed, total, source))
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Test {i}",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
             for i in range(3)
@@ -436,12 +483,12 @@ class TestPDFDiscoveryFramework:
         framework = PDFDiscoveryFramework()
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper_1",
                 title="Test",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
         ]
@@ -464,12 +511,12 @@ class TestPDFDiscoveryFramework:
         framework.add_collector(collector2)
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id=f"paper_{i}",
                 title=f"Test {i}",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="Test",
             )
             for i in range(4)

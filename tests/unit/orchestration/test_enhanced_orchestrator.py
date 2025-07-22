@@ -10,6 +10,12 @@ from compute_forecast.pipeline.metadata_collection.collectors.enhanced_orchestra
     EnhancedCollectionOrchestrator,
     CollectionResult,
 )
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     Author,
@@ -17,6 +23,50 @@ from compute_forecast.pipeline.metadata_collection.models import (
     CollectionQuery,
     ResponseMetadata,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestEnhancedCollectionOrchestrator:
@@ -57,21 +107,21 @@ class TestEnhancedCollectionOrchestrator:
     def sample_papers(self):
         """Create sample papers for testing"""
         return [
-            Paper(
+            create_test_paper(
+                paper_id="paper_110",
                 title="Paper 1",
                 authors=[Author(name="Author A")],
                 venue="NeurIPS",
                 year=2023,
-                citations=10,
-                collection_source="semantic_scholar",
+                citation_count=10,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="test2",
                 title="Paper 2",
                 authors=[Author(name="Author B")],
                 venue="ICML",
                 year=2023,
-                citations=20,
-                collection_source="openalex",
+                citation_count=20,
             ),
         ]
 

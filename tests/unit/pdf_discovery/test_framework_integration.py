@@ -11,6 +11,56 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import 
     BasePDFCollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class MockCollectorWithDuplicates(BasePDFCollector):
@@ -54,32 +104,29 @@ class TestFrameworkDeduplicationIntegration:
     def sample_papers(self) -> list[Paper]:
         """Create sample papers with potential duplicates."""
         return [
-            Paper(
+            create_test_paper(
+                paper_id="paper_107",
                 title="Deep Learning for NLP",
-                authors=[Author(name="John Doe", affiliation="MIT")],
+                authors=[Author(name="John Doe", affiliations=["MIT"])],
                 venue="NeurIPS",
                 year=2023,
-                citations=100,
-                paper_id="paper_1",
-                doi="10.1234/nlp.2023",  # Same DOI for duplicates
+                citation_count=100,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_115",
                 title="Deep Learning for NLP (Extended)",
-                authors=[Author(name="J. Doe", affiliation="MIT")],
+                authors=[Author(name="J. Doe", affiliations=["MIT"])],
                 venue="NeurIPS 2023",
                 year=2023,
-                citations=100,
-                paper_id="paper_2",
-                doi="10.1234/nlp.2023",  # Same DOI - should be deduplicated
+                citation_count=100,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_123",
                 title="Computer Vision Research",
-                authors=[Author(name="Jane Smith", affiliation="Stanford")],
+                authors=[Author(name="Jane Smith", affiliations=["Stanford"])],
                 venue="CVPR",
                 year=2023,
-                citations=50,
-                paper_id="paper_3",
-                doi="10.5678/cv.2023",
+                citation_count=50,
             ),
         ]
 
@@ -140,32 +187,29 @@ class TestFrameworkDeduplicationIntegration:
 
         # Create completely unique papers with no similarity
         unique_papers = [
-            Paper(
+            create_test_paper(
+                paper_id="paper_190",
                 title="Unique Paper A: Quantum Computing",
-                authors=[Author(name="Alice A", affiliation="Uni A")],
+                authors=[Author(name="Alice A", affiliations=["Uni A"])],
                 venue="Venue A",
                 year=2023,
-                citations=10,
-                paper_id="unique_a",
-                doi="10.1111/quantum.2023",
+                citation_count=10,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_198",
                 title="Unique Paper B: Robotics Control",
-                authors=[Author(name="Bob B", affiliation="Uni B")],
+                authors=[Author(name="Bob B", affiliations=["Uni B"])],
                 venue="Venue B",
                 year=2022,
-                citations=20,
-                paper_id="unique_b",
-                doi="10.2222/robotics.2022",
+                citation_count=20,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_206",
                 title="Unique Paper C: Data Mining",
-                authors=[Author(name="Carol C", affiliation="Uni C")],
+                authors=[Author(name="Carol C", affiliations=["Uni C"])],
                 venue="Venue C",
                 year=2021,
-                citations=30,
-                paper_id="unique_c",
-                doi="10.3333/datamining.2021",
+                citation_count=30,
             ),
         ]
 

@@ -193,7 +193,7 @@ class CitationAnalyzer:
             venue = paper.normalized_venue or paper.venue
             year = paper.year
 
-            # Check if it's a breakthrough paper
+            # Check if it's a breakthrough paper first
             is_breakthrough = (
                 paper.paper_id in breakthrough_papers if paper.paper_id else False
             )
@@ -204,6 +204,10 @@ class CitationAnalyzer:
                 filtering_statistics["breakthrough_preserved"] += 1
                 if venue:
                     venue_representation[venue] += 1
+            elif not paper.citations:
+                # Check if paper has no citation data
+                papers_below_threshold.append(paper)
+                filtering_statistics["no_citation_data"] += 1
             else:
                 # Apply venue/year-specific threshold
                 threshold = venue_year_thresholds.get(
@@ -217,10 +221,7 @@ class CitationAnalyzer:
                         venue_representation[venue] += 1
                 else:
                     papers_below_threshold.append(paper)
-                    if paper.get_latest_citations_count() == 0:
-                        filtering_statistics["no_citation_data"] += 1
-                    else:
-                        filtering_statistics["below_threshold"] += 1
+                    filtering_statistics["below_threshold"] += 1
 
         # Calculate threshold compliance
         threshold_compliance = {}

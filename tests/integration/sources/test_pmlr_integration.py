@@ -1,6 +1,7 @@
 """Integration tests for PMLR collector with PDF discovery framework."""
 
 import pytest
+from datetime import datetime
 from unittest.mock import patch, Mock
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
@@ -10,6 +11,55 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.pmlr_collector 
     PMLRCollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestPMLRIntegration:
@@ -27,29 +77,29 @@ class TestPMLRIntegration:
     def sample_papers(self):
         """Create sample papers for testing."""
         return [
-            Paper(
+            create_test_paper(
+                paper_id="icml_2023_drl",
                 title="Deep Reinforcement Learning",
                 authors=[Author(name="Alice Smith")],
                 venue="ICML",
                 year=2023,
-                citations=50,
-                paper_id="icml_2023_drl",
+                citation_count=50,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="aistats_2024_bo",
                 title="Bayesian Optimization Methods",
                 authors=[Author(name="Bob Jones")],
                 venue="AISTATS",
                 year=2024,
-                citations=20,
-                paper_id="aistats_2024_bo",
+                citation_count=20,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="unknown_2023",
                 title="Unknown Conference Paper",
                 authors=[Author(name="Charlie Brown")],
                 venue="UNKNOWN",
                 year=2023,
-                citations=5,
-                paper_id="unknown_2023",
+                citation_count=5,
             ),
         ]
 

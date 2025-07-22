@@ -272,8 +272,8 @@ class TestIEEEXplorePDFCollector:
             mock_response.json.return_value = {"articles": [], "total_records": 0}
             mock_get.return_value = mock_response
 
-            paper1 = Mock(spec=Paper, paper_id="1", title="Paper 1", doi="10.1109/1")
-            paper2 = Mock(spec=Paper, paper_id="2", title="Paper 2", doi="10.1109/2")
+            paper1 = Mock(spec=Paper, paper_id="1", title="Paper 1")
+            paper2 = Mock(spec=Paper, paper_id="2", title="Paper 2")
 
             try:
                 collector._discover_single(paper1)

@@ -2,11 +2,61 @@
 
 import pytest
 from unittest.mock import Mock, patch
+from datetime import datetime
 
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.jmlr_collector import (
     JMLRCollector,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestJMLRCollector:
@@ -24,15 +74,25 @@ class TestJMLRCollector:
 
     def test_discover_jmlr_paper_with_url(self):
         """Test discovering JMLR paper with URL containing volume info."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test123",
             title="Test Paper",
             venue="Journal of Machine Learning Research",
             authors=[],
             year=2023,
-            citations=0,
-            urls=["https://jmlr.org/papers/v23/21-1234.html"],
+            citation_count=0,
         )
+        # Add URL with volume info
+        from compute_forecast.pipeline.consolidation.models import URLRecord, URLData
+
+        paper.urls = [
+            URLRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=URLData(url="https://jmlr.org/papers/v23/21-1234.html"),
+            )
+        ]
 
         with patch.object(self.collector.session, "head") as mock_head:
             mock_response = Mock()
@@ -50,13 +110,13 @@ class TestJMLRCollector:
 
     def test_discover_tmlr_paper(self):
         """Test discovering TMLR paper."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test456",
             title="Deep Learning for Test Cases",
             venue="Transactions on Machine Learning Research",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
         )
 
         # Mock HTML response
@@ -86,13 +146,13 @@ class TestJMLRCollector:
 
     def test_non_jmlr_tmlr_paper_raises_error(self):
         """Test that non-JMLR/TMLR papers raise ValueError."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test789",
             title="Test Paper",
             venue="NeurIPS",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
         )
 
         with pytest.raises(ValueError, match="not from JMLR or TMLR"):
@@ -100,15 +160,25 @@ class TestJMLRCollector:
 
     def test_extract_jmlr_volume_info_from_url(self):
         """Test extracting volume info from URL."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test",
             title="Test",
             venue="JMLR",
             authors=[],
             year=2023,
-            citations=0,
-            urls=["https://jmlr.org/papers/v23/21-1234.html"],
+            citation_count=0,
         )
+        # Add URL with volume info
+        from compute_forecast.pipeline.consolidation.models import URLRecord, URLData
+
+        paper.urls = [
+            URLRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=URLData(url="https://jmlr.org/papers/v23/21-1234.html"),
+            )
+        ]
 
         info = self.collector._extract_jmlr_volume_info(paper)
 
@@ -157,13 +227,13 @@ class TestJMLRCollector:
 
     def test_discover_jmlr_fallback_to_search(self):
         """Test that JMLR discovery falls back to website search when URL construction fails."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test123",
             title="Test Paper",
             venue="JMLR",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
         )
 
         with patch.object(self.collector.session, "head") as mock_head:
@@ -182,13 +252,13 @@ class TestJMLRCollector:
 
     def test_tmlr_paper_not_found(self):
         """Test error when TMLR paper is not found on website."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test456",
             title="Non-existent Paper",
             venue="TMLR",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
         )
 
         mock_html = """
@@ -235,13 +305,13 @@ class TestJMLRCollector:
 
     def test_jmlr_website_search_implementation(self):
         """Test JMLR website search implementation."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test123",
             title="Test Paper for Search",
             venue="JMLR",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
         )
 
         # Mock HTML response with matching paper
@@ -270,13 +340,13 @@ class TestJMLRCollector:
 
     def test_jmlr_search_with_direct_pdf_link(self):
         """Test JMLR search when direct PDF link is found."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test123",
             title="Test Paper",
             venue="JMLR",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
         )
 
         mock_html = """
@@ -300,14 +370,13 @@ class TestJMLRCollector:
 
     def test_jmlr_url_verification_exception(self):
         """Test exception handling during URL verification."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test123",
             title="Test Paper",
             venue="Journal of Machine Learning Research",
             authors=[],
             year=2023,
-            citations=0,
-            urls=["https://jmlr.org/papers/v23/21-1234.html"],
+            citation_count=0,
         )
 
         with patch.object(self.collector.session, "head") as mock_head:
@@ -323,13 +392,13 @@ class TestJMLRCollector:
 
     def test_jmlr_website_search_no_match(self):
         """Test JMLR website search when no matching paper is found."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test123",
             title="Non-existent Paper",
             venue="JMLR",
             authors=[],
             year=2023,
-            citations=0,
+            citation_count=0,
         )
 
         # Mock HTML response with no matching papers

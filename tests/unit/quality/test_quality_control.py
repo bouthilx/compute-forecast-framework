@@ -29,6 +29,12 @@ from compute_forecast.pipeline.content_extraction.quality.outlier_detection impo
 )
 from compute_forecast.testing.integration.phase_validators import DataIntegrityChecker
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 
 
 @pytest.fixture
@@ -82,6 +88,50 @@ def quality_config():
 def quality_controller(quality_config):
     """Create quality controller instance."""
     return QualityController(quality_config)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestQualityMetrics:
@@ -283,21 +333,21 @@ class TestDataIntegrityChecker:
 
         # Create sample papers with required citations parameter
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="test_001",
                 title="Test Paper 1",
                 authors=[Author(name="Author A"), Author(name="Author B")],
                 year=2024,
                 venue="ICML",
-                citations=50,
+                citation_count=50,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="test_002",
                 title="Test Paper 2",
                 authors=[Author(name="Author C")],
                 year=2023,
                 venue="NeurIPS",
-                citations=25,
+                citation_count=25,
             ),
         ]
 

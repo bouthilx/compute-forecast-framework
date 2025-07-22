@@ -6,22 +6,67 @@ from compute_forecast.pipeline.consolidation.models import (
     EnrichmentResult,
     CitationRecord,
     CitationData,
+    AbstractRecord,
+    AbstractData,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 def test_unified_enrichment():
     """Test unified paper enrichment approach"""
     # Create test papers
     papers = [
-        Paper(
+        create_test_paper(
+            paper_id="paper1",
             title="Test Paper 1",
             authors=[Author(name="John Doe", affiliations=[])],
             venue="ICML",
             year=2023,
-            paper_id="paper1",
-            doi="10.1234/test1",
-            citations=[],
+            citation_count=0,
         )
     ]
 
@@ -64,14 +109,15 @@ def test_unified_enrichment():
 
 def test_paper_to_dict_datetime_serialization():
     """Test Paper.to_dict handles datetime serialization"""
-    paper = Paper(
+    paper = create_test_paper(
+        paper_id="paper_111",
         title="Test Paper",
         authors=[Author(name="John Doe", affiliations=["MIT"])],
         venue="ICML",
         year=2023,
-        citations=10,
-        collection_timestamp=datetime(2025, 1, 10, 12, 0, 0),
+        citation_count=10,
     )
+    paper.collection_timestamp = datetime(2025, 1, 10, 12, 0, 0)
 
     # Convert to dict
     paper_dict = paper.to_dict()
@@ -107,36 +153,25 @@ def test_paper_from_dict_datetime_deserialization():
 
 def test_source_enriches_all_papers():
     """Test that source enriches all papers in unified approach"""
-    from compute_forecast.pipeline.consolidation.models import (
-        AbstractRecord,
-        AbstractData,
-    )
 
     papers = [
-        Paper(
+        create_test_paper(
+            paper_id="paper1",
             title="Paper with abstract",
             authors=[],
             venue="ICML",
             year=2023,
-            paper_id="paper1",
-            citations=[],
-            abstracts=[
-                AbstractRecord(
-                    source="original",
-                    timestamp=datetime.now(),
-                    original=True,
-                    data=AbstractData(text="Existing abstract"),
-                )
-            ],  # Has abstract
+            citation_count=0,
+            abstract_text="Existing abstract",
         ),
-        Paper(
+        create_test_paper(
+            paper_id="paper2",
             title="Paper without abstract",
             authors=[],
             venue="ICML",
             year=2023,
-            paper_id="paper2",
-            citations=[],
-            abstracts=[],  # No abstract
+            citation_count=0,
+            abstract_text="",  # No abstract
         ),
     ]
 
@@ -164,13 +199,13 @@ def test_source_enriches_all_papers():
 def test_enrichment_with_missing_paper_ids():
     """Test enrichment handles papers without IDs gracefully"""
     papers = [
-        Paper(
+        create_test_paper(
+            paper_id="paper_211",
             title="Paper without ID",
             authors=[],
             venue="ICML",
             year=2023,
-            paper_id=None,  # No ID
-            citations=[],
+            citation_count=0,
         )
     ]
 

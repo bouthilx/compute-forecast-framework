@@ -32,8 +32,15 @@ from compute_forecast.pipeline.consolidation.models import (
 )
 
 
-def create_test_paper(paper_id: str, title: str, venue: str, year: int, 
-                     citation_count: int, authors: list, abstract_text: str = "") -> Paper:
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
     """Helper to create Paper objects with new model format."""
     citations = []
     if citation_count > 0:
@@ -42,10 +49,10 @@ def create_test_paper(paper_id: str, title: str, venue: str, year: int,
                 source="test",
                 timestamp=datetime.now(),
                 original=True,
-                data=CitationData(count=citation_count)
+                data=CitationData(count=citation_count),
             )
         )
-    
+
     abstracts = []
     if abstract_text:
         abstracts.append(
@@ -53,10 +60,10 @@ def create_test_paper(paper_id: str, title: str, venue: str, year: int,
                 source="test",
                 timestamp=datetime.now(),
                 original=True,
-                data=AbstractData(text=abstract_text)
+                data=AbstractData(text=abstract_text),
             )
         )
-    
+
     return Paper(
         paper_id=paper_id,
         title=title,

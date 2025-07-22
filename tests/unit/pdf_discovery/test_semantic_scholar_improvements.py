@@ -1,6 +1,7 @@
 """TDD tests for Semantic Scholar PDF Collector improvements based on code review."""
 
 from unittest.mock import Mock, patch
+from datetime import datetime
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector import (
     SemanticScholarPDFCollector,
@@ -10,6 +11,55 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_schola
     CONFIDENCE_SCORE_TITLE_SEARCH,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestSemanticScholarImprovements:
@@ -41,24 +91,24 @@ class TestSemanticScholarImprovements:
         papers = []
 
         # Paper with DOI
-        p1 = Paper(
+        p1 = create_test_paper(
             paper_id="doi_paper",
             title="DOI Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         p1.doi = "10.1234/test"
         papers.append(p1)
 
         # Paper with arXiv ID
-        p2 = Paper(
+        p2 = create_test_paper(
             paper_id="arxiv_paper",
             title="ArXiv Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         p2.arxiv_id = "2301.00001"
@@ -108,12 +158,12 @@ class TestSemanticScholarImprovements:
         mock_api.get_papers.side_effect = Exception("API Error")
 
         # Paper with identifier (should attempt batch)
-        p1 = Paper(
+        p1 = create_test_paper(
             paper_id="test_paper",
             title="Test Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         p1.doi = "10.1234/test"

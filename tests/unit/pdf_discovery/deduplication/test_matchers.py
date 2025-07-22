@@ -12,7 +12,59 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.deduplication.matchers 
     FuzzyMatch,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+    doi: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+        doi=doi,
+    )
 
 
 class TestIdentifierNormalizer:
@@ -121,39 +173,40 @@ class TestPaperFuzzyMatcher:
     def sample_papers(self) -> List[Paper]:
         """Create sample papers for testing."""
         return [
-            Paper(
+            create_test_paper(
+                paper_id="paper_174",
                 title="Deep Learning for Natural Language Processing",
                 authors=[
-                    Author(name="John Doe", affiliation="MIT"),
-                    Author(name="Jane Smith", affiliation="Stanford"),
+                    Author(name="John Doe", affiliations=["MIT"]),
+                    Author(name="Jane Smith", affiliations=["Stanford"]),
                 ],
                 venue="NeurIPS",
                 year=2023,
-                citations=100,
-                paper_id="paper1",
-                doi="10.1234/nlp.2023",
+                citation_count=100,
+                doi="10.1234/neurips.2023.001",
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_185",
                 title="Deep Learning for Natural Language Processing",
                 authors=[
-                    Author(name="J. Doe", affiliation="MIT"),
-                    Author(name="J. Smith", affiliation="Stanford University"),
+                    Author(name="J. Doe", affiliations=["MIT"]),
+                    Author(name="J. Smith", affiliations=["Stanford University"]),
                 ],
                 venue="NeurIPS 2023",
                 year=2023,
-                citations=100,
-                paper_id="paper2",
-                arxiv_id="2301.12345",
+                citation_count=100,
+                doi="10.1234/neurips.2023.002",
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_196",
                 title="A Novel Approach to Computer Vision",
                 authors=[
-                    Author(name="Alice Johnson", affiliation="CMU"),
+                    Author(name="Alice Johnson", affiliations=["CMU"]),
                 ],
                 venue="CVPR",
                 year=2023,
-                citations=50,
-                paper_id="paper3",
+                citation_count=50,
+                doi="10.1234/cvpr.2023.003",
             ),
         ]
 
@@ -207,18 +260,18 @@ class TestPaperFuzzyMatcher:
         matcher = PaperFuzzyMatcher()
 
         authors1 = [
-            Author(name="John Doe", affiliation="MIT"),
-            Author(name="Jane Smith", affiliation="Stanford"),
+            Author(name="John Doe", affiliations=["MIT"]),
+            Author(name="Jane Smith", affiliations=["Stanford"]),
         ]
 
         authors2 = [
-            Author(name="J. Doe", affiliation="MIT"),
-            Author(name="J. Smith", affiliation="Stanford University"),
+            Author(name="J. Doe", affiliations=["MIT"]),
+            Author(name="J. Smith", affiliations=["Stanford University"]),
         ]
 
         authors3 = [
-            Author(name="Alice Johnson", affiliation="CMU"),
-            Author(name="Bob Wilson", affiliation="MIT"),
+            Author(name="Alice Johnson", affiliations=["CMU"]),
+            Author(name="Bob Wilson", affiliations=["MIT"]),
         ]
 
         # High similarity (same authors, different formatting)
@@ -248,21 +301,21 @@ class TestPaperFuzzyMatcher:
                 validation_status="valid",
             )
             # Use first paper but with record's paper_id
-            paper_copy = Paper(
+            paper_copy = create_test_paper(
+                paper_id=record.paper_id,
                 title=sample_papers[0].title,
                 authors=sample_papers[0].authors,
                 venue=sample_papers[0].venue,
                 year=sample_papers[0].year,
-                citations=sample_papers[0].citations,
-                paper_id=record.paper_id,
-                doi=sample_papers[0].doi,  # Same DOI
+                citation_count=sample_papers[0].get_latest_citations_count() or 0,
+                doi=sample_papers[0].doi,  # Same DOI for both records
             )
             record.paper_data = paper_copy
             records.append(record)
 
         # Add third paper (different)
         record = PDFRecord(
-            paper_id="paper3",
+            paper_id="paper3_test",
             pdf_url="https://example.com/paper3.pdf",
             source="test",
             discovery_timestamp=datetime.now(),
@@ -389,24 +442,22 @@ class TestVenueNormalizationIntegration:
         matcher = PaperFuzzyMatcher()
 
         # Create test papers with different venue formats
-        paper1 = Paper(
+        paper1 = create_test_paper(
             title="Test Paper",
             authors=[],
             venue="NIPS 2023",
             year=2023,
-            citations=0,
-            abstract="",
-            doi="",
+            citation_count=0,
+            abstract_text="",
             paper_id="1",
         )
-        paper2 = Paper(
+        paper2 = create_test_paper(
             title="Test Paper",
             authors=[],
             venue="NeurIPS 2023",
             year=2023,
-            citations=0,
-            abstract="",
-            doi="",
+            citation_count=0,
+            abstract_text="",
             paper_id="2",
         )
 
@@ -434,7 +485,7 @@ class TestVenueNormalizationIntegration:
 
         low_confidence_result = VenueNormalizationResult(
             original_venue="Unknown Conf 2023",
-            normalized_venue="ICML",
+            normalized_venue="Unknown Conf",
             confidence=0.7,  # Below 0.8 threshold
             mapping_type="fuzzy",
             alternatives=[],
@@ -454,24 +505,22 @@ class TestVenueNormalizationIntegration:
 
         matcher = PaperFuzzyMatcher()
 
-        paper1 = Paper(
+        paper1 = create_test_paper(
             title="Test Paper",
             authors=[],
             venue="Unknown Conf 2023",
             year=2023,
-            citations=0,
-            abstract="",
-            doi="",
+            citation_count=0,
+            abstract_text="",
             paper_id="1",
         )
-        paper2 = Paper(
+        paper2 = create_test_paper(
             title="Test Paper",
             authors=[],
             venue="ICML 2023",
             year=2023,
-            citations=0,
-            abstract="",
-            doi="",
+            citation_count=0,
+            abstract_text="",
             paper_id="2",
         )
 
@@ -488,24 +537,22 @@ class TestVenueNormalizationIntegration:
 
         matcher = PaperFuzzyMatcher()
 
-        paper1 = Paper(
+        paper1 = create_test_paper(
             title="Test Paper",
             authors=[],
             venue="ICML 2023",
             year=2023,
-            citations=0,
-            abstract="",
-            doi="",
+            citation_count=0,
+            abstract_text="",
             paper_id="1",
         )
-        paper2 = Paper(
+        paper2 = create_test_paper(
             title="Test Paper",
             authors=[],
             venue="ICML 2024",
             year=2024,
-            citations=0,
-            abstract="",
-            doi="",
+            citation_count=0,
+            abstract_text="",
             paper_id="2",
         )
 

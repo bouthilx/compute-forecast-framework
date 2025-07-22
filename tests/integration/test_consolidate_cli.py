@@ -1,4 +1,5 @@
 import json
+import pytest
 from typer.testing import CliRunner
 
 from compute_forecast.cli.main import app
@@ -43,6 +44,9 @@ def test_consolidate_command(tmp_path):
     assert "1 papers" in result.output
 
 
+@pytest.mark.skip(
+    reason="Legacy consolidate command removed, replaced with consolidate-parallel"
+)
 def test_consolidate_command_with_scraper_format(tmp_path):
     """Test consolidate CLI command with new format"""
     # Create test input with new format
@@ -198,6 +202,9 @@ def test_consolidate_command_with_scraper_format(tmp_path):
     assert original_citations[0]["data"]["count"] == 5
 
 
+@pytest.mark.skip(
+    reason="Legacy consolidate command removed, replaced with consolidate-parallel"
+)
 def test_consolidate_command_json_serialization(tmp_path):
     """Test consolidate handles datetime serialization correctly"""
     input_file = tmp_path / "datetime_test.json"

@@ -2,6 +2,8 @@
 Tests for OutlierDetector.
 """
 
+from datetime import datetime
+
 import numpy as np
 
 from compute_forecast.pipeline.content_extraction.quality.outlier_detection import (
@@ -10,6 +12,56 @@ from compute_forecast.pipeline.content_extraction.quality.outlier_detection impo
     OutlierResult,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestOutlierDetector:
@@ -85,13 +137,13 @@ class TestOutlierDetector:
 
     def test_contextualize_outlier_known_extreme(self):
         """Test contextualizing known extreme values."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="gpt3_paper",
             title="GPT-3: Language Models are Few-Shot Learners",
             year=2020,
             authors=[],
             venue="",
-            citations=5000,
+            citation_count=5000,
         )
 
         # GPT-3 parameter count
@@ -102,13 +154,13 @@ class TestOutlierDetector:
 
     def test_contextualize_outlier_novel_architecture(self):
         """Test contextualizing novel architecture."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="novel_paper",
             title="Introducing a Novel Transformer Architecture",
             year=2023,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
 
         context = self.detector.contextualize_outlier(paper, "parameters", 50e9)
@@ -118,13 +170,13 @@ class TestOutlierDetector:
 
     def test_contextualize_outlier_scale_indicator(self):
         """Test contextualizing with scale indicators."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="large_paper",
             title="Training Massive Language Models at Scale",
             year=2023,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
 
         context = self.detector.contextualize_outlier(paper, "gpu_hours", 1e6)
@@ -134,13 +186,13 @@ class TestOutlierDetector:
 
     def test_contextualize_outlier_efficiency_contradiction(self):
         """Test contextualizing efficiency contradiction."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="efficient_paper",
             title="Efficient Lightweight Model Training",
             year=2023,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
 
         # High GPU hours despite efficiency claims
@@ -153,13 +205,13 @@ class TestOutlierDetector:
     def test_contextualize_outlier_temporal(self):
         """Test temporal context for outliers."""
         # Old paper with modern-scale parameters
-        old_paper = Paper(
+        old_paper = create_test_paper(
             paper_id="old_paper",
             title="Deep Learning Model",
             year=2015,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
 
         context = self.detector.contextualize_outlier(old_paper, "parameters", 100e9)
@@ -169,13 +221,13 @@ class TestOutlierDetector:
 
     def test_verify_outlier_expected(self):
         """Test automatic verification of expected outliers."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="gpt3",
             title="GPT-3: Language Models are Few-Shot Learners",
             year=2020,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
 
         extraction = {"parameters": 175e9, "gpu_hours": 3.64e6}
@@ -186,13 +238,13 @@ class TestOutlierDetector:
 
     def test_verify_outlier_corroborating_evidence(self):
         """Test verification with corroborating evidence."""
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="test",
             title="Large Model",
             year=2023,
             authors=[],
             venue="",
-            citations=0,
+            citation_count=0,
         )
 
         # High parameters with high GPU hours (corroborating)
@@ -254,21 +306,21 @@ class TestOutlierDetector:
         outliers[1].field = "gpu_hours"
 
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="1",
                 title="Paper 1",
                 year=2022,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
-            Paper(
+            create_test_paper(
                 paper_id="2",
                 title="Paper 2",
                 year=2023,
                 authors=[],
                 venue="",
-                citations=0,
+                citation_count=0,
             ),
         ]
 

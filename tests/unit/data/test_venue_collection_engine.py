@@ -4,8 +4,15 @@ Following TDD approach - these tests should fail initially
 """
 
 import pytest
+from datetime import datetime
 from unittest.mock import Mock
 
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     Author,
@@ -15,6 +22,50 @@ from compute_forecast.pipeline.metadata_collection.models import (
     CollectionEstimate,
     APIHealthStatus,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestVenueCollectionEngine:
@@ -55,21 +106,21 @@ class TestVenueCollectionEngine:
 
         # Mock successful API responses
         [
-            Paper(
+            create_test_paper(
+                paper_id="paper_109",
                 title="Test Paper 1",
                 authors=[Author(name="Author 1")],
                 venue="ICML",
                 year=2023,
-                citations=10,
-                paper_id="test_id_1",
+                citation_count=10,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_117",
                 title="Test Paper 2",
                 authors=[Author(name="Author 2")],
                 venue="NeurIPS",
                 year=2023,
-                citations=15,
-                paper_id="test_id_2",
+                citation_count=15,
             ),
         ]
 

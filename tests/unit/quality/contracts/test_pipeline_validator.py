@@ -1,8 +1,15 @@
 """Unit tests for pipeline validation components."""
 
 import pytest
+from datetime import datetime
 from unittest.mock import Mock, patch
 
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
 from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     ComputationalAnalysis,
@@ -17,6 +24,50 @@ from compute_forecast.core.contracts.pipeline_validator import (
     PipelineIntegrationValidator,
     PipelineValidationReport,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestAnalysisContractValidator:
@@ -41,14 +92,14 @@ class TestAnalysisContractValidator:
     @pytest.fixture
     def valid_paper(self):
         """Provide valid paper."""
-        return Paper(
+        return create_test_paper(
             paper_id="123",
             title="Test Paper",
-            authors=[Author(name="Test Author", affiliation="Test Uni")],
+            authors=[Author(name="Test Author", affiliations=["Test Uni"])],
             venue="ICML",
             year=2024,
-            citations=10,
-            abstract="Test abstract",
+            citation_count=10,
+            abstract_text="Test abstract",
         )
 
     def test_register_default_contracts(self, validator):
@@ -177,23 +228,23 @@ class TestAnalysisContractValidator:
     def test_validate_papers_interface(self, validator):
         """Test BaseValidator interface implementation."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="1",
                 title="Paper 1",
-                authors=[Author(name="Author 1", affiliation="Uni 1")],
+                authors=[Author(name="Author 1", affiliations=["Uni 1"])],
                 venue="ICML",
                 year=2024,
-                citations=10,
-                abstract="Abstract 1",
+                citation_count=10,
+                abstract_text="Abstract 1",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="2",
                 title="",  # Invalid empty title
                 authors=[],  # Invalid empty authors
                 venue="NeurIPS",
                 year=2024,
-                citations=5,
-                abstract="Abstract 2",
+                citation_count=5,
+                abstract_text="Abstract 2",
             ),
         ]
 
@@ -273,14 +324,14 @@ class TestPipelineIntegrationValidator:
     def valid_papers(self):
         """Provide list of valid papers."""
         return [
-            Paper(
+            create_test_paper(
                 paper_id=f"{i}",
                 title=f"Paper {i}",
-                authors=[Author(name=f"Author {i}", affiliation=f"Uni {i}")],
+                authors=[Author(name=f"Author {i}", affiliations=[f"Uni {i}"])],
                 venue="ICML",
                 year=2024,
-                citations=i * 10,
-                abstract=f"Abstract {i}",
+                citation_count=i * 10,
+                abstract_text=f"Abstract {i}",
             )
             for i in range(1, 6)
         ]
@@ -314,23 +365,23 @@ class TestPipelineIntegrationValidator:
     def test_validate_collection_with_invalid_papers(self, validator):
         """Test validation with invalid papers."""
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="1",
                 title="Valid Paper",
-                authors=[Author(name="Author", affiliation="Uni")],
+                authors=[Author(name="Author", affiliations=["Uni"])],
                 venue="ICML",
                 year=2024,
-                citations=10,
-                abstract="Abstract",
+                citation_count=10,
+                abstract_text="Abstract",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="2",
                 title="",  # Invalid
                 authors=[],  # Invalid
                 venue="NeurIPS",
                 year=2018,  # Invalid year
-                citations=-5,  # Invalid
-                abstract="",
+                citation_count=-5,  # Invalid
+                abstract_text="",
             ),
         ]
 

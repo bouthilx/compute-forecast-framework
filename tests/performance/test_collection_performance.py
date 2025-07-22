@@ -5,16 +5,66 @@ Collection Performance Tests for validating system performance characteristics.
 import time
 import psutil
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Dict, List, Any
 
 from compute_forecast.orchestration.orchestrators.venue_collection_orchestrator import (
     VenueCollectionOrchestrator,
+)
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
 )
 from compute_forecast.pipeline.metadata_collection.models import (
     CollectionConfig,
     Paper,
     Author,
 )
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 @dataclass
@@ -484,15 +534,16 @@ class PerformanceValidationTest:
         venues = ["ICML", "NeurIPS", "ICLR", "AAAI", "CVPR"]
 
         for i in range(count):
-            paper = Paper(
+            paper = create_test_paper(
+                paper_id=f"perf-{i + 1}",
                 title=f"Performance Test Paper {i + 1}",
                 authors=[
                     Author(name=f"Author {i + 1}", affiliation=f"University {i + 1}")
                 ],
                 venue=venues[i % len(venues)],
                 year=2020 + (i % 5),
-                citations=max(0, 100 - (i // 10)),
-                abstract=f"Abstract for performance test paper {i + 1}"
+                citation_count=max(0, 100 - (i // 10)),
+                abstract_text=f"Abstract for performance test paper {i + 1}"
                 * 5,  # Make it longer
             )
             papers.append(paper)

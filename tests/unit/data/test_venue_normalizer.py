@@ -19,6 +19,56 @@ from compute_forecast.pipeline.metadata_collection.processors.venue_mapping_load
     VenueConfig,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestFuzzyVenueMatcher:
@@ -265,19 +315,21 @@ class TestVenueNormalizer:
     def test_batch_normalize_venues(self):
         """Test batch venue normalization"""
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id="paper_318",
                 title="Test Paper 1",
                 authors=[Author("Test Author 1")],
                 venue="ICML 2024",
                 year=2024,
-                citations=10,
+                citation_count=10,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_325",
                 title="Test Paper 2",
                 authors=[Author("Test Author 2")],
                 venue="Unknown Conference",
                 year=2024,
-                citations=5,
+                citation_count=5,
             ),
         ]
 
@@ -393,12 +445,13 @@ class TestIntegration:
 
         for i, venue in enumerate(venues):
             papers.append(
-                Paper(
+                create_test_paper(
+                    paper_id=f"paper_{i}",
                     title=f"Test Paper {i}",
-                    authors=[Author(f"Author {i}")],
+                    authors=[Author(name=f"Author {i}")],
                     venue=venue,
                     year=2024,
-                    citations=i,
+                    citation_count=i,
                 )
             )
 

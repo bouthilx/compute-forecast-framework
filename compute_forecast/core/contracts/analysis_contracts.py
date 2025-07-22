@@ -324,25 +324,20 @@ class PaperMetadataContract(BaseContract):
                 if violation:
                     violations.append(violation)
 
-        # Validate citations if present
+        # Validate citations if present (new model uses list of CitationRecord)
         if "citations" in paper_data and paper_data["citations"] is not None:
             citations = paper_data["citations"]
-            if isinstance(citations, int):
-                if citations < 0:
-                    violations.append(
-                        ContractViolation(
-                            violation_type=ContractViolationType.OUT_OF_RANGE,
-                            field_name="citations",
-                            expected="non-negative integer",
-                            actual=citations,
-                            severity="error",
-                            message="Citation count cannot be negative",
-                        )
+            if not isinstance(citations, list):
+                violations.append(
+                    ContractViolation(
+                        violation_type=ContractViolationType.INVALID_TYPE,
+                        field_name="citations",
+                        expected="list",
+                        actual=type(citations).__name__,
+                        severity="error",
+                        message="Citations must be a list of CitationRecord objects",
                     )
-            else:
-                violation = self._check_type(citations, int, "citations")
-                if violation:
-                    violations.append(violation)
+                )
 
         # Validate at least one identifier is present
         identifiers = ["paper_id", "openalex_id", "arxiv_id"]

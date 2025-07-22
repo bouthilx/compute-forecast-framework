@@ -9,6 +9,58 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.deduplication.engine im
 )
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import PDFRecord
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+    doi: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        normalized_venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+        doi=doi,
+    )
 
 
 class TestPaperDeduplicator:
@@ -18,41 +70,39 @@ class TestPaperDeduplicator:
     def sample_papers_and_records(self) -> tuple[List[Paper], List[PDFRecord]]:
         """Create sample papers and records for testing."""
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id="paper_71",
                 title="Deep Learning for Natural Language Processing",
                 authors=[
-                    Author(name="John Doe", affiliation="MIT"),
-                    Author(name="Jane Smith", affiliation="Stanford"),
+                    Author(name="John Doe", affiliations=["MIT"]),
+                    Author(name="Jane Smith", affiliations=["Stanford"]),
                 ],
                 venue="NeurIPS",
                 year=2023,
-                citations=100,
-                paper_id="semantic_scholar_123",
-                doi="10.1234/nlp.2023",
+                citation_count=100,
+                doi="10.1234/neurips.2023.001",
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_82",
                 title="Deep Learning for Natural Language Processing",
                 authors=[
-                    Author(name="J. Doe", affiliation="MIT"),
-                    Author(name="J. Smith", affiliation="Stanford University"),
+                    Author(name="J. Doe", affiliations=["MIT"]),
+                    Author(name="J. Smith", affiliations=["Stanford University"]),
                 ],
                 venue="NeurIPS 2023",
                 year=2023,
-                citations=100,
-                paper_id="arxiv_456",
-                arxiv_id="2301.12345",
-                doi="10.1234/nlp.2023",  # Same DOI as first paper
+                citation_count=100,
+                doi="10.1234/neurips.2023.001",  # Same DOI as first paper
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_93",
                 title="A Novel Approach to Computer Vision",
                 authors=[
-                    Author(name="Alice Johnson", affiliation="CMU"),
+                    Author(name="Alice Johnson", affiliations=["CMU"]),
                 ],
                 venue="CVPR",
                 year=2023,
-                citations=50,
-                paper_id="paper_789",
-                doi="10.5678/cv.2023",
+                citation_count=50,
             ),
         ]
 
@@ -109,24 +159,23 @@ class TestPaperDeduplicator:
         deduplicator = PaperDeduplicator()
 
         # Create two records for the same paper (same DOI)
-        paper1 = Paper(
+        paper1 = create_test_paper(
+            paper_id="paper_158",
             title="Test Paper",
-            authors=[Author(name="Test Author", affiliation="Test Uni")],
+            authors=[Author(name="Test Author", affiliations=["Test Uni"])],
             venue="Test Venue",
             year=2023,
-            citations=10,
-            paper_id="test_1",
-            doi="10.1234/test.2023",
+            citation_count=10,
         )
 
-        paper2 = Paper(
+        paper2 = create_test_paper(
+            paper_id="paper_167",
             title="Test Paper",
-            authors=[Author(name="Test Author", affiliation="Test Uni")],
+            authors=[Author(name="Test Author", affiliations=["Test Uni"])],
             venue="Test Venue",
             year=2023,
-            citations=10,
-            paper_id="test_2",
-            doi="10.1234/test.2023",  # Same DOI
+            citation_count=10,
+            # Same DOI
         )
 
         records = [
@@ -168,22 +217,22 @@ class TestPaperDeduplicator:
         deduplicator = PaperDeduplicator()
 
         # Create papers with similar titles but different IDs
-        paper1 = Paper(
+        paper1 = create_test_paper(
+            paper_id="paper_215",
             title="Deep Learning for Natural Language Processing",
-            authors=[Author(name="John Doe", affiliation="MIT")],
+            authors=[Author(name="John Doe", affiliations=["MIT"])],
             venue="NeurIPS",
             year=2023,
-            citations=10,
-            paper_id="paper_1",
+            citation_count=10,
         )
 
-        paper2 = Paper(
+        paper2 = create_test_paper(
+            paper_id="paper_224",
             title="Deep Learning for Natural Language Processing (Extended Abstract)",
-            authors=[Author(name="J. Doe", affiliation="MIT")],
+            authors=[Author(name="J. Doe", affiliations=["MIT"])],
             venue="NeurIPS 2023",
             year=2023,
-            citations=10,
-            paper_id="paper_2",
+            citation_count=10,
         )
 
         records = [
@@ -222,23 +271,21 @@ class TestPaperDeduplicator:
 
         # Create completely different papers
         papers = [
-            Paper(
+            create_test_paper(
+                paper_id="paper_269",
                 title="Paper A",
-                authors=[Author(name="Author A", affiliation="Uni A")],
+                authors=[Author(name="Author A", affiliations=["Uni A"])],
                 venue="Venue A",
                 year=2023,
-                citations=10,
-                paper_id="paper_a",
-                doi="10.1111/a.2023",
+                citation_count=10,
             ),
-            Paper(
+            create_test_paper(
+                paper_id="paper_277",
                 title="Paper B",
-                authors=[Author(name="Author B", affiliation="Uni B")],
+                authors=[Author(name="Author B", affiliations=["Uni B"])],
                 venue="Venue B",
                 year=2023,
-                citations=20,
-                paper_id="paper_b",
-                doi="10.2222/b.2023",
+                citation_count=20,
             ),
         ]
 

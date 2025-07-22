@@ -2,11 +2,18 @@
 
 import pytest
 import time
+from datetime import datetime
 
 from compute_forecast.pipeline.metadata_collection.models import (
     Paper,
     ComputationalAnalysis,
     Author,
+)
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
 )
 from compute_forecast.core.contracts import (
     AnalysisContractValidator,
@@ -14,6 +21,49 @@ from compute_forecast.core.contracts import (
     ContractViolationType,
 )
 from compute_forecast.core.contracts.contract_tests import ContractTestSuite
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestContractValidationIntegration:
@@ -42,35 +92,36 @@ class TestContractValidationIntegration:
         # High quality papers
         for i in range(5):
             papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"high_{i}",
                     title=f"Deep Learning Advances in Computer Vision: Paper {i}",
                     authors=[
-                        Author(name=f"Lead Author {i}", affiliation="MIT"),
-                        Author(name=f"Co-Author {i}", affiliation="Stanford"),
+                        Author(name=f"Lead Author {i}", affiliations=["MIT"]),
+                        Author(name=f"Co-Author {i}", affiliations=["Stanford"]),
                     ],
                     venue="NeurIPS",
                     year=2023,
-                    citations=50 + i * 10,
-                    abstract=f"This paper presents novel deep learning techniques for computer vision tasks. {i}",
+                    citation_count=50 + i * 10,
+                    abstract_text=f"This paper presents novel deep learning techniques for computer vision tasks. {i}",
                 )
             )
 
         # Papers with minor issues
         for i in range(3):
             papers.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"minor_{i}",
                     title=f"Machine Learning Study {i}",
                     authors=[
                         Author(
-                            name=f"Single Author {i}", affiliation="Unknown University"
+                            name=f"Single Author {i}",
+                            affiliations=["Unknown University"],
                         )
                     ],
                     venue="Workshop",
                     year=2022,
-                    citations=2,  # Low citations
-                    abstract="Short abstract.",
+                    citation_count=2,  # Low citations
+                    abstract_text="Short abstract.",
                 )
             )
 
@@ -83,20 +134,27 @@ class TestContractValidationIntegration:
                 authors=[],  # No authors
                 venue="Unknown",
                 year=2024,
-                citations=0,
-                abstract=None,
+                citations=[],
+                abstracts=[],
             )
         )
 
         papers.append(
             Paper(
-                arxiv_id="arxiv_456",  # Only arxiv ID
+                # Only arxiv ID
                 title="Future Paper",
-                authors=[Author(name="Time Traveler", affiliation="Future U")],
+                authors=[Author(name="Time Traveler", affiliations=["Future U"])],
                 venue="FutureCon",
                 year=2030,  # Invalid future year
-                citations=-10,  # Negative citations
-                abstract="From the future",
+                citations=[],  # Empty citations list instead of negative
+                abstracts=[
+                    AbstractRecord(
+                        source="test",
+                        timestamp=datetime.now(),
+                        original=True,
+                        data=AbstractData(text="From the future"),
+                    )
+                ],
             )
         )
 
@@ -276,14 +334,16 @@ class TestContractValidationIntegration:
         large_paper_set = []
         for i in range(1000):
             large_paper_set.append(
-                Paper(
+                create_test_paper(
                     paper_id=f"perf_{i}",
                     title=f"Performance Test Paper {i}",
-                    authors=[Author(name=f"Author {i}", affiliation=f"Uni {i % 10}")],
+                    authors=[
+                        Author(name=f"Author {i}", affiliations=[f"Uni {i % 10}"])
+                    ],
                     venue=["ICML", "NeurIPS", "ICLR", "CVPR", "ECCV"][i % 5],
                     year=2020 + (i % 5),
-                    citations=i % 100,
-                    abstract=f"Abstract for paper {i}" * 10,  # Longer abstract
+                    citation_count=i % 100,
+                    abstract_text=f"Abstract for paper {i}" * 10,  # Longer abstract
                 )
             )
 
@@ -306,24 +366,24 @@ class TestContractValidationIntegration:
         # Create papers that might cause issues
         problematic_papers = [
             # Normal paper
-            Paper(
+            create_test_paper(
                 paper_id="normal",
                 title="Normal Paper",
-                authors=[Author(name="Normal Author", affiliation="Normal Uni")],
+                authors=[Author(name="Normal Author", affiliations=["Normal Uni"])],
                 venue="ICML",
                 year=2024,
-                citations=10,
-                abstract="Normal abstract",
+                citation_count=10,
+                abstract_text="Normal abstract",
             ),
-            # Paper with None values in unexpected places
+            # Paper with None values in unexpected places - create directly
             Paper(
                 paper_id="problematic",
                 title="Problematic Paper",
                 authors=None,  # This might cause issues
                 venue=None,
                 year=2024,
-                citations=None,
-                abstract=None,
+                citations=[],
+                abstracts=[],
             ),
         ]
 
@@ -404,14 +464,14 @@ class TestContractValidationIntegration:
     def test_cross_component_integration(self, contract_validator, pipeline_validator):
         """Test integration between different validation components."""
         # Create a paper and its analysis
-        paper = Paper(
+        paper = create_test_paper(
             paper_id="123",
             title="GPU-Accelerated Deep Learning",
-            authors=[Author(name="AI Researcher", affiliation="Tech Corp")],
+            authors=[Author(name="AI Researcher", affiliations=["Tech Corp"])],
             venue="ICML",
             year=2024,
-            citations=25,
-            abstract="We present GPU-accelerated training methods...",
+            citation_count=25,
+            abstract_text="We present GPU-accelerated training methods...",
         )
 
         analysis = ComputationalAnalysis(

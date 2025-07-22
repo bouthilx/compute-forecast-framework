@@ -63,16 +63,19 @@ class TestCrossrefDOILookup:
             assert result.success is True
             assert len(result.papers) == 1
             paper = result.papers[0]
-            assert paper.doi == "10.1038/nature12373"
+            assert getattr(paper, "doi", "") == "10.1038/nature12373"
             assert paper.title == "Example Paper Title"
             assert len(paper.authors) == 2
             assert paper.venue == "Nature"
             assert paper.year == 2021
-            assert paper.citations == 42
+            # Check citations - should be a list of CitationRecord objects
+            assert len(paper.citations) == 1
+            assert paper.citations[0].data.count == 42
 
-            # Check that PDF URLs are extracted
+            # Check that PDF URLs are extracted - URLs are now URLRecord objects
             assert len(paper.urls) >= 1
-            assert "https://www.nature.com/articles/nature12373.pdf" in paper.urls
+            url_strings = [url.data.url for url in paper.urls]
+            assert "https://www.nature.com/articles/nature12373.pdf" in url_strings
 
     def test_lookup_doi_not_found(self, client):
         """Test DOI lookup when DOI is not found."""

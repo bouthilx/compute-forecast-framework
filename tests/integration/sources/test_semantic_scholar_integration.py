@@ -10,6 +10,55 @@ from compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_schola
     SemanticScholarPDFCollector,
 )
 from compute_forecast.pipeline.metadata_collection.models import Paper, Author
+from compute_forecast.pipeline.consolidation.models import (
+    CitationRecord,
+    CitationData,
+    AbstractRecord,
+    AbstractData,
+)
+
+
+def create_test_paper(
+    paper_id: str,
+    title: str,
+    venue: str,
+    year: int,
+    citation_count: int,
+    authors: list,
+    abstract_text: str = "",
+) -> Paper:
+    """Helper to create Paper objects with new model format."""
+    citations = []
+    if citation_count > 0:
+        citations.append(
+            CitationRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=CitationData(count=citation_count),
+            )
+        )
+
+    abstracts = []
+    if abstract_text:
+        abstracts.append(
+            AbstractRecord(
+                source="test",
+                timestamp=datetime.now(),
+                original=True,
+                data=AbstractData(text=abstract_text),
+            )
+        )
+
+    return Paper(
+        paper_id=paper_id,
+        title=title,
+        venue=venue,
+        year=year,
+        citations=citations,
+        abstracts=abstracts,
+        authors=authors,
+    )
 
 
 class TestSemanticScholarIntegration:
@@ -66,28 +115,28 @@ class TestSemanticScholarIntegration:
 
         # Test papers
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="paper_1",
                 title="Machine Learning Paper",
                 authors=[Author(name="John Doe")],
                 year=2024,
-                citations=10,
+                citation_count=10,
                 venue="ICML",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="paper_2",
                 title="Deep Learning Paper",
                 authors=[Author(name="Jane Smith")],
                 year=2024,
-                citations=20,
+                citation_count=20,
                 venue="NeurIPS",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="paper_3",
                 title="Unknown Paper",
                 authors=[Author(name="Bob Wilson")],
                 year=2024,
-                citations=5,
+                citation_count=5,
                 venue="Workshop",
             ),
         ]
@@ -146,20 +195,20 @@ class TestSemanticScholarIntegration:
 
         # Test papers
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="neurips_paper",
                 title="NeurIPS Paper",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="NeurIPS",
             ),
-            Paper(
+            create_test_paper(
                 paper_id="icml_paper",
                 title="ICML Paper",
                 authors=[],
                 year=2024,
-                citations=0,
+                citation_count=0,
                 venue="ICML",
             ),
         ]
@@ -238,12 +287,12 @@ class TestSemanticScholarIntegration:
 
         # Test paper that both sources will find
         papers = [
-            Paper(
+            create_test_paper(
                 paper_id="ml_paper",
                 title="Machine Learning Paper",
                 authors=[Author(name="John Doe")],
                 year=2024,
-                citations=10,
+                citation_count=10,
                 venue="ICML",
             )
         ]
@@ -293,48 +342,48 @@ class TestSemanticScholarIntegration:
         papers = []
 
         # Paper with DOI
-        p1 = Paper(
+        p1 = create_test_paper(
             paper_id="doi_paper",
             title="DOI Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         p1.doi = "10.1234/test"
         papers.append(p1)
 
         # Paper with arXiv ID
-        p2 = Paper(
+        p2 = create_test_paper(
             paper_id="arxiv_paper",
             title="ArXiv Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         p2.arxiv_id = "2301.00001"
         papers.append(p2)
 
         # Paper with SS ID
-        p3 = Paper(
+        p3 = create_test_paper(
             paper_id="ss_paper",
             title="SS Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         p3.semantic_scholar_id = "ss_direct_123"
         papers.append(p3)
 
         # Paper with only title
-        p4 = Paper(
+        p4 = create_test_paper(
             paper_id="title_paper",
             title="Title Only Paper",
             authors=[],
             year=2024,
-            citations=0,
+            citation_count=0,
             venue="Test",
         )
         papers.append(p4)
