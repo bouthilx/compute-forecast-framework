@@ -66,7 +66,7 @@ class TestSemanticScholarIntegration:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_framework_integration(self, mock_ss_class, mock_sleep):
         """Test that SS collector integrates properly with the framework."""
@@ -160,7 +160,7 @@ class TestSemanticScholarIntegration:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_venue_priority_integration(self, mock_ss_class, mock_sleep):
         """Test that venue priorities work with SS collector."""
@@ -226,7 +226,7 @@ class TestSemanticScholarIntegration:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_deduplication_with_other_sources(self, mock_ss_class, mock_sleep):
         """Test that SS PDFs are properly deduplicated with other sources."""
@@ -312,7 +312,7 @@ class TestSemanticScholarIntegration:
         )
 
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_real_api_timeout_handling(self, mock_ss_class):
         """Test timeout handling in real conditions."""
@@ -331,7 +331,7 @@ class TestSemanticScholarIntegration:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_mixed_identifier_batch(self, mock_ss_class, mock_sleep):
         """Test batch processing with mixed identifier types."""

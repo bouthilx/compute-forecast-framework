@@ -83,3 +83,26 @@ After the first round, pre-commit hooks were still failing. Fixed the following:
 The remaining failures are:
 - Integration tests for pubmed_central and semantic_scholar have incorrect import paths (not related to quality module)
 - Various mypy warnings about untyped function bodies (can be ignored with --check-untyped-defs)
+
+## Final Round of Fixes
+
+Fixed the last remaining type errors:
+
+1. **validators.py line 249**: Fixed `seen_titles` type from `Dict[str, int]` to `Dict[str, Tuple[int, Dict[str, Any]]]` 
+2. **checker.py validator returns**: Added type assertions for all validator.validate() return values
+
+## Final Status
+
+✅ **All pre-commit checks now pass:**
+- trim trailing whitespace: Passed
+- fix end of files: Passed  
+- check yaml/toml/json: Passed
+- ruff (linting): Passed
+- ruff format: Passed
+- mypy: Passed
+
+✅ **Fixed pytest test:** test_quality_checks_with_empty_data now passes
+
+⚠️ **Remaining issues (not blocking):**
+- 7 failing integration tests in pubmed_central and semantic_scholar modules due to incorrect import paths
+- These are unrelated to the quality module and can be addressed separately

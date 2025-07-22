@@ -407,7 +407,7 @@ class TestVenueNormalizationIntegration:
         assert hasattr(matcher, "venue_normalizer")
         assert matcher.venue_normalizer is not None
 
-    @patch("compute_forecast.pdf_discovery.deduplication.matchers.VenueNormalizer")
+    @patch("compute_forecast.pipeline.pdf_acquisition.discovery.deduplication.matchers.VenueNormalizer")
     def test_calculate_venue_year_match_with_normalization(
         self, mock_venue_normalizer_class
     ):
@@ -472,7 +472,7 @@ class TestVenueNormalizationIntegration:
         mock_normalizer.normalize_venue.assert_any_call("NIPS 2023")
         mock_normalizer.normalize_venue.assert_any_call("NeurIPS 2023")
 
-    @patch("compute_forecast.pdf_discovery.deduplication.matchers.VenueNormalizer")
+    @patch("compute_forecast.pipeline.pdf_acquisition.discovery.deduplication.matchers.VenueNormalizer")
     def test_venue_confidence_threshold(self, mock_venue_normalizer_class):
         """Test venue matching respects confidence thresholds."""
         # Setup mock
@@ -528,7 +528,7 @@ class TestVenueNormalizationIntegration:
         result = matcher.calculate_venue_year_match(paper1, paper2)
         assert result is False
 
-    @patch("compute_forecast.pdf_discovery.deduplication.matchers.VenueNormalizer")
+    @patch("compute_forecast.pipeline.pdf_acquisition.discovery.deduplication.matchers.VenueNormalizer")
     def test_venue_match_different_years(self, mock_venue_normalizer_class):
         """Test venue matching fails for different years."""
         # Setup mock

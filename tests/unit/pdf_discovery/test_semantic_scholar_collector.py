@@ -80,7 +80,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_discover_single_paper_with_pdf(self, mock_ss_class, mock_sleep):
         """Test discovering a single paper with available PDF."""
@@ -124,7 +124,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_discover_single_paper_without_pdf(self, mock_ss_class, mock_sleep):
         """Test discovering a single paper without available PDF."""
@@ -157,7 +157,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_batch_discovery(self, mock_ss_class, mock_sleep):
         """Test batch discovery of multiple papers."""
@@ -235,7 +235,7 @@ class TestSemanticScholarPDFCollector:
         assert results["paper_2"].pdf_url == "https://arxiv.org/pdf/2301.00002.pdf"
 
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_rate_limiting(self, mock_ss_class):
         """Test rate limiting between requests."""
@@ -279,7 +279,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_retry_logic_on_failure(self, mock_ss_class, mock_sleep):
         """Test retry logic when API fails."""
@@ -324,7 +324,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_handle_large_batch(self, mock_ss_class, mock_sleep):
         """Test handling batches larger than API limit."""
@@ -377,7 +377,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_search_by_title_fallback(self, mock_ss_class, mock_sleep):
         """Test fallback to search by title when paper lookup fails."""
@@ -418,7 +418,7 @@ class TestSemanticScholarPDFCollector:
         """Test that statistics are properly tracked."""
         with patch("time.sleep", return_value=None):
             with patch(
-                "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+                "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
             ) as mock_ss:
                 mock_api = Mock()
                 mock_ss.return_value = mock_api
@@ -477,7 +477,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_discover_with_doi(self, mock_ss_class, mock_sleep):
         """Test discovering paper using DOI."""
@@ -510,7 +510,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_discover_with_arxiv_id(self, mock_ss_class, mock_sleep):
         """Test discovering paper using arXiv ID."""
@@ -545,7 +545,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_discover_with_ss_id(self, mock_ss_class, mock_sleep):
         """Test discovering paper using Semantic Scholar ID."""
@@ -578,7 +578,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_search_fallback_no_exact_match(self, mock_ss_class, mock_sleep):
         """Test search fallback when no exact title match found."""
@@ -617,7 +617,7 @@ class TestSemanticScholarPDFCollector:
 
     @patch("time.sleep", return_value=None)
     @patch(
-        "compute_forecast.pdf_discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.semantic_scholar_collector.semanticscholar.SemanticScholar"
     )
     def test_batch_error_handling(self, mock_ss_class, mock_sleep):
         """Test batch discovery error handling."""
