@@ -83,25 +83,36 @@ class PDFDownloader:
         pdf_url: str,
         progress_callback: Optional[Callable[[str, int, str, float], None]] = None,
         metadata: Optional[Dict] = None,
-    ) -> bool:
+    ) -> Tuple[bool, Optional[str]]:
         """Download a PDF from URL and save to storage.
 
         Args:
             paper_id: Paper identifier
             pdf_url: URL to download PDF from
-            progress_callback: Progress callback function
+            progress_callback: Progress callback function with signature:
+                (paper_id: str, bytes_transferred: int, operation: str, speed: float) -> None
+                - paper_id: The paper being processed
+                - bytes_transferred: Bytes downloaded so far (or total size at start)
+                - operation: "Starting", "Downloading", "Uploading to Drive", etc.
+                - speed: Transfer speed in bytes/second
             metadata: Optional metadata to store with PDF
 
         Returns:
-            True if download successful
+            Tuple of (success: bool, error_message: Optional[str])
+            - success: True if download and storage succeeded
+            - error_message: Detailed error description if failed, None if successful
         """
         logger.info(f"Downloading PDF for {paper_id} from {pdf_url}")
+        
+        # Notify progress manager about starting download
+        if progress_callback:
+            progress_callback(paper_id, 0, "Starting", 0)
 
         # Check if already exists
         exists, location = self.storage_manager.exists(paper_id)
         if exists:
             logger.info(f"PDF for {paper_id} already exists in {location}")
-            return True
+            return True, None
 
         # Download with retries
         for attempt in range(self.max_retries + 1):
@@ -111,12 +122,12 @@ class PDFDownloader:
                 )
 
                 if success:
-                    return True
+                    return True, None
 
                 # Check if error is retryable
                 if not self._is_retryable_error(error) or attempt == self.max_retries:
                     logger.error(f"Non-retryable error or max retries reached: {error}")
-                    return False
+                    return False, error
 
                 # Calculate retry delay
                 if self.exponential_backoff:
@@ -130,11 +141,12 @@ class PDFDownloader:
                 time.sleep(delay)
 
             except Exception as e:
+                error_msg = str(e)
                 logger.error(f"Unexpected error downloading {paper_id}: {e}")
                 if attempt == self.max_retries:
-                    return False
+                    return False, error_msg
 
-        return False
+        return False, "Maximum retries exceeded"
 
     def _download_attempt(
         self,
@@ -150,16 +162,26 @@ class PDFDownloader:
         """
         try:
             # Make request
+            logger.debug(f"Making HTTP request to {pdf_url}")
             response = self.session.get(
                 pdf_url, timeout=self.timeout, stream=True, allow_redirects=True
             )
 
             # Check status code
+            logger.debug(f"HTTP response status: {response.status_code}")
             if response.status_code != 200:
-                return False, f"HTTP {response.status_code}"
+                error_msg = f"HTTP {response.status_code}"
+                # Try to get more details from response
+                if response.text and len(response.text) < 500:
+                    # Include short error messages from server
+                    error_msg += f" - {response.text.strip()}"
+                elif response.reason:
+                    error_msg += f" - {response.reason}"
+                return False, error_msg
 
             # Check content type
             content_type = response.headers.get("Content-Type", "").lower()
+            logger.debug(f"Content type: {content_type}")
             if "pdf" not in content_type and "octet-stream" not in content_type:
                 logger.warning(
                     f"Unexpected content type for {paper_id}: {content_type}"
@@ -167,6 +189,7 @@ class PDFDownloader:
 
             # Get content length
             content_length = int(response.headers.get("Content-Length", 0))
+            logger.debug(f"Content length: {content_length} bytes ({content_length/1024/1024:.1f} MB)")
 
             # Initialize progress tracking
             if progress_callback and content_length > 0:
@@ -175,6 +198,7 @@ class PDFDownloader:
             # Download to temporary file
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
                 tmp_path = Path(tmp_file.name)
+                logger.debug(f"Downloading to temporary file: {tmp_path}")
 
                 bytes_downloaded = 0
                 start_time = time.time()
@@ -193,32 +217,41 @@ class PDFDownloader:
                                 paper_id, bytes_downloaded, "Downloading", speed
                             )
 
+            logger.debug(f"Downloaded {bytes_downloaded} bytes to temporary file")
+
             # Validate downloaded file
+            logger.debug(f"Validating downloaded file: {tmp_path}")
             validation_error = self._validate_pdf(tmp_path, bytes_downloaded)
             if validation_error:
+                logger.warning(f"PDF validation failed for {paper_id}: {validation_error}")
                 tmp_path.unlink()  # Delete invalid file
                 return False, validation_error
 
             # Save to storage
+            logger.debug(f"Saving PDF to storage for {paper_id}")
             success = self.storage_manager.save_pdf(
                 paper_id, tmp_path, progress_callback, metadata
             )
 
             # Clean up temp file
             tmp_path.unlink()
+            logger.debug(f"Cleaned up temporary file: {tmp_path}")
 
             if success:
                 logger.info(f"Successfully downloaded PDF for {paper_id}")
                 return True, None
             else:
+                logger.error(f"Failed to save PDF to storage for {paper_id}")
                 return False, "Failed to save to storage"
 
-        except requests.exceptions.Timeout:
-            return False, "Download timeout"
-        except requests.exceptions.ConnectionError:
-            return False, "Connection error"
+        except requests.exceptions.Timeout as e:
+            return False, f"Download timeout after {self.timeout}s: {str(e)}"
+        except requests.exceptions.ConnectionError as e:
+            return False, f"Connection error: {str(e)}"
+        except requests.exceptions.HTTPError as e:
+            return False, f"HTTP error: {str(e)}"
         except Exception as e:
-            return False, str(e)
+            return False, f"Unexpected error: {type(e).__name__}: {str(e)}"
 
     def _validate_pdf(self, file_path: Path, expected_size: int) -> Optional[str]:
         """Validate downloaded PDF file.
@@ -244,37 +277,38 @@ class PDFDownloader:
                 f"Size mismatch: expected {expected_size}, got {actual_size}"
             )
 
-        # Check PDF header
-        try:
-            with open(file_path, "rb") as f:
-                header = f.read(4)
-                if header != self.PDF_HEADER:
-                    return f"Invalid PDF header: {header}"
-        except Exception as e:
-            return f"Failed to read file: {e}"
-
-        # Check for common error page patterns
+        # Check for common error page patterns first (more specific than PDF header check)
         try:
             with open(file_path, "rb") as f:
                 # Read first 1KB
-                content = f.read(1024).lower()
+                content = f.read(1024)
+                content_lower = content.lower()
 
                 # Check for HTML content
-                if b"<html" in content or b"<!doctype" in content:
+                if b"<html" in content_lower or b"<!doctype" in content_lower:
                     return "File appears to be HTML, not PDF"
 
-                # Check for common error messages
+                # Reset to check PDF header from the beginning
+                f.seek(0)
+                header = f.read(4)
+                if header != self.PDF_HEADER:
+                    return f"Invalid PDF header: {header}"
+
+                # Check for common error messages with more specific categorization
                 error_patterns = [
-                    b"access denied",
-                    b"404 not found",
-                    b"403 forbidden",
-                    b"error occurred",
-                    b"page not found",
+                    (b"404 not found", "HTTP 404 - Page not found in downloaded content"),
+                    (b"403 forbidden", "HTTP 403 - Access forbidden in downloaded content"),
+                    (b"401 unauthorized", "HTTP 401 - Unauthorized access in downloaded content"),
+                    (b"access denied", "Access denied by server"),
+                    (b"error occurred", "Server error page detected"),
+                    (b"page not found", "Page not found error in content"),
+                    (b"not available", "Content not available"),
+                    (b"coming soon", "Content not yet available"),
                 ]
 
-                for pattern in error_patterns:
-                    if pattern in content:
-                        return f"File contains error message: {pattern.decode()}"
+                for pattern, message in error_patterns:
+                    if pattern in content_lower:
+                        return message
 
         except Exception as e:
             logger.warning(f"Failed to check file content: {e}")

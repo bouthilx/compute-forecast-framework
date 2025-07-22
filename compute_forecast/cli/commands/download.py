@@ -5,6 +5,7 @@ from typing import Optional, List, Dict, Any
 from pathlib import Path
 import json
 import os
+import logging
 from datetime import datetime
 from rich.console import Console
 from rich.table import Table
@@ -12,7 +13,7 @@ from dotenv import load_dotenv
 
 from compute_forecast.pipeline.metadata_collection.models import Paper
 from compute_forecast.orchestration import DownloadOrchestrator
-from compute_forecast.monitoring import DownloadProgressManager
+from compute_forecast.monitoring.simple_download_progress import SimpleDownloadProgressManager
 
 
 console = Console()
@@ -23,6 +24,8 @@ load_dotenv()
 
 def load_papers_for_download(papers_path: Path) -> List[Paper]:
     """Load papers from JSON file and filter those with PDF URLs."""
+    logger = logging.getLogger(__name__)
+    
     with open(papers_path, "r") as f:
         data = json.load(f)
 
@@ -32,14 +35,75 @@ def load_papers_for_download(papers_path: Path) -> List[Paper]:
     else:
         papers_data = data
 
+    logger.info(f"Loaded {len(papers_data)} papers from {papers_path}")
+
     # Convert to Paper objects and filter those with PDF URLs
     papers = []
-    for paper_data in papers_data:
+    papers_without_urls = 0
+    
+    for i, paper_data in enumerate(papers_data):
         paper = Paper.from_dict(paper_data)
-        if paper.pdf_url:
+        
+        # Generate paper_id if not present
+        if not paper.paper_id:
+            # Use existing identifiers or generate from title/venue/year
+            if paper.arxiv_id:
+                paper.paper_id = f"arxiv_{paper.arxiv_id}"
+            elif paper.openalex_id:
+                paper.paper_id = f"openalex_{paper.openalex_id}"
+            elif paper.doi:
+                paper.paper_id = f"doi_{paper.doi.replace('/', '_').replace('.', '_')}"
+            else:
+                # Generate from title, venue, year
+                title_slug = paper.title[:50].lower()
+                title_slug = ''.join(c if c.isalnum() else '_' for c in title_slug)
+                paper.paper_id = f"{paper.venue}_{paper.year}_{title_slug}_{i}"
+        
+        # Extract best PDF URL from urls field
+        pdf_url = get_best_pdf_url(paper)
+        if pdf_url:
+            # Store the selected PDF URL in processing_flags for easy access
+            paper.processing_flags["selected_pdf_url"] = pdf_url
             papers.append(paper)
+            logger.debug(f"Paper {paper.paper_id} has PDF URL: {pdf_url}")
+        else:
+            papers_without_urls += 1
+            logger.debug(f"Paper {paper.paper_id} has no usable PDF URL")
 
+    logger.info(f"Found {len(papers)} papers with PDF URLs, {papers_without_urls} without URLs")
     return papers
+
+
+def get_best_pdf_url(paper: Paper) -> Optional[str]:
+    """Get the best PDF URL from a paper's URL records.
+    
+    Prioritizes original=True records, otherwise selects the most recent one.
+    Only considers URLs that appear to be PDFs.
+    """
+    if not paper.urls:
+        return None
+    
+    # Filter for likely PDF URLs
+    pdf_urls = []
+    for url_record in paper.urls:
+        url = url_record.data.url
+        # Check if URL likely points to a PDF
+        if url and ('.pdf' in url.lower() or 'pdf' in url.lower()):
+            pdf_urls.append(url_record)
+    
+    if not pdf_urls:
+        return None
+    
+    # First, look for original URLs
+    original_urls = [record for record in pdf_urls if record.original]
+    if original_urls:
+        # If multiple originals, take the most recent
+        original_urls.sort(key=lambda r: r.timestamp, reverse=True)
+        return original_urls[0].data.url
+    
+    # No originals, take the most recent URL
+    pdf_urls.sort(key=lambda r: r.timestamp, reverse=True)
+    return pdf_urls[0].data.url
 
 
 def get_download_state_path() -> Path:
@@ -78,18 +142,18 @@ def get_config_value(key: str, default: Any = None) -> Any:
 
 def validate_configuration() -> bool:
     """Validate required configuration is present."""
-    issues = []
+    warnings = []
 
-    # Check Google Drive configuration
-    if get_config_value("GOOGLE_DRIVE_FOLDER_ID") is None:
-        issues.append("GOOGLE_DRIVE_FOLDER_ID not set in .env file")
-
-    if get_config_value("GOOGLE_CREDENTIALS_PATH") is None:
-        issues.append("GOOGLE_CREDENTIALS_PATH not set in .env file")
-    else:
-        creds_path = Path(get_config_value("GOOGLE_CREDENTIALS_PATH"))
-        if not creds_path.exists():
-            issues.append(f"Google credentials file not found at: {creds_path}")
+    # Check Google Drive configuration (optional)
+    has_google_drive = False
+    if get_config_value("GOOGLE_DRIVE_FOLDER_ID") is not None:
+        has_google_drive = True
+        if get_config_value("GOOGLE_CREDENTIALS_PATH") is None:
+            warnings.append("GOOGLE_DRIVE_FOLDER_ID set but GOOGLE_CREDENTIALS_PATH not set")
+        else:
+            creds_path = Path(get_config_value("GOOGLE_CREDENTIALS_PATH"))
+            if not creds_path.exists():
+                warnings.append(f"Google credentials file not found at: {creds_path}")
 
     # Check local cache configuration
     cache_dir = get_config_value("LOCAL_CACHE_DIR", ".cache/pdfs")
@@ -98,13 +162,16 @@ def validate_configuration() -> bool:
         console.print(f"[yellow]Creating cache directory: {cache_path}[/yellow]")
         cache_path.mkdir(parents=True, exist_ok=True)
 
-    if issues:
-        console.print("[red]Configuration issues found:[/red]")
-        for issue in issues:
-            console.print(f"  - {issue}")
-        return False
+    if warnings:
+        console.print("[yellow]Configuration warnings:[/yellow]")
+        for warning in warnings:
+            console.print(f"  - {warning}")
+        if has_google_drive:
+            console.print("[yellow]Google Drive upload will be disabled, using local cache only[/yellow]")
+    elif not has_google_drive:
+        console.print("[blue]Google Drive not configured, using local cache only[/blue]")
 
-    return True
+    return True  # Always return True since Google Drive is optional
 
 
 def main(
@@ -136,6 +203,13 @@ def main(
     no_progress: bool = typer.Option(
         False, "--no-progress", help="Disable progress bars"
     ),
+    verbose: int = typer.Option(
+        0,
+        "--verbose",
+        "-v",
+        count=True,
+        help="Increase verbosity level (-v for INFO, -vv for DEBUG)",
+    ),
 ):
     """
     Download PDFs using URLs discovered by consolidate command.
@@ -157,7 +231,39 @@ def main(
 
         # Resume interrupted download session
         cf download --papers papers.json --resume
+        
+        # Enable verbose logging
+        cf download --papers papers.json -v      # INFO level logging  
+        cf download --papers papers.json -vv     # DEBUG level logging
     """
+
+    # Configure logging based on verbosity
+    log_level = logging.WARNING
+    if verbose >= 2:
+        log_level = logging.DEBUG
+    elif verbose >= 1:
+        log_level = logging.INFO
+
+    # Configure root logger  
+    logging.basicConfig(
+        level=log_level,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler()],  # Add console handler for verbose output
+    )
+    
+    # Add a separate handler for verbose logging that works with Rich console
+    if verbose > 0:
+        logger = logging.getLogger()
+        for handler in logger.handlers[:]:
+            if isinstance(handler, logging.StreamHandler):
+                logger.removeHandler(handler)
+        
+        # Create a new handler that outputs to stderr (won't interfere with Rich progress bar)
+        import sys
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+        logger.addHandler(handler)
+        logger.setLevel(log_level)
 
     # Validate configuration
     if not validate_configuration():
@@ -251,16 +357,18 @@ def main(
     console.print(f"  Timeout per file: {timeout}s")
     console.print(f"  Max retries: {max_retries}")
     console.print(f"  Cache directory: {cache_dir}")
-    console.print(
-        f"  Google Drive folder: {get_config_value('GOOGLE_DRIVE_FOLDER_ID')}"
-    )
+    google_drive_folder = get_config_value('GOOGLE_DRIVE_FOLDER_ID')
+    if google_drive_folder:
+        console.print(f"  Google Drive folder: {google_drive_folder}")
+    else:
+        console.print(f"  Google Drive: [yellow]Not configured[/yellow]")
     console.print()
 
     # Create progress manager if not disabled
     progress_manager = (
         None
         if no_progress
-        else DownloadProgressManager(console=console, max_parallel=parallel)
+        else SimpleDownloadProgressManager(console=console, max_parallel=parallel)
     )
 
     # Create download orchestrator
@@ -272,6 +380,8 @@ def main(
         retry_delay=retry_delay,
         exponential_backoff=exponential_backoff,
         cache_dir=str(cache_dir),
+        google_drive_credentials=get_config_value("GOOGLE_CREDENTIALS_PATH"),
+        google_drive_folder_id=get_config_value("GOOGLE_DRIVE_FOLDER_ID"),
         progress_manager=progress_manager,
         state_path=get_download_state_path(),
     )
@@ -317,6 +427,31 @@ def main(
             console.print(
                 f"  [blue]Cached files:[/blue] {cache_stats.get('total_files', 0)}"
             )
+
+        # Export failed papers if any
+        if failed > 0:
+            console.print()
+            console.print("[bold]Exporting Failed Papers:[/bold]")
+            failed_papers_file = orchestrator.export_failed_papers()
+            if failed_papers_file:
+                console.print(f"  [yellow]Failed papers exported to:[/yellow] {failed_papers_file}")
+                
+                # Show summary of failure types
+                if orchestrator.state.failed_papers:
+                    permanent_failures = len([fp for fp in orchestrator.state.failed_papers if fp.permanent_failure])
+                    temporary_failures = len([fp for fp in orchestrator.state.failed_papers if not fp.permanent_failure])
+                    
+                    console.print(f"  [red]Permanent failures:[/red] {permanent_failures} (will not retry)")
+                    console.print(f"  [yellow]Temporary failures:[/yellow] {temporary_failures} (can retry)")
+                    
+                    # Show breakdown by error type
+                    error_summary = orchestrator._get_error_type_summary()
+                    if error_summary:
+                        console.print("  [dim]Error breakdown:[/dim]")
+                        for error_type, stats in error_summary.items():
+                            console.print(f"    {error_type}: {stats['count']} papers")
+        else:
+            console.print("  [green]All downloads successful![/green]")
 
     except KeyboardInterrupt:
         console.print("\n[yellow]Download interrupted by user[/yellow]")

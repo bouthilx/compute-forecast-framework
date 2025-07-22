@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Callable, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import time
 from datetime import datetime
 import threading
@@ -19,31 +19,78 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
+class FailedPaper:
+    """Detailed information about a failed paper download."""
+    paper_id: str
+    title: str
+    pdf_url: str
+    error_message: str
+    error_type: str  # 'http_404', 'http_error', 'timeout', 'validation', 'storage', 'other'
+    attempts: int
+    last_attempt: str
+    permanent_failure: bool = False  # If true, don't retry even with --retry-failed
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "paper_id": self.paper_id,
+            "title": self.title,
+            "pdf_url": self.pdf_url,
+            "error_message": self.error_message,
+            "error_type": self.error_type,
+            "attempts": self.attempts,
+            "last_attempt": self.last_attempt,
+            "permanent_failure": self.permanent_failure,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "FailedPaper":
+        return cls(
+            paper_id=data["paper_id"],
+            title=data["title"],
+            pdf_url=data["pdf_url"],
+            error_message=data["error_message"],
+            error_type=data["error_type"],
+            attempts=data["attempts"],
+            last_attempt=data["last_attempt"],
+            permanent_failure=data.get("permanent_failure", False),
+        )
+
+
+@dataclass
 class DownloadState:
     """State for download progress tracking."""
 
     completed: List[str]
-    failed: Dict[str, str]  # paper_id -> error message
+    failed: Dict[str, str]  # paper_id -> error message (legacy)
     in_progress: List[str]
     last_updated: Optional[str]
+    failed_papers: List[FailedPaper] = field(default_factory=list)  # Detailed failure information
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
-        return {
+        result = {
             "completed": self.completed,
             "failed": self.failed,
             "in_progress": self.in_progress,
             "last_updated": self.last_updated,
         }
+        if self.failed_papers:
+            result["failed_papers"] = [fp.to_dict() for fp in self.failed_papers]
+        return result
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "DownloadState":
         """Create from dictionary."""
+        failed_papers = []
+        if "failed_papers" in data:
+            failed_papers = [FailedPaper.from_dict(fp) for fp in data["failed_papers"]]
+            
         return cls(
             completed=data.get("completed", []),
             failed=data.get("failed", {}),
             in_progress=data.get("in_progress", []),
             last_updated=data.get("last_updated"),
+            failed_papers=failed_papers,
         )
 
 
@@ -145,7 +192,34 @@ class DownloadOrchestrator:
             except Exception as e:
                 logger.error(f"Failed to save state: {e}")
 
-    def _update_state(self, paper_id: str, status: str, error: Optional[str] = None):
+    def _categorize_error(self, error_message: str) -> Tuple[str, bool]:
+        """Categorize error and determine if it's a permanent failure.
+        
+        Returns:
+            Tuple of (error_type, is_permanent)
+        """
+        error_lower = error_message.lower()
+        
+        if "http 404" in error_lower:
+            return "http_404", True  # 404 errors are permanent
+        elif "http 403" in error_lower:
+            return "http_403", True  # Forbidden, likely permanent
+        elif "http 401" in error_lower:
+            return "http_401", True  # Unauthorized, likely permanent
+        elif "http" in error_lower and any(code in error_lower for code in ["500", "502", "503", "504"]):
+            return "http_server_error", False  # Server errors might be temporary
+        elif "timeout" in error_lower:
+            return "timeout", False  # Timeouts might be temporary
+        elif "connection" in error_lower:
+            return "connection_error", False  # Connection issues might be temporary
+        elif "validation" in error_lower or "invalid" in error_lower:
+            return "validation_error", True  # File validation errors are permanent
+        elif "storage" in error_lower:
+            return "storage_error", False  # Storage errors might be temporary
+        else:
+            return "other", False  # Unknown errors default to non-permanent
+
+    def _update_state(self, paper_id: str, status: str, error: Optional[str] = None, paper_info: Optional[Dict] = None):
         """Update download state for a paper."""
         with self._state_lock:
             # Remove from in_progress
@@ -159,8 +233,43 @@ class DownloadOrchestrator:
                 # Remove from failed if it was there
                 if paper_id in self.state.failed:
                     del self.state.failed[paper_id]
+                # Remove from failed_papers if it was there
+                self.state.failed_papers = [fp for fp in self.state.failed_papers if fp.paper_id != paper_id]
             elif status == "failed":
                 self.state.failed[paper_id] = error or "Unknown error"
+                
+                # Add detailed failure information
+                if paper_info and error:
+                    error_type, is_permanent = self._categorize_error(error)
+                    
+                    # Check if this paper already exists in failed_papers
+                    existing_failure = None
+                    for fp in self.state.failed_papers:
+                        if fp.paper_id == paper_id:
+                            existing_failure = fp
+                            break
+                    
+                    if existing_failure:
+                        # Update existing failure
+                        existing_failure.error_message = error
+                        existing_failure.error_type = error_type
+                        existing_failure.attempts += 1
+                        existing_failure.last_attempt = datetime.now().isoformat()
+                        existing_failure.permanent_failure = is_permanent
+                    else:
+                        # Create new failure record
+                        failed_paper = FailedPaper(
+                            paper_id=paper_id,
+                            title=paper_info.get("title", "Unknown"),
+                            pdf_url=paper_info.get("pdf_url", "Unknown"),
+                            error_message=error,
+                            error_type=error_type,
+                            attempts=1,
+                            last_attempt=datetime.now().isoformat(),
+                            permanent_failure=is_permanent,
+                        )
+                        self.state.failed_papers.append(failed_paper)
+                        
             elif status == "in_progress":
                 if paper_id not in self.state.in_progress:
                     self.state.in_progress.append(paper_id)
@@ -178,7 +287,8 @@ class DownloadOrchestrator:
         Returns:
             List of papers to download
         """
-        if resume:
+        # Always load state to check for permanent failures
+        if resume or retry_failed:
             self.state = self._load_state()
 
         papers_to_download = []
@@ -203,6 +313,15 @@ class DownloadOrchestrator:
             # Skip failed papers unless retry_failed is set
             if paper_id in self.state.failed and not retry_failed:
                 logger.debug(f"Skipping {paper_id} - previously failed")
+                continue
+                
+            # Skip permanently failed papers even if retry_failed is set
+            permanent_failure = any(
+                fp.paper_id == paper_id and fp.permanent_failure 
+                for fp in self.state.failed_papers
+            )
+            if permanent_failure:
+                logger.debug(f"Skipping {paper_id} - permanent failure (will not retry)")
                 continue
 
             papers_to_download.append(paper)
@@ -245,6 +364,7 @@ class DownloadOrchestrator:
         failed = 0
 
         # Process papers in parallel
+        logger.info(f"Starting parallel download with {self.parallel_workers} workers")
         with ThreadPoolExecutor(max_workers=self.parallel_workers) as executor:
             # Submit download tasks
             future_to_paper = {}
@@ -257,6 +377,7 @@ class DownloadOrchestrator:
                 self._update_state(paper.paper_id, "in_progress")
 
                 # Submit download task
+                logger.debug(f"Submitting download task for {paper.paper_id}")
                 future = executor.submit(self._download_single_paper, paper, downloader)
                 future_to_paper[future] = paper
 
@@ -270,6 +391,7 @@ class DownloadOrchestrator:
                     if success:
                         successful += 1
                         self._update_state(paper.paper_id, "completed")
+                        logger.info(f"Successfully downloaded PDF for {paper.paper_id}")
 
                         # Update paper metadata
                         paper.pdf_downloaded = True
@@ -281,7 +403,13 @@ class DownloadOrchestrator:
                             )
                     else:
                         failed += 1
-                        self._update_state(paper.paper_id, "failed", error_msg)
+                        # Prepare paper info for detailed failure tracking
+                        paper_info = {
+                            "title": paper.title,
+                            "pdf_url": paper.processing_flags.get("selected_pdf_url", "Unknown"),
+                        }
+                        self._update_state(paper.paper_id, "failed", error_msg, paper_info)
+                        logger.warning(f"Failed to download PDF for {paper.paper_id}: {error_msg}")
 
                         # Update paper metadata
                         paper.pdf_download_error = error_msg
@@ -294,7 +422,12 @@ class DownloadOrchestrator:
                 except Exception as e:
                     logger.error(f"Unexpected error processing {paper.paper_id}: {e}")
                     failed += 1
-                    self._update_state(paper.paper_id, "failed", str(e))
+                    # Prepare paper info for detailed failure tracking
+                    paper_info = {
+                        "title": paper.title,
+                        "pdf_url": paper.processing_flags.get("selected_pdf_url", "Unknown"),
+                    }
+                    self._update_state(paper.paper_id, "failed", str(e), paper_info)
 
                     if self.progress_manager:
                         self.progress_manager.complete_download(paper.paper_id, False)
@@ -321,6 +454,66 @@ class DownloadOrchestrator:
         logger.info(f"Download complete: {successful} successful, {failed} failed")
         return successful, failed
 
+    def export_failed_papers(self, output_path: Optional[Path] = None) -> Optional[Path]:
+        """Export detailed information about failed papers to JSON file.
+        
+        Args:
+            output_path: Output file path (defaults to timestamped file)
+            
+        Returns:
+            Path to exported file or None if no failures
+        """
+        if not self.state.failed_papers:
+            logger.info("No failed papers to export")
+            return None
+            
+        # Generate default output path if not provided
+        if not output_path:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            output_path = Path(f"failed_papers_{timestamp}.json")
+        
+        # Prepare export data
+        export_data = {
+            "export_timestamp": datetime.now().isoformat(),
+            "total_failed_papers": len(self.state.failed_papers),
+            "permanent_failures": len([fp for fp in self.state.failed_papers if fp.permanent_failure]),
+            "temporary_failures": len([fp for fp in self.state.failed_papers if not fp.permanent_failure]),
+            "failed_papers": [fp.to_dict() for fp in self.state.failed_papers],
+            "summary_by_error_type": self._get_error_type_summary(),
+        }
+        
+        # Ensure output directory exists
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Write to file
+        try:
+            with open(output_path, "w") as f:
+                json.dump(export_data, f, indent=2)
+            logger.info(f"Exported {len(self.state.failed_papers)} failed papers to {output_path}")
+            return output_path
+        except Exception as e:
+            logger.error(f"Failed to export failed papers: {e}")
+            return None
+    
+    def _get_error_type_summary(self) -> Dict[str, Dict[str, int]]:
+        """Get summary statistics by error type."""
+        if not self.state.failed_papers:
+            return {}
+            
+        summary = {}
+        for fp in self.state.failed_papers:
+            error_type = fp.error_type
+            if error_type not in summary:
+                summary[error_type] = {"count": 0, "permanent": 0, "temporary": 0}
+            
+            summary[error_type]["count"] += 1
+            if fp.permanent_failure:
+                summary[error_type]["permanent"] += 1
+            else:
+                summary[error_type]["temporary"] += 1
+                
+        return summary
+
     def _download_single_paper(
         self, paper: Paper, downloader: PDFDownloader
     ) -> Tuple[bool, Optional[str]]:
@@ -345,24 +538,29 @@ class DownloadOrchestrator:
             if self.progress_manager:
                 progress_callback = self.progress_manager.get_progress_callback()
 
+            # Get PDF URL from processing_flags (set by load_papers_for_download)
+            pdf_url = paper.processing_flags.get("selected_pdf_url")
+            if not pdf_url:
+                return False, "No PDF URL found"
+
             # Download the PDF
-            success = downloader.download_pdf(
+            success, download_error = downloader.download_pdf(
                 paper_id=paper.paper_id,
-                pdf_url=paper.pdf_url,
+                pdf_url=pdf_url,
                 progress_callback=progress_callback,
                 metadata={
                     "title": paper.title,
-                    "authors": ", ".join(paper.authors) if paper.authors else "",
+                    "authors": ", ".join([a.name for a in paper.authors]) if paper.authors else "",
                     "year": paper.year,
                     "venue": paper.venue,
-                    "source_url": paper.source_url,
+                    "urls": [url.data.url for url in paper.urls],
                 },
             )
 
             if success:
                 return True, None
             else:
-                return False, "Download failed"
+                return False, download_error or "Download failed"
 
         except Exception as e:
             error_msg = f"Error downloading {paper.paper_id}: {str(e)}"

@@ -267,29 +267,31 @@ class GoogleDriveStorage:
             # Test basic API access
             self._service.files().list(pageSize=1, fields="files(id)").execute()
 
-            # Test folder access
-            folder = (
-                self._service.files()
-                .get(fileId=self.folder_id, fields="id, name, mimeType")
-                .execute()
-            )
-
-            if folder.get("mimeType") != "application/vnd.google-apps.folder":
-                logger.error(f"ID {self.folder_id} is not a folder")
+            # For shared folders, we can't directly get folder metadata with drive.file scope
+            # Instead, try to list contents of the folder to verify access
+            try:
+                # Try to list files in the folder (this works with shared folders)
+                results = self._service.files().list(
+                    q=f"'{self.folder_id}' in parents and trashed=false",
+                    pageSize=1,
+                    fields="files(id)"
+                ).execute()
+                
+                # If we can list contents, we have access
+                logger.info(f"Successfully connected to Google Drive folder: {self.folder_id}")
+                return True
+                
+            except HttpError as e:
+                if e.resp.status == 404:
+                    # Folder doesn't exist or not shared
+                    logger.error(f"Folder not found or not accessible: {self.folder_id}")
+                    logger.error(
+                        "Please ensure the folder is shared with the service account"
+                    )
+                else:
+                    logger.error(f"Failed to access folder: {e}")
                 return False
 
-            logger.info(f"Connected to Google Drive folder: {folder.get('name')}")
-            return True
-
-        except HttpError as e:
-            if e.resp.status == 404:
-                logger.error(f"Folder not found or not accessible: {self.folder_id}")
-                logger.error(
-                    "Please ensure the folder is shared with the service account"
-                )
-            else:
-                logger.error(f"Failed to access folder: {e}")
-            return False
         except Exception as e:
             logger.error(f"Connection test failed: {e}")
             return False

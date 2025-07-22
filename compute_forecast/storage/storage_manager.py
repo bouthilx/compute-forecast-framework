@@ -124,24 +124,31 @@ class StorageManager:
         Returns:
             True if saved successfully to at least one location
         """
+        logger.debug(f"Saving PDF for {paper_id} from {source_path}")
         success = False
 
         # Save to local cache first
+        logger.debug(f"Saving {paper_id} to local cache")
         cache_path = self.local_cache.save(paper_id, source_path, metadata)
         if cache_path:
             success = True
-            logger.info(f"Saved {paper_id} to local cache")
+            logger.info(f"Saved {paper_id} to local cache: {cache_path}")
+        else:
+            logger.error(f"Failed to save {paper_id} to local cache")
 
         # Upload to Google Drive
         if self.google_drive:
+            logger.debug(f"Uploading {paper_id} to Google Drive")
             file_id = self.google_drive.upload_with_progress(
                 source_path, paper_id, progress_callback, metadata
             )
             if file_id:
                 success = True
-                logger.info(f"Uploaded {paper_id} to Google Drive")
+                logger.info(f"Uploaded {paper_id} to Google Drive (file_id: {file_id})")
             else:
                 logger.warning(f"Failed to upload {paper_id} to Google Drive")
+        else:
+            logger.debug(f"Google Drive not configured, skipping upload for {paper_id}")
 
         return success
 

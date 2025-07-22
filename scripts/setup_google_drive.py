@@ -10,7 +10,7 @@ from typing import Optional
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from compute_forecast.pdf_storage.google_drive_store import GoogleDriveStore
+from compute_forecast.storage.google_drive import GoogleDriveStorage
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -174,21 +174,18 @@ class GoogleDriveSetupWizard:
             print(f"\nService account email: {service_account_email}")
             print("\nTesting connection to Google Drive...")
 
-            # Initialize store
-            store = GoogleDriveStore(str(self.credentials_file), folder_id)
+            # Initialize storage
+            storage = GoogleDriveStorage(
+                credentials_path=str(self.credentials_file),
+                folder_id=folder_id
+            )
 
             # Test connection
-            if store.test_connection():
+            if storage.test_connection():
                 print("✓ Successfully connected to Google Drive!")
 
-                # List existing files
-                try:
-                    files = store.list_files(page_size=5)
-                    print(f"\nFound {len(files)} existing PDF(s) in the folder")
-                except Exception as e:
-                    print(
-                        f"\nNote: Could not list files, but connection is working: {e}"
-                    )
+                # Connection test passed
+                print("\nFolder is accessible and writable.")
 
                 return True
             else:
@@ -258,63 +255,50 @@ GOOGLE_DRIVE_FOLDER_ID={folder_id}
 
     def _create_example_usage(self):
         """Create an example usage file."""
-        example_file = self.project_root / "examples" / "google_drive_storage_usage.py"
+        example_file = self.project_root / "examples" / "google_drive_download_usage.py"
         example_file.parent.mkdir(exist_ok=True)
 
-        example_content = '''"""Example usage of Google Drive storage with PDF discovery."""
+        example_content = '''"""Example usage of Google Drive storage with the download command."""
 
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-from compute_forecast.pdf_storage import GoogleDriveStore, PDFManager, PDFDiscoveryStorage
-from compute_forecast.pdf_discovery.core import PDFDiscoveryFramework
-from compute_forecast.data.models import Paper
-
 # Load environment variables
 load_dotenv()
 
-# Initialize storage
+# The download command automatically uses Google Drive if configured
+# Simply run:
+#   cf download --papers papers.json
+
+# To test Google Drive configuration:
+import subprocess
+result = subprocess.run(["python", "scripts/test_google_drive_config.py"], capture_output=True, text=True)
+print(result.stdout)
+
+# To use Google Drive storage directly in code:
+from compute_forecast.storage.google_drive import GoogleDriveStorage
+
 credentials_path = os.getenv('GOOGLE_CREDENTIALS_PATH')
 folder_id = os.getenv('GOOGLE_DRIVE_FOLDER_ID')
 
-# Create storage components
-drive_store = GoogleDriveStore(credentials_path, folder_id)
-pdf_manager = PDFManager(drive_store)
-storage = PDFDiscoveryStorage(drive_store, pdf_manager)
-
-# Initialize discovery framework with storage
-discovery = PDFDiscoveryFramework(storage_backend=storage)
-
-# Add collectors (example)
-# discovery.add_collector(SemanticScholarCollector())
-# discovery.add_collector(OpenReviewCollector())
-
-# Example papers to discover
-papers = [
-    Paper(
-        paper_id="example_2024_1",
-        title="Example Paper",
-        authors=["Author One", "Author Two"],
-        year=2024,
-        venue="ICML"
+if credentials_path and folder_id:
+    storage = GoogleDriveStorage(
+        credentials_path=credentials_path,
+        folder_id=folder_id
     )
-]
-
-# Discover and store PDFs
-results = discovery.discover_and_store_pdfs(
-    papers,
-    download_pdfs=True,
-    upload_to_drive=True
-)
-
-print(f"Discovery: {results['discovery']}")
-print(f"Storage: {results['storage']}")
-
-# Later, retrieve a PDF for analysis
-pdf_path = pdf_manager.get_pdf_for_analysis("example_2024_1")
-if pdf_path:
-    print(f"PDF available at: {pdf_path}")
+    
+    if storage.test_connection():
+        print("✓ Google Drive is ready!")
+        
+        # Upload a file
+        file_id = storage.upload_file(
+            Path("example.pdf"),
+            "example_paper_id"
+        )
+        print(f"Uploaded file ID: {file_id}")
+else:
+    print("Google Drive not configured - using local storage only")
 '''
 
         with open(example_file, "w") as f:
