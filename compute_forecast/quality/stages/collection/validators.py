@@ -2,7 +2,7 @@
 
 import re
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -246,7 +246,7 @@ class ConsistencyValidator(BaseValidator):
         self, papers: List[Dict[str, Any]], issues: List[QualityIssue]
     ) -> float:
         """Check for duplicate papers."""
-        seen_titles: Dict[str, int] = {}
+        seen_titles: Dict[str, Tuple[int, Dict[str, Any]]] = {}
         all_duplicates = []
         duplicate_pairs = []
 

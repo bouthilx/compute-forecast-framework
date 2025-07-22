@@ -114,28 +114,36 @@ class CollectionQualityChecker(StageQualityChecker):
     ) -> QualityCheckResult:
         """Run completeness validation."""
         papers = data.get("papers", [])
-        return self.completeness_validator.validate(papers, config)
+        result = self.completeness_validator.validate(papers, config)
+        assert isinstance(result, QualityCheckResult)
+        return result
 
     def _run_consistency_check(
         self, data: Dict[str, Any], config: QualityConfig
     ) -> QualityCheckResult:
         """Run consistency validation."""
         papers = data.get("papers", [])
-        return self.consistency_validator.validate(papers, config)
+        result = self.consistency_validator.validate(papers, config)
+        assert isinstance(result, QualityCheckResult)
+        return result
 
     def _run_accuracy_check(
         self, data: Dict[str, Any], config: QualityConfig
     ) -> QualityCheckResult:
         """Run accuracy validation."""
         papers = data.get("papers", [])
-        return self.accuracy_validator.validate(papers, config)
+        result = self.accuracy_validator.validate(papers, config)
+        assert isinstance(result, QualityCheckResult)
+        return result
 
     def _run_coverage_check(
         self, data: Dict[str, Any], config: QualityConfig
     ) -> QualityCheckResult:
         """Run coverage validation."""
         papers = data.get("papers", [])
-        return self.coverage_validator.validate(papers, config)
+        result = self.coverage_validator.validate(papers, config)
+        assert isinstance(result, QualityCheckResult)
+        return result
 
     def check(self, data_path: Path, config: QualityConfig) -> QualityReport:
         """Run all quality checks for this stage and attach metrics."""
