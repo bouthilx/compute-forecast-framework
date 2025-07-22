@@ -2,6 +2,7 @@
 
 import logging
 import json
+import random
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Callable, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -380,13 +381,18 @@ class DownloadOrchestrator:
         successful = 0
         failed = 0
 
+        # Shuffle papers to distribute requests across different venue servers
+        shuffled_papers = papers.copy()
+        random.shuffle(shuffled_papers)
+        logger.info(f"Shuffled {len(shuffled_papers)} papers to distribute load across venues")
+
         # Process papers in parallel
         logger.info(f"Starting parallel download with {self.parallel_workers} workers")
         with ThreadPoolExecutor(max_workers=self.parallel_workers) as executor:
             # Submit download tasks
             future_to_paper = {}
 
-            for paper in papers:
+            for paper in shuffled_papers:
                 # Apply rate limiting
                 self._enforce_rate_limit()
 
