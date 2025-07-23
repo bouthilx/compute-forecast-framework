@@ -215,7 +215,8 @@ class LocalCache:
         Returns:
             Metadata dictionary or None if not found
         """
-        return self.metadata.get(paper_id)
+        result = self.metadata.get(paper_id)
+        return result if result is not None else None
 
     def list_cached(self) -> List[str]:
         """List all cached paper IDs.

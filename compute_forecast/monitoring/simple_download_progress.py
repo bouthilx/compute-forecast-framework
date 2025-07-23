@@ -1,7 +1,7 @@
 """Simple progress tracking for PDF downloads using the same approach as consolidate command."""
 
 import logging
-from typing import Dict, Optional, Callable, Any
+from typing import Dict, Optional, Callable, Any, List
 from datetime import datetime, timedelta
 import threading
 import time
@@ -14,6 +14,7 @@ from rich.progress import (
     BarColumn,
     ProgressColumn,
     Task,
+    TaskID,
 )
 from rich.live import Live
 
@@ -132,13 +133,13 @@ class SimpleDownloadProgressManager(DownloadProgressManager):
         self._lock = threading.Lock()
 
         # Progress bars
-        self.progress = None
-        self.live = None
-        self.overall_task = None
+        self.progress: Optional[Progress] = None
+        self.live: Optional[Live] = None
+        self.overall_task: Optional[TaskID] = None
 
         # Logging capture
-        self.log_handler = None
-        self.original_handlers = []
+        self.log_handler: Optional[ProgressLogHandler] = None
+        self.original_handlers: List[logging.Handler] = []
 
     def start(self, total_papers: int):
         """Start progress tracking.
@@ -281,7 +282,8 @@ class SimpleDownloadProgressManager(DownloadProgressManager):
                 speed_mb = speed / (1024 * 1024)
                 desc += f" - {speed_mb:.1f} MB/s"
 
-            self.progress.update(self.overall_task, description=desc)
+            if self.progress and self.overall_task is not None:
+                self.progress.update(self.overall_task, description=desc)
 
     def complete_download(
         self, paper_id: str, success: bool, permanent_failure: bool = False
@@ -311,15 +313,17 @@ class SimpleDownloadProgressManager(DownloadProgressManager):
                     self.log(f"Failed to download {paper_id}", "ERROR")
 
             # Update overall progress
-            self.progress.advance(self.overall_task, 1)
+            if self.progress and self.overall_task is not None:
+                self.progress.advance(self.overall_task, 1)
 
             # Update task fields for custom columns
-            self.progress.update(
-                self.overall_task,
-                success=self.completed,
-                failed=self.failed,
-                broken=self.broken,
-            )
+            if self.progress and self.overall_task is not None:
+                self.progress.update(
+                    self.overall_task,
+                    success=self.completed,
+                    failed=self.failed,
+                    broken=self.broken,
+                )
 
     def get_progress_callback(self) -> Callable[[str, int, str, float], None]:
         """Get a progress callback function for downloads.
@@ -339,7 +343,7 @@ class SimpleDownloadProgressManager(DownloadProgressManager):
 
         return callback
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> Dict[str, float]:
         """Get current download statistics.
 
         Returns:
@@ -347,10 +351,10 @@ class SimpleDownloadProgressManager(DownloadProgressManager):
         """
         total_attempted = self.completed + self.failed + self.broken
         return {
-            "total": self.total_papers,
-            "completed": self.completed,
-            "failed": self.failed,
-            "broken": self.broken,
-            "in_progress": len(self.active_downloads),
-            "success_rate": self.completed / max(total_attempted, 1) * 100,
+            "total": float(self.total_papers),
+            "completed": float(self.completed),
+            "failed": float(self.failed),
+            "broken": float(self.broken),
+            "in_progress": float(len(self.active_downloads)),
+            "success_rate": float(self.completed / max(total_attempted, 1) * 100),
         }

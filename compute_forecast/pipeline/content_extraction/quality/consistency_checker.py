@@ -197,11 +197,11 @@ class ExtractionConsistencyChecker:
                 std_val = np.std(values)
                 if std_val == 0 or not np.isfinite(std_val):
                     # All values are the same, no outliers
-                    outliers = []
+                    outliers: List[int] = []
                     z_scores = np.zeros_like(values)
                 else:
                     z_scores = np.abs((values - np.mean(values)) / std_val)
-                    outliers = np.where(z_scores > self.outlier_z_score)[0]
+                    outliers = list(np.where(z_scores > self.outlier_z_score)[0])
             except (ValueError, RuntimeWarning):
                 # If calculation fails, assume no outliers
                 outliers = []
@@ -259,7 +259,7 @@ class ExtractionConsistencyChecker:
                 },
             )
 
-        values = np.array(values)
+        values = list(values)
 
         # Calculate statistics
         mean_val = np.mean(values)
@@ -274,7 +274,7 @@ class ExtractionConsistencyChecker:
             if std_val > 0
             else np.zeros_like(values)
         )
-        outliers = np.where(z_scores > self.outlier_z_score)[0]
+        outliers = list(np.where(z_scores > self.outlier_z_score)[0])
 
         # Determine if consistency is acceptable
         if cv > 1.0:  # High variation

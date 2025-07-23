@@ -1,7 +1,7 @@
 """Progress tracking for PDF downloads with two-level progress bars."""
 
 import logging
-from typing import Dict, Optional, Callable
+from typing import Dict, Optional, Callable, List, Any
 from datetime import datetime
 import threading
 import time
@@ -16,6 +16,7 @@ from rich.progress import (
     TimeRemainingColumn,
     DownloadColumn,
     TransferSpeedColumn,
+    TaskID,
 )
 from rich.layout import Layout
 from rich.live import Live
@@ -41,19 +42,19 @@ class DownloadProgressManager:
         self.total_papers = 0
         self.completed = 0
         self.failed = 0
-        self.active_downloads = {}
+        self.active_downloads: Dict[str, Dict[str, Any]] = {}
 
         # Threading
         self._lock = threading.Lock()
         self._running = False
 
         # Progress bars
-        self.progress = None
-        self.live = None
-        self.overall_task = None
+        self.progress: Optional[Progress] = None
+        self.live: Optional[Live] = None
+        self.overall_task: Optional[TaskID] = None
 
         # Log messages
-        self.log_messages = []
+        self.log_messages: List[str] = []
         self.max_log_messages = 20
 
     def start(self, total_papers: int):
@@ -149,6 +150,9 @@ class DownloadProgressManager:
             total_size: Total file size in bytes
         """
         with self._lock:
+            if not self.progress:
+                return
+                
             # Limit number of active progress bars
             if len(self.active_downloads) >= self.max_parallel:
                 # Find and remove oldest completed task
@@ -184,7 +188,7 @@ class DownloadProgressManager:
             speed: Transfer speed in bytes per second
         """
         with self._lock:
-            if paper_id in self.active_downloads:
+            if paper_id in self.active_downloads and self.progress:
                 task_info = self.active_downloads[paper_id]
                 task = task_info["task"]
                 task_info["operation"] = operation
@@ -211,7 +215,8 @@ class DownloadProgressManager:
 
                 # Complete the task
                 task = task_info["task"]
-                self.progress.update(task, visible=False)
+                if self.progress:
+                    self.progress.update(task, visible=False)
 
                 # Schedule for removal (don't remove immediately to avoid flickering)
                 # Will be removed when space is needed
@@ -225,7 +230,8 @@ class DownloadProgressManager:
                 self.log(f"Failed to download {paper_id}", "ERROR")
 
             # Update overall progress
-            self.progress.advance(self.overall_task, 1)
+            if self.progress and self.overall_task is not None:
+                self.progress.advance(self.overall_task, 1)
             self._update_overall_description()
 
     def _update_overall_description(self):
@@ -235,7 +241,8 @@ class DownloadProgressManager:
             f"[green]Success: {self.completed}[/green] "
             f"[red]Failed: {self.failed}[/red]"
         )
-        self.progress.update(self.overall_task, description=description)
+        if self.progress and self.overall_task is not None:
+            self.progress.update(self.overall_task, description=description)
 
     def _update_display(self):
         """Update the display in a separate thread."""
@@ -287,7 +294,7 @@ class DownloadProgressManager:
 
         return callback
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> Dict[str, float]:
         """Get current download statistics.
 
         Returns:

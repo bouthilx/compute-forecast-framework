@@ -1,9 +1,9 @@
 """NeurIPS paperoni adapter - simplified implementation."""
 
-from typing import List, Any, Optional
+from typing import List, Any, Optional, cast
 from datetime import datetime
 import re
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from .base import BasePaperoniAdapter
 from ..models import SimplePaper
@@ -33,9 +33,10 @@ class NeurIPSAdapter(BasePaperoniAdapter):
             # Count paper entries
             paper_count = 0
             for li in soup.find_all("li"):
-                link = li.find("a", href=lambda x: x and "hash" in x)
-                if link:
-                    paper_count += 1
+                if isinstance(li, Tag):
+                    link = li.find("a", href=lambda x: x and "hash" in x)
+                    if link:
+                        paper_count += 1
 
             self.logger.info(f"NeurIPS {year} has approximately {paper_count} papers")
             return paper_count
@@ -62,9 +63,10 @@ class NeurIPSAdapter(BasePaperoniAdapter):
             paper_entries = []
 
             for li in all_li:
-                link = li.find("a", href=lambda x: x and "hash" in x)
-                if link:
-                    paper_entries.append(li)
+                if isinstance(li, Tag):
+                    link = li.find("a", href=lambda x: x and "hash" in x)
+                    if link:
+                        paper_entries.append(li)
 
             self.logger.info(
                 f"Found {len(paper_entries)} paper entries on NeurIPS {year} page"
@@ -79,24 +81,32 @@ class NeurIPSAdapter(BasePaperoniAdapter):
             for entry in paper_entries[:limit]:
                 try:
                     # Extract paper link
-                    link_elem = entry.find("a")
-                    if not link_elem or "hash" not in link_elem.get("href", ""):
+                    if isinstance(entry, Tag):
+                        link_elem = entry.find("a")
+                        if not link_elem or not isinstance(link_elem, Tag):
+                            continue
+                        
+                        href_attr = link_elem.get("href", "")
+                        if not isinstance(href_attr, str) or "hash" not in href_attr:
+                            continue
+
+                        paper_url = href_attr
+                        if not paper_url.startswith("http"):
+                            paper_url = self.base_url + paper_url
+
+                        # Extract title
+                        title = link_elem.text.strip()
+                    else:
                         continue
 
-                    paper_url = link_elem["href"]
-                    if not paper_url.startswith("http"):
-                        paper_url = self.base_url + paper_url
-
-                    # Extract title
-                    title = link_elem.text.strip()
-
                     # Extract authors
-                    authors_elem = entry.find("i")
                     authors = []
-                    if authors_elem:
-                        authors_text = authors_elem.text
-                        # Simple split by comma - more sophisticated parsing could be added
-                        authors = [a.strip() for a in authors_text.split(",")]
+                    if isinstance(entry, Tag):
+                        authors_elem = entry.find("i")
+                        if authors_elem and isinstance(authors_elem, Tag):
+                            authors_text = authors_elem.text
+                            # Simple split by comma - more sophisticated parsing could be added
+                            authors = [a.strip() for a in authors_text.split(",")]
 
                     # Extract hash for PDF URL
                     hash_match = re.search(r"hash/([^-]+)", paper_url)
