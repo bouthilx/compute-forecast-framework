@@ -154,9 +154,14 @@ class TestDownloadIntegration:
             json.dump(checkpoint_data, f)
 
         # Create a file in cache for the first paper so it's truly "completed"
+        # LocalCache uses subdirectory structure based on first 2 chars
         cache_dir = temp_dir / "cache"
-        cache_dir.mkdir(parents=True, exist_ok=True)
-        (cache_dir / "test_paper_1.pdf").write_bytes(b"dummy pdf content")
+        paper_subdir = cache_dir / "te"  # First 2 chars of "test_paper_1"
+        paper_subdir.mkdir(parents=True, exist_ok=True)
+        (paper_subdir / "test_paper_1.pdf").write_bytes(b"dummy pdf content")
+        
+        # Debug: verify file exists
+        assert (paper_subdir / "test_paper_1.pdf").exists(), f"File not created at {paper_subdir / 'test_paper_1.pdf'}"
         
         # Mock only one request (for second paper)
         mock_response = Mock()
@@ -204,6 +209,14 @@ class TestDownloadIntegration:
                                 break
                     assert table_found, "Could not find download plan table"
                     
+                    # Debug: check mock call count
+                    print(f"mock_session.get.call_count: {mock_session.get.call_count}")
+                    print(f"Exit code: {result.exit_code}")
+                    if result.exception:
+                        print(f"Exception: {result.exception}")
+                        import traceback
+                        traceback.print_tb(result.exc_info[2])
+                    
                     # Should show successful download
                     assert "Successful: 1" in result.output
                     # Should only call get once for the second paper
@@ -246,7 +259,7 @@ class TestDownloadIntegration:
             "Content-Length": "10000",
         }
         mock_response.text = ""
-        mock_response.iter_content = Mock(return_value=[b"%PDF-1.4\n" + b"0" * 1000])
+        mock_response.iter_content = Mock(return_value=[b"%PDF-1.4\n" + b"0" * 10000 + b"\n%%EOF"])
 
         with patch("compute_forecast.workers.pdf_downloader.PDFDownloader._create_session") as mock_create:
             mock_session = Mock()
@@ -269,6 +282,9 @@ class TestDownloadIntegration:
                     )
 
                     assert result.exit_code == 0
+                    # Debug output
+                    print(f"Output: {result.output}")
+                    print(f"Mock call count: {mock_session.get.call_count}")
                     # Should only attempt to download the second paper
                     assert mock_session.get.call_count == 1
                     assert "Starting download of 1 papers" in result.output
@@ -347,6 +363,10 @@ class TestDownloadIntegration:
             mock_session.get.side_effect = mock_download
             mock_create.return_value = mock_session
             successful, failed = orchestrator.download_papers(papers)
+            
+            print(f"Successful: {successful}, Failed: {failed}")
+            print(f"mock_session.get.call_count: {mock_session.get.call_count}")
+            print(f"download_times: {download_times}")
 
             assert successful == 5
             assert failed == 0
@@ -360,6 +380,9 @@ class TestDownloadIntegration:
     def test_failed_papers_export_format(self, sample_papers, temp_dir):
         """Test the format of failed papers export."""
         runner = CliRunner()
+        
+        # Record existing failed papers files to ignore them
+        existing_failed_files = set(Path(".").glob("failed_papers_*.json"))
 
         # All requests fail with different errors
         responses = [
@@ -379,12 +402,13 @@ class TestDownloadIntegration:
 
                 assert result.exit_code == 0
 
-                # Find the failed papers file
-                failed_files = list(Path(".").glob("failed_papers_*.json"))
-                assert len(failed_files) == 1
+                # Find the newly created failed papers file
+                all_failed_files = set(Path(".").glob("failed_papers_*.json"))
+                new_failed_files = list(all_failed_files - existing_failed_files)
+                assert len(new_failed_files) == 1
 
                 # Check content
-                with open(failed_files[0]) as f:
+                with open(new_failed_files[0]) as f:
                     failed_data = json.load(f)
 
                 assert "export_timestamp" in failed_data
@@ -398,7 +422,7 @@ class TestDownloadIntegration:
                 assert "http_403" in error_types
 
                 # Cleanup
-                failed_files[0].unlink()
+                new_failed_files[0].unlink()
 
     def test_verbosity_levels(self, sample_papers, temp_dir, mock_pdf_content):
         """Test different verbosity levels."""

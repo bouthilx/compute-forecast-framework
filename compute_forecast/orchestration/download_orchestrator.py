@@ -179,6 +179,10 @@ class DownloadOrchestrator:
         # State management
         self.state = DownloadState([], {}, [], None)
         self._state_lock = threading.Lock()
+        
+        # Session counters
+        self._session_successful = 0
+        self._session_failed = 0
 
         # Queue for worker communication
         self._message_queue: Queue[QueueMessage] = Queue()
@@ -425,6 +429,7 @@ class DownloadOrchestrator:
                     ),
                 }
                 self._update_state(message.paper_id, "failed", error_msg, paper_info)
+                self._session_failed += 1
                 logger.info(
                     f"Failed to download PDF for {message.paper_id}: {error_msg}"
                 )
@@ -478,6 +483,10 @@ class DownloadOrchestrator:
         if not papers:
             logger.info("No papers to download")
             return 0, 0
+
+        # Reset session counters
+        self._session_successful = 0
+        self._session_failed = 0
 
         # Initialize progress manager if provided
         if self.progress_manager:
@@ -615,6 +624,13 @@ class DownloadOrchestrator:
                         paper_index += 1
                         active_downloads += 1
 
+        # Ensure all messages are processed before stopping
+        # Give the processor thread time to process remaining messages
+        timeout = 5.0
+        start_time = time.time()
+        while not self._message_queue.empty() and (time.time() - start_time) < timeout:
+            time.sleep(0.1)
+        
         # Stop processor thread
         self._stop_processor.set()
         # Send stop message to ensure processor exits
@@ -637,15 +653,11 @@ class DownloadOrchestrator:
         if self.progress_manager:
             self.progress_manager.stop()
 
-        # Count actual results from state
-        with self._state_lock:
-            actual_successful = len(self.state.completed)
-            actual_failed = len(self.state.failed)
-
+        # Return counts for this session only
         logger.info(
-            f"Download complete: {actual_successful} successful, {actual_failed} failed"
+            f"Download complete: {self._session_successful} successful, {self._session_failed} failed"
         )
-        return actual_successful, actual_failed
+        return self._session_successful, self._session_failed
 
     def export_failed_papers(
         self, output_path: Optional[Path] = None
