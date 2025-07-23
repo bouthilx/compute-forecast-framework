@@ -205,11 +205,13 @@ class EnhancedCollectionOrchestratorStreaming:
                 ):
                     for paper in paper_batch:
                         if process_callback:
-                            paper = (
+                            processed_paper = (
                                 await process_callback(paper)
                                 if asyncio.iscoroutinefunction(process_callback)
                                 else process_callback(paper)
                             )
+                            if processed_paper is not None:
+                                paper = processed_paper
                         yield paper
             except Exception as e:
                 logger.error(f"Async streaming failed for {source_name}: {e}")

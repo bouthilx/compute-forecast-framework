@@ -30,7 +30,7 @@ class StorageManager:
         """
         # Initialize local cache
         cache_dir = cache_dir or os.getenv("LOCAL_CACHE_DIR", ".cache/pdfs")
-        self.local_cache = LocalCache(cache_dir)
+        self.local_cache = LocalCache(str(cache_dir))
 
         # Initialize Google Drive if credentials provided
         self.google_drive = None

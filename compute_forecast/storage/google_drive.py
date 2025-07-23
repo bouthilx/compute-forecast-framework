@@ -2,7 +2,7 @@
 
 import logging
 from pathlib import Path
-from typing import Dict, Optional, Callable
+from typing import Dict, Optional, Callable, Any
 import time
 
 from google.oauth2.service_account import Credentials
@@ -34,7 +34,7 @@ class GoogleDriveStorage:
             folder_id: Google Drive folder ID to store PDFs
         """
         self.folder_id = folder_id
-        self._service = None
+        self._service: Optional[Any] = None
         self._credentials_path = credentials_path
         self._initialize_service()
 
@@ -49,6 +49,13 @@ class GoogleDriveStorage:
         except Exception as e:
             logger.error(f"Failed to initialize Google Drive service: {e}")
             raise
+    
+    @property
+    def service(self) -> Any:
+        """Get the Drive service, ensuring it's initialized."""
+        if not self._service:
+            raise RuntimeError("Google Drive service not initialized")
+        return self._service
 
     def upload_with_progress(
         self,
@@ -82,7 +89,7 @@ class GoogleDriveStorage:
         }
 
         if metadata:
-            file_metadata["properties"] = metadata
+            file_metadata["properties"] = {k: str(v) for k, v in metadata.items()}
 
         # Initialize progress tracking
         if progress_callback:
@@ -97,7 +104,7 @@ class GoogleDriveStorage:
                 chunksize=self.CHUNK_SIZE,
             )
 
-            request = self._service.files().create(
+            request = self.service.files().create(
                 body=file_metadata, media_body=media, fields="id"
             )
 
@@ -150,7 +157,7 @@ class GoogleDriveStorage:
         try:
             # Get file metadata for size
             file_metadata = (
-                self._service.files().get(fileId=file_id, fields="size").execute()
+                self.service.files().get(fileId=file_id, fields="size").execute()
             )
             file_size = int(file_metadata.get("size", 0))
 
@@ -159,7 +166,7 @@ class GoogleDriveStorage:
                 progress_callback(paper_id, file_size, "Downloading from Drive", 0.0)
 
             # Create download request
-            request = self._service.files().get_media(fileId=file_id)
+            request = self.service.files().get_media(fileId=file_id)
 
             # Ensure output directory exists
             output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -215,7 +222,7 @@ class GoogleDriveStorage:
                 f"name='{filename}' and parents in '{self.folder_id}' and trashed=false"
             )
             results = (
-                self._service.files()
+                self.service.files()
                 .list(q=query, pageSize=1, fields="files(id)")
                 .execute()
             )
@@ -243,7 +250,7 @@ class GoogleDriveStorage:
                 f"name='{filename}' and parents in '{self.folder_id}' and trashed=false"
             )
             results = (
-                self._service.files()
+                self.service.files()
                 .list(q=query, pageSize=1, fields="files(id)")
                 .execute()
             )
@@ -265,13 +272,13 @@ class GoogleDriveStorage:
         """
         try:
             # Test basic API access
-            self._service.files().list(pageSize=1, fields="files(id)").execute()
+            self.service.files().list(pageSize=1, fields="files(id)").execute()
 
             # For shared folders, we can't directly get folder metadata with drive.file scope
             # Instead, try to list contents of the folder to verify access
             try:
                 # Try to list files in the folder (this works with shared folders)
-                self._service.files().list(
+                self.service.files().list(
                     q=f"'{self.folder_id}' in parents and trashed=false",
                     pageSize=1,
                     fields="files(id)",
@@ -310,7 +317,7 @@ class GoogleDriveStorage:
             True if successful
         """
         try:
-            self._service.files().delete(fileId=file_id).execute()
+            self.service.files().delete(fileId=file_id).execute()
             logger.info(f"Successfully deleted file {file_id}")
             return True
 
