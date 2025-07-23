@@ -4,7 +4,6 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
-
 from compute_forecast.pipeline.metadata_collection.sources.scrapers.paperoni_adapters.openreview_v2 import (
     OpenReviewAdapterV2 as OpenReviewAdapter,
 )

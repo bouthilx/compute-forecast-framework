@@ -316,7 +316,7 @@ class TestACLAnthologyCollector:
 
         # Discover PDF
         with patch(
-            "compute_forecast.pdf_discovery.sources.acl_anthology_collector.datetime"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.acl_anthology_collector.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2023, 12, 1, 10, 0, 0)
             pdf_record = collector._discover_single(sample_paper)

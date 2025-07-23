@@ -107,7 +107,7 @@ class TestPubMedCentralIntegration:
         """Test framework discovers PDFs using PubMed Central."""
         # Mock successful PMC responses
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             # Setup responses for paper 1
             search_resp1 = Mock()
@@ -213,7 +213,7 @@ class TestPubMedCentralIntegration:
 
         # Mock response
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             search_resp = Mock()
             search_resp.text = """<?xml version="1.0" encoding="UTF-8"?>

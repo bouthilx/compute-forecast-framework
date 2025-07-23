@@ -74,16 +74,16 @@ class TestOrchestratorPerformance:
         # Mock each source with delayed responses
         with (
             patch(
-                "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
+                "compute_forecast.pipeline.metadata_collection.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
             patch(
-                "compute_forecast.data.sources.openalex.OpenAlexSource.search"
+                "compute_forecast.pipeline.metadata_collection.sources.openalex.OpenAlexSource.search"
             ) as mock_oa,
             patch(
-                "compute_forecast.data.sources.crossref.CrossRefSource.search"
+                "compute_forecast.pipeline.metadata_collection.sources.crossref.CrossRefSource.search"
             ) as mock_cr,
             patch(
-                "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
+                "compute_forecast.pipeline.metadata_collection.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,
         ):
             # Configure mocks with delays to simulate real API calls
@@ -152,7 +152,7 @@ class TestOrchestratorPerformance:
         orchestrator = EnhancedOrchestrator()
 
         with patch(
-            "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
+            "compute_forecast.pipeline.metadata_collection.sources.google_scholar.GoogleScholarSource.search"
         ) as mock_gs:
             # Track call times
             call_times = []
@@ -184,16 +184,16 @@ class TestOrchestratorPerformance:
 
         with (
             patch(
-                "compute_forecast.data.sources.semantic_scholar.SemanticScholarSource.search"
+                "compute_forecast.pipeline.metadata_collection.sources.semantic_scholar.SemanticScholarSource.search"
             ) as mock_ss,
             patch(
-                "compute_forecast.data.sources.openalex.OpenAlexSource.search"
+                "compute_forecast.pipeline.metadata_collection.sources.openalex.OpenAlexSource.search"
             ) as mock_oa,
             patch(
-                "compute_forecast.data.sources.crossref.CrossRefSource.search"
+                "compute_forecast.pipeline.metadata_collection.sources.crossref.CrossRefSource.search"
             ) as mock_cr,
             patch(
-                "compute_forecast.data.sources.google_scholar.GoogleScholarSource.search"
+                "compute_forecast.pipeline.metadata_collection.sources.google_scholar.GoogleScholarSource.search"
             ) as mock_gs,
         ):
             # Make one source fail

@@ -78,7 +78,9 @@ class TestExtractionTemplateEngine:
         assert sample_template.template_id in engine.templates
         assert engine.templates[sample_template.template_id] == sample_template
 
-    @patch("compute_forecast.extraction.template_engine.ComputationalAnalyzer")
+    @patch(
+        "compute_forecast.pipeline.content_extraction.templates.template_engine.ComputationalAnalyzer"
+    )
     def test_extract_to_template(
         self, mock_analyzer_class, sample_template, mock_analyzer_result
     ):
@@ -129,7 +131,9 @@ class TestExtractionTemplateEngine:
         with pytest.raises(ValueError, match="Template 'non_existent' not found"):
             engine.extract_to_template(paper, "non_existent")
 
-    @patch("compute_forecast.extraction.template_engine.ComputationalAnalyzer")
+    @patch(
+        "compute_forecast.pipeline.content_extraction.templates.template_engine.ComputationalAnalyzer"
+    )
     def test_map_to_template(
         self, mock_analyzer_class, sample_template, mock_analyzer_result
     ):
@@ -152,7 +156,9 @@ class TestExtractionTemplateEngine:
         # GPU_COUNT is not in template fields, so shouldn't be included
         assert ExtractionField.GPU_COUNT not in mapped
 
-    @patch("compute_forecast.extraction.template_engine.ComputationalAnalyzer")
+    @patch(
+        "compute_forecast.pipeline.content_extraction.templates.template_engine.ComputationalAnalyzer"
+    )
     def test_partial_extraction(self, mock_analyzer_class, sample_template):
         """Test extraction when some required fields are missing."""
         # Mock analyzer with missing fields
@@ -186,7 +192,9 @@ class TestExtractionTemplateEngine:
         assert ExtractionField.PARAMETERS_COUNT in extracted
         assert ExtractionField.TRAINING_TIME_HOURS not in extracted
 
-    @patch("compute_forecast.extraction.template_engine.ComputationalAnalyzer")
+    @patch(
+        "compute_forecast.pipeline.content_extraction.templates.template_engine.ComputationalAnalyzer"
+    )
     def test_confidence_scores(
         self, mock_analyzer_class, sample_template, mock_analyzer_result
     ):

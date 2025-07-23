@@ -135,7 +135,7 @@ class TestPubMedCentralCollector:
         )
 
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             # Mock search response
             search_response = Mock()
@@ -174,7 +174,7 @@ class TestPubMedCentralCollector:
         sample_paper.doi = None  # Remove DOI to force title search
 
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             # First search (by title) returns results
             search_response = Mock()
@@ -207,7 +207,7 @@ class TestPubMedCentralCollector:
         sample_paper.doi = None
 
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             # First search (title) returns no results
             no_results_response = Mock()
@@ -240,7 +240,7 @@ class TestPubMedCentralCollector:
     ):
         """Test handling papers without PMC ID."""
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             search_response = Mock()
             search_response.text = esearch_response_with_pmc
@@ -265,7 +265,7 @@ class TestPubMedCentralCollector:
     def test_discover_single_paper_api_error(self, collector, sample_paper):
         """Test handling API errors."""
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             mock_get.side_effect = Exception("API connection error")
 
@@ -290,7 +290,7 @@ class TestPubMedCentralCollector:
         ]
 
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             # Mock all responses
             responses = []
@@ -371,7 +371,7 @@ class TestPubMedCentralCollector:
     def test_empty_search_results(self, collector, sample_paper):
         """Test handling empty search results."""
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             # All searches return no results
             no_results = Mock()
@@ -387,7 +387,7 @@ class TestPubMedCentralCollector:
     def test_http_error_handling(self, collector, sample_paper):
         """Test handling HTTP errors."""
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             error_response = Mock()
             error_response.status_code = 429  # Rate limit exceeded
@@ -405,7 +405,7 @@ class TestPubMedCentralCollector:
     ):
         """Test handling malformed XML responses."""
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             search_response = Mock()
             search_response.text = esearch_response_with_pmc
@@ -425,7 +425,7 @@ class TestPubMedCentralCollector:
     ):
         """Test confidence scoring based on search method."""
         with patch(
-            "compute_forecast.pdf_discovery.sources.pubmed_central_collector.requests.get"
+            "compute_forecast.pipeline.pdf_acquisition.discovery.sources.pubmed_central_collector.requests.get"
         ) as mock_get:
             # Setup responses
             search_resp = Mock()

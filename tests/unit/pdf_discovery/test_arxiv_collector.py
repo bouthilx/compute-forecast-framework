@@ -186,13 +186,13 @@ class TestArXivPDFCollector:
         assert arxiv_id is None
 
     @patch(
-        "compute_forecast.pdf_discovery.sources.arxiv_collector.ArXivPDFCollector.handle_versions"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector.ArXivPDFCollector.handle_versions"
     )
     @patch(
-        "compute_forecast.pdf_discovery.sources.arxiv_collector.ArXivPDFCollector.search_by_title_author"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector.ArXivPDFCollector.search_by_title_author"
     )
     @patch(
-        "compute_forecast.pdf_discovery.sources.arxiv_collector.ArXivPDFCollector.extract_arxiv_id"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector.ArXivPDFCollector.extract_arxiv_id"
     )
     def test_discover_single_direct_id(
         self, mock_extract, mock_search, mock_handle, collector, sample_paper
@@ -219,13 +219,13 @@ class TestArXivPDFCollector:
         assert result == expected_record
 
     @patch(
-        "compute_forecast.pdf_discovery.sources.arxiv_collector.ArXivPDFCollector.handle_versions"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector.ArXivPDFCollector.handle_versions"
     )
     @patch(
-        "compute_forecast.pdf_discovery.sources.arxiv_collector.ArXivPDFCollector.search_by_title_author"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector.ArXivPDFCollector.search_by_title_author"
     )
     @patch(
-        "compute_forecast.pdf_discovery.sources.arxiv_collector.ArXivPDFCollector.extract_arxiv_id"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector.ArXivPDFCollector.extract_arxiv_id"
     )
     def test_discover_single_fallback_search(
         self, mock_extract, mock_search, mock_handle, collector, sample_paper
@@ -253,10 +253,10 @@ class TestArXivPDFCollector:
         assert result == expected_record
 
     @patch(
-        "compute_forecast.pdf_discovery.sources.arxiv_collector.ArXivPDFCollector.search_by_title_author"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector.ArXivPDFCollector.search_by_title_author"
     )
     @patch(
-        "compute_forecast.pdf_discovery.sources.arxiv_collector.ArXivPDFCollector.extract_arxiv_id"
+        "compute_forecast.pipeline.pdf_acquisition.discovery.sources.arxiv_collector.ArXivPDFCollector.extract_arxiv_id"
     )
     def test_discover_single_no_arxiv_found(
         self, mock_extract, mock_search, collector, sample_paper

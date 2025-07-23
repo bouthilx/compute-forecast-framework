@@ -24,6 +24,7 @@ from compute_forecast.pipeline.metadata_collection.sources.scrapers.base import 
 from compute_forecast.pipeline.metadata_collection.sources.scrapers.models import (
     SimplePaper,
 )
+from compute_forecast.quality.core.hooks import run_post_command_quality_check
 
 
 console = Console()
@@ -185,6 +186,11 @@ def main(
     ),
     list_venues: bool = typer.Option(
         False, "--list-venues", help="List available venues and their scrapers"
+    ),
+    skip_quality_check: bool = typer.Option(
+        False,
+        "--skip-quality-check",
+        help="Skip automatic quality checking after collection",
     ),
 ):
     """
@@ -544,6 +550,28 @@ def main(
                 console.print(f"  - {error}")
             if len(errors) > 5:
                 console.print(f"  ... and {len(errors) - 5} more")
+
+        # Run quality checks if not skipped
+        if not skip_quality_check:
+            console.print("\n[cyan]Running quality checks on collected data...[/cyan]")
+            try:
+                context = {
+                    "total_papers": len(all_papers),
+                    "venues": list(set(p.venue for p in all_papers)),
+                    "years": sorted(list(set(p.year for p in all_papers))),
+                    "errors": errors,
+                }
+                run_post_command_quality_check(
+                    stage="collection",
+                    output_path=output,
+                    context=context,
+                    config=None,
+                    show_summary=True,
+                )
+            except Exception as e:
+                console.print(f"[yellow]Warning: Quality check failed: {e}[/yellow]")
+                # Don't fail the entire command if quality check fails
+                pass
     else:
         console.print("[red]No papers collected![/red]")
         raise typer.Exit(1)

@@ -6,6 +6,7 @@ from .. import __version__
 from .commands.collect import main as collect_command
 from .commands.consolidate_sessions import list_sessions, clean_sessions
 from .commands.consolidate_parallel import main as consolidate_parallel_command
+from .commands.quality import main as quality_command
 from .commands.download import main as download_command
 
 
@@ -17,7 +18,7 @@ app = typer.Typer(
     add_completion=False,
 )
 
-# Register the commands
+# Register the collect command
 app.command(name="collect")(collect_command)
 app.command(name="consolidate")(consolidate_parallel_command)  # Use parallel version
 app.command(name="download")(download_command)
@@ -27,6 +28,9 @@ consolidate_sessions_app = typer.Typer(help="Manage consolidation sessions")
 consolidate_sessions_app.command(name="list")(list_sessions)
 consolidate_sessions_app.command(name="clean")(clean_sessions)
 app.add_typer(consolidate_sessions_app, name="consolidate-sessions")
+
+# Register the quality command
+app.command(name="quality")(quality_command)
 
 
 def version_callback(value: bool):
