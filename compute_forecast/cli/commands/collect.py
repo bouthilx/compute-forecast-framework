@@ -176,8 +176,8 @@ def main(
     no_progress: bool = typer.Option(
         False, "--no-progress", help="Disable progress bars"
     ),
-    parallel: int = typer.Option(
-        1, "--parallel", help="Number of parallel workers (currently not implemented)"
+    parallel: bool = typer.Option(
+        False, "--parallel", help="Enable parallel collection (one worker per venue)"
     ),
     rate_limit: float = typer.Option(
         1.0, "--rate-limit", help="API rate limit (requests/second)"
@@ -227,6 +227,9 @@ def main(
         # Enable verbose logging
         cf collect --venue neurips --year 2019 -v      # INFO level
         cf collect --venue neurips --year 2019 -vv     # DEBUG level
+        
+        # Enable parallel collection
+        cf collect --venues neurips,icml,iclr --years 2023-2024 --parallel
     """
     
     # Configure logging based on verbosity level
@@ -431,24 +434,51 @@ def main(
                     venue_estimates[(venue_name, year)] = default_estimate
                     total_papers_estimate += default_estimate
 
-    # Collection progress
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TaskProgressColumn(),
-        TextColumn(
-            "• {task.fields[papers_collected]}/{task.fields[papers_total]} papers"
-        ),
-        console=console,
-        disable=no_progress,
-    ) as progress:
-        main_task = progress.add_task(
-            "Collecting papers...",
-            total=total_papers_estimate,
-            papers_collected=0,
-            papers_total=total_papers_estimate,
+    # Use parallel collection if requested
+    if parallel:
+        console.print("[cyan]Using parallel collection (one worker per venue)[/cyan]")
+        
+        from compute_forecast.pipeline.metadata_collection.parallel.orchestrator import (
+            ParallelCollectionOrchestrator
         )
+        
+        orchestrator = ParallelCollectionOrchestrator(
+            config=config,
+            scraper_override=scraper,
+            console=console,
+            no_progress=no_progress,
+        )
+        
+        # Run parallel collection
+        all_papers = orchestrator.collect_parallel(
+            venues=venue_years,
+            output_path=output,
+            checkpoint_callback=save_checkpoint if resume else None,
+        )
+        
+    else:
+        # Sequential collection (original implementation)
+        console.print("[cyan]Using sequential collection[/cyan]")
+        all_papers = []
+        
+        # Collection progress
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TaskProgressColumn(),
+            TextColumn(
+                "• {task.fields[papers_collected]}/{task.fields[papers_total]} papers"
+            ),
+            console=console,
+            disable=no_progress,
+        ) as progress:
+            main_task = progress.add_task(
+                "Collecting papers...",
+                total=total_papers_estimate,
+                papers_collected=0,
+                papers_total=total_papers_estimate,
+            )
 
         for venue_name, venue_year_list in venue_years.items():
             # Get scraper - use override if provided
@@ -544,20 +574,104 @@ def main(
                         ] + len(collected)
                         progress.update(main_task, papers_collected=papers_collected)
                     else:
-                        errors.extend(result.errors)
                         console.print(
-                            f"[red]✗[/red] Failed to collect {venue_name} {year}: "
-                            f"{', '.join(result.errors)}"
+                            f"[red]Error:[/red] Unknown scraper {scraper}. "
+                            f"Available scrapers: {', '.join(registry.get_available_scrapers())}"
                         )
-                        # Still advance progress by expected amount on failure
-                        progress.advance(main_task, expected_papers)
+                        errors.append(f"Unknown scraper {scraper}")
+                        continue
+                else:
+                    # Use default scraper for venue
+                    scraper_instance = registry.get_scraper_for_venue(venue_name, config)  # type: ignore
 
-                except Exception as e:
-                    error_msg = f"Exception collecting {venue_name} {year}: {str(e)}"
-                    errors.append(error_msg)
-                    console.print(f"[red]✗[/red] {error_msg}")
-                    # Still advance progress by expected amount on exception
-                    progress.advance(main_task, expected_papers)
+                if not scraper_instance:
+                    console.print(
+                        f"[red]Error:[/red] No scraper available for venue {venue_name}"
+                    )
+                    errors.append(f"No scraper for {venue_name}")
+                    # Advance by estimated papers for this venue
+                    venue_estimate = sum(
+                        venue_estimates.get((venue_name, y), 0) for y in venue_year_list
+                    )
+                    progress.advance(main_task, venue_estimate)
+                    continue
+
+                for year in venue_year_list:
+                    task_desc = f"Collecting {venue_name} {year}"
+                    expected_papers = venue_estimates.get((venue_name, year), max_papers)
+                    progress.update(main_task, description=task_desc)
+
+                    # Check for checkpoint if resuming
+                    if resume:
+                        checkpoint = load_checkpoint(venue_name, year)
+                        if checkpoint and checkpoint.get("completed"):
+                            console.print(
+                                f"[yellow]Skipping {venue_name} {year} (already completed)[/yellow]"
+                            )
+                            progress.advance(main_task, expected_papers)
+                            papers_collected = (
+                                progress.tasks[main_task].fields["papers_collected"]
+                                + expected_papers
+                            )
+                            progress.update(main_task, papers_collected=papers_collected)
+                            continue
+
+                    try:
+                        # Scrape papers
+                        result = scraper_instance.scrape_venue_year(venue_name, year)
+
+                        if result.success:
+                            papers = result.metadata.get("papers", [])
+                            collected = papers if max_papers == 0 else papers[:max_papers]
+                            all_papers.extend(collected)
+
+                            # Save checkpoint
+                            save_checkpoint(venue_name, year, collected, completed=True)
+
+                            console.print(
+                                f"[green]✓[/green] Collected {len(collected)} papers "
+                                f"from {venue_name} {year}"
+                            )
+
+                            # Update progress
+                            if max_papers == 0:
+                                # For unlimited collection, update total estimate as we discover actual counts
+                                actual_diff = len(collected) - expected_papers
+                                if actual_diff != 0:
+                                    # Adjust total and advance appropriately
+                                    new_total = max(
+                                        progress.tasks[main_task].total + actual_diff,
+                                        len(collected),
+                                    )
+                                    progress.update(main_task, total=new_total)
+                                progress.advance(main_task, len(collected))
+                            else:
+                                # For limited collection, stick to estimates
+                                progress.advance(main_task, len(collected))
+                                if len(collected) < expected_papers:
+                                    progress.advance(
+                                        main_task, expected_papers - len(collected)
+                                    )
+
+                            papers_collected = progress.tasks[main_task].fields[
+                                "papers_collected"
+                            ] + len(collected)
+                            progress.update(main_task, papers_collected=papers_collected)
+                        else:
+                            errors.extend(result.errors)
+                            console.print(
+                                f"[red]✗[/red] Failed to collect {venue_name} {year}: "
+                                f"{', '.join(result.errors)}"
+                            )
+                            # Still advance progress by expected amount on failure
+                            progress.advance(main_task, expected_papers)
+
+                    except Exception as e:
+                        error_msg = f"Exception collecting {venue_name} {year}: {str(e)}"
+                        errors.append(error_msg)
+                        console.print(f"[red]✗[/red] {error_msg}")
+                        # Still advance progress by expected amount on exception
+                        progress.advance(main_task, expected_papers)
 
     # Save results
     if all_papers:
