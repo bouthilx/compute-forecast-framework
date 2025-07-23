@@ -4,6 +4,7 @@ import typer
 from typing import List, Optional, Dict, Any
 from pathlib import Path
 import json
+import logging
 from datetime import datetime
 from rich.console import Console
 from rich.progress import (
@@ -192,6 +193,10 @@ def main(
         "--skip-quality-check",
         help="Skip automatic quality checking after collection",
     ),
+    verbose: int = typer.Option(
+        0, "-v", "--verbose", count=True, max=2,
+        help="Increase verbosity (0=WARNING, 1=INFO, 2=DEBUG). Use -vv for max verbosity."
+    ),
 ):
     """
     Collect research papers from various venues and years.
@@ -218,7 +223,29 @@ def main(
 
         # Use new OpenReview scraper (with better decision extraction)
         cf collect --venue iclr --year 2024 --scraper OpenReviewScraperV2
+        
+        # Enable verbose logging
+        cf collect --venue neurips --year 2019 -v      # INFO level
+        cf collect --venue neurips --year 2019 -vv     # DEBUG level
     """
+    
+    # Configure logging based on verbosity level
+    log_levels = [logging.WARNING, logging.INFO, logging.DEBUG]
+    log_level = log_levels[min(verbose, len(log_levels) - 1)]
+    
+    # Configure root logger
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        force=True  # Override any existing configuration
+    )
+    
+    # Also configure the scraper logger specifically
+    scraper_logger = logging.getLogger("scraper")
+    scraper_logger.setLevel(log_level)
+    
+    if verbose >= 2:
+        console.print(f"[yellow]Debug logging enabled (level={log_level})[/yellow]")
 
     # Handle --list-venues option
     if list_venues:

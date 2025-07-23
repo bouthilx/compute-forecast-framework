@@ -21,7 +21,7 @@ class ScrapingConfig:
     rate_limit_delay: float = 1.0
     max_retries: int = 3
     timeout: int = 30
-    batch_size: int = 100
+    batch_size: int = 1
     cache_enabled: bool = True
     user_agent: str = "ComputeForecast/1.0 (Academic Research)"
 
