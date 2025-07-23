@@ -83,7 +83,7 @@ class GoogleDriveStorage:
         filename = f"{paper_id}.pdf"
 
         # Prepare file metadata
-        file_metadata = {
+        file_metadata: Dict[str, Any] = {
             "name": filename,
             "parents": [self.folder_id],
         }

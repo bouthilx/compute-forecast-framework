@@ -232,26 +232,26 @@ class JMLRCollector(BasePDFCollector):
                                 validation_status="discovered",
                                 license="JMLR",
                             )
-                        elif "papers/v" in href:
-                            # Extract volume info from link and construct PDF URL
-                            match = re.search(r"/v(\d+)/([^/\s]+)(?:\.html)?", str(href))
-                            if match:
-                                volume = match.group(1)
-                                paper_id = match.group(2).replace(".html", "")
-                                pdf_url = (
-                                    f"{self.jmlr_base_url}v{volume}/{paper_id}.pdf"
-                                )
+                            elif "papers/v" in href:
+                                # Extract volume info from link and construct PDF URL
+                                match = re.search(r"/papers/v(\d+)/([^/\s]+)(?:\.html)?", str(href))
+                                if match:
+                                    volume = match.group(1)
+                                    paper_id = match.group(2).replace(".html", "")
+                                    pdf_url = (
+                                        f"{self.jmlr_base_url}v{volume}/{paper_id}.pdf"
+                                    )
 
-                                return PDFRecord(
-                                    paper_id=paper.paper_id or f"jmlr_{paper_id}",
-                                    pdf_url=pdf_url,
-                                    source=self.source_name,
-                                    discovery_timestamp=datetime.now(),
-                                    confidence_score=self.TMLR_CONFIDENCE_SCORE,
-                                    version_info={"type": "published", "venue": "JMLR"},
-                                    validation_status="discovered",
-                                    license="JMLR",
-                                )
+                                    return PDFRecord(
+                                        paper_id=paper.paper_id or f"jmlr_{paper_id}",
+                                        pdf_url=pdf_url,
+                                        source=self.source_name,
+                                        discovery_timestamp=datetime.now(),
+                                        confidence_score=self.TMLR_CONFIDENCE_SCORE,
+                                        version_info={"type": "published", "venue": "JMLR"},
+                                        validation_status="discovered",
+                                        license="JMLR",
+                                    )
 
             raise ValueError(f"Could not find JMLR paper: {paper.title}")
 

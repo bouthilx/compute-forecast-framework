@@ -1,6 +1,6 @@
 """NeurIPS paperoni adapter - simplified implementation."""
 
-from typing import List, Any, Optional, cast
+from typing import List, Any, Optional
 from datetime import datetime
 import re
 from bs4 import BeautifulSoup, Tag

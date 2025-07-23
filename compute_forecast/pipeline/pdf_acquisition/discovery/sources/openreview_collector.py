@@ -106,7 +106,7 @@ class OpenReviewPDFCollector(BasePDFCollector):
 
         # Find best title match
         best_match = None
-        best_score = 0
+        best_score = 0.0
 
         for submission in submissions:
             # Get title from submission
@@ -118,7 +118,7 @@ class OpenReviewPDFCollector(BasePDFCollector):
             score = fuzz.ratio(paper.title.lower(), submission_title.lower())
 
             if score > best_score and score >= self.title_similarity_threshold:
-                best_score = score
+                best_score = float(score)
                 best_match = submission
 
                 # Perfect match, no need to continue

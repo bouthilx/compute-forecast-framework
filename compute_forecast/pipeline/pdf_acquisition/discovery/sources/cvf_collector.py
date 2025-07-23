@@ -7,7 +7,7 @@ from typing import Optional, Dict, Tuple
 from urllib.parse import urljoin
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from rapidfuzz import fuzz
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import (
@@ -133,14 +133,16 @@ class CVFCollector(BasePDFCollector):
 
         # Look for all links to PDFs
         for link in soup.find_all("a", href=pdf_pattern):
-            href = link.get("href", "")
-            match = pdf_pattern.search(href)
-            if match:
-                paper_id = match.group(1)
-                # Get the link text as title
-                link_title = link.get_text(strip=True)
-                if link_title:
-                    papers_found.append((paper_id, link_title))
+            if isinstance(link, Tag):
+                href = link.get("href", "")
+                if isinstance(href, str):
+                    match = pdf_pattern.search(href)
+                    if match:
+                        paper_id = match.group(1)
+                        # Get the link text as title
+                        link_title = link.get_text(strip=True)
+                        if link_title:
+                            papers_found.append((paper_id, link_title))
 
         if not papers_found:
             logger.warning(f"No papers found in {venue}{year} proceedings")
@@ -148,14 +150,14 @@ class CVFCollector(BasePDFCollector):
 
         # Find best title match
         best_match = None
-        best_score = 0
+        best_score = 0.0
 
         for paper_id, found_title in papers_found:
             # Calculate fuzzy match score
             score = fuzz.ratio(paper_title.lower(), found_title.lower())
 
             if score > best_score:
-                best_score = score
+                best_score = float(score)
                 best_match = paper_id
 
         # Return if score is above threshold

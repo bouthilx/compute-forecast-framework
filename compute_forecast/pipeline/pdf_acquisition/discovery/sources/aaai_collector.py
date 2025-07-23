@@ -10,7 +10,7 @@ from urllib.parse import urljoin
 import requests
 from rapidfuzz import fuzz
 from rapidfuzz import process
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import (
     BasePDFCollector,
@@ -158,37 +158,40 @@ class AAICollector(BasePDFCollector):
                 return None
 
             # Extract article data
-            candidates = []
+            candidates: List[Tuple[str, str]] = []
             for article in articles:
-                # Get title
-                title_elem = article.find("h3", class_="title")
-                if not title_elem:
-                    continue
-
-                article_title = title_elem.get_text(strip=True)
-
-                # Get article link
-                link_elem = title_elem.find("a")
-                if not link_elem or "href" not in link_elem.attrs:
-                    continue
-
-                article_url = link_elem["href"]
-
-                # Extract article ID from URL
-                match = re.search(r"/article/view/(\d+)", article_url)
-                if not match:
-                    continue
-
-                article_id = match.group(1)
-
-                # Check if it's from the correct year (if year info available)
-                year_elem = article.find("div", class_="published")
-                if year_elem:
-                    year_text = year_elem.get_text()
-                    if str(year) not in year_text:
+                if isinstance(article, Tag):
+                    # Get title
+                    title_elem = article.find("h3", class_="title")
+                    if not title_elem or not isinstance(title_elem, Tag):
                         continue
 
-                candidates.append((article_id, article_title))
+                    article_title = title_elem.get_text(strip=True)
+
+                    # Get article link
+                    link_elem = title_elem.find("a")
+                    if not link_elem or not isinstance(link_elem, Tag) or "href" not in link_elem.attrs:
+                        continue
+
+                    article_url = link_elem["href"]
+                    if not isinstance(article_url, str):
+                        continue
+
+                    # Extract article ID from URL
+                    match = re.search(r"/article/view/(\d+)", article_url)
+                    if not match:
+                        continue
+
+                    article_id = match.group(1)
+
+                    # Check if it's from the correct year (if year info available)
+                    year_elem = article.find("div", class_="published")
+                    if year_elem and isinstance(year_elem, Tag):
+                        year_text = year_elem.get_text()
+                        if str(year) not in year_text:
+                            continue
+
+                    candidates.append((article_id, article_title))
 
             if not candidates:
                 logger.debug(f"No candidates found for '{title}' in year {year}")
@@ -296,23 +299,26 @@ class AAICollector(BasePDFCollector):
             articles = soup.find_all("article", class_="obj_article_summary")
 
             for article in articles:
-                title_elem = article.find("h3", class_="title")
-                if not title_elem:
-                    continue
+                if isinstance(article, Tag):
+                    title_elem = article.find("h3", class_="title")
+                    if not title_elem or not isinstance(title_elem, Tag):
+                        continue
 
-                article_title = title_elem.get_text(strip=True)
+                    article_title = title_elem.get_text(strip=True)
 
-                # Check title similarity
-                similarity = fuzz.token_sort_ratio(title, article_title)
-                if similarity >= self.FUZZY_MATCH_THRESHOLD:
-                    link_elem = title_elem.find("a")
-                    if link_elem and "href" in link_elem.attrs:
-                        match = re.search(r"/article/view/(\d+)", link_elem["href"])
-                        if match:
-                            article_id = match.group(1)
-                            pdf_id = self._get_pdf_id_from_article(article_id)
-                            if pdf_id:
-                                return (article_id, pdf_id)
+                    # Check title similarity
+                    similarity = fuzz.token_sort_ratio(title, article_title)
+                    if similarity >= self.FUZZY_MATCH_THRESHOLD:
+                        link_elem = title_elem.find("a")
+                        if link_elem and isinstance(link_elem, Tag) and "href" in link_elem.attrs:
+                            href_value = link_elem["href"]
+                            if isinstance(href_value, str):
+                                match = re.search(r"/article/view/(\d+)", href_value)
+                                if match:
+                                    article_id = match.group(1)
+                                    pdf_id = self._get_pdf_id_from_article(article_id)
+                                    if pdf_id:
+                                        return (article_id, pdf_id)
 
             return None
 

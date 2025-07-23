@@ -363,9 +363,12 @@ class ACLAnthologyCollector(BasePDFCollector):
                         if cache_key in proceedings_cache:
                             soup = proceedings_cache[cache_key]
                             pattern = rf"/{year}\.{re.escape(venue_code)}\.(\d+)/"
+                            logger.debug(f"Using pattern: {pattern} for {venue_code} {year}")
 
                             links_processed = 0
-                            for link in soup.find_all("a", href=True):
+                            all_links = soup.find_all("a", href=True)
+                            logger.debug(f"Found {len(all_links)} links in proceedings for {venue_code} {year}")
+                            for link in all_links:
                                 if links_processed >= self.MAX_LINKS_TO_PROCESS:
                                     break
 
@@ -378,10 +381,8 @@ class ACLAnthologyCollector(BasePDFCollector):
                                         if match:
                                             paper_id = match.group(1)
                                             link_title = link.get_text(strip=True)
-
-                                            if self._fuzzy_match_title(
-                                                link_title, paper.title
-                                            ):
+                                            
+                                            if self._fuzzy_match_title(link_title, paper.title):
                                                 pdf_url = self._construct_pdf_url(
                                                     venue_code, year, paper_id
                                                 )
@@ -410,9 +411,10 @@ class ACLAnthologyCollector(BasePDFCollector):
                                                         file_size_bytes=file_size,
                                                         license="ACL Anthology License",
                                                     )
-                                            break
+                                                    break  # Break out of link loop
 
-                            if paper.paper_id in results:
+                            # Check if we found this paper (using the same logic for ID)
+                            if paper.paper_id and paper.paper_id in results:
                                 break
 
                     except Exception as e:
