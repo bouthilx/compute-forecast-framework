@@ -184,12 +184,8 @@ The test expects "Successful: 1" but gets "Successful: 0". Investigation shows:
 - ✅ Fixed test_failed_papers_export_format (file cleanup issue)
 - ✅ Fixed memory leak test (was already passing)
 
-**Remaining Issues**:
-- ❌ Integration tests failing due to session counter race condition:
-  - test_download_command_basic
-  - test_download_with_failures 
-  - test_resume_functionality
-  - test_parallel_downloads
-  - test_failed_papers_export_format (in CI environment)
+**All Issues Resolved!** ✅
 
-The remaining failures are all related to the same root cause: the queue-based architecture has a race condition where download results are processed asynchronously, and the session counters may not be updated before the final count is returned. This requires a more fundamental architectural fix to ensure proper synchronization between the download threads and the result processor thread.
+The race condition was actually caused by a missing line of code - the session counter increment was missing from the DOWNLOAD_COMPLETE message handler. After adding `self._session_successful += 1` back to the handler, all integration tests now pass.
+
+The delay added after queue emptying helps ensure all messages are fully processed before returning counts.

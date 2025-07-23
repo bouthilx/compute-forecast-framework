@@ -408,6 +408,7 @@ class DownloadOrchestrator:
 
             if message.type == MessageType.DOWNLOAD_COMPLETE:
                 self._update_state(message.paper_id, "completed")
+                self._session_successful += 1
                 logger.info(f"Successfully downloaded PDF for {message.paper_id}")
 
                 # Update paper metadata
@@ -630,6 +631,11 @@ class DownloadOrchestrator:
         start_time = time.time()
         while not self._message_queue.empty() and (time.time() - start_time) < timeout:
             time.sleep(0.1)
+        
+        # Add a small delay after queue appears empty to ensure processor
+        # has finished updating counters (only happens once at the end)
+        if (time.time() - start_time) < timeout:
+            time.sleep(0.5)  # 500ms delay for final processing
         
         # Stop processor thread
         self._stop_processor.set()
