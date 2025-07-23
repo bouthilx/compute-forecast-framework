@@ -23,6 +23,40 @@ from rich.live import Live
 logger = logging.getLogger(__name__)
 
 
+class ProgressLogHandler(logging.Handler):
+    """Custom log handler that routes through progress manager's log method."""
+    
+    def __init__(self, progress_manager):
+        super().__init__()
+        self.progress_manager = progress_manager
+        # Set a filter to avoid processing logs from compute_forecast.monitoring
+        self.addFilter(logging.Filter())
+        
+    def emit(self, record):
+        """Emit a log record through the progress manager."""
+        # Skip logs from our own module to avoid recursion
+        if record.name.startswith('compute_forecast.monitoring'):
+            return
+            
+        try:
+            # Map Python log levels to our levels
+            level_map = {
+                logging.DEBUG: "INFO",
+                logging.INFO: "INFO",
+                logging.WARNING: "WARNING",
+                logging.ERROR: "ERROR",
+                logging.CRITICAL: "ERROR"
+            }
+            
+            # Format message with logger name
+            msg = f"[{record.name}] {record.getMessage()}"
+            
+            # Use progress manager's log method
+            self.progress_manager.log(msg, level_map.get(record.levelno, "INFO"))
+        except Exception:
+            self.handleError(record)
+
+
 class StatusColumn(ProgressColumn):
     """Custom column to show download status counts."""
     
@@ -102,6 +136,10 @@ class SimpleDownloadProgressManager:
         self.progress = None
         self.live = None
         self.overall_task = None
+        
+        # Logging capture
+        self.log_handler = None
+        self.original_handlers = []
 
     def start(self, total_papers: int):
         """Start progress tracking.
@@ -144,9 +182,39 @@ class SimpleDownloadProgressManager:
             transient=True,
         )
         self.live.start()
+        
+        # Setup logging capture - add our custom handler to root logger
+        root_logger = logging.getLogger()
+        
+        # Store original handlers to restore later
+        self.original_handlers = root_logger.handlers[:]
+        
+        # Remove all existing handlers to prevent duplicate output
+        for handler in self.original_handlers:
+            root_logger.removeHandler(handler)
+        
+        # Add our custom handler
+        self.log_handler = ProgressLogHandler(self)
+        
+        # Set handler level to match root logger level (respects --verbose flag)
+        # This ensures we only capture logs at the configured verbosity level
+        self.log_handler.setLevel(root_logger.level)
+        
+        root_logger.addHandler(self.log_handler)
+        
+        # Don't modify the root logger level - respect what was set by CLI
 
     def stop(self):
         """Stop progress tracking."""
+        # Restore original logging configuration
+        if self.log_handler:
+            root_logger = logging.getLogger()
+            root_logger.removeHandler(self.log_handler)
+            
+            # Restore original handlers
+            for handler in self.original_handlers:
+                root_logger.addHandler(handler)
+        
         if self.live:
             self.live.stop()
 
