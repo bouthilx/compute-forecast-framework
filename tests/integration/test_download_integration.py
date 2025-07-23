@@ -270,7 +270,7 @@ class TestDownloadIntegration:
 
                     assert result.exit_code == 0
                     # Should only attempt to download the second paper
-                    assert mock_get.call_count == 1
+                    assert mock_session.get.call_count == 1
                     assert "Starting download of 1 papers" in result.output
 
     def test_parallel_downloads(self, temp_dir):

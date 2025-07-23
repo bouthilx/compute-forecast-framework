@@ -271,15 +271,11 @@ class GoogleDriveStorage:
             # Instead, try to list contents of the folder to verify access
             try:
                 # Try to list files in the folder (this works with shared folders)
-                results = (
-                    self._service.files()
-                    .list(
-                        q=f"'{self.folder_id}' in parents and trashed=false",
-                        pageSize=1,
-                        fields="files(id)",
-                    )
-                    .execute()
-                )
+                self._service.files().list(
+                    q=f"'{self.folder_id}' in parents and trashed=false",
+                    pageSize=1,
+                    fields="files(id)",
+                ).execute()
 
                 # If we can list contents, we have access
                 logger.info(
