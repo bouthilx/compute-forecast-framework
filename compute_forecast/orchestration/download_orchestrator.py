@@ -95,7 +95,7 @@ class DownloadState:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
-        result = {
+        result: Dict[str, Any] = {
             "completed": self.completed,
             "failed": self.failed,
             "in_progress": self.in_progress,
@@ -412,8 +412,8 @@ class DownloadOrchestrator:
                 logger.info(f"Successfully downloaded PDF for {message.paper_id}")
 
                 # Update paper metadata
-                paper.pdf_downloaded = True
-                paper.pdf_download_timestamp = datetime.now().isoformat()
+                paper.processing_flags["pdf_downloaded"] = True
+                paper.processing_flags["pdf_download_timestamp"] = datetime.now().isoformat()
 
                 if self.progress_manager:
                     self.progress_manager.complete_download(message.paper_id, True)
@@ -436,12 +436,10 @@ class DownloadOrchestrator:
                 )
 
                 # Update paper metadata
-                paper.pdf_download_error = error_msg
+                paper.processing_flags["pdf_download_error"] = error_msg
 
                 if self.progress_manager:
-                    self.progress_manager.complete_download(
-                        message.paper_id, False, permanent_failure=permanent
-                    )
+                    self.progress_manager.complete_download(message.paper_id, False)
 
             elif message.type == MessageType.PROGRESS_UPDATE:
                 # Forward progress updates to progress manager
@@ -540,7 +538,8 @@ class DownloadOrchestrator:
                 self._enforce_rate_limit()
 
                 # Update state
-                self._update_state(paper.paper_id, "in_progress")
+                if paper.paper_id:
+                    self._update_state(paper.paper_id, "in_progress")
 
                 # Submit download task
                 logger.debug(f"Submitting download task for {paper.paper_id}")
@@ -569,23 +568,25 @@ class DownloadOrchestrator:
                         if success:
                             successful += 1
                             # Send success message to queue
-                            message = QueueMessage(
-                                type=MessageType.DOWNLOAD_COMPLETE,
-                                paper_id=paper.paper_id,
-                            )
-                            self._message_queue.put(message)
+                            if paper.paper_id:
+                                message = QueueMessage(
+                                    type=MessageType.DOWNLOAD_COMPLETE,
+                                    paper_id=paper.paper_id,
+                                )
+                                self._message_queue.put(message)
                         else:
                             failed += 1
                             # Determine if this is a permanent failure
-                            _, is_permanent = self._categorize_error(error_msg)
+                            _, is_permanent = self._categorize_error(error_msg or "Unknown error")
 
                             # Send failure message to queue
-                            message = QueueMessage(
-                                type=MessageType.DOWNLOAD_FAILED,
-                                paper_id=paper.paper_id,
-                                data={"error": error_msg, "permanent": is_permanent},
-                            )
-                            self._message_queue.put(message)
+                            if paper.paper_id:
+                                message = QueueMessage(
+                                    type=MessageType.DOWNLOAD_FAILED,
+                                    paper_id=paper.paper_id,
+                                    data={"error": error_msg, "permanent": is_permanent},
+                                )
+                                self._message_queue.put(message)
 
                     except Exception as e:
                         logger.error(
@@ -594,12 +595,13 @@ class DownloadOrchestrator:
                         failed += 1
 
                         # Send failure message to queue
-                        message = QueueMessage(
-                            type=MessageType.DOWNLOAD_FAILED,
-                            paper_id=paper.paper_id,
-                            data={"error": str(e), "permanent": False},
-                        )
-                        self._message_queue.put(message)
+                        if paper.paper_id:
+                            message = QueueMessage(
+                                type=MessageType.DOWNLOAD_FAILED,
+                                paper_id=paper.paper_id,
+                                data={"error": str(e), "permanent": False},
+                            )
+                            self._message_queue.put(message)
 
                     # Submit next paper if any remain
                     if (
@@ -611,7 +613,8 @@ class DownloadOrchestrator:
                         self._enforce_rate_limit()
 
                         # Update state
-                        self._update_state(next_paper.paper_id, "in_progress")
+                        if next_paper.paper_id:
+                            self._update_state(next_paper.paper_id, "in_progress")
 
                         # Submit download task
                         logger.debug(
@@ -747,10 +750,13 @@ class DownloadOrchestrator:
         """
         try:
             # Check if already exists
-            exists, location = self.storage_manager.exists(paper.paper_id)
-            if exists:
-                logger.info(f"{paper.paper_id} already exists in {location}")
-                return True, None
+            if paper.paper_id:
+                exists, location = self.storage_manager.exists(paper.paper_id)
+                if exists:
+                    logger.info(f"{paper.paper_id} already exists in {location}")
+                    return True, None
+            else:
+                return False, "No paper_id provided"
 
             # Set up progress callback that sends messages to queue
             def progress_callback(
@@ -774,20 +780,23 @@ class DownloadOrchestrator:
                 return False, "No PDF URL found"
 
             # Download the PDF
-            success, download_error = downloader.download_pdf(
-                paper_id=paper.paper_id,
-                pdf_url=pdf_url,
-                progress_callback=progress_callback,
-                metadata={
-                    "title": paper.title,
-                    "authors": ", ".join([a.name for a in paper.authors])
-                    if paper.authors
-                    else "",
-                    "year": paper.year,
-                    "venue": paper.venue,
-                    "urls": [url.data.url for url in paper.urls],
-                },
-            )
+            if paper.paper_id:
+                success, download_error = downloader.download_pdf(
+                    paper_id=paper.paper_id,
+                    pdf_url=pdf_url,
+                    progress_callback=progress_callback,
+                    metadata={
+                        "title": paper.title,
+                        "authors": ", ".join([a.name for a in paper.authors])
+                        if paper.authors
+                        else "",
+                        "year": paper.year,
+                        "venue": paper.venue,
+                        "urls": [url.data.url for url in paper.urls],
+                    },
+                )
+            else:
+                return False, "No paper_id for download"
 
             if success:
                 return True, None

@@ -17,6 +17,8 @@ from rich.progress import (
 )
 from rich.live import Live
 
+from .download_progress import DownloadProgressManager
+
 logger = logging.getLogger(__name__)
 
 
@@ -107,7 +109,7 @@ class DetailedProgressColumn(ProgressColumn):
         return f"{percentage:3.0f}% ({task.completed}/{task.total}) {elapsed_str} ({eta_str})"
 
 
-class SimpleDownloadProgressManager:
+class SimpleDownloadProgressManager(DownloadProgressManager):
     """Simplified progress display for PDF downloads."""
 
     def __init__(self, console: Optional[Console] = None, max_parallel: int = 5):

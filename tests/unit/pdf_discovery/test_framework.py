@@ -2,7 +2,7 @@
 
 import pytest
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 import time
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.models import (
@@ -72,7 +72,7 @@ class MockCollector(BasePDFCollector):
     """Mock collector for testing."""
 
     def __init__(
-        self, source_name: str, delay: float = 0, fail_papers: List[str] = None
+        self, source_name: str, delay: float = 0, fail_papers: Optional[List[str]] = None
     ):
         super().__init__(source_name)
         self.delay = delay
@@ -93,8 +93,8 @@ class MockCollector(BasePDFCollector):
         source_confidence = {"arxiv": 0.9, "openreview": 0.85, "semantic_scholar": 0.8}
 
         return PDFRecord(
-            paper_id=paper.paper_id,
-            pdf_url=f"https://{self.source_name}.com/{paper.paper_id}.pdf",
+            paper_id=paper.paper_id or f"test_{self.source_name}",
+            pdf_url=f"https://{self.source_name}.com/{paper.paper_id or 'test'}.pdf",
             source=self.source_name,
             discovery_timestamp=datetime.now(),
             confidence_score=source_confidence.get(self.source_name, 0.7),

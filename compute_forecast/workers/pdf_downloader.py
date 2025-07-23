@@ -294,7 +294,7 @@ class PDFDownloader:
                 f.seek(0)
                 header = f.read(4)
                 if header != self.PDF_HEADER:
-                    return f"Invalid PDF header: {header}"
+                    return f"Invalid PDF header: {header!r}"
 
                 # Check for common error messages with more specific categorization
                 error_patterns = [

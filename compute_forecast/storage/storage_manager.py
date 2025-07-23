@@ -2,7 +2,7 @@
 
 import logging
 from pathlib import Path
-from typing import Optional, Dict, Callable, Tuple
+from typing import Optional, Dict, Callable, Tuple, Any
 import os
 from datetime import datetime
 
@@ -210,7 +210,7 @@ class StorageManager:
 
         return removed
 
-    def get_storage_stats(self) -> Dict[str, any]:
+    def get_storage_stats(self) -> Dict[str, Any]:
         """Get storage statistics.
 
         Returns:

@@ -70,7 +70,7 @@ class Paper:
     # Processing metadata
     collection_source: str = ""
     collection_timestamp: datetime = field(default_factory=datetime.now)
-    processing_flags: Dict[str, bool] = field(default_factory=dict)
+    processing_flags: Dict[str, Any] = field(default_factory=dict)
     venue_confidence: float = 1.0
     deduplication_confidence: float = 1.0
     breakthrough_score: Optional[float] = None

@@ -2,6 +2,7 @@
 
 import pytest
 from datetime import datetime
+from typing import Optional
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.framework import (
     PDFDiscoveryFramework,
@@ -66,7 +67,7 @@ def create_test_paper(
 class MockCollectorWithDuplicates(BasePDFCollector):
     """Mock collector that returns duplicate records for testing."""
 
-    def __init__(self, source_name: str, duplicate_papers: list = None):
+    def __init__(self, source_name: str, duplicate_papers: Optional[list] = None):
         super().__init__(source_name)
         self.duplicate_papers = duplicate_papers or []
 
@@ -87,8 +88,8 @@ class MockCollectorWithDuplicates(BasePDFCollector):
         else:
             # Return regular record
             return PDFRecord(
-                paper_id=paper.paper_id,
-                pdf_url=f"https://{self.source_name}.com/{paper.paper_id}.pdf",
+                paper_id=paper.paper_id or f"unknown_{self.source_name}",
+                pdf_url=f"https://{self.source_name}.com/{paper.paper_id or 'unknown'}.pdf",
                 source=self.source_name,
                 discovery_timestamp=datetime.now(),
                 confidence_score=0.8,

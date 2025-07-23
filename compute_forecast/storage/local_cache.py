@@ -3,7 +3,7 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 import hashlib
 import json
 from datetime import datetime
@@ -206,7 +206,7 @@ class LocalCache:
             logger.error(f"Failed to remove {paper_id} from cache: {e}")
             return False
 
-    def get_metadata(self, paper_id: str) -> Optional[Dict]:
+    def get_metadata(self, paper_id: str) -> Optional[Dict[str, Any]]:
         """Get metadata for a cached PDF.
 
         Args:
@@ -300,7 +300,7 @@ class LocalCache:
                 sha256.update(chunk)
         return sha256.hexdigest()
 
-    def get_stats(self) -> Dict[str, any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get cache statistics.
 
         Returns:
