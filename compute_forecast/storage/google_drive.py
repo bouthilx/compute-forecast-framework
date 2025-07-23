@@ -49,7 +49,7 @@ class GoogleDriveStorage:
         except Exception as e:
             logger.error(f"Failed to initialize Google Drive service: {e}")
             raise
-    
+
     @property
     def service(self) -> Any:
         """Get the Drive service, ensuring it's initialized."""

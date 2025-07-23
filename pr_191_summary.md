@@ -5,7 +5,7 @@
 ### 1. Pre-commit Fixes
 - Fixed PR title to include conventional commit prefix (feat:)
 - Fixed trailing whitespace in 7 files
-- Added final newlines to 8 journal/repair files  
+- Added final newlines to 8 journal/repair files
 - Fixed bare except clause in download_orchestrator.py
 - Ran ruff format on 5 files
 
@@ -41,7 +41,7 @@
 
 ## Commits Made:
 1. Fix PR #191 pre-commit and test failures
-2. Fix 158 mypy type errors  
+2. Fix 158 mypy type errors
 3. Fix 21 more mypy type errors
 4. Fix 18 more mypy type errors in scrapers
 5. Fix 7 more mypy type errors

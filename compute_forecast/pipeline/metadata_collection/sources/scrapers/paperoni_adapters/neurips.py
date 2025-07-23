@@ -85,7 +85,7 @@ class NeurIPSAdapter(BasePaperoniAdapter):
                         link_elem = entry.find("a")
                         if not link_elem or not isinstance(link_elem, Tag):
                             continue
-                        
+
                         href_attr = link_elem.get("href", "")
                         if not isinstance(href_attr, str) or "hash" not in href_attr:
                             continue

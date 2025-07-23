@@ -127,13 +127,13 @@ class JMLRCollector(BasePDFCollector):
                                 paper_id=paper.paper_id
                                 or f"tmlr_{href.split('/')[-1].replace('.pdf', '')}",
                                 pdf_url=pdf_url,
-                            source=self.source_name,
-                            discovery_timestamp=datetime.now(),
-                            confidence_score=self.TMLR_CONFIDENCE_SCORE,
-                            version_info={"type": "published", "venue": "TMLR"},
-                            validation_status="discovered",
-                            license="TMLR",
-                        )
+                                source=self.source_name,
+                                discovery_timestamp=datetime.now(),
+                                confidence_score=self.TMLR_CONFIDENCE_SCORE,
+                                version_info={"type": "published", "venue": "TMLR"},
+                                validation_status="discovered",
+                                license="TMLR",
+                            )
 
             raise ValueError(f"Could not find TMLR paper: {paper.title}")
 
@@ -225,16 +225,18 @@ class JMLRCollector(BasePDFCollector):
                                     paper_id=paper.paper_id
                                     or f"jmlr_{href.split('/')[-1].replace('.pdf', '')}",
                                     pdf_url=pdf_url,
-                                source=self.source_name,
-                                discovery_timestamp=datetime.now(),
-                                confidence_score=self.TMLR_CONFIDENCE_SCORE,  # Lower confidence for search-based
-                                version_info={"type": "published", "venue": "JMLR"},
-                                validation_status="discovered",
-                                license="JMLR",
-                            )
+                                    source=self.source_name,
+                                    discovery_timestamp=datetime.now(),
+                                    confidence_score=self.TMLR_CONFIDENCE_SCORE,  # Lower confidence for search-based
+                                    version_info={"type": "published", "venue": "JMLR"},
+                                    validation_status="discovered",
+                                    license="JMLR",
+                                )
                             elif "papers/v" in href:
                                 # Extract volume info from link and construct PDF URL
-                                match = re.search(r"/papers/v(\d+)/([^/\s]+)(?:\.html)?", str(href))
+                                match = re.search(
+                                    r"/papers/v(\d+)/([^/\s]+)(?:\.html)?", str(href)
+                                )
                                 if match:
                                     volume = match.group(1)
                                     paper_id = match.group(2).replace(".html", "")
@@ -248,7 +250,10 @@ class JMLRCollector(BasePDFCollector):
                                         source=self.source_name,
                                         discovery_timestamp=datetime.now(),
                                         confidence_score=self.TMLR_CONFIDENCE_SCORE,
-                                        version_info={"type": "published", "venue": "JMLR"},
+                                        version_info={
+                                            "type": "published",
+                                            "venue": "JMLR",
+                                        },
                                         validation_status="discovered",
                                         license="JMLR",
                                     )

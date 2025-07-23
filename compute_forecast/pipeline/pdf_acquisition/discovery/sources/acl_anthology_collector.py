@@ -363,11 +363,15 @@ class ACLAnthologyCollector(BasePDFCollector):
                         if cache_key in proceedings_cache:
                             soup = proceedings_cache[cache_key]
                             pattern = rf"/{year}\.{re.escape(venue_code)}\.(\d+)/"
-                            logger.debug(f"Using pattern: {pattern} for {venue_code} {year}")
+                            logger.debug(
+                                f"Using pattern: {pattern} for {venue_code} {year}"
+                            )
 
                             links_processed = 0
                             all_links = soup.find_all("a", href=True)
-                            logger.debug(f"Found {len(all_links)} links in proceedings for {venue_code} {year}")
+                            logger.debug(
+                                f"Found {len(all_links)} links in proceedings for {venue_code} {year}"
+                            )
                             for link in all_links:
                                 if links_processed >= self.MAX_LINKS_TO_PROCESS:
                                     break
@@ -381,8 +385,10 @@ class ACLAnthologyCollector(BasePDFCollector):
                                         if match:
                                             paper_id = match.group(1)
                                             link_title = link.get_text(strip=True)
-                                            
-                                            if self._fuzzy_match_title(link_title, paper.title):
+
+                                            if self._fuzzy_match_title(
+                                                link_title, paper.title
+                                            ):
                                                 pdf_url = self._construct_pdf_url(
                                                     venue_code, year, paper_id
                                                 )

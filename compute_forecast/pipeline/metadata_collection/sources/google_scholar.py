@@ -93,7 +93,9 @@ class GoogleScholarSource(BaseCitationSource):
                 )
 
                 firefox_service = FirefoxService("/snap/bin/geckodriver")
-                self.driver = webdriver.Firefox(service=firefox_service, options=firefox_options)
+                self.driver = webdriver.Firefox(
+                    service=firefox_service, options=firefox_options
+                )
 
             # Configure timeouts
             if self.driver:

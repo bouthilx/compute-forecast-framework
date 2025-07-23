@@ -152,7 +152,7 @@ class DownloadProgressManager:
         with self._lock:
             if not self.progress:
                 return
-                
+
             # Limit number of active progress bars
             if len(self.active_downloads) >= self.max_parallel:
                 # Find and remove oldest completed task

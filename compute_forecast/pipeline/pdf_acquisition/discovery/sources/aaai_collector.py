@@ -170,7 +170,11 @@ class AAICollector(BasePDFCollector):
 
                     # Get article link
                     link_elem = title_elem.find("a")
-                    if not link_elem or not isinstance(link_elem, Tag) or "href" not in link_elem.attrs:
+                    if (
+                        not link_elem
+                        or not isinstance(link_elem, Tag)
+                        or "href" not in link_elem.attrs
+                    ):
                         continue
 
                     article_url = link_elem["href"]
@@ -310,7 +314,11 @@ class AAICollector(BasePDFCollector):
                     similarity = fuzz.token_sort_ratio(title, article_title)
                     if similarity >= self.FUZZY_MATCH_THRESHOLD:
                         link_elem = title_elem.find("a")
-                        if link_elem and isinstance(link_elem, Tag) and "href" in link_elem.attrs:
+                        if (
+                            link_elem
+                            and isinstance(link_elem, Tag)
+                            and "href" in link_elem.attrs
+                        ):
                             href_value = link_elem["href"]
                             if isinstance(href_value, str):
                                 match = re.search(r"/article/view/(\d+)", href_value)
