@@ -1,6 +1,6 @@
 """OpenReview adapter v2 - Paperoni-inspired implementation with improved decision extraction."""
 
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Iterator
 from datetime import datetime
 import openreview
 import re
@@ -129,6 +129,58 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             return value["value"]
 
         return value
+
+    def scrape_venue_year_iter(self, venue: str, year: int) -> Iterator[SimplePaper]:
+        """
+        Stream papers one by one from OpenReview.
+        
+        Yields papers as they are fetched and processed instead of collecting all first.
+        """
+        venue_lower = venue.lower()
+        
+        # Get venue ID
+        venue_id = self._get_venue_id(venue_lower, year)
+        if not venue_id:
+            self.logger.error(f"Unsupported venue for OpenReview: {venue}")
+            return
+        
+        # Ensure scrapers are initialized
+        if not self.client_v2 or not self.client_v1:
+            self._create_paperoni_scraper()
+        
+        # Rate limiting - small delay before starting
+        time.sleep(0.5)
+        
+        try:
+            # Choose strategy based on venue and year
+            if venue_lower == "tmlr":
+                # TMLR has special handling
+                yield from self._get_tmlr_papers_iter(year)
+            elif venue_lower == "iclr" and year >= 2024:
+                # Use optimized venueid query for ICLR 2024+
+                yield from self._get_accepted_by_venueid_iter(venue_id, venue, year)
+            elif venue_lower == "iclr" and year <= 2023:
+                # Use v1 API with batch decision fetching
+                yield from self._get_conference_submissions_v1_iter(venue_id, venue, year)
+            else:
+                # Standard approach for other venues
+                yield from self._get_conference_submissions_v2_iter(venue_id, venue, year)
+                
+        except openreview.OpenReviewException as e:
+            # Handle OpenReview-specific errors
+            self.logger.error(f"OpenReview API error for {venue} {year}: {e}")
+            if "rate limit" in str(e).lower():
+                self.logger.info("Rate limit hit, waiting 60 seconds...")
+                time.sleep(60)
+            # Don't re-raise, just stop yielding
+            
+        except Exception as e:
+            self.logger.error(
+                f"Unexpected error fetching papers for {venue} {year}: {e}"
+            )
+            import traceback
+            self.logger.debug(traceback.format_exc())
+            # Don't re-raise, just stop yielding
 
     def _call_paperoni_scraper(self, scraper: Any, venue: str, year: int) -> List[Any]:
         """Main method to fetch papers from OpenReview with robust error handling."""
@@ -475,6 +527,232 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             return "Accept: poster"
         else:
             return "Accept"
+
+    def _get_tmlr_papers_iter(self, year: int) -> Iterator[SimplePaper]:
+        """Stream TMLR papers published in a specific year."""
+        try:
+            self.logger.info(f"Getting TMLR papers for year {year}")
+            
+            # TMLR uses a single invitation for all published papers
+            submissions = self.client_v2.get_all_notes(
+                invitation="TMLR/-/Paper", details="directReplies"
+            )
+            
+            # Filter by publication year and yield papers one by one
+            for submission in submissions:
+                try:
+                    # Get publication date
+                    pub_date = None
+                    if hasattr(submission, "pdate") and submission.pdate:
+                        pub_date = datetime.fromtimestamp(submission.pdate / 1000)
+                    elif hasattr(submission, "cdate") and submission.cdate:
+                        pub_date = datetime.fromtimestamp(submission.cdate / 1000)
+                    
+                    if pub_date and pub_date.year != year:
+                        continue
+                    elif not pub_date:
+                        continue
+                    
+                    # TMLR papers are all accepted, no decision extraction needed
+                    paper = self._convert_to_simple_paper(
+                        submission, "accepted", "TMLR", year
+                    )
+                    if paper:
+                        yield paper
+                        
+                except Exception as e:
+                    self.logger.debug(
+                        f"Failed to parse TMLR submission {getattr(submission, 'id', 'unknown')}: {e}"
+                    )
+                    continue
+                    
+        except Exception as e:
+            self.logger.error(f"Error fetching TMLR papers: {e}")
+
+    def _get_accepted_by_venueid_iter(
+        self, venue_id: str, venue: str, year: int
+    ) -> Iterator[SimplePaper]:
+        """Stream accepted papers using venueid for ICLR 2024+."""
+        try:
+            self.logger.info(f"Getting accepted papers for {venue_id} using venueid")
+            
+            # Use venueid to get only accepted papers
+            submissions = self.client_v2.get_all_notes(content={"venueid": venue_id})
+            
+            for submission in submissions:
+                try:
+                    # For venueid-filtered papers, we know they're accepted
+                    # But we still extract decision for classification (oral/poster/spotlight)
+                    decision = self._extract_decision_smart(
+                        submission, venue.lower(), year
+                    )
+                    if not decision:
+                        decision = "accepted"  # Default for venueid-filtered papers
+                    
+                    paper = self._convert_to_simple_paper(
+                        submission, decision, venue, year
+                    )
+                    if paper:
+                        yield paper
+                        
+                except Exception as e:
+                    self.logger.debug(
+                        f"Failed to parse submission {getattr(submission, 'id', 'unknown')}: {e}"
+                    )
+                    continue
+                    
+        except Exception as e:
+            self.logger.error(
+                f"Error getting accepted papers by venueid for {venue_id}: {e}"
+            )
+
+    def _get_conference_submissions_v1_iter(
+        self, venue_id: str, venue: str, year: int
+    ) -> Iterator[SimplePaper]:
+        """Stream papers using API v1 for ICLR ≤2023."""
+        # First, get all submissions
+        invitation_formats = [
+            f"{venue_id}/-/Blind_Submission",
+            f"{venue_id}/-/Submission",
+            f"{venue_id}/-/Paper",
+        ]
+        
+        all_submissions = []
+        for invitation in invitation_formats:
+            try:
+                self.logger.debug(f"Trying v1 invitation format: {invitation}")
+                # Use iterget_notes for pagination
+                from openreview import tools
+                
+                submissions_iter = tools.iterget_notes(
+                    self.client_v1, invitation=invitation
+                )
+                all_submissions = list(submissions_iter)
+                
+                if all_submissions:
+                    self.logger.info(
+                        f"Found {len(all_submissions)} submissions using {invitation}"
+                    )
+                    break
+            except Exception as e:
+                self.logger.debug(f"Failed with invitation {invitation}: {e}")
+                continue
+        
+        if not all_submissions:
+            self.logger.error(f"No submissions found for {venue_id}")
+            return
+        
+        # For ICLR, implement efficient decision extraction
+        self.logger.info(
+            f"Filtering {len(all_submissions)} submissions for accepted papers..."
+        )
+        
+        # Try venue field approach first
+        venue_filtered = []
+        for submission in all_submissions:
+            venue_field = submission.content.get("venue", "")
+            
+            # Check if this is an accepted paper based on venue field
+            if self._is_accepted_by_venue_field(venue_field, year):
+                # Cache the decision from venue field
+                submission._cached_decision = self._extract_decision_from_venue(
+                    venue_field
+                )
+                venue_filtered.append(submission)
+        
+        if len(venue_filtered) > 100:  # Sanity check
+            self.logger.info(
+                f"Used venue field to find {len(venue_filtered)} accepted papers"
+            )
+            submissions_to_process = venue_filtered
+        else:
+            # Fallback: Get all submissions and extract decisions
+            self.logger.info(
+                "Venue field unreliable, extracting decisions for all papers..."
+            )
+            submissions_to_process = all_submissions
+        
+        # Convert to SimplePaper and yield
+        for submission in submissions_to_process:
+            try:
+                decision = self._extract_decision_smart(submission, venue.lower(), year)
+                
+                # Skip rejected/withdrawn papers
+                if decision and decision.lower() in ["rejected", "withdrawn"]:
+                    continue
+                
+                paper = self._convert_to_simple_paper(submission, decision, venue, year)
+                if paper:
+                    yield paper
+                    
+            except Exception as e:
+                self.logger.debug(f"Failed to process submission: {e}")
+                continue
+
+    def _get_conference_submissions_v2_iter(
+        self, venue_id: str, venue: str, year: int
+    ) -> Iterator[SimplePaper]:
+        """Stream papers using API v2 for standard conferences."""
+        # Try different invitation formats
+        invitation_formats = [
+            f"{venue_id}/-/Blind_Submission",
+            f"{venue_id}/-/Submission",
+            f"{venue_id}#-/Submission",  # Some venues use # instead of /
+            f"{venue_id}/-/Paper",
+        ]
+        
+        submissions = None
+        for invitation in invitation_formats:
+            try:
+                self.logger.debug(f"Trying v2 invitation format: {invitation}")
+                submissions = self.client_v2.get_all_notes(
+                    invitation=invitation, details="replies"
+                )
+                # Check if we have any results by peeking at the iterator
+                first_submission = next(submissions, None)
+                if first_submission:
+                    # Create a new iterator that includes the first item
+                    import itertools
+                    submissions = itertools.chain([first_submission], submissions)
+                    self.logger.info(f"Found submissions using {invitation}")
+                    break
+            except Exception as e:
+                self.logger.debug(f"Failed with invitation {invitation}: {e}")
+                continue
+        
+        if not submissions:
+            self.logger.error(f"No submissions found for {venue_id}")
+            return
+        
+        # Process submissions
+        self.logger.info(f"Processing submissions...")
+        accepted_count = 0
+        rejected_count = 0
+        
+        for submission in submissions:
+            try:
+                # Extract decision
+                decision = self._extract_decision_smart(submission, venue.lower(), year)
+                
+                # Skip rejected/withdrawn papers
+                if decision and decision.lower() in ["rejected", "withdrawn"]:
+                    rejected_count += 1
+                    continue
+                
+                paper = self._convert_to_simple_paper(submission, decision, venue, year)
+                if paper:
+                    yield paper
+                    accepted_count += 1
+                    
+                    # Log progress every 100 papers
+                    if accepted_count % 100 == 0:
+                        self.logger.info(
+                            f"Processed {accepted_count} accepted papers so far..."
+                        )
+                    
+            except Exception as e:
+                self.logger.debug(f"Failed to process submission: {e}")
+                continue
 
     def _convert_to_simple_paper(
         self, submission: Any, decision: Optional[str], venue: str, year: int

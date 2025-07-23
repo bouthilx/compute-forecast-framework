@@ -1,6 +1,6 @@
 """NeurIPS paperoni adapter - simplified implementation."""
 
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Iterator
 from datetime import datetime
 import re
 import time
@@ -54,6 +54,129 @@ class NeurIPSAdapter(BasePaperoniAdapter):
                 f"Could not estimate paper count for NeurIPS {year}: {e}"
             )
             return None
+
+    def scrape_venue_year_iter(self, venue: str, year: int) -> Iterator[SimplePaper]:
+        """
+        Stream NeurIPS papers one by one as they are scraped.
+        """
+        self.logger.info(f"Starting NeurIPS scraper for {venue} {year}")
+        self.logger.debug(f"Batch size: {self.config.batch_size}")
+        self.logger.debug(f"PDF request delay: {self.pdf_request_delay}s")
+
+        try:
+            # Fetch the proceedings page for the given year
+            url = f"{self.base_url}/paper_files/paper/{year}"
+            self.logger.info(f"Fetching proceedings page: {url}")
+            response = self._make_request(url)
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            # Find all paper entries - look for li elements that contain paper links
+            # NeurIPS papers have links with 'hash' in the URL
+            all_li = soup.find_all("li")
+            paper_entries = []
+
+            for li in all_li:
+                link = li.find("a", href=lambda x: x and "hash" in x)
+                if link:
+                    paper_entries.append(li)
+
+            self.logger.info(
+                f"Found {len(paper_entries)} paper entries on NeurIPS {year} page"
+            )
+
+            # Apply batch size limit if batch_size is reasonable (not unlimited)
+            limit = (
+                self.config.batch_size
+                if self.config.batch_size < 10000
+                else len(paper_entries)
+            )
+            
+            self.logger.info(f"Processing {limit} papers (batch_size={self.config.batch_size})")
+            
+            processed_count = 0
+            for i, entry in enumerate(paper_entries[:limit]):
+                try:
+                    self.logger.debug(f"Processing paper {i+1}/{limit}")
+                    # Extract paper link
+                    link_elem = entry.find("a")
+                    if not link_elem or "hash" not in link_elem.get("href", ""):
+                        continue
+
+                    paper_url = link_elem["href"]
+                    if not paper_url.startswith("http"):
+                        paper_url = self.base_url + paper_url
+
+                    # Extract title
+                    title = link_elem.text.strip()
+
+                    # Extract authors
+                    authors_elem = entry.find("i")
+                    authors = []
+                    if authors_elem:
+                        authors_text = authors_elem.text
+                        # Simple split by comma - more sophisticated parsing could be added
+                        authors = [a.strip() for a in authors_text.split(",")]
+
+                    # Extract hash for PDF URL
+                    hash_match = re.search(r"hash/([^-]+)", paper_url)
+                    if hash_match:
+                        paper_hash = hash_match.group(1)
+                        
+                        # Try to fetch actual PDF URL from page
+                        self.logger.debug(f"Fetching PDF URL for paper: {paper_url}")
+                        pdf_url = self._fetch_pdf_url_from_page(paper_url, paper_hash)
+                        
+                        if not pdf_url:
+                            # Fall back to pattern-based URL (with year-aware logic)
+                            year_int = int(year)
+                            if year_int >= 2022:
+                                # Use Conference pattern for 2022+
+                                pdf_url = f"{self.base_url}/paper_files/paper/{year}/file/{paper_hash}-Paper-Conference.pdf"
+                            else:
+                                # Use standard pattern for 2021 and earlier
+                                pdf_url = f"{self.base_url}/paper_files/paper/{year}/file/{paper_hash}-Paper.pdf"
+                            
+                            self.logger.debug(
+                                f"Using pattern-based PDF URL for {paper_hash}: {pdf_url}"
+                            )
+                    else:
+                        # Fallback for unexpected URL format
+                        pdf_url = paper_url.replace("/hash/", "/file/").replace(".html", ".pdf")
+                        self.logger.warning(f"Could not extract hash from URL: {paper_url}")
+
+                    # Create SimplePaper object
+                    paper = SimplePaper(
+                        title=title,
+                        authors=authors,
+                        venue="NeurIPS",
+                        year=year,
+                        pdf_urls=[pdf_url],
+                        source_scraper=self.source_name,
+                        source_url=paper_url,
+                        scraped_at=datetime.now(),
+                        extraction_confidence=0.9,
+                    )
+
+                    yield paper
+                    processed_count += 1
+                    
+                    if processed_count % 10 == 0:
+                        self.logger.info(f"Processed {processed_count}/{limit} papers")
+
+                except Exception as e:
+                    self.logger.warning(f"Failed to parse paper entry {i+1}: {e}")
+                    if self.logger.isEnabledFor(logging.DEBUG):
+                        import traceback
+                        self.logger.debug(traceback.format_exc())
+                    continue
+
+            self.logger.info(
+                f"Successfully extracted {processed_count} papers from {limit} processed entries"
+            )
+
+        except Exception as e:
+            self.logger.error(f"Failed to fetch NeurIPS {year} proceedings: {e}")
+            raise
 
     def _call_paperoni_scraper(self, scraper: Any, venue: str, year: int) -> List[Any]:
         """Direct implementation instead of using paperoni."""

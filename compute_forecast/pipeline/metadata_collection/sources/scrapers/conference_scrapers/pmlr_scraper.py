@@ -2,7 +2,7 @@
 
 import re
 from bs4 import BeautifulSoup
-from typing import List, Optional
+from typing import List, Optional, Iterator
 from urllib.parse import urljoin
 
 from ..base import ConferenceProceedingsScraper, ScrapingConfig, ScrapingResult
@@ -92,6 +92,57 @@ class PMLRScraper(ConferenceProceedingsScraper):
 
         volume = self.venue_volumes[venue_upper][year]
         return urljoin(self.base_url, f"v{volume}/")
+
+    def scrape_venue_year_iter(self, venue: str, year: int) -> Iterator[SimplePaper]:
+        """
+        Stream PMLR papers one by one as they are scraped.
+        """
+        venue_normalized = self._normalize_venue(venue)
+        
+        if venue_normalized not in self.venue_volumes:
+            self.logger.error(f"Venue {venue} not supported")
+            return
+        
+        if year not in self.venue_volumes[venue_normalized]:
+            self.logger.error(f"Year {year} not available for venue {venue}")
+            return
+        
+        try:
+            url = self.get_proceedings_url(venue, year)
+            self.logger.info(f"Fetching PMLR proceedings from: {url}")
+            
+            response = self._make_request(url)
+            soup = BeautifulSoup(response.text, "html.parser")
+            
+            # PMLR uses <div class="paper"> for each paper entry
+            paper_entries = soup.find_all("div", class_="paper")
+            
+            if not paper_entries:
+                # Try alternative structure
+                paper_entries = soup.find_all("p", class_="title")
+            
+            self.logger.info(f"Found {len(paper_entries)} paper entries for {venue} {year}")
+            
+            for i, entry in enumerate(paper_entries):
+                try:
+                    paper = self._extract_paper_from_entry(entry, venue_normalized, year, i)
+                    if paper:
+                        yield paper
+                        
+                        # Log progress every 50 papers
+                        if (i + 1) % 50 == 0:
+                            self.logger.info(f"Processed {i + 1}/{len(paper_entries)} papers")
+                            
+                except Exception as e:
+                    self.logger.warning(f"Failed to extract paper from entry {i}: {e}")
+                    continue
+            
+            self.logger.info(f"Finished streaming papers from {venue} {year}")
+            
+        except Exception as e:
+            error_msg = f"Failed to scrape {venue} {year}: {str(e)}"
+            self.logger.error(error_msg)
+            raise
 
     @retry_on_error(max_retries=3, delay=1.0)
     def scrape_venue_year(self, venue: str, year: int) -> ScrapingResult:

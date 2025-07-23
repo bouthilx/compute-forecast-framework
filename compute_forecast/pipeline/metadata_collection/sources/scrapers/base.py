@@ -1,7 +1,7 @@
 """Base classes for web scraping conference proceedings and journal papers"""
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Optional, Any, Tuple
+from typing import List, Dict, Optional, Any, Tuple, Iterator
 from dataclasses import dataclass
 from datetime import datetime
 import logging
@@ -121,6 +121,20 @@ class BaseScraper(ABC):
     def scrape_venue_year(self, venue: str, year: int) -> ScrapingResult:
         """Scrape all papers from a venue for a specific year"""
         pass
+
+    def scrape_venue_year_iter(self, venue: str, year: int) -> Iterator[SimplePaper]:
+        """
+        Stream papers one by one from a venue for a specific year.
+        
+        This is the iterator version of scrape_venue_year that yields papers
+        as they are scraped instead of collecting them all first.
+        
+        Default implementation uses scrape_venue_year for backwards compatibility.
+        Override in subclasses for true streaming behavior.
+        """
+        result = self.scrape_venue_year(venue, year)
+        if result.success and result.metadata.get("papers"):
+            yield from result.metadata["papers"]
 
     def estimate_paper_count(self, venue: str, year: int) -> Optional[int]:
         """Estimate the number of papers available for a venue/year.
