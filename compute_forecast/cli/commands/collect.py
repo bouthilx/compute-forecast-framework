@@ -574,99 +574,15 @@ def main(
                         ] + len(collected)
                         progress.update(main_task, papers_collected=papers_collected)
                     else:
+                        errors.extend(result.errors)
                         console.print(
-                            f"[red]Error:[/red] Unknown scraper {scraper}. "
-                            f"Available scrapers: {', '.join(registry.get_available_scrapers())}"
+                            f"[red]✗[/red] Failed to collect {venue_name} {year}: "
+                            f"{', '.join(result.errors)}"
                         )
-                        errors.append(f"Unknown scraper {scraper}")
-                        continue
-                else:
-                    # Use default scraper for venue
-                    scraper_instance = registry.get_scraper_for_venue(venue_name, config)  # type: ignore
+                        # Still advance progress by expected amount on failure
+                        progress.advance(main_task, expected_papers)
 
-                if not scraper_instance:
-                    console.print(
-                        f"[red]Error:[/red] No scraper available for venue {venue_name}"
-                    )
-                    errors.append(f"No scraper for {venue_name}")
-                    # Advance by estimated papers for this venue
-                    venue_estimate = sum(
-                        venue_estimates.get((venue_name, y), 0) for y in venue_year_list
-                    )
-                    progress.advance(main_task, venue_estimate)
-                    continue
-
-                for year in venue_year_list:
-                    task_desc = f"Collecting {venue_name} {year}"
-                    expected_papers = venue_estimates.get((venue_name, year), max_papers)
-                    progress.update(main_task, description=task_desc)
-
-                    # Check for checkpoint if resuming
-                    if resume:
-                        checkpoint = load_checkpoint(venue_name, year)
-                        if checkpoint and checkpoint.get("completed"):
-                            console.print(
-                                f"[yellow]Skipping {venue_name} {year} (already completed)[/yellow]"
-                            )
-                            progress.advance(main_task, expected_papers)
-                            papers_collected = (
-                                progress.tasks[main_task].fields["papers_collected"]
-                                + expected_papers
-                            )
-                            progress.update(main_task, papers_collected=papers_collected)
-                            continue
-
-                    try:
-                        # Scrape papers
-                        result = scraper_instance.scrape_venue_year(venue_name, year)
-
-                        if result.success:
-                            papers = result.metadata.get("papers", [])
-                            collected = papers if max_papers == 0 else papers[:max_papers]
-                            all_papers.extend(collected)
-
-                            # Save checkpoint
-                            save_checkpoint(venue_name, year, collected, completed=True)
-
-                            console.print(
-                                f"[green]✓[/green] Collected {len(collected)} papers "
-                                f"from {venue_name} {year}"
-                            )
-
-                            # Update progress
-                            if max_papers == 0:
-                                # For unlimited collection, update total estimate as we discover actual counts
-                                actual_diff = len(collected) - expected_papers
-                                if actual_diff != 0:
-                                    # Adjust total and advance appropriately
-                                    new_total = max(
-                                        progress.tasks[main_task].total + actual_diff,
-                                        len(collected),
-                                    )
-                                    progress.update(main_task, total=new_total)
-                                progress.advance(main_task, len(collected))
-                            else:
-                                # For limited collection, stick to estimates
-                                progress.advance(main_task, len(collected))
-                                if len(collected) < expected_papers:
-                                    progress.advance(
-                                        main_task, expected_papers - len(collected)
-                                    )
-
-                            papers_collected = progress.tasks[main_task].fields[
-                                "papers_collected"
-                            ] + len(collected)
-                            progress.update(main_task, papers_collected=papers_collected)
-                        else:
-                            errors.extend(result.errors)
-                            console.print(
-                                f"[red]✗[/red] Failed to collect {venue_name} {year}: "
-                                f"{', '.join(result.errors)}"
-                            )
-                            # Still advance progress by expected amount on failure
-                            progress.advance(main_task, expected_papers)
-
-                    except Exception as e:
+                except Exception as e:
                         error_msg = f"Exception collecting {venue_name} {year}: {str(e)}"
                         errors.append(error_msg)
                         console.print(f"[red]✗[/red] {error_msg}")

@@ -9,6 +9,7 @@ from fnmatch import fnmatch
 from functools import reduce
 import time
 import os
+import logging
 
 from .base import BasePaperoniAdapter
 from ..models import SimplePaper
@@ -549,12 +550,12 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             self.logger.info(f"Getting TMLR papers for year {year}")
             
             # TMLR uses a single invitation for all published papers
-            # Use efficient_iterget to stream papers instead of loading all at once
-            submissions = tools.efficient_iterget(
-                self.client_v2.get_notes,
+            # Use our custom streaming iterator with smaller batch size
+            submissions = self._iterget_notes_streaming(
+                self.client_v2,
                 invitation="TMLR/-/Paper",
                 details="directReplies",
-                limit=1000  # Fetch in batches of 1000
+                batch_size=25  # Small batches for better progress visibility
             )
             
             # Filter by publication year and yield papers one by one
@@ -605,11 +606,11 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             self.logger.info(f"Getting accepted papers for {venue_id} using venueid method")
             
             # Use venueid to get only accepted papers
-            # Use efficient_iterget to stream papers instead of loading all at once
-            submissions = tools.efficient_iterget(
-                self.client_v2.get_notes,
+            # Use our custom streaming iterator with smaller batch size
+            submissions = self._iterget_notes_streaming(
+                self.client_v2,
                 content={"venueid": venue_id},
-                limit=1000  # Fetch in batches of 1000
+                batch_size=25  # Small batches for better progress visibility
             )
             
             paper_count = 0
@@ -689,7 +690,7 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
                 submissions_iter = self._iterget_notes_streaming(
                     self.client_v1, 
                     invitation=invitation,
-                    batch_size=50  # Smaller batches for better progress visibility
+                    batch_size=25  # Even smaller batches for better progress visibility
                 )
                 
                 self.logger.info(f"Iterator created in {time_module.time() - iter_create_time:.3f}s")
@@ -784,12 +785,12 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         for invitation in invitation_formats:
             try:
                 self.logger.debug(f"Trying v2 invitation format: {invitation}")
-                # Use efficient_iterget to stream papers instead of loading all at once
-                submissions = tools.efficient_iterget(
-                    self.client_v2.get_notes,
+                # Use our custom streaming iterator with smaller batch size
+                submissions = self._iterget_notes_streaming(
+                    self.client_v2,
                     invitation=invitation,
                     details="replies",
-                    limit=1000  # Fetch in batches of 1000
+                    batch_size=25  # Small batches for better progress visibility
                 )
                 # Check if we have any results by peeking at the iterator
                 first_submission = next(submissions, None)
@@ -1017,24 +1018,40 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         The default iterget_notes uses batch_size=1000 which causes progress bars
         to appear stuck while fetching the initial batch.
         """
-        offset = 0
-        while True:
-            # Fetch a smaller batch
-            self.logger.debug(f"Fetching batch at offset={offset}, limit={batch_size}")
-            notes = client.get_notes(offset=offset, limit=batch_size, **kwargs)
-            
-            if not notes:
-                break
+        import time as time_module
+        from openreview import tools
+        
+        # Override the default limit in efficient_iterget
+        kwargs['limit'] = batch_size
+        
+        self.logger.info(f"Creating streaming iterator with batch_size={batch_size}")
+        
+        # Create a custom efficient_iterget that uses our batch size
+        class SmallBatchIterget(tools.efficient_iterget):
+            def __init__(self, get_function, desc='Gathering Responses', **params):
+                self.obj_index = 0
+                self.params = params
+                self.params.update({
+                    'with_count': True,
+                    'sort': params.get('sort') or 'id',
+                    'limit': batch_size  # Use our smaller batch size
+                })
+                self.get_function = get_function
                 
-            self.logger.debug(f"Got {len(notes)} notes")
-            for note in notes:
-                yield note
+                # Log before making the API call
+                logger = logging.getLogger("scraper")
+                logger.info(f"About to fetch first batch with limit={batch_size}")
+                fetch_start = time_module.time()
                 
-            # If we got fewer than batch_size, we're at the end
-            if len(notes) < batch_size:
-                break
+                self.current_batch, total = self.get_function(**self.params)
                 
-            offset += batch_size
+                logger.info(f"First batch fetched in {time_module.time() - fetch_start:.3f}s, got {len(self.current_batch)} items, total={total}")
+                
+                # Disable tqdm progress bar
+                self.gathering_responses = None
+        
+        # Create iterator with smaller batch size
+        return SmallBatchIterget(client.get_notes, **kwargs)
 
     def _refine_decision(self, text: str) -> Optional[str]:
         """
