@@ -1,7 +1,7 @@
 """Scraper for IJCAI conference proceedings"""
 
 import re
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from typing import List, Optional
 from urllib.parse import urljoin
 from datetime import datetime
@@ -36,10 +36,11 @@ class IJCAIScraper(ConferenceProceedingsScraper):
 
             # Look for year links in proceedings index
             for link in soup.find_all("a", href=True):
-                href = link.get("href", "")
-                year_match = re.search(r"proceedings/(\d{4})", str(href))
-                if year_match:
-                    years.append(int(year_match.group(1)))
+                if isinstance(link, Tag):
+                    href = link.get("href", "")
+                    year_match = re.search(r"proceedings/(\d{4})", str(href))
+                    if year_match:
+                        years.append(int(year_match.group(1)))
 
             return sorted(list(set(years)), reverse=True)
 

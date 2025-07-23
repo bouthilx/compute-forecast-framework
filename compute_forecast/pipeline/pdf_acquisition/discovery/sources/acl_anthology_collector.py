@@ -34,7 +34,7 @@ from typing import Optional, List, Tuple, Dict
 from difflib import SequenceMatcher
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from compute_forecast.pipeline.metadata_collection.models import Paper
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import (
@@ -167,21 +167,25 @@ class ACLAnthologyCollector(BasePDFCollector):
                         )
                         break
 
-                    links_processed += 1
-                    href = link.get("href")
+                    if isinstance(link, Tag):
+                        links_processed += 1
+                        href = link.get("href")
 
-                    # Check if href matches the pattern
-                    match = re.search(pattern, href)
-                    if match:
-                        paper_id = match.group(1)
+                        # Check if href matches the pattern
+                        if href and isinstance(href, str):
+                            match = re.search(pattern, href)
+                            if match:
+                                paper_id = match.group(1)
 
-                        # Get the text content of the link (handles nested HTML tags)
-                        link_title = link.get_text(strip=True)
+                                # Get the text content of the link (handles nested HTML tags)
+                                link_title = link.get_text(strip=True)
 
-                        # Check if title matches (fuzzy matching)
-                        if self._fuzzy_match_title(link_title, title):
-                            logger.info(f"Found paper ID {paper_id} for title: {title}")
-                            return paper_id
+                                # Check if title matches (fuzzy matching)
+                                if self._fuzzy_match_title(link_title, title):
+                                    logger.info(
+                                        f"Found paper ID {paper_id} for title: {title}"
+                                    )
+                                    return paper_id
 
             except requests.exceptions.RequestException as e:
                 logger.debug(f"Error fetching proceedings from {proceedings_url}: {e}")
@@ -359,52 +363,64 @@ class ACLAnthologyCollector(BasePDFCollector):
                         if cache_key in proceedings_cache:
                             soup = proceedings_cache[cache_key]
                             pattern = rf"/{year}\.{re.escape(venue_code)}\.(\d+)/"
+                            logger.debug(
+                                f"Using pattern: {pattern} for {venue_code} {year}"
+                            )
 
                             links_processed = 0
-                            for link in soup.find_all("a", href=True):
+                            all_links = soup.find_all("a", href=True)
+                            logger.debug(
+                                f"Found {len(all_links)} links in proceedings for {venue_code} {year}"
+                            )
+                            for link in all_links:
                                 if links_processed >= self.MAX_LINKS_TO_PROCESS:
                                     break
 
-                                links_processed += 1
-                                href = link.get("href")
-                                match = re.search(pattern, href)
+                                if isinstance(link, Tag):
+                                    links_processed += 1
+                                    href = link.get("href")
+                                    if href and isinstance(href, str):
+                                        match = re.search(pattern, href)
 
-                                if match:
-                                    paper_id = match.group(1)
-                                    link_title = link.get_text(strip=True)
+                                        if match:
+                                            paper_id = match.group(1)
+                                            link_title = link.get_text(strip=True)
 
-                                    if self._fuzzy_match_title(link_title, paper.title):
-                                        pdf_url = self._construct_pdf_url(
-                                            venue_code, year, paper_id
-                                        )
-                                        is_valid, file_size = self._validate_pdf_url(
-                                            pdf_url
-                                        )
+                                            if self._fuzzy_match_title(
+                                                link_title, paper.title
+                                            ):
+                                                pdf_url = self._construct_pdf_url(
+                                                    venue_code, year, paper_id
+                                                )
+                                                is_valid, file_size = (
+                                                    self._validate_pdf_url(pdf_url)
+                                                )
 
-                                        if is_valid:
-                                            # Generate a fallback ID if paper.paper_id is None
-                                            record_id = (
-                                                paper.paper_id
-                                                or f"acl_{venue_code}_{paper_id}"
-                                            )
-                                            results[record_id] = PDFRecord(
-                                                paper_id=record_id,
-                                                pdf_url=pdf_url,
-                                                source=self.source_name,
-                                                discovery_timestamp=datetime.now(),
-                                                confidence_score=0.95,
-                                                version_info={
-                                                    "venue_code": venue_code,
-                                                    "paper_id": paper_id,
-                                                    "year": year,
-                                                },
-                                                validation_status="validated",
-                                                file_size_bytes=file_size,
-                                                license="ACL Anthology License",
-                                            )
-                                            break
+                                                if is_valid:
+                                                    # Generate a fallback ID if paper.paper_id is None
+                                                    record_id = (
+                                                        paper.paper_id
+                                                        or f"acl_{venue_code}_{paper_id}"
+                                                    )
+                                                    results[record_id] = PDFRecord(
+                                                        paper_id=record_id,
+                                                        pdf_url=pdf_url,
+                                                        source=self.source_name,
+                                                        discovery_timestamp=datetime.now(),
+                                                        confidence_score=0.95,
+                                                        version_info={
+                                                            "venue_code": venue_code,
+                                                            "paper_id": paper_id,
+                                                            "year": year,
+                                                        },
+                                                        validation_status="validated",
+                                                        file_size_bytes=file_size,
+                                                        license="ACL Anthology License",
+                                                    )
+                                                    break  # Break out of link loop
 
-                            if paper.paper_id in results:
+                            # Check if we found this paper (using the same logic for ID)
+                            if paper.paper_id and paper.paper_id in results:
                                 break
 
                     except Exception as e:

@@ -68,8 +68,8 @@ class SimpleCollector(BasePDFCollector):
     def _discover_single(self, paper: Paper) -> PDFRecord:
         """Simple mock discovery."""
         return PDFRecord(
-            paper_id=paper.paper_id,
-            pdf_url=f"https://{self.source_name}.com/{paper.paper_id}.pdf",
+            paper_id=paper.paper_id or f"test_{self.source_name}",
+            pdf_url=f"https://{self.source_name}.com/{paper.paper_id or 'test'}.pdf",
             source=self.source_name,
             discovery_timestamp=datetime.now(),
             confidence_score=0.8,

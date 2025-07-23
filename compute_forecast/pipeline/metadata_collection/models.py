@@ -70,7 +70,7 @@ class Paper:
     # Processing metadata
     collection_source: str = ""
     collection_timestamp: datetime = field(default_factory=datetime.now)
-    processing_flags: Dict[str, bool] = field(default_factory=dict)
+    processing_flags: Dict[str, Any] = field(default_factory=dict)
     venue_confidence: float = 1.0
     deduplication_confidence: float = 1.0
     breakthrough_score: Optional[float] = None
@@ -302,6 +302,11 @@ class Paper:
 
         # Remove legacy fields that no longer exist in the model
         paper_data.pop("external_ids", None)
+
+        # Remove download-related fields that are added dynamically
+        paper_data.pop("pdf_downloaded", None)
+        paper_data.pop("pdf_download_timestamp", None)
+        paper_data.pop("pdf_download_error", None)
 
         paper_data["authors"] = authors
         paper_data["citations"] = citations

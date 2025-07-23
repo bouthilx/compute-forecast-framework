@@ -48,6 +48,9 @@ from .alerting.notification_channels import (
     NotificationChannelManager,
 )
 
+# Download progress tracking
+from .download_progress import DownloadProgressManager
+
 # Advanced Analytics Dashboard components
 from .server.advanced_analytics_engine import (
     AdvancedAnalyticsEngine,
@@ -115,4 +118,6 @@ __all__ = [
     "create_advanced_analytics_dashboard",
     "AnalyticsDashboardAdapter",
     "EXAMPLE_ANALYTICS_CONFIG",
+    # Download progress
+    "DownloadProgressManager",
 ]

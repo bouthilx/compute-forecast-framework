@@ -231,19 +231,19 @@ class EnhancedOrganizationClassifier(OrganizationDatabase):
         self, affiliation_lower: str
     ) -> Optional[ClassificationResult]:
         """Try fuzzy string matching for name variations."""
-        best_score = 0
+        best_score = 0.0
         best_match = None
 
         # Check against organization names
         for org_name, org in self._enhanced_orgs.items():
-            score = fuzz.ratio(org_name, affiliation_lower)
+            score = float(fuzz.ratio(org_name, affiliation_lower))
             if score > best_score and score >= self.fuzzy_threshold:
                 best_score = score
                 best_match = org
 
         # Check against aliases
         for alias, org_name in self._alias_map.items():
-            score = fuzz.ratio(alias, affiliation_lower)
+            score = float(fuzz.ratio(alias, affiliation_lower))
             if score > best_score and score >= self.fuzzy_threshold:
                 best_score = score
                 best_match = self._enhanced_orgs[org_name.lower()]

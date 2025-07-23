@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from compute_forecast.storage.google_drive import GoogleDriveStorage
 
 # Load environment
 load_dotenv()
@@ -135,32 +136,25 @@ def test_configuration():
     else:
         print("\n4. No folder ID configured in .env file")
 
-    # 5. Create test folder (optional)
-    print("\n5. Testing write permissions")
-    try:
-        # Try to create a test folder in root
-        test_folder_metadata = {
-            "name": "PDF_Storage_Test_Folder",
-            "mimeType": "application/vnd.google-apps.folder",
-        }
+    # 5. Test using the actual storage implementation
+    print("\n5. Testing storage implementation")
+    if folder_id:
+        try:
+            # Test with the actual GoogleDriveStorage class
+            storage = GoogleDriveStorage(
+                credentials_path=creds_path, folder_id=folder_id
+            )
 
-        test_folder = (
-            service.files()
-            .create(body=test_folder_metadata, fields="id, name")
-            .execute()
-        )
+            if storage.test_connection():
+                print("   ✓ Storage implementation is working correctly")
+                print("   The download command will use this configuration")
+            else:
+                print("   ❌ Storage test failed")
 
-        print(f"   ✓ Successfully created test folder: {test_folder['name']}")
-        print(f"   Folder ID: {test_folder['id']}")
-        print("   You can use this folder ID in your configuration")
-
-        # Clean up
-        service.files().delete(fileId=test_folder["id"]).execute()
-        print("   ✓ Cleaned up test folder")
-
-    except Exception as e:
-        print(f"   ⚠️  Could not create test folder: {e}")
-        print("   This is normal if using restricted scopes")
+        except Exception as e:
+            print(f"   ❌ Could not initialize storage: {e}")
+    else:
+        print("   ⚠️  Skipping storage test (no folder ID configured)")
 
     print("\n" + "=" * 60)
     print("Diagnostic complete")

@@ -345,8 +345,8 @@ class StatisticalAnalyzer:
 
             if quality_scores:
                 stats.quality_metrics = {
-                    "avg_quality_score": np.mean(quality_scores),
-                    "quality_variance": np.var(quality_scores),
+                    "avg_quality_score": float(np.mean(quality_scores)),
+                    "quality_variance": float(np.var(quality_scores)),
                     "high_quality_papers": sum(1 for q in quality_scores if q > 0.7),
                     "excellent_papers": sum(1 for q in quality_scores if q > 0.8),
                     "good_papers": sum(1 for q in quality_scores if 0.6 < q <= 0.8),

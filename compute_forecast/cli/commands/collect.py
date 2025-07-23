@@ -497,8 +497,9 @@ def main(
                             actual_diff = len(collected) - expected_papers
                             if actual_diff != 0:
                                 # Adjust total and advance appropriately
+                                current_total = progress.tasks[main_task].total or 0
                                 new_total = max(
-                                    progress.tasks[main_task].total + actual_diff,
+                                    current_total + actual_diff,
                                     len(collected),
                                 )
                                 progress.update(main_task, total=new_total)
