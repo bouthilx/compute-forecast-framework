@@ -5,7 +5,7 @@ import logging
 import requests
 from typing import Optional, Dict, Any
 from datetime import datetime
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from urllib.parse import urljoin
 from difflib import SequenceMatcher
 
@@ -114,18 +114,19 @@ class JMLRCollector(BasePDFCollector):
 
             # TMLR papers are listed with links
             for link in soup.find_all("a"):
-                link_text = link.get_text().lower().strip()
+                if isinstance(link, Tag):
+                    link_text = link.get_text().lower().strip()
 
-                # Check if this link contains the paper title
-                if self._fuzzy_title_match(paper_title, link_text):
-                    href = link.get("href")
-                    if href and href.endswith(".pdf"):
-                        pdf_url = urljoin(self.tmlr_base_url, href)
+                    # Check if this link contains the paper title
+                    if self._fuzzy_title_match(paper_title, link_text):
+                        href = link.get("href")
+                        if href and isinstance(href, str) and href.endswith(".pdf"):
+                            pdf_url = urljoin(self.tmlr_base_url, href)
 
-                        return PDFRecord(
-                            paper_id=paper.paper_id
-                            or f"tmlr_{href.split('/')[-1].replace('.pdf', '')}",
-                            pdf_url=pdf_url,
+                            return PDFRecord(
+                                paper_id=paper.paper_id
+                                or f"tmlr_{href.split('/')[-1].replace('.pdf', '')}",
+                                pdf_url=pdf_url,
                             source=self.source_name,
                             discovery_timestamp=datetime.now(),
                             confidence_score=self.TMLR_CONFIDENCE_SCORE,
@@ -205,24 +206,25 @@ class JMLRCollector(BasePDFCollector):
 
             # Look for links that might contain the paper title
             for link in soup.find_all("a"):
-                link_text = link.get_text().lower().strip()
+                if isinstance(link, Tag):
+                    link_text = link.get_text().lower().strip()
 
-                # Use improved fuzzy matching
-                if self._improved_fuzzy_title_match(paper_title, link_text):
-                    href = link.get("href")
-                    if href:
-                        # Check if this links to a PDF or paper page
-                        if href.endswith(".pdf"):
-                            pdf_url = (
-                                href
-                                if href.startswith("http")
-                                else self.jmlr_base_url + href
-                            )
+                    # Use improved fuzzy matching
+                    if self._improved_fuzzy_title_match(paper_title, link_text):
+                        href = link.get("href")
+                        if href and isinstance(href, str):
+                            # Check if this links to a PDF or paper page
+                            if href.endswith(".pdf"):
+                                pdf_url = (
+                                    href
+                                    if href.startswith("http")
+                                    else self.jmlr_base_url + href
+                                )
 
-                            return PDFRecord(
-                                paper_id=paper.paper_id
-                                or f"jmlr_{href.split('/')[-1].replace('.pdf', '')}",
-                                pdf_url=pdf_url,
+                                return PDFRecord(
+                                    paper_id=paper.paper_id
+                                    or f"jmlr_{href.split('/')[-1].replace('.pdf', '')}",
+                                    pdf_url=pdf_url,
                                 source=self.source_name,
                                 discovery_timestamp=datetime.now(),
                                 confidence_score=self.TMLR_CONFIDENCE_SCORE,  # Lower confidence for search-based
@@ -232,7 +234,7 @@ class JMLRCollector(BasePDFCollector):
                             )
                         elif "papers/v" in href:
                             # Extract volume info from link and construct PDF URL
-                            match = re.search(r"/v(\d+)/([^/\s]+)(?:\.html)?", href)
+                            match = re.search(r"/v(\d+)/([^/\s]+)(?:\.html)?", str(href))
                             if match:
                                 volume = match.group(1)
                                 paper_id = match.group(2).replace(".html", "")
