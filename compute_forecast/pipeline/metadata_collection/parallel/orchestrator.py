@@ -223,6 +223,10 @@ class ParallelCollectionOrchestrator:
                     
                     # Handle paper result
                     if result.paper:
+                        # Log when first paper is received
+                        if len(all_papers) == 0 or (result.venue, result.year) not in papers_by_venue_year:
+                            self.logger.info(f"Received first paper from {result.venue} {result.year}")
+                        
                         all_papers.append(result.paper)
                         progress.advance(task_id, 1)
                         

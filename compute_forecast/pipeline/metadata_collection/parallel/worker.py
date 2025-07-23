@@ -107,6 +107,10 @@ class VenueWorker(multiprocessing.Process):
                     
                     for paper in scraper.scrape_venue_year_iter(self.venue, year):
                         try:
+                            # Log when putting paper in queue
+                            if paper_count == 0:
+                                logger.info(f"Putting first paper in queue for {self.venue} {year}")
+                            
                             self.result_queue.put(
                                 CollectionResult.paper_result(self.venue, year, paper)
                             )

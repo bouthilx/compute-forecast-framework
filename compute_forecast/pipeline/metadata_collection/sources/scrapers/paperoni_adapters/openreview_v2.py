@@ -615,6 +615,12 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             paper_count = 0
             max_papers = self.config.batch_size if self.config.batch_size < 10000 else None
             
+            # Log when we start iterating
+            self.logger.info(f"Starting to iterate through submissions for {venue_id}")
+            first_paper_time = None
+            import time as time_module
+            start_time = time_module.time()
+            
             for submission in submissions:
                 try:
                     # For venueid-filtered papers, we know they're accepted
@@ -631,6 +637,11 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
                     if paper:
                         yield paper
                         paper_count += 1
+                        
+                        # Log timing for first paper
+                        if paper_count == 1:
+                            first_paper_time = time_module.time() - start_time
+                            self.logger.info(f"First paper yielded after {first_paper_time:.2f} seconds")
                         
                         # Check batch size limit
                         if max_papers and paper_count >= max_papers:
@@ -653,6 +664,9 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
     ) -> Iterator[SimplePaper]:
         """Stream papers using API v1 for ICLR ≤2023."""
         self.logger.info(f"Using v1 API iterator for {venue} {year}")
+        import time as time_module
+        start_time = time_module.time()
+        
         # Try different invitation formats
         invitation_formats = [
             f"{venue_id}/-/Blind_Submission",
@@ -667,9 +681,18 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
                 # Use iterget_notes for pagination
                 from openreview import tools
                 
-                submissions_iter = tools.iterget_notes(
-                    self.client_v1, invitation=invitation
+                self.logger.info(f"Creating iterator for {invitation}")
+                iter_create_time = time_module.time()
+                
+                # Use smaller batch size for better streaming UX
+                # iterget_notes uses batch_size=1000 which causes progress to appear stuck
+                submissions_iter = self._iterget_notes_streaming(
+                    self.client_v1, 
+                    invitation=invitation,
+                    batch_size=50  # Smaller batches for better progress visibility
                 )
+                
+                self.logger.info(f"Iterator created in {time_module.time() - iter_create_time:.3f}s")
                 
                 # Use itertools.tee to peek without consuming the iterator
                 import itertools
@@ -677,7 +700,9 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
                 
                 # Test if we have any submissions by peeking
                 try:
+                    peek_time = time_module.time()
                     first_submission = next(peek_iter)
+                    self.logger.info(f"First submission peeked in {time_module.time() - peek_time:.3f}s")
                     self.logger.info(f"Found submissions using {invitation}")
                     break
                 except StopIteration:
@@ -693,13 +718,18 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         
         # Process submissions as they come
         self.logger.info("Processing submissions for accepted papers...")
+        self.logger.info(f"Time since start: {time_module.time() - start_time:.3f}s")
         
         paper_count = 0
         accepted_count = 0
         rejected_count = 0
         max_papers = self.config.batch_size if self.config.batch_size < 10000 else None
+        first_iter_time = None
         
         for submission in submissions_iter:
+            if first_iter_time is None:
+                first_iter_time = time_module.time()
+                self.logger.info(f"First iteration started after {first_iter_time - start_time:.3f}s")
             try:
                 # Check venue field first for quick filtering (ICLR-specific optimization)
                 venue_field = submission.content.get("venue", "")
@@ -907,7 +937,7 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             ranked_results = []
 
             # Check replies using heuristics
-            if hasattr(submission, "details") and "replies" in submission.details:
+            if hasattr(submission, "details") and submission.details and "replies" in submission.details:
                 replies = submission.details["replies"]
 
                 # Process in reverse order like paperoni
@@ -920,8 +950,8 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
                         invitations = [invitations]
 
                     for rank, pattern, field in heuristics:
-                        if any(
-                            re.match(pattern, inv, re.IGNORECASE) for inv in invitations
+                        if invitations and any(
+                            re.match(pattern, inv, re.IGNORECASE) for inv in invitations if inv
                         ):
                             if field.startswith("="):
                                 # Direct decision value
@@ -979,6 +1009,32 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             )
 
         return None
+
+    def _iterget_notes_streaming(self, client: Any, batch_size: int = 50, **kwargs) -> Iterator[Any]:
+        """
+        Stream notes with smaller batch size for better progress visibility.
+        
+        The default iterget_notes uses batch_size=1000 which causes progress bars
+        to appear stuck while fetching the initial batch.
+        """
+        offset = 0
+        while True:
+            # Fetch a smaller batch
+            self.logger.debug(f"Fetching batch at offset={offset}, limit={batch_size}")
+            notes = client.get_notes(offset=offset, limit=batch_size, **kwargs)
+            
+            if not notes:
+                break
+                
+            self.logger.debug(f"Got {len(notes)} notes")
+            for note in notes:
+                yield note
+                
+            # If we got fewer than batch_size, we're at the end
+            if len(notes) < batch_size:
+                break
+                
+            offset += batch_size
 
     def _refine_decision(self, text: str) -> Optional[str]:
         """
