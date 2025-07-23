@@ -18,16 +18,18 @@ from .validators import (
     CoverageValidator,
 )
 from .models import CollectionQualityMetrics
+from .pdf_validator import PDFURLValidator
 
 
 class CollectionQualityChecker(StageQualityChecker):
     """Quality checker for collection stage."""
 
-    def __init__(self):
-        self.completeness_validator = CompletenessValidator()
+    def __init__(self, pdf_validation_mode: str = "strict"):
+        self.completeness_validator = CompletenessValidator(pdf_validation_mode)
         self.consistency_validator = ConsistencyValidator()
         self.accuracy_validator = AccuracyValidator()
         self.coverage_validator = CoverageValidator()
+        self.pdf_validator = PDFURLValidator(strict_mode=(pdf_validation_mode == "strict"))
         super().__init__()
 
     def get_stage_name(self) -> str:
@@ -187,6 +189,35 @@ class CollectionQualityChecker(StageQualityChecker):
 
         return metrics
 
+    def _paper_has_pdf(self, paper: Dict[str, Any]) -> bool:
+        """Check if a paper has valid PDF URLs."""
+        return self.pdf_validator.validate_paper_pdfs(paper)
+
+    def _get_pdf_validation_stats(self, papers: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Get detailed PDF validation statistics."""
+        stats = {
+            "papers_with_valid_pdfs": 0,
+            "papers_with_invalid_pdfs": 0,
+            "papers_without_pdfs": 0,
+            "invalid_url_samples": [],
+        }
+        
+        for paper in papers:
+            has_valid = self.pdf_validator.validate_paper_pdfs(paper)
+            invalid_urls = self.pdf_validator.get_invalid_urls(paper)
+            
+            if has_valid:
+                stats["papers_with_valid_pdfs"] += 1
+            elif invalid_urls:
+                stats["papers_with_invalid_pdfs"] += 1
+                # Collect samples of invalid URLs (up to 10)
+                if len(stats["invalid_url_samples"]) < 10:
+                    stats["invalid_url_samples"].extend(invalid_urls[:2])
+            else:
+                stats["papers_without_pdfs"] += 1
+                
+        return stats
+
     def _extract_completeness_metrics(
         self,
         papers: List[Dict[str, Any]],
@@ -215,12 +246,14 @@ class CollectionQualityChecker(StageQualityChecker):
         papers_with_pdfs = sum(
             1
             for paper in papers
-            if (paper.get("pdf_urls") and paper["pdf_urls"])
-            or (paper.get("pdf_url") and str(paper["pdf_url"]).strip())
+            if self._paper_has_pdf(paper)
         )
         papers_with_dois = sum(
             1 for paper in papers if paper.get("doi") and str(paper["doi"]).strip()
         )
+        
+        # Get detailed PDF validation stats
+        pdf_stats = self._get_pdf_validation_stats(papers)
 
         # Calculate field completeness scores
         field_completeness = {}
@@ -234,12 +267,11 @@ class CollectionQualityChecker(StageQualityChecker):
             "doi",
         ]:
             if field == "pdf_url":
-                # Check both pdf_url and pdf_urls
+                # Check both pdf_url and pdf_urls and urls field with PDFs
                 present_count = sum(
                     1
                     for paper in papers
-                    if (paper.get("pdf_urls") and paper["pdf_urls"])
-                    or (paper.get("pdf_url") and paper["pdf_url"])
+                    if self._paper_has_pdf(paper)
                 )
             else:
                 present_count = sum(1 for paper in papers if paper.get(field))
@@ -253,6 +285,12 @@ class CollectionQualityChecker(StageQualityChecker):
         metrics.papers_with_pdfs = papers_with_pdfs
         metrics.papers_with_dois = papers_with_dois
         metrics.field_completeness_scores = field_completeness
+        
+        # Update PDF validation metrics
+        metrics.papers_with_valid_pdfs = pdf_stats["papers_with_valid_pdfs"]
+        metrics.papers_with_invalid_pdfs = pdf_stats["papers_with_invalid_pdfs"]
+        metrics.papers_without_pdfs = pdf_stats["papers_without_pdfs"]
+        metrics.invalid_pdf_url_samples = pdf_stats["invalid_url_samples"]
 
     def _extract_consistency_metrics(
         self,

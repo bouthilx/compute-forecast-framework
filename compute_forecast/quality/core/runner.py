@@ -23,7 +23,7 @@ class QualityRunner:
         if config is None:
             config = get_default_quality_config(stage)
 
-        checker = self.registry.get_checker(stage)
+        checker = self.registry.get_checker(stage, config.custom_params)
         if not checker:
             raise ValueError(f"No quality checker registered for stage: {stage}")
 

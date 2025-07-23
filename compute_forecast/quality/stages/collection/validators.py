@@ -13,6 +13,7 @@ from compute_forecast.quality.core.interfaces import (
     QualityIssueLevel,
     QualityConfig,
 )
+from .pdf_validator import PDFURLValidator
 
 
 class BaseValidator(ABC):
@@ -54,6 +55,9 @@ class CompletenessValidator(BaseValidator):
 
     REQUIRED_FIELDS = ["title", "authors", "venue", "year"]
     OPTIONAL_FIELDS = ["abstract", "pdf_url", "doi", "keywords"]
+
+    def __init__(self, pdf_validation_mode: str = "strict"):
+        self.pdf_validator = PDFURLValidator(strict_mode=(pdf_validation_mode == "strict"))
 
     def get_check_type(self) -> QualityCheckType:
         return QualityCheckType.COMPLETENESS
@@ -149,6 +153,10 @@ class CompletenessValidator(BaseValidator):
 
         return missing_required
 
+    def _paper_has_pdf(self, paper: Dict[str, Any]) -> bool:
+        """Check if a paper has valid PDF URLs."""
+        return self.pdf_validator.validate_paper_pdfs(paper)
+
     def _check_optional_fields(
         self, papers: List[Dict[str, Any]], issues: List[QualityIssue]
     ) -> Dict[str, float]:
@@ -158,19 +166,11 @@ class CompletenessValidator(BaseValidator):
 
         for field in self.OPTIONAL_FIELDS:
             if field == "pdf_url":
-                # Check both pdf_url and pdf_urls fields
+                # Check both pdf_url and pdf_urls fields, and also urls field with PDF URLs
                 present_count = sum(
                     1
                     for paper in papers
-                    if (paper.get("pdf_urls") and paper["pdf_urls"])
-                    or (
-                        paper.get("pdf_url")
-                        and paper["pdf_url"]
-                        and (
-                            not isinstance(paper["pdf_url"], str)
-                            or paper["pdf_url"].strip()
-                        )
-                    )
+                    if self._paper_has_pdf(paper)
                 )
             else:
                 present_count = sum(

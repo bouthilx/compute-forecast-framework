@@ -67,6 +67,11 @@ def main(
         "--fail-on-critical/--no-fail-on-critical",
         help="Exit with error code if critical issues found",
     ),
+    pdf_validation_mode: str = typer.Option(
+        "strict",
+        "--pdf-validation-mode",
+        help="PDF URL validation strictness: strict (only .pdf extension) or lenient (various PDF patterns)",
+    ),
 ):
     """Run quality checks on compute-forecast data."""
 
@@ -131,6 +136,7 @@ def main(
         skip_checks=skip_checks_list,
         output_format=output_format,
         verbose=verbose,
+        custom_params={"pdf_validation_mode": pdf_validation_mode},
     )
 
     # Run quality checks
