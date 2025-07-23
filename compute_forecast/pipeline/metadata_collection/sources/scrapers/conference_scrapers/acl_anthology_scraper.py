@@ -2,7 +2,7 @@
 
 import re
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from typing import List, Dict, Optional, Any
 from urllib.parse import urljoin
 from datetime import datetime
@@ -65,28 +65,29 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
 
             # Look for year-based links in various patterns
             for link in soup.find_all("a", href=True):
-                href = link.get("href", "")
-                # Multiple patterns: events/acl-2024/, volumes/2024.acl-main/, P24-1234
-                year_patterns = [
-                    r"events/.*-(\d{4})/?$",
-                    r"volumes/(\d{4})\.",
-                    r"/[A-Z](\d{2})-\d+",  # Paper IDs like P24-1234 (year 2024)
-                ]
+                if isinstance(link, Tag):
+                    href = link.get("href", "")
+                    # Multiple patterns: events/acl-2024/, volumes/2024.acl-main/, P24-1234
+                    year_patterns = [
+                        r"events/.*-(\d{4})/?$",
+                        r"volumes/(\d{4})\.",
+                        r"/[A-Z](\d{2})-\d+",  # Paper IDs like P24-1234 (year 2024)
+                    ]
 
-                for pattern in year_patterns:
-                    year_match = re.search(pattern, str(href))
-                    if year_match:
-                        year_str = year_match.group(1)
-                        # Handle 2-digit years
-                        if len(year_str) == 2:
-                            year = (
-                                2000 + int(year_str)
-                                if int(year_str) < 50
-                                else 1900 + int(year_str)
-                            )
-                        else:
-                            year = int(year_str)
-                        years.add(year)
+                    for pattern in year_patterns:
+                        year_match = re.search(pattern, str(href))
+                        if year_match:
+                            year_str = year_match.group(1)
+                            # Handle 2-digit years
+                            if len(year_str) == 2:
+                                year = (
+                                    2000 + int(year_str)
+                                    if int(year_str) < 50
+                                    else 1900 + int(year_str)
+                                )
+                            else:
+                                year = int(year_str)
+                            years.add(year)
 
             return sorted(list(years), reverse=True)
 
@@ -186,13 +187,14 @@ class ACLAnthologyScraper(ConferenceProceedingsScraper):
         ]
 
         for link in soup.find_all("a", href=True):
-            href = link.get("href", "")
-            for pattern in volume_patterns:
-                match = re.search(pattern, str(href))
-                if match:
-                    volume_type = match.group(1)
-                    full_url = urljoin(self.base_url, str(href))
-                    volumes[volume_type] = str(full_url)
+            if isinstance(link, Tag):
+                href = link.get("href", "")
+                for pattern in volume_patterns:
+                    match = re.search(pattern, str(href))
+                    if match:
+                        volume_type = match.group(1)
+                        full_url = urljoin(self.base_url, str(href))
+                        volumes[volume_type] = str(full_url)
 
         return volumes
 

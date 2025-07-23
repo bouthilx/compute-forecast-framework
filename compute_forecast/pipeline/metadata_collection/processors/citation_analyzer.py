@@ -253,7 +253,7 @@ class CitationAnalyzer:
             else 0
         )
         estimated_precision = (
-            min(avg_citations_filtered / avg_citations_original, 1.0)
+            min(float(avg_citations_filtered / avg_citations_original), 1.0)
             if avg_citations_original > 0
             else 0.0
         )
@@ -434,9 +434,9 @@ class CitationAnalyzer:
             breakthrough_papers_original=len(breakthrough_original),
             breakthrough_papers_preserved=len(breakthrough_preserved),
             breakthrough_preservation_rate=breakthrough_preservation_rate,
-            average_citations_original=avg_citations_original,
-            average_citations_filtered=avg_citations_filtered,
-            citation_improvement_ratio=citation_improvement_ratio,
+            average_citations_original=float(avg_citations_original),
+            average_citations_filtered=float(avg_citations_filtered),
+            citation_improvement_ratio=float(citation_improvement_ratio),
             warnings=warnings,
             recommendations=recommendations,
         )
@@ -497,9 +497,9 @@ class CitationAnalyzer:
             venue_tier=venue_tier,
             total_papers=len(papers),
             citation_percentiles=percentiles,
-            mean_citations=mean_citations,
-            median_citations=median_citations,
-            std_citations=std_citations,
+            mean_citations=float(mean_citations),
+            median_citations=float(median_citations),
+            std_citations=float(std_citations),
             yearly_stats=yearly_stats,
             high_impact_papers=high_impact_papers,
             breakthrough_papers=venue_breakthrough_papers,
@@ -536,11 +536,11 @@ class CitationAnalyzer:
             year=year,
             total_papers=len(papers),
             citation_percentiles=percentiles,
-            mean_citations=mean_citations,
-            median_citations=median_citations,
+            mean_citations=float(mean_citations),
+            median_citations=float(median_citations),
             years_since_publication=years_since_publication,
             expected_citation_velocity=expected_velocity,
-            actual_citation_velocity=actual_velocity,
+            actual_citation_velocity=float(actual_velocity),
         )
 
     def _calculate_percentiles(self, citations: List[int]) -> Dict[int, float]:
@@ -606,7 +606,7 @@ class CitationAnalyzer:
         indicators["breakthrough_rate"] = (
             len(breakthrough_papers) / len(papers) if papers else 0
         )
-        indicators["avg_breakthrough_score"] = (
+        indicators["avg_breakthrough_score"] = float(
             np.mean([bp.breakthrough_score for bp in breakthrough_papers])
             if breakthrough_papers
             else 0

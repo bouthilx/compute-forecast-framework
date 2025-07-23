@@ -2,7 +2,7 @@ from scholarly import scholarly
 import time
 import random
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 try:
     from compute_forecast.pipeline.metadata_collection.sources.base import (
@@ -17,6 +17,7 @@ try:
         CitationRecord,
         URLRecord,
     )
+    from compute_forecast.pipeline.consolidation.models import CitationData
     from compute_forecast.core.config import ConfigManager
     from compute_forecast.core.logging import setup_logging
 except ImportError:
@@ -47,7 +48,7 @@ class GoogleScholarSource(BaseCitationSource):
         # Browser automation settings
         self.use_browser = getattr(config, "use_browser_automation", True)
         self.manual_captcha = getattr(config, "manual_captcha_intervention", True)
-        self.driver = None
+        self.driver: Optional[Union[webdriver.Chrome, webdriver.Firefox]] = None
         self.session_start_time: Optional[float] = None
         self.request_count = 0
         self.max_requests_per_session = 30
@@ -85,14 +86,16 @@ class GoogleScholarSource(BaseCitationSource):
                 self.driver = webdriver.Chrome(service=service, options=options)
 
             elif browser_type == "firefox":
-                options = FirefoxOptions()
-                options.add_argument("--headless")
-                options.set_preference(
+                firefox_options = FirefoxOptions()
+                firefox_options.add_argument("--headless")
+                firefox_options.set_preference(
                     "general.useragent.override", random.choice(self.user_agents)
                 )
 
-                service = FirefoxService("/snap/bin/geckodriver")
-                self.driver = webdriver.Firefox(service=service, options=options)
+                firefox_service = FirefoxService("/snap/bin/geckodriver")
+                self.driver = webdriver.Firefox(
+                    service=firefox_service, options=firefox_options
+                )
 
             # Configure timeouts
             if self.driver:
@@ -359,7 +362,7 @@ class GoogleScholarSource(BaseCitationSource):
                     source="google_scholar",
                     timestamp=datetime.now(),
                     original=True,
-                    data=citations,
+                    data=CitationData(count=citations),
                 )
             ]
             if citations > 0

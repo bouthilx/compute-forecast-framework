@@ -10,6 +10,7 @@ from .core.workflow_coordinator import WorkflowCoordinator
 from .state.state_persistence import StatePersistenceManager
 from .recovery.checkpoint_manager import CheckpointManager
 from .recovery.recovery_system import InterruptionRecoverySystem
+from .download_orchestrator import DownloadOrchestrator
 
 __all__ = [
     "VenueCollectionOrchestrator",
@@ -19,4 +20,5 @@ __all__ = [
     "StatePersistenceManager",
     "CheckpointManager",
     "InterruptionRecoverySystem",
+    "DownloadOrchestrator",
 ]
