@@ -9,7 +9,7 @@ from pathlib import Path
 import requests
 from rapidfuzz import fuzz
 from rapidfuzz import process
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from compute_forecast.pipeline.pdf_acquisition.discovery.core.collectors import (
     BasePDFCollector,
@@ -153,12 +153,13 @@ class PMLRCollector(BasePDFCollector):
             # Extract titles and IDs from found links
             papers_data = []
             for link in paper_links:
-                href = link.get("href")
-                title = link.get_text(strip=True)
-                if href and title:
-                    # Extract paper ID from href like "/v202/smith23a.html"
-                    paper_id = href.split("/")[-1].replace(".html", "")
-                    papers_data.append((paper_id, title))
+                if isinstance(link, Tag):
+                    href = link.get("href")
+                    title = link.get_text(strip=True)
+                    if href and isinstance(href, str) and title:
+                        # Extract paper ID from href like "/v202/smith23a.html"
+                        paper_id = href.split("/")[-1].replace(".html", "")
+                        papers_data.append((paper_id, title))
 
             if not papers_data:
                 logger.warning(f"No valid papers found in proceedings {volume}")

@@ -127,7 +127,7 @@ class GoogleDriveStorage:
 
             file_id = response.get("id")
             logger.info(f"Successfully uploaded {filename} to Google Drive: {file_id}")
-            return file_id
+            return str(file_id) if file_id else None
 
         except HttpError as e:
             logger.error(f"Failed to upload {filename}: {e}")
@@ -257,7 +257,8 @@ class GoogleDriveStorage:
 
             files = results.get("files", [])
             if files:
-                return files[0]["id"]
+                file_id = files[0].get("id")
+                return str(file_id) if file_id else None
             return None
 
         except HttpError as e:

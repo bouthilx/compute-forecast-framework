@@ -122,7 +122,8 @@ def load_download_state() -> Dict[str, Any]:
     state_path = get_download_state_path()
     if state_path.exists():
         with open(state_path, "r") as f:
-            return json.load(f)
+            data = json.load(f)
+            return dict(data) if isinstance(data, dict) else {}
     return {
         "completed": [],
         "failed": [],

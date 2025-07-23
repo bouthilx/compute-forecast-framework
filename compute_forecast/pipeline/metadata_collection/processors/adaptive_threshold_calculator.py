@@ -54,11 +54,11 @@ class AdaptiveThresholdCalculator:
         # Calculate statistical threshold (percentile from config)
         citations = [p.get_latest_citations_count() for p in venue_papers]
         if citations:
-            statistical_threshold = np.percentile(
+            statistical_threshold = float(np.percentile(
                 citations, self.config.statistical_percentile
-            )
+            ))
         else:
-            statistical_threshold = base_threshold
+            statistical_threshold = float(base_threshold)
 
         # Adaptive threshold (weighted combination using config weights)
         adaptive_threshold = int(
