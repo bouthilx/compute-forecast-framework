@@ -179,7 +179,7 @@ class DownloadOrchestrator:
         # State management
         self.state = DownloadState([], {}, [], None)
         self._state_lock = threading.Lock()
-        
+
         # Session counters
         self._session_successful = 0
         self._session_failed = 0
@@ -631,12 +631,12 @@ class DownloadOrchestrator:
         start_time = time.time()
         while not self._message_queue.empty() and (time.time() - start_time) < timeout:
             time.sleep(0.1)
-        
+
         # Add a small delay after queue appears empty to ensure processor
         # has finished updating counters (only happens once at the end)
         if (time.time() - start_time) < timeout:
             time.sleep(0.5)  # 500ms delay for final processing
-        
+
         # Stop processor thread
         self._stop_processor.set()
         # Send stop message to ensure processor exits

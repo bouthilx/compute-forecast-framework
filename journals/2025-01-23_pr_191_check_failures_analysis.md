@@ -63,7 +63,7 @@ Multiple issues detected:
 
 ### Pre-commit Fixes
 - [ ] Fix trailing whitespace in 7 files
-- [ ] Add final newlines to 8 files  
+- [ ] Add final newlines to 8 files
 - [ ] Fix bare except in download_orchestrator.py:387
 - [ ] Run ruff format on 5 files
 
@@ -145,7 +145,7 @@ Found extensive API mismatches in storage manager tests:
 Successfully fixed:
 1. ✅ PR title (added "feat:" prefix)
 2. ✅ Bare except clause (changed to `except queue.Empty`)
-3. ✅ Missing import of `queue` module  
+3. ✅ Missing import of `queue` module
 4. ✅ All trailing whitespace issues
 5. ✅ All missing final newlines
 6. ✅ Unused imports in monitoring and storage modules
@@ -171,7 +171,7 @@ The test expects "Successful: 1" but gets "Successful: 0". Investigation shows:
 
 **Pre-commit Fixes (All Completed)**:
 - ✅ Fixed trailing whitespace in 7 files
-- ✅ Added final newlines to 8 files  
+- ✅ Added final newlines to 8 files
 - ✅ Fixed bare except in download_orchestrator.py:387
 - ✅ Ran ruff format on 5 files
 - ✅ Updated PR title with conventional commit prefix
@@ -189,3 +189,19 @@ The test expects "Successful: 1" but gets "Successful: 0". Investigation shows:
 The race condition was actually caused by a missing line of code - the session counter increment was missing from the DOWNLOAD_COMPLETE message handler. After adding `self._session_successful += 1` back to the handler, all integration tests now pass.
 
 The delay added after queue emptying helps ensure all messages are fully processed before returning counts.
+
+### Final Fix for StorageManager Tests
+After pre-commit/linting fixes, some StorageManager tests failed due to:
+1. Tests using `upload_file` instead of `upload_with_progress`
+2. Tests expecting exceptions but API returns None on failure
+3. Mock download paths not being relative to cache directory
+4. Tests checking wrong mock method calls
+
+**Fixes Applied**:
+- Changed all `upload_file` references to `upload_with_progress`
+- Changed mock side_effect exceptions to return_value = None
+- Fixed mock download paths to be within cache directory
+- Fixed test assertions to match actual API behavior
+- Used side_effect callbacks to create files during mock download
+
+**Result**: All 15 StorageManager tests now pass! ✅

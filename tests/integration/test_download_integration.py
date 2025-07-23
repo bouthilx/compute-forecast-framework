@@ -92,11 +92,13 @@ class TestDownloadIntegration:
             ]
         )
 
-        with patch("compute_forecast.workers.pdf_downloader.PDFDownloader._create_session") as mock_create:
+        with patch(
+            "compute_forecast.workers.pdf_downloader.PDFDownloader._create_session"
+        ) as mock_create:
             mock_session = Mock()
             mock_session.get.return_value = mock_response
             mock_create.return_value = mock_session
-            
+
             with patch.dict("os.environ", {"LOCAL_CACHE_DIR": str(temp_dir / "cache")}):
                 result = runner.invoke(
                     app, ["download", "--papers", str(sample_papers), "--no-progress"]
@@ -116,16 +118,20 @@ class TestDownloadIntegration:
                 status_code=200,
                 headers={"Content-Type": "application/pdf", "Content-Length": "10000"},
                 text="",
-                iter_content=Mock(return_value=[b"%PDF-1.4\n" + b"0" * 10000 + b"\n%%EOF"]),
+                iter_content=Mock(
+                    return_value=[b"%PDF-1.4\n" + b"0" * 10000 + b"\n%%EOF"]
+                ),
             ),
             Mock(status_code=404, text="Not Found", reason="Not Found"),
         ]
 
-        with patch("compute_forecast.workers.pdf_downloader.PDFDownloader._create_session") as mock_create:
+        with patch(
+            "compute_forecast.workers.pdf_downloader.PDFDownloader._create_session"
+        ) as mock_create:
             mock_session = Mock()
             mock_session.get.side_effect = responses
             mock_create.return_value = mock_session
-            
+
             with patch.dict("os.environ", {"LOCAL_CACHE_DIR": str(temp_dir / "cache")}):
                 result = runner.invoke(
                     app, ["download", "--papers", str(sample_papers), "--no-progress"]
@@ -159,10 +165,12 @@ class TestDownloadIntegration:
         paper_subdir = cache_dir / "te"  # First 2 chars of "test_paper_1"
         paper_subdir.mkdir(parents=True, exist_ok=True)
         (paper_subdir / "test_paper_1.pdf").write_bytes(b"dummy pdf content")
-        
+
         # Debug: verify file exists
-        assert (paper_subdir / "test_paper_1.pdf").exists(), f"File not created at {paper_subdir / 'test_paper_1.pdf'}"
-        
+        assert (paper_subdir / "test_paper_1.pdf").exists(), (
+            f"File not created at {paper_subdir / 'test_paper_1.pdf'}"
+        )
+
         # Mock only one request (for second paper)
         mock_response = Mock()
         mock_response.status_code = 200
@@ -173,7 +181,9 @@ class TestDownloadIntegration:
         mock_response.text = ""
         mock_response.iter_content = Mock(return_value=[mock_pdf_content])
 
-        with patch("compute_forecast.workers.pdf_downloader.PDFDownloader._create_session") as mock_create:
+        with patch(
+            "compute_forecast.workers.pdf_downloader.PDFDownloader._create_session"
+        ) as mock_create:
             mock_session = Mock()
             mock_session.get.return_value = mock_response
             mock_create.return_value = mock_session
@@ -195,28 +205,35 @@ class TestDownloadIntegration:
 
                     assert result.exit_code == 0
                     # Check that it shows 1 paper to download in the table
-                    output_lines = result.output.split('\n')
+                    output_lines = result.output.split("\n")
                     table_found = False
                     for i, line in enumerate(output_lines):
                         if "To Download" in line and i + 2 < len(output_lines):
                             # The table row with counts should be 2 lines down
                             data_line = output_lines[i + 2]
                             # Extract numbers from the table row
-                            numbers = [s.strip() for s in data_line.split('│') if s.strip().isdigit()]
+                            numbers = [
+                                s.strip()
+                                for s in data_line.split("│")
+                                if s.strip().isdigit()
+                            ]
                             if len(numbers) >= 2:
-                                assert numbers[1] == "1"  # To Download column should be 1
+                                assert (
+                                    numbers[1] == "1"
+                                )  # To Download column should be 1
                                 table_found = True
                                 break
                     assert table_found, "Could not find download plan table"
-                    
+
                     # Debug: check mock call count
                     print(f"mock_session.get.call_count: {mock_session.get.call_count}")
                     print(f"Exit code: {result.exit_code}")
                     if result.exception:
                         print(f"Exception: {result.exception}")
                         import traceback
+
                         traceback.print_tb(result.exc_info[2])
-                    
+
                     # Should show successful download
                     assert "Successful: 1" in result.output
                     # Should only call get once for the second paper
@@ -259,9 +276,13 @@ class TestDownloadIntegration:
             "Content-Length": "10000",
         }
         mock_response.text = ""
-        mock_response.iter_content = Mock(return_value=[b"%PDF-1.4\n" + b"0" * 10000 + b"\n%%EOF"])
+        mock_response.iter_content = Mock(
+            return_value=[b"%PDF-1.4\n" + b"0" * 10000 + b"\n%%EOF"]
+        )
 
-        with patch("compute_forecast.workers.pdf_downloader.PDFDownloader._create_session") as mock_create:
+        with patch(
+            "compute_forecast.workers.pdf_downloader.PDFDownloader._create_session"
+        ) as mock_create:
             mock_session = Mock()
             mock_session.get.return_value = mock_response
             mock_create.return_value = mock_session
@@ -355,15 +376,19 @@ class TestDownloadIntegration:
                 "Content-Length": "1000",
             }
             response.text = ""
-            response.iter_content = Mock(return_value=[b"%PDF-1.4\n" + b"0" * 10000 + b"\n%%EOF"])
+            response.iter_content = Mock(
+                return_value=[b"%PDF-1.4\n" + b"0" * 10000 + b"\n%%EOF"]
+            )
             return response
 
-        with patch("compute_forecast.workers.pdf_downloader.PDFDownloader._create_session") as mock_create:
+        with patch(
+            "compute_forecast.workers.pdf_downloader.PDFDownloader._create_session"
+        ) as mock_create:
             mock_session = Mock()
             mock_session.get.side_effect = mock_download
             mock_create.return_value = mock_session
             successful, failed = orchestrator.download_papers(papers)
-            
+
             print(f"Successful: {successful}, Failed: {failed}")
             print(f"mock_session.get.call_count: {mock_session.get.call_count}")
             print(f"download_times: {download_times}")
@@ -380,7 +405,7 @@ class TestDownloadIntegration:
     def test_failed_papers_export_format(self, sample_papers, temp_dir):
         """Test the format of failed papers export."""
         runner = CliRunner()
-        
+
         # Record existing failed papers files to ignore them
         existing_failed_files = set(Path(".").glob("failed_papers_*.json"))
 
@@ -390,11 +415,13 @@ class TestDownloadIntegration:
             Mock(status_code=403, text="Forbidden", reason="Forbidden"),
         ]
 
-        with patch("compute_forecast.workers.pdf_downloader.PDFDownloader._create_session") as mock_create:
+        with patch(
+            "compute_forecast.workers.pdf_downloader.PDFDownloader._create_session"
+        ) as mock_create:
             mock_session = Mock()
             mock_session.get.side_effect = responses
             mock_create.return_value = mock_session
-            
+
             with patch.dict("os.environ", {"LOCAL_CACHE_DIR": str(temp_dir / "cache")}):
                 result = runner.invoke(
                     app, ["download", "--papers", str(sample_papers), "--no-progress"]
@@ -437,7 +464,9 @@ class TestDownloadIntegration:
         mock_response.text = ""
         mock_response.iter_content = Mock(return_value=[mock_pdf_content])
 
-        with patch("compute_forecast.workers.pdf_downloader.PDFDownloader._create_session") as mock_create:
+        with patch(
+            "compute_forecast.workers.pdf_downloader.PDFDownloader._create_session"
+        ) as mock_create:
             mock_session = Mock()
             mock_session.get.return_value = mock_response
             mock_create.return_value = mock_session

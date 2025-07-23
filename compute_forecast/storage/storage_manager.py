@@ -96,8 +96,10 @@ class StorageManager:
                 if downloaded_path:
                     # Update cache metadata
                     self.local_cache.metadata[paper_id] = {
-                        "path": str(cache_path.relative_to(self.local_cache.cache_dir)),
-                        "size": cache_path.stat().st_size,
+                        "path": str(
+                            downloaded_path.relative_to(self.local_cache.cache_dir)
+                        ),
+                        "size": downloaded_path.stat().st_size,
                         "cached_at": datetime.now().isoformat(),
                         "from_drive": True,
                     }
