@@ -413,14 +413,15 @@ class DownloadOrchestrator:
 
                 # Update paper metadata
                 paper.processing_flags["pdf_downloaded"] = True
-                paper.processing_flags["pdf_download_timestamp"] = datetime.now().isoformat()
+                paper.processing_flags["pdf_download_timestamp"] = (
+                    datetime.now().isoformat()
+                )
 
                 if self.progress_manager:
                     self.progress_manager.complete_download(message.paper_id, True)
 
             elif message.type == MessageType.DOWNLOAD_FAILED:
                 error_msg = message.data.get("error", "Unknown error")
-                permanent = message.data.get("permanent", False)
 
                 # Prepare paper info for detailed failure tracking
                 paper_info = {
@@ -577,14 +578,19 @@ class DownloadOrchestrator:
                         else:
                             failed += 1
                             # Determine if this is a permanent failure
-                            _, is_permanent = self._categorize_error(error_msg or "Unknown error")
+                            _, is_permanent = self._categorize_error(
+                                error_msg or "Unknown error"
+                            )
 
                             # Send failure message to queue
                             if paper.paper_id:
                                 message = QueueMessage(
                                     type=MessageType.DOWNLOAD_FAILED,
                                     paper_id=paper.paper_id,
-                                    data={"error": error_msg, "permanent": is_permanent},
+                                    data={
+                                        "error": error_msg,
+                                        "permanent": is_permanent,
+                                    },
                                 )
                                 self._message_queue.put(message)
 

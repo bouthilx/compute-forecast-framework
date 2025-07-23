@@ -72,7 +72,10 @@ class MockCollector(BasePDFCollector):
     """Mock collector for testing."""
 
     def __init__(
-        self, source_name: str, delay: float = 0, fail_papers: Optional[List[str]] = None
+        self,
+        source_name: str,
+        delay: float = 0,
+        fail_papers: Optional[List[str]] = None,
     ):
         super().__init__(source_name)
         self.delay = delay
