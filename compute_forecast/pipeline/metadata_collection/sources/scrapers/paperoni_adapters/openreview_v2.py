@@ -3,6 +3,7 @@
 from typing import List, Any, Optional, Iterator
 from datetime import datetime
 import openreview
+from openreview import tools
 import re
 from fnmatch import fnmatch
 from functools import reduce
@@ -59,13 +60,16 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
     def _create_paperoni_scraper(self):
         """Create OpenReview clients for both API versions."""
         try:
+            self.logger.info("Creating OpenReview API clients...")
             # Create API v2 client (for 2024+)
             self.client_v2 = openreview.api.OpenReviewClient(
                 baseurl="https://api2.openreview.net"
             )
+            self.logger.info("Created v2 client")
 
             # Create API v1 client (for 2023 and earlier)
             self.client_v1 = openreview.Client(baseurl="https://api.openreview.net")
+            self.logger.info("Created v1 client")
 
             return self.client_v2  # Return v2 as default
         except Exception as e:
@@ -149,6 +153,7 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             self._create_paperoni_scraper()
         
         # Rate limiting - small delay before starting
+        self.logger.info(f"Starting scrape for {venue} {year}")
         time.sleep(0.5)
         
         try:
@@ -241,11 +246,14 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
 
         try:
             # TMLR uses a different structure - get accepted papers
-            submissions = list(
-                self.client_v2.get_all_notes(
-                    invitation="TMLR/-/Accepted", details="replies"
-                )
+            # Use efficient_iterget to stream papers
+            submissions_iter = tools.efficient_iterget(
+                self.client_v2.get_notes,
+                invitation="TMLR/-/Accepted",
+                details="replies",
+                limit=1000
             )
+            submissions = list(submissions_iter)  # Convert to list for backward compatibility
 
             self.logger.info(f"Found {len(submissions)} total TMLR papers")
 
@@ -296,9 +304,13 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             self.logger.info(f"Getting accepted papers for {venue_id} using venueid")
 
             # Use venueid to get only accepted papers
-            submissions = list(
-                self.client_v2.get_all_notes(content={"venueid": venue_id})
+            # Use efficient_iterget to stream papers
+            submissions_iter = tools.efficient_iterget(
+                self.client_v2.get_notes,
+                content={"venueid": venue_id},
+                limit=1000
             )
+            submissions = list(submissions_iter)  # Convert to list for backward compatibility
 
             self.logger.info(f"Found {len(submissions)} accepted papers using venueid")
 
@@ -446,11 +458,14 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         for invitation in invitation_formats:
             try:
                 self.logger.debug(f"Trying v2 invitation format: {invitation}")
-                submissions = list(
-                    self.client_v2.get_all_notes(
-                        invitation=invitation, details="replies"
-                    )
+                # Use efficient_iterget to stream papers
+                submissions_iter = tools.efficient_iterget(
+                    self.client_v2.get_notes,
+                    invitation=invitation,
+                    details="replies",
+                    limit=1000
                 )
+                submissions = list(submissions_iter)  # Convert to list for backward compatibility
                 if submissions:
                     self.logger.info(
                         f"Found {len(submissions)} submissions using {invitation}"
@@ -534,11 +549,18 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
             self.logger.info(f"Getting TMLR papers for year {year}")
             
             # TMLR uses a single invitation for all published papers
-            submissions = self.client_v2.get_all_notes(
-                invitation="TMLR/-/Paper", details="directReplies"
+            # Use efficient_iterget to stream papers instead of loading all at once
+            submissions = tools.efficient_iterget(
+                self.client_v2.get_notes,
+                invitation="TMLR/-/Paper",
+                details="directReplies",
+                limit=1000  # Fetch in batches of 1000
             )
             
             # Filter by publication year and yield papers one by one
+            paper_count = 0
+            max_papers = self.config.batch_size if self.config.batch_size < 10000 else None
+            
             for submission in submissions:
                 try:
                     # Get publication date
@@ -559,6 +581,12 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
                     )
                     if paper:
                         yield paper
+                        paper_count += 1
+                        
+                        # Check batch size limit
+                        if max_papers and paper_count >= max_papers:
+                            self.logger.info(f"Reached batch_size limit ({max_papers})")
+                            return
                         
                 except Exception as e:
                     self.logger.debug(
@@ -574,10 +602,18 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
     ) -> Iterator[SimplePaper]:
         """Stream accepted papers using venueid for ICLR 2024+."""
         try:
-            self.logger.info(f"Getting accepted papers for {venue_id} using venueid")
+            self.logger.info(f"Getting accepted papers for {venue_id} using venueid method")
             
             # Use venueid to get only accepted papers
-            submissions = self.client_v2.get_all_notes(content={"venueid": venue_id})
+            # Use efficient_iterget to stream papers instead of loading all at once
+            submissions = tools.efficient_iterget(
+                self.client_v2.get_notes,
+                content={"venueid": venue_id},
+                limit=1000  # Fetch in batches of 1000
+            )
+            
+            paper_count = 0
+            max_papers = self.config.batch_size if self.config.batch_size < 10000 else None
             
             for submission in submissions:
                 try:
@@ -594,6 +630,12 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
                     )
                     if paper:
                         yield paper
+                        paper_count += 1
+                        
+                        # Check batch size limit
+                        if max_papers and paper_count >= max_papers:
+                            self.logger.info(f"Reached batch_size limit ({max_papers})")
+                            return
                         
                 except Exception as e:
                     self.logger.debug(
@@ -610,14 +652,15 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         self, venue_id: str, venue: str, year: int
     ) -> Iterator[SimplePaper]:
         """Stream papers using API v1 for ICLR ≤2023."""
-        # First, get all submissions
+        self.logger.info(f"Using v1 API iterator for {venue} {year}")
+        # Try different invitation formats
         invitation_formats = [
             f"{venue_id}/-/Blind_Submission",
             f"{venue_id}/-/Submission",
             f"{venue_id}/-/Paper",
         ]
         
-        all_submissions = []
+        submissions_iter = None
         for invitation in invitation_formats:
             try:
                 self.logger.debug(f"Trying v1 invitation format: {invitation}")
@@ -627,63 +670,68 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
                 submissions_iter = tools.iterget_notes(
                     self.client_v1, invitation=invitation
                 )
-                all_submissions = list(submissions_iter)
                 
-                if all_submissions:
-                    self.logger.info(
-                        f"Found {len(all_submissions)} submissions using {invitation}"
-                    )
+                # Use itertools.tee to peek without consuming the iterator
+                import itertools
+                peek_iter, submissions_iter = itertools.tee(submissions_iter, 2)
+                
+                # Test if we have any submissions by peeking
+                try:
+                    first_submission = next(peek_iter)
+                    self.logger.info(f"Found submissions using {invitation}")
                     break
+                except StopIteration:
+                    # No submissions with this invitation
+                    continue
             except Exception as e:
                 self.logger.debug(f"Failed with invitation {invitation}: {e}")
                 continue
         
-        if not all_submissions:
+        if not submissions_iter:
             self.logger.error(f"No submissions found for {venue_id}")
             return
         
-        # For ICLR, implement efficient decision extraction
-        self.logger.info(
-            f"Filtering {len(all_submissions)} submissions for accepted papers..."
-        )
+        # Process submissions as they come
+        self.logger.info("Processing submissions for accepted papers...")
         
-        # Try venue field approach first
-        venue_filtered = []
-        for submission in all_submissions:
-            venue_field = submission.content.get("venue", "")
-            
-            # Check if this is an accepted paper based on venue field
-            if self._is_accepted_by_venue_field(venue_field, year):
-                # Cache the decision from venue field
-                submission._cached_decision = self._extract_decision_from_venue(
-                    venue_field
-                )
-                venue_filtered.append(submission)
+        paper_count = 0
+        accepted_count = 0
+        rejected_count = 0
+        max_papers = self.config.batch_size if self.config.batch_size < 10000 else None
         
-        if len(venue_filtered) > 100:  # Sanity check
-            self.logger.info(
-                f"Used venue field to find {len(venue_filtered)} accepted papers"
-            )
-            submissions_to_process = venue_filtered
-        else:
-            # Fallback: Get all submissions and extract decisions
-            self.logger.info(
-                "Venue field unreliable, extracting decisions for all papers..."
-            )
-            submissions_to_process = all_submissions
-        
-        # Convert to SimplePaper and yield
-        for submission in submissions_to_process:
+        for submission in submissions_iter:
             try:
+                # Check venue field first for quick filtering (ICLR-specific optimization)
+                venue_field = submission.content.get("venue", "")
+                if venue_field and self._is_accepted_by_venue_field(venue_field, year):
+                    # Cache the decision from venue field
+                    submission._cached_decision = self._extract_decision_from_venue(venue_field)
+                
                 decision = self._extract_decision_smart(submission, venue.lower(), year)
                 
                 # Skip rejected/withdrawn papers
                 if decision and decision.lower() in ["rejected", "withdrawn"]:
+                    rejected_count += 1
                     continue
                 
                 paper = self._convert_to_simple_paper(submission, decision, venue, year)
                 if paper:
                     yield paper
+                    accepted_count += 1
+                    
+                    # Check batch size limit
+                    if max_papers and accepted_count >= max_papers:
+                        self.logger.info(f"Reached batch_size limit ({max_papers})")
+                        return
+                    
+                    # Log progress every 100 papers processed
+                    if (accepted_count + rejected_count) % 100 == 0:
+                        self.logger.info(
+                            f"Processed {accepted_count + rejected_count} submissions: "
+                            f"{accepted_count} accepted, {rejected_count} rejected"
+                        )
+                
+                paper_count = accepted_count + rejected_count
                     
             except Exception as e:
                 self.logger.debug(f"Failed to process submission: {e}")
@@ -693,6 +741,7 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         self, venue_id: str, venue: str, year: int
     ) -> Iterator[SimplePaper]:
         """Stream papers using API v2 for standard conferences."""
+        self.logger.info(f"Using v2 API iterator for {venue} {year}")
         # Try different invitation formats
         invitation_formats = [
             f"{venue_id}/-/Blind_Submission",
@@ -705,8 +754,12 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         for invitation in invitation_formats:
             try:
                 self.logger.debug(f"Trying v2 invitation format: {invitation}")
-                submissions = self.client_v2.get_all_notes(
-                    invitation=invitation, details="replies"
+                # Use efficient_iterget to stream papers instead of loading all at once
+                submissions = tools.efficient_iterget(
+                    self.client_v2.get_notes,
+                    invitation=invitation,
+                    details="replies",
+                    limit=1000  # Fetch in batches of 1000
                 )
                 # Check if we have any results by peeking at the iterator
                 first_submission = next(submissions, None)
@@ -728,6 +781,7 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
         self.logger.info(f"Processing submissions...")
         accepted_count = 0
         rejected_count = 0
+        max_papers = self.config.batch_size if self.config.batch_size < 10000 else None
         
         for submission in submissions:
             try:
@@ -743,6 +797,11 @@ class OpenReviewAdapterV2(BasePaperoniAdapter):
                 if paper:
                     yield paper
                     accepted_count += 1
+                    
+                    # Check batch size limit
+                    if max_papers and accepted_count >= max_papers:
+                        self.logger.info(f"Reached batch_size limit ({max_papers})")
+                        return
                     
                     # Log progress every 100 papers
                     if accepted_count % 100 == 0:

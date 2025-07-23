@@ -85,6 +85,11 @@ class VenueWorker(multiprocessing.Process):
                     try:
                         estimated_count = scraper.estimate_paper_count(self.venue, year)
                         if estimated_count:
+                            # Apply max_papers limit to estimate
+                            max_papers = self.config.batch_size if self.config.batch_size < 10000 else None
+                            if max_papers and estimated_count > max_papers:
+                                estimated_count = max_papers
+                            
                             logger.info(f"Estimated {estimated_count} papers for {self.venue} {year}")
                             # Send progress initialization
                             self.result_queue.put(
@@ -98,6 +103,7 @@ class VenueWorker(multiprocessing.Process):
                     # Stream papers one by one
                     paper_count = 0
                     error_count = 0
+                    max_papers = self.config.batch_size if self.config.batch_size < 10000 else None
                     
                     for paper in scraper.scrape_venue_year_iter(self.venue, year):
                         try:
@@ -105,6 +111,11 @@ class VenueWorker(multiprocessing.Process):
                                 CollectionResult.paper_result(self.venue, year, paper)
                             )
                             paper_count += 1
+                            
+                            # Check if we've reached the max_papers limit
+                            if max_papers and paper_count >= max_papers:
+                                logger.info(f"Reached max_papers limit ({max_papers}), stopping")
+                                break
                             
                             # Log progress periodically
                             if paper_count % 100 == 0:

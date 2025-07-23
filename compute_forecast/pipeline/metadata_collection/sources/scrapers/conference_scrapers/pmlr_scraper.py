@@ -112,7 +112,9 @@ class PMLRScraper(ConferenceProceedingsScraper):
             self.logger.info(f"Fetching PMLR proceedings from: {url}")
             
             response = self._make_request(url)
+            self.logger.info(f"Downloaded HTML ({len(response.text)} bytes), parsing...")
             soup = BeautifulSoup(response.text, "html.parser")
+            self.logger.info("HTML parsing complete")
             
             # PMLR uses <div class="paper"> for each paper entry
             paper_entries = soup.find_all("div", class_="paper")
@@ -123,7 +125,13 @@ class PMLRScraper(ConferenceProceedingsScraper):
             
             self.logger.info(f"Found {len(paper_entries)} paper entries for {venue} {year}")
             
-            for i, entry in enumerate(paper_entries):
+            # Apply batch size limit if configured
+            limit = len(paper_entries)
+            if self.config.batch_size < 10000:  # Reasonable batch size
+                limit = min(self.config.batch_size, len(paper_entries))
+                self.logger.info(f"Limiting to {limit} papers (batch_size={self.config.batch_size})")
+            
+            for i, entry in enumerate(paper_entries[:limit]):
                 try:
                     paper = self._extract_paper_from_entry(entry, venue_normalized, year, i)
                     if paper:
@@ -131,7 +139,7 @@ class PMLRScraper(ConferenceProceedingsScraper):
                         
                         # Log progress every 50 papers
                         if (i + 1) % 50 == 0:
-                            self.logger.info(f"Processed {i + 1}/{len(paper_entries)} papers")
+                            self.logger.info(f"Processed {i + 1}/{limit} papers")
                             
                 except Exception as e:
                     self.logger.warning(f"Failed to extract paper from entry {i}: {e}")
