@@ -39,14 +39,14 @@ Follow the same pattern as the consolidate command:
       "cached_path": "...",
       "timestamp": "..."
   }
-  
+
   {
-      "type": "download_failed", 
+      "type": "download_failed",
       "paper_id": "...",
       "error": "...",
       "permanent": True/False
   }
-  
+
   {
       "type": "progress_update",
       "paper_id": "...",
@@ -112,15 +112,15 @@ def process_results(queue, orchestrator, progress_mgr):
         message = queue.get()
         if message["type"] == "stop":
             break
-            
+
         if message["type"] == "download_complete":
             orchestrator._update_state(...)
             progress_mgr.complete_download(...)
-            
+
         elif message["type"] == "download_failed":
             orchestrator._update_state(...)
             progress_mgr.complete_download(...)
-            
+
         # Periodic state save
         if processed % 10 == 0:
             orchestrator._save_state()
@@ -135,13 +135,13 @@ def process_results(queue, orchestrator, progress_mgr):
 
 1. **Thread Safety**: Single point of state modification
 2. **Consistency**: No race conditions
-3. **Performance**: Workers don't block on state updates  
+3. **Performance**: Workers don't block on state updates
 4. **Reliability**: Centralized error handling
 5. **Maintainability**: Clear separation of concerns
 
 ### 6. Estimated Changes
 
-- `download_orchestrator.py`: 
+- `download_orchestrator.py`:
   - Add queue initialization
   - Create result processor
   - Modify `_download_single_paper` to push to queue

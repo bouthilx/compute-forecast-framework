@@ -43,7 +43,7 @@ Created a message queue system with typed messages:
    ```python
    from queue import Queue
    from enum import Enum
-   
+
    class MessageType(Enum):
        DOWNLOAD_COMPLETE = "download_complete"
        DOWNLOAD_FAILED = "download_failed"

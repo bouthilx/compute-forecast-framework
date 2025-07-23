@@ -25,19 +25,19 @@ logger = logging.getLogger(__name__)
 
 class ProgressLogHandler(logging.Handler):
     """Custom log handler that routes through progress manager's log method."""
-    
+
     def __init__(self, progress_manager):
         super().__init__()
         self.progress_manager = progress_manager
         # Set a filter to avoid processing logs from compute_forecast.monitoring
         self.addFilter(logging.Filter())
-        
+
     def emit(self, record):
         """Emit a log record through the progress manager."""
         # Skip logs from our own module to avoid recursion
-        if record.name.startswith('compute_forecast.monitoring'):
+        if record.name.startswith("compute_forecast.monitoring"):
             return
-            
+
         try:
             # Map Python log levels to our levels
             level_map = {
@@ -45,12 +45,12 @@ class ProgressLogHandler(logging.Handler):
                 logging.INFO: "INFO",
                 logging.WARNING: "WARNING",
                 logging.ERROR: "ERROR",
-                logging.CRITICAL: "ERROR"
+                logging.CRITICAL: "ERROR",
             }
-            
+
             # Format message with logger name
             msg = f"[{record.name}] {record.getMessage()}"
-            
+
             # Use progress manager's log method
             self.progress_manager.log(msg, level_map.get(record.levelno, "INFO"))
         except Exception:
@@ -59,31 +59,31 @@ class ProgressLogHandler(logging.Handler):
 
 class StatusColumn(ProgressColumn):
     """Custom column to show download status counts."""
-    
+
     def __init__(self):
         super().__init__()
-    
+
     def render(self, task: Task) -> str:
         """Render the status counts."""
         # Extract counts from task fields
-        success = task.fields.get('success', 0)
-        failed = task.fields.get('failed', 0)
-        broken = task.fields.get('broken', 0)
-        
+        success = task.fields.get("success", 0)
+        failed = task.fields.get("failed", 0)
+        broken = task.fields.get("broken", 0)
+
         return f"[green]success:{success}[/green] [yellow]failed:{failed}[/yellow] [red]broken:{broken}[/red]"
 
 
 class DetailedProgressColumn(ProgressColumn):
     """Custom column showing percentage, count, elapsed time and ETA."""
-    
+
     def render(self, task: Task) -> str:
         """Render detailed progress information."""
         if task.total is None:
             return ""
-        
+
         # Calculate percentage
         percentage = (task.completed / task.total * 100) if task.total > 0 else 0
-        
+
         # Get elapsed time
         elapsed = task.elapsed
         if elapsed is None:
@@ -93,12 +93,12 @@ class DetailedProgressColumn(ProgressColumn):
             hours = int((elapsed % 86400) // 3600)
             minutes = int((elapsed % 3600) // 60)
             seconds = int(elapsed % 60)
-            
+
             if days > 0:
                 elapsed_str = f"{days:02d} {hours:02d}:{minutes:02d}:{seconds:02d}"
             else:
                 elapsed_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-        
+
         # Calculate ETA
         if task.speed and task.remaining:
             eta_seconds = task.remaining / task.speed
@@ -106,7 +106,7 @@ class DetailedProgressColumn(ProgressColumn):
             eta_str = eta_datetime.strftime("%Y-%m-%d %H:%M:%S ETA")
         else:
             eta_str = "--:--:-- ETA"
-        
+
         return f"{percentage:3.0f}% ({task.completed}/{task.total}) {elapsed_str} ({eta_str})"
 
 
@@ -136,7 +136,7 @@ class SimpleDownloadProgressManager:
         self.progress = None
         self.live = None
         self.overall_task = None
-        
+
         # Logging capture
         self.log_handler = None
         self.original_handlers = []
@@ -167,11 +167,11 @@ class SimpleDownloadProgressManager:
 
         # Create overall progress task with custom fields
         self.overall_task = self.progress.add_task(
-            "[cyan]Downloading papers[/cyan]", 
+            "[cyan]Downloading papers[/cyan]",
             total=total_papers,
             success=0,
             failed=0,
-            broken=0
+            broken=0,
         )
 
         # Start live display with transient mode
@@ -182,26 +182,26 @@ class SimpleDownloadProgressManager:
             transient=True,
         )
         self.live.start()
-        
+
         # Setup logging capture - add our custom handler to root logger
         root_logger = logging.getLogger()
-        
+
         # Store original handlers to restore later
         self.original_handlers = root_logger.handlers[:]
-        
+
         # Remove all existing handlers to prevent duplicate output
         for handler in self.original_handlers:
             root_logger.removeHandler(handler)
-        
+
         # Add our custom handler
         self.log_handler = ProgressLogHandler(self)
-        
+
         # Set handler level to match root logger level (respects --verbose flag)
         # This ensures we only capture logs at the configured verbosity level
         self.log_handler.setLevel(root_logger.level)
-        
+
         root_logger.addHandler(self.log_handler)
-        
+
         # Don't modify the root logger level - respect what was set by CLI
 
     def stop(self):
@@ -210,11 +210,11 @@ class SimpleDownloadProgressManager:
         if self.log_handler:
             root_logger = logging.getLogger()
             root_logger.removeHandler(self.log_handler)
-            
+
             # Restore original handlers
             for handler in self.original_handlers:
                 root_logger.addHandler(handler)
-        
+
         if self.live:
             self.live.stop()
 
@@ -223,9 +223,13 @@ class SimpleDownloadProgressManager:
             f"\n[green]✓[/green] Downloaded {self.completed} papers successfully"
         )
         if self.failed > 0:
-            self.console.print(f"[yellow]⚠[/yellow] Failed to download {self.failed} papers (can retry)")
+            self.console.print(
+                f"[yellow]⚠[/yellow] Failed to download {self.failed} papers (can retry)"
+            )
         if self.broken > 0:
-            self.console.print(f"[red]✗[/red] Failed to download {self.broken} papers (permanent failures)")
+            self.console.print(
+                f"[red]✗[/red] Failed to download {self.broken} papers (permanent failures)"
+            )
 
     def log(self, message: str, level: str = "INFO"):
         """Log a message to console.
@@ -280,7 +284,9 @@ class SimpleDownloadProgressManager:
 
             self.progress.update(self.overall_task, description=desc)
 
-    def complete_download(self, paper_id: str, success: bool, permanent_failure: bool = False):
+    def complete_download(
+        self, paper_id: str, success: bool, permanent_failure: bool = False
+    ):
         """Mark download as complete.
 
         Args:
@@ -307,13 +313,13 @@ class SimpleDownloadProgressManager:
 
             # Update overall progress
             self.progress.advance(self.overall_task, 1)
-            
+
             # Update task fields for custom columns
             self.progress.update(
-                self.overall_task, 
+                self.overall_task,
                 success=self.completed,
                 failed=self.failed,
-                broken=self.broken
+                broken=self.broken,
             )
 
     def get_progress_callback(self) -> Callable[[str, int, str, float], None]:

@@ -189,7 +189,9 @@ def main(
         ..., "--papers", help="Path to papers JSON file with PDF URLs"
     ),
     output: Optional[Path] = typer.Option(
-        None, "--output", help="Path for output JSON file with download status (optional)"
+        None,
+        "--output",
+        help="Path for output JSON file with download status (optional)",
     ),
     parallel: int = typer.Option(
         None, "--parallel", help="Number of parallel downloads (default from .env or 5)"
@@ -413,7 +415,7 @@ def main(
     output_path = output
     if output_path and output is not None:
         console.print(f"  [blue]Output file:[/blue] {output_path}")
-    
+
     # Callback to save papers periodically
     def save_papers_callback(updated_papers: List[Paper]):
         # Only save if output path is specified

@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 import time
 from datetime import datetime
 import threading
+import queue
 from queue import Queue
 from enum import Enum
 
@@ -23,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class MessageType(Enum):
     """Types of messages that can be sent through the queue."""
+
     DOWNLOAD_COMPLETE = "download_complete"
     DOWNLOAD_FAILED = "download_failed"
     PROGRESS_UPDATE = "progress_update"
@@ -32,6 +34,7 @@ class MessageType(Enum):
 @dataclass
 class QueueMessage:
     """Message sent through the queue from workers to processor."""
+
     type: MessageType
     paper_id: str
     data: Dict[str, Any] = field(default_factory=dict)
@@ -176,7 +179,7 @@ class DownloadOrchestrator:
         # State management
         self.state = DownloadState([], {}, [], None)
         self._state_lock = threading.Lock()
-        
+
         # Queue for worker communication
         self._message_queue: Queue[QueueMessage] = Queue()
         self._processor_thread: Optional[threading.Thread] = None
@@ -369,9 +372,13 @@ class DownloadOrchestrator:
 
         return papers_to_download
 
-    def _process_results(self, papers: List[Paper], save_papers_callback: Optional[Callable[[List[Paper]], None]] = None):
+    def _process_results(
+        self,
+        papers: List[Paper],
+        save_papers_callback: Optional[Callable[[List[Paper]], None]] = None,
+    ):
         """Process results from the message queue.
-        
+
         Args:
             papers: List of all papers being downloaded
             save_papers_callback: Optional callback to save updated papers
@@ -379,73 +386,79 @@ class DownloadOrchestrator:
         logger.info("Starting result processor thread")
         processed_count = 0
         paper_dict = {p.paper_id: p for p in papers}
-        
+
         while not self._stop_processor.is_set() or not self._message_queue.empty():
             try:
                 # Get message with timeout to allow checking stop flag
                 message = self._message_queue.get(timeout=0.1)
-            except:
+            except queue.Empty:
                 continue
-                
+
             if message.type == MessageType.STOP:
                 break
-                
+
             paper = paper_dict.get(message.paper_id)
             if not paper:
                 logger.warning(f"Unknown paper ID in message: {message.paper_id}")
                 continue
-                
+
             if message.type == MessageType.DOWNLOAD_COMPLETE:
                 self._update_state(message.paper_id, "completed")
                 logger.info(f"Successfully downloaded PDF for {message.paper_id}")
-                
+
                 # Update paper metadata
                 paper.pdf_downloaded = True
                 paper.pdf_download_timestamp = datetime.now().isoformat()
-                
+
                 if self.progress_manager:
                     self.progress_manager.complete_download(message.paper_id, True)
-                    
+
             elif message.type == MessageType.DOWNLOAD_FAILED:
                 error_msg = message.data.get("error", "Unknown error")
                 permanent = message.data.get("permanent", False)
-                
+
                 # Prepare paper info for detailed failure tracking
                 paper_info = {
                     "title": paper.title,
-                    "pdf_url": paper.processing_flags.get("selected_pdf_url", "Unknown"),
+                    "pdf_url": paper.processing_flags.get(
+                        "selected_pdf_url", "Unknown"
+                    ),
                 }
                 self._update_state(message.paper_id, "failed", error_msg, paper_info)
-                logger.info(f"Failed to download PDF for {message.paper_id}: {error_msg}")
-                
+                logger.info(
+                    f"Failed to download PDF for {message.paper_id}: {error_msg}"
+                )
+
                 # Update paper metadata
                 paper.pdf_download_error = error_msg
-                
+
                 if self.progress_manager:
                     self.progress_manager.complete_download(
                         message.paper_id, False, permanent_failure=permanent
                     )
-                    
+
             elif message.type == MessageType.PROGRESS_UPDATE:
                 # Forward progress updates to progress manager
-                if self.progress_manager and hasattr(self.progress_manager, 'update_download'):
+                if self.progress_manager and hasattr(
+                    self.progress_manager, "update_download"
+                ):
                     callback = self.progress_manager.get_progress_callback()
                     callback(
                         message.paper_id,
-                        message.data.get('bytes', 0),
-                        message.data.get('operation', ''),
-                        message.data.get('speed', 0.0)
+                        message.data.get("bytes", 0),
+                        message.data.get("operation", ""),
+                        message.data.get("speed", 0.0),
                     )
-                
+
             processed_count += 1
-            
+
             # Save state periodically
             if processed_count % 10 == 0:
                 self._save_state()
                 # Save papers if callback provided
                 if save_papers_callback:
                     save_papers_callback(papers)
-                    
+
         logger.info("Result processor thread finished")
 
     def download_papers(
@@ -484,7 +497,7 @@ class DownloadOrchestrator:
         self._processor_thread = threading.Thread(
             target=self._process_results,
             args=(papers, save_papers_callback),
-            name="DownloadResultProcessor"
+            name="DownloadResultProcessor",
         )
         self._processor_thread.start()
 
@@ -495,7 +508,9 @@ class DownloadOrchestrator:
         # Shuffle papers to distribute requests across different venue servers
         shuffled_papers = papers.copy()
         random.shuffle(shuffled_papers)
-        logger.info(f"Shuffled {len(shuffled_papers)} papers to distribute load across venues")
+        logger.info(
+            f"Shuffled {len(shuffled_papers)} papers to distribute load across venues"
+        )
 
         # Process papers in parallel
         logger.info(f"Starting parallel download with {self.parallel_workers} workers")
@@ -504,21 +519,24 @@ class DownloadOrchestrator:
             future_to_paper = {}
             paper_index = 0
             active_downloads = 0
-            
+
             # Initially submit up to parallel_workers tasks
-            while paper_index < len(shuffled_papers) and active_downloads < self.parallel_workers:
+            while (
+                paper_index < len(shuffled_papers)
+                and active_downloads < self.parallel_workers
+            ):
                 paper = shuffled_papers[paper_index]
                 # Apply rate limiting
                 self._enforce_rate_limit()
-                
+
                 # Update state
                 self._update_state(paper.paper_id, "in_progress")
-                
+
                 # Submit download task
                 logger.debug(f"Submitting download task for {paper.paper_id}")
                 future = executor.submit(self._download_single_paper, paper, downloader)
                 future_to_paper[future] = paper
-                
+
                 paper_index += 1
                 active_downloads += 1
 
@@ -529,7 +547,7 @@ class DownloadOrchestrator:
                 for future in as_completed(future_to_paper, timeout=None):
                     done_futures.append(future)
                     break  # Process one at a time to maintain parallel limit
-                
+
                 # Process completed futures
                 for future in done_futures:
                     paper = future_to_paper.pop(future)
@@ -543,48 +561,57 @@ class DownloadOrchestrator:
                             # Send success message to queue
                             message = QueueMessage(
                                 type=MessageType.DOWNLOAD_COMPLETE,
-                                paper_id=paper.paper_id
+                                paper_id=paper.paper_id,
                             )
                             self._message_queue.put(message)
                         else:
                             failed += 1
                             # Determine if this is a permanent failure
                             _, is_permanent = self._categorize_error(error_msg)
-                            
+
                             # Send failure message to queue
                             message = QueueMessage(
                                 type=MessageType.DOWNLOAD_FAILED,
                                 paper_id=paper.paper_id,
-                                data={"error": error_msg, "permanent": is_permanent}
+                                data={"error": error_msg, "permanent": is_permanent},
                             )
                             self._message_queue.put(message)
 
                     except Exception as e:
-                        logger.error(f"Unexpected error processing {paper.paper_id}: {e}")
+                        logger.error(
+                            f"Unexpected error processing {paper.paper_id}: {e}"
+                        )
                         failed += 1
-                        
+
                         # Send failure message to queue
                         message = QueueMessage(
                             type=MessageType.DOWNLOAD_FAILED,
                             paper_id=paper.paper_id,
-                            data={"error": str(e), "permanent": False}
+                            data={"error": str(e), "permanent": False},
                         )
                         self._message_queue.put(message)
-                    
+
                     # Submit next paper if any remain
-                    if paper_index < len(shuffled_papers) and active_downloads < self.parallel_workers:
+                    if (
+                        paper_index < len(shuffled_papers)
+                        and active_downloads < self.parallel_workers
+                    ):
                         next_paper = shuffled_papers[paper_index]
                         # Apply rate limiting
                         self._enforce_rate_limit()
-                        
+
                         # Update state
                         self._update_state(next_paper.paper_id, "in_progress")
-                        
+
                         # Submit download task
-                        logger.debug(f"Submitting download task for {next_paper.paper_id}")
-                        future = executor.submit(self._download_single_paper, next_paper, downloader)
+                        logger.debug(
+                            f"Submitting download task for {next_paper.paper_id}"
+                        )
+                        future = executor.submit(
+                            self._download_single_paper, next_paper, downloader
+                        )
                         future_to_paper[future] = next_paper
-                        
+
                         paper_index += 1
                         active_downloads += 1
 
@@ -592,13 +619,13 @@ class DownloadOrchestrator:
         self._stop_processor.set()
         # Send stop message to ensure processor exits
         self._message_queue.put(QueueMessage(type=MessageType.STOP, paper_id=""))
-        
+
         # Wait for processor to finish
         if self._processor_thread:
             self._processor_thread.join(timeout=30)
             if self._processor_thread.is_alive():
                 logger.warning("Result processor thread did not finish in time")
-        
+
         # Final state save
         self._save_state()
 
@@ -615,7 +642,9 @@ class DownloadOrchestrator:
             actual_successful = len(self.state.completed)
             actual_failed = len(self.state.failed)
 
-        logger.info(f"Download complete: {actual_successful} successful, {actual_failed} failed")
+        logger.info(
+            f"Download complete: {actual_successful} successful, {actual_failed} failed"
+        )
         return actual_successful, actual_failed
 
     def export_failed_papers(
@@ -706,7 +735,9 @@ class DownloadOrchestrator:
                 return True, None
 
             # Set up progress callback that sends messages to queue
-            def progress_callback(paper_id: str, bytes_transferred: int, operation: str, speed: float):
+            def progress_callback(
+                paper_id: str, bytes_transferred: int, operation: str, speed: float
+            ):
                 # Send progress update through queue
                 message = QueueMessage(
                     type=MessageType.PROGRESS_UPDATE,
@@ -714,8 +745,8 @@ class DownloadOrchestrator:
                     data={
                         "bytes": bytes_transferred,
                         "operation": operation,
-                        "speed": speed
-                    }
+                        "speed": speed,
+                    },
                 )
                 self._message_queue.put(message)
 

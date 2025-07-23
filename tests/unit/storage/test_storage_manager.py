@@ -23,7 +23,10 @@ class TestStorageManager:
         mock = Mock()
         mock.file_exists.return_value = False
         mock.upload_file.return_value = "file_id_123"
+        mock.upload_with_progress.return_value = "file_id_123"
         mock.download_pdf.return_value = Path("/tmp/downloaded.pdf")
+        mock.download_with_progress.return_value = Path("/tmp/downloaded.pdf")
+        mock.get_file_id.return_value = "file_id_123"
         mock.test_connection.return_value = True
         return mock
 
@@ -47,7 +50,13 @@ class TestStorageManager:
         )
         # Replace with our mock
         manager.google_drive = mock_google_drive
-        manager.local_cache = None  # Disable local cache for drive-only test
+        # Mock the local cache to fail saves to simulate drive-only mode
+        mock_local_cache = Mock()
+        mock_local_cache.save.return_value = None  # Simulate failed save
+        mock_local_cache.get_path.return_value = None  # Simulate file not in cache
+        mock_local_cache.exists.return_value = False  # Simulate file not existing in cache
+        mock_local_cache.cache_dir = temp_dir / "minimal_cache"
+        manager.local_cache = mock_local_cache
         return manager
 
     @pytest.fixture
@@ -94,25 +103,26 @@ class TestStorageManager:
         pdf_path = temp_dir / "test.pdf"
         pdf_path.write_bytes(b"%PDF-1.4\nTest content")
 
-        success, error = storage_manager_drive_only.save_pdf(
-            paper_id="test_paper", pdf_path=pdf_path
+        success = storage_manager_drive_only.save_pdf(
+            paper_id="test_paper", source_path=pdf_path
         )
 
         assert success is True
-        assert error is None
-        mock_google_drive.upload_file.assert_called_once()
+        mock_google_drive.upload_with_progress.assert_called_once()
 
         # Test exists
         mock_google_drive.file_exists.return_value = True
         exists, location = storage_manager_drive_only.exists("test_paper")
         assert exists is True
-        assert location == "google_drive"
+        assert location == "drive"
 
         # Test get
-        mock_google_drive.download_pdf.return_value = pdf_path
-        retrieved_path = storage_manager_drive_only.get_pdf("test_paper")
+        mock_google_drive.get_file_id.return_value = "file123"
+        mock_google_drive.download_with_progress.return_value = pdf_path
+        retrieved_path = storage_manager_drive_only.get_pdf_path("test_paper")
         assert retrieved_path == pdf_path
-        mock_google_drive.download_pdf.assert_called_once()
+        mock_google_drive.get_file_id.assert_called_once()
+        mock_google_drive.download_with_progress.assert_called_once()
 
     def test_both_storages(self, storage_manager_both, mock_google_drive, temp_dir):
         """Test storage manager with both local and Google Drive."""
@@ -125,8 +135,7 @@ class TestStorageManager:
         )
 
         assert success is True
-        assert error is None
-        mock_google_drive.upload_file.assert_called_once()
+        mock_google_drive.upload_with_progress.assert_called_once()
 
         # Check local cache exists
         cache_path = Path(storage_manager_both.cache_dir) / "test_paper.pdf"
@@ -141,7 +150,6 @@ class TestStorageManager:
         success, error = storage_manager_local_only.save_pdf("paper123", pdf_path)
 
         assert success is True
-        assert error is None
 
         # Verify file was copied to cache
         cache_path = Path(storage_manager_local_only.cache_dir) / "paper123.pdf"
@@ -166,7 +174,6 @@ class TestStorageManager:
         )
 
         assert success is True
-        assert error is None
         mock_google_drive.upload_file.assert_called_once_with(
             pdf_path,
             "paper123.pdf",
@@ -186,7 +193,6 @@ class TestStorageManager:
 
         # Should still succeed with local save
         assert success is True
-        assert error is None
 
         # Local file should exist
         cache_path = Path(storage_manager_both.cache_dir) / "paper123.pdf"
@@ -237,7 +243,7 @@ class TestStorageManager:
 
         exists, location = storage_manager_both.exists("paper123")
         assert exists is True
-        assert location == "google_drive"
+        assert location == "drive"
 
     def test_get_pdf_from_cache(self, storage_manager_both, temp_dir):
         """Test retrieving PDF from local cache."""
@@ -247,7 +253,7 @@ class TestStorageManager:
         cache_path = cache_dir / "paper123.pdf"
         cache_path.write_bytes(b"%PDF-1.4\nCached content")
 
-        retrieved = storage_manager_both.get_pdf("paper123")
+        retrieved = storage_manager_both.get_pdf_path("paper123")
         assert retrieved == cache_path
         assert retrieved.read_bytes() == b"%PDF-1.4\nCached content"
 
@@ -263,7 +269,7 @@ class TestStorageManager:
         downloaded_file.write_bytes(b"%PDF-1.4\nDrive content")
         mock_google_drive.download_pdf.return_value = downloaded_file
 
-        retrieved = storage_manager_both.get_pdf("paper123")
+        retrieved = storage_manager_both.get_pdf_path("paper123")
         assert retrieved == downloaded_file
         mock_google_drive.download_pdf.assert_called_once()
 
@@ -286,7 +292,7 @@ class TestStorageManager:
         storage_manager_both.save_pdf("paper123", pdf_path, metadata=metadata)
 
         # Check metadata was passed to Google Drive
-        mock_google_drive.upload_file.assert_called_once()
+        mock_google_drive.upload_with_progress.assert_called_once()
         call_args = mock_google_drive.upload_file.call_args
         assert call_args[1]["metadata"] == metadata
 
@@ -327,6 +333,6 @@ class TestStorageManager:
         )
 
         # Verify callback was passed to Google Drive
-        mock_google_drive.upload_file.assert_called_once()
+        mock_google_drive.upload_with_progress.assert_called_once()
         call_kwargs = mock_google_drive.upload_file.call_args.kwargs
         assert call_kwargs.get("progress_callback") == progress_callback

@@ -50,7 +50,7 @@ while future_to_paper:
     for future in as_completed(future_to_paper):
         # Process result
         active_downloads -= 1
-        
+
         # Submit next if under limit
         if paper_index < len(shuffled_papers) and active_downloads < self.parallel_workers:
             # Submit next task

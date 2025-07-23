@@ -225,9 +225,7 @@ class PDFDownloader:
             logger.debug(f"Validating downloaded file: {tmp_path}")
             validation_error = self._validate_pdf(tmp_path, bytes_downloaded)
             if validation_error:
-                logger.info(
-                    f"PDF validation failed for {paper_id}: {validation_error}"
-                )
+                logger.info(f"PDF validation failed for {paper_id}: {validation_error}")
                 tmp_path.unlink()  # Delete invalid file
                 return False, validation_error
 
