@@ -21,6 +21,12 @@ class CollectionQualityMetrics:
     papers_with_dois: int = 0
     field_completeness_scores: Dict[str, float] = field(default_factory=dict)
 
+    # PDF validation metrics
+    papers_with_valid_pdfs: int = 0
+    papers_with_invalid_pdfs: int = 0
+    papers_without_pdfs: int = 0
+    invalid_pdf_url_samples: List[str] = field(default_factory=list)
+
     # Consistency metrics
     venue_consistency_score: float = 1.0
     year_consistency_score: float = 1.0
