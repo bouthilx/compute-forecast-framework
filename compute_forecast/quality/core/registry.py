@@ -16,7 +16,9 @@ class StageCheckerRegistry:
         """Register a stage checker class."""
         self._checkers[stage.lower()] = checker_class
 
-    def get_checker(self, stage: str, config: Optional[Dict[str, Any]] = None) -> Optional[StageQualityChecker]:
+    def get_checker(
+        self, stage: str, config: Optional[Dict[str, Any]] = None
+    ) -> Optional[StageQualityChecker]:
         """Get or create a checker instance for a stage."""
         stage = stage.lower()
 
@@ -25,8 +27,11 @@ class StageCheckerRegistry:
 
         # Create a new instance with config if provided
         if config and stage == "collection" and "pdf_validation_mode" in config:
-            return self._checkers[stage](pdf_validation_mode=config["pdf_validation_mode"])
-        
+            # CollectionQualityChecker accepts pdf_validation_mode
+            return self._checkers[stage](  # type: ignore[call-arg]
+                pdf_validation_mode=config["pdf_validation_mode"]
+            )
+
         if stage not in self._instances:
             self._instances[stage] = self._checkers[stage]()
 

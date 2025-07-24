@@ -57,7 +57,9 @@ class CompletenessValidator(BaseValidator):
     OPTIONAL_FIELDS = ["abstract", "pdf_url", "doi", "keywords"]
 
     def __init__(self, pdf_validation_mode: str = "strict"):
-        self.pdf_validator = PDFURLValidator(strict_mode=(pdf_validation_mode == "strict"))
+        self.pdf_validator = PDFURLValidator(
+            strict_mode=(pdf_validation_mode == "strict")
+        )
 
     def get_check_type(self) -> QualityCheckType:
         return QualityCheckType.COMPLETENESS
@@ -167,11 +169,7 @@ class CompletenessValidator(BaseValidator):
         for field in self.OPTIONAL_FIELDS:
             if field == "pdf_url":
                 # Check both pdf_url and pdf_urls fields, and also urls field with PDF URLs
-                present_count = sum(
-                    1
-                    for paper in papers
-                    if self._paper_has_pdf(paper)
-                )
+                present_count = sum(1 for paper in papers if self._paper_has_pdf(paper))
             else:
                 present_count = sum(
                     1

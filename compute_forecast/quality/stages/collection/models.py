@@ -20,7 +20,7 @@ class CollectionQualityMetrics:
     papers_with_pdfs: int = 0
     papers_with_dois: int = 0
     field_completeness_scores: Dict[str, float] = field(default_factory=dict)
-    
+
     # PDF validation metrics
     papers_with_valid_pdfs: int = 0
     papers_with_invalid_pdfs: int = 0

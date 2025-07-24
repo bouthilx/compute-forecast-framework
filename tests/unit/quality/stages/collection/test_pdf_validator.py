@@ -202,8 +202,12 @@ class TestPDFURLValidator:
                 "https://example.com/pdf-guide.html",  # Invalid
             ],
             "urls": [
-                {"data": {"url": "https://example.com/pdf/viewer"}},  # Invalid but PDF-like
-                {"data": {"url": "https://example.com/index.html"}},  # Invalid, not PDF-like
+                {
+                    "data": {"url": "https://example.com/pdf/viewer"}
+                },  # Invalid but PDF-like
+                {
+                    "data": {"url": "https://example.com/index.html"}
+                },  # Invalid, not PDF-like
             ],
         }
 
